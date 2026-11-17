@@ -25,13 +25,20 @@ $("#admin-login-btn").onclick = async () => {
   if (!pw) return;
   const d = await api("/admin/api/login", {password: pw});
   if (d.ok) {
+    if (d.is_subscriber || (d.redirect && d.redirect !== "/admin")) {
+      $("#admin-msg").textContent = "✔ مرحباً بك " + (d.name || "") + "! جاري نقلك إلى لوحة حسابك...";
+      $("#admin-msg").style.color = "#22c55e";
+      setTimeout(() => { window.location.href = d.redirect || "/"; }, 500);
+      return;
+    }
     SESSION = d.session;
     $("#login-overlay").hidden = true;
     $("#main-ui").hidden = false;
-    $("#admin-pw-badge").textContent = "Admin password: " + pw;
+    $("#admin-pw-badge").textContent = "Admin Mode";
     loadAll();
   } else {
-    $("#admin-msg").textContent = "❌ Wrong password"; $("#admin-msg").style.color = "#ef4444";
+    $("#admin-msg").textContent = "❌ كلمة المرور أو التوكن غير صحيح (Wrong password / Invalid token)";
+    $("#admin-msg").style.color = "#ef4444";
   }
 };
 $("#admin-pw").onkeydown = e => { if (e.key === "Enter") $("#admin-login-btn").click(); };

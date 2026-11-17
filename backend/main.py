@@ -337,6 +337,17 @@ def _caller_identity(request: Request, conn):
     }
 
 
+SUBSCRIBER_ALIASES = {
+    "youseif": {"youseif", "yousef", "youssef", "yousif", "يوسف"},
+    "يوسف": {"youseif", "yousef", "youssef", "yousif", "يوسف"},
+    "af": {"af", "ahmed", "ahmad", "احمد"},
+    "احمد": {"af", "ahmed", "ahmad", "احمد"},
+    "ahmed": {"af", "ahmed", "ahmad", "احمد"},
+    "فهمي": {"فهمي", "fahmy", "fahmi"},
+    "fahmy": {"فهمي", "fahmy", "fahmi"},
+}
+
+
 def is_account_accessible(rec, filter_owner: str = "", is_admin: bool = False) -> bool:
     """صلاحية الوصول للحساب:
     - الأدمن إذا لم يكن يتصفح مشتركاً محدداً: لا يرى أي حساب نهائياً (مخصص لعرض لوحة التحكم وقائمة المشتركين فقط).
@@ -350,8 +361,9 @@ def is_account_accessible(rec, filter_owner: str = "", is_admin: bool = False) -
     owner_str = (rec.get("owner_username") or "").strip().lower()
     if not owner_str:
         return False
-    owners = [o.strip() for o in owner_str.split(",") if o.strip()]
-    return clean_filter in owners or "all" in owners or "public" in owners
+    owners = set(o.strip() for o in owner_str.split(",") if o.strip())
+    filter_set = SUBSCRIBER_ALIASES.get(clean_filter, {clean_filter})
+    return bool(filter_set & owners) or "all" in owners or "public" in owners
 
 
 def _one_account(account):
@@ -497,15 +509,30 @@ async def admin_login(request: Request):
     conn = store.db()
     pw = (body.get("password") or "").strip()
     ok = subs_mod.verify_admin(conn, pw)
+    if ok:
+        conn.close()
+        session = secrets.token_hex(16)
+        _ADMIN_SESSIONS.add(session)
+        resp = JSONResponse({"ok": True, "session": session, "is_admin": True, "redirect": "/admin"})
+        resp.set_cookie("cm_admin_session", session, max_age=86400, httponly=True, samesite="lax")
+        resp.set_cookie("cm_subscriber_token", pw, max_age=400*86400, httponly=True, samesite="lax")
+        return resp
+
+    # فحص إذا كان المُدخل هو توكن مشترك وليس باسورد الأدمن — تسجيل دخوله وتحويله للداشبورد مباشرة
+    sub = subs_mod.verify_token(conn, pw)
     conn.close()
-    if not ok:
-        return JSONResponse({"ok": False})
-    session = secrets.token_hex(16)
-    _ADMIN_SESSIONS.add(session)
-    resp = JSONResponse({"ok": True, "session": session})
-    resp.set_cookie("cm_admin_session", session, max_age=86400, httponly=True, samesite="lax")
-    resp.set_cookie("cm_subscriber_token", pw, max_age=400*86400, httponly=True, samesite="lax")
-    return resp
+    if sub:
+        resp = JSONResponse({
+            "ok": True,
+            "is_subscriber": True,
+            "name": sub["name"],
+            "redirect": "/",
+            "message": f"مرحباً {sub['name']}! جاري نقلك لحسابك..."
+        })
+        resp.set_cookie("cm_subscriber_token", pw, max_age=400*86400, httponly=True, samesite="lax")
+        return resp
+
+    return JSONResponse({"ok": False, "detail": "كلمة المرور أو التوكن غير صحيح"})
 
 
 def _admin_check(request: Request):
