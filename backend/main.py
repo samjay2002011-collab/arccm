@@ -324,7 +324,7 @@ def _caller_identity(request: Request, conn):
 
     is_admin = is_local or (token == adm_pw) or (admin_sess and admin_sess in _ADMIN_SESSIONS)
     url_view = (request.query_params.get("view_as") or request.query_params.get("subscriber") or request.query_params.get("owner") or "").strip()
-    viewing_as = url_view or view_cookie or ""
+    viewing_as = (url_view or view_cookie or "") if is_admin else ""
     # إذا كان أدمن ومش بيتصفح مشترك معين: filter_owner فاضي تماماً حتى لا تظهر أي حسابات
     filter_owner = viewing_as if is_admin else (sub_name if not is_admin else "")
 
@@ -332,7 +332,7 @@ def _caller_identity(request: Request, conn):
         "is_admin": bool(is_admin),
         "is_local": bool(is_local),
         "subscriber_name": sub_name or ("Admin" if is_admin else ""),
-        "viewing_as": viewing_as or "",
+        "viewing_as": viewing_as if is_admin else "",
         "filter_owner": (filter_owner or "").strip()
     }
 
@@ -778,7 +778,7 @@ def api_accounts(request: Request):
                 "capacity": {"used": len(out), "limit": sub_limit if sub_limit is not None else limits["limit"]},
                 "profile": profile_info,
                 "subscriber": filter_owner or None,
-                "viewing_as": filter_owner or "",
+                "viewing_as": (ident["viewing_as"] or "") if ident["is_admin"] else "",
                 "is_admin": bool(ident["is_admin"]),
                 "subscribers": subscribers_summary,
                 "all_system_accounts": all_system_accounts}

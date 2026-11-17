@@ -196,16 +196,16 @@ async function loadAccounts() {
     return data;
   }
   state.isAdmin = !!data.is_admin;
-  state.viewingAs = data.viewing_as || new URLSearchParams(window.location.search).get("view_as") || "";
-  state.allSystemAccounts = data.all_system_accounts || [];
+  state.viewingAs = (state.isAdmin && (data.viewing_as || new URLSearchParams(window.location.search).get("view_as"))) || "";
+  state.allSystemAccounts = state.isAdmin ? (data.all_system_accounts || []) : [];
 
   const bar = document.getElementById("view-as-bar");
   const nameEl = document.getElementById("view-as-name");
-  if (state.viewingAs) {
-    if (bar) bar.style.display = "flex";
+  if (state.isAdmin && state.viewingAs) {
+    if (bar) bar.style.setProperty("display", "flex", "important");
     if (nameEl) nameEl.textContent = state.viewingAs;
   } else {
-    if (bar) bar.style.display = "none";
+    if (bar) bar.style.setProperty("display", "none", "important");
   }
 
   state.accounts = data.accounts || [];
