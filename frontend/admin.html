@@ -57,7 +57,7 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: "Segoe
 .table-head { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--line); }
 .table-head h2 { margin: 0; font-size: 13px; letter-spacing: 3px; font-weight: 800; flex: 1; }
 .sub-list { max-height: 60vh; overflow-y: auto; }
-.sub-row { display: grid; grid-template-columns: 35px 1fr 130px 90px 90px auto; gap: 12px; align-items: center; padding: 14px 20px; border-bottom: 1px solid var(--line); transition: background .15s; }
+.sub-row { display: grid; grid-template-columns: 35px 1fr 110px 80px 80px 110px auto; gap: 12px; align-items: center; padding: 14px 20px; border-bottom: 1px solid var(--line); transition: background .15s; }
 .sub-row:hover { background: rgba(255,255,255,.02); }
 .sub-row .num { font-size: 11px; color: var(--muted); font-weight: 700; }
 .sub-row .name { font-weight: 800; font-size: 14px; }
@@ -155,6 +155,7 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: "Segoe
     <div class="create-row">
       <div class="field"><label>NAME</label><input id="c-name" placeholder="e.g. Ahmed"></div>
       <div class="field"><label>DAYS (0 = unlimited)</label><input id="c-days" type="number" value="30" min="0"></div>
+      <div class="field" style="max-width:140px;"><label>MAX ACCOUNTS</label><input id="c-max-accs" type="number" value="1" min="1"></div>
       <div class="field"><label>NOTES (optional)</label><input id="c-notes" placeholder="e.g. paid $10"></div>
       <button class="btn btn-primary" id="btn-create">+ CREATE</button>
     </div>
@@ -167,6 +168,15 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: "Segoe
       <h2>SUBSCRIBERS</h2>
       <button class="btn btn-ghost btn-sm" id="btn-refresh">↻ REFRESH</button>
     </div>
+    <div style="display:grid; grid-template-columns:35px 1fr 110px 80px 80px 110px auto; gap:12px; padding:10px 20px; font-size:11px; font-weight:800; color:var(--muted); border-bottom:1px solid var(--line); letter-spacing:1px; background:rgba(255,255,255,0.015);">
+      <span>#</span>
+      <span>المشترك / SUBSCRIBER</span>
+      <span>TOKEN</span>
+      <span>الحالة</span>
+      <span>المدة المتبقية</span>
+      <span style="color:#c084fc;">🎮 حد الحسابات</span>
+      <span>إجراءات التحكم</span>
+    </div>
     <div class="sub-list" id="sub-list"></div>
   </div>
 </div>
@@ -177,6 +187,7 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: "Segoe
   <div class="modal-card">
     <h3 id="edit-title">EDIT SUBSCRIBER</h3>
     <div class="field"><label>NAME</label><input id="e-name"></div>
+    <div class="field"><label>MAX ACCOUNTS ALLOWED (الحد الأقصى للحسابات المسموح بها)</label><input id="e-max-accs" type="number" min="1" value="1"></div>
     <div class="field"><label>ADD DAYS (from now or from current expiry)</label><input id="e-days" type="number" value="0" min="0"></div>
     <div class="field"><label>SET EXACT DAYS (replaces current — 0 = unlimited)</label><input id="e-set-days" type="number" value="" min="0" placeholder="Leave empty to keep current"></div>
     <div class="field"><label>NOTES</label><input id="e-notes"></div>
@@ -204,7 +215,7 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: "Segoe
       <div class="profile-stat"><div class="ps-label">EXPIRES</div><div class="ps-value" id="prf-expires">—</div></div>
       <div class="profile-stat"><div class="ps-label">DAYS LEFT</div><div class="ps-value" id="prf-days">—</div></div>
       <div class="profile-stat"><div class="ps-label">LAST LOGIN</div><div class="ps-value" id="prf-lastlogin">—</div></div>
-      <div class="profile-stat"><div class="ps-label">TOTAL LOGINS</div><div class="ps-value" id="prf-logincount">—</div></div>
+      <div class="profile-stat"><div class="ps-label">MAX ACCOUNTS</div><div class="ps-value" id="prf-maxaccs">—</div></div>
       <div class="profile-stat"><div class="ps-label">NOTES</div><div class="ps-value" id="prf-notes" style="font-size:12px; font-weight:600;">—</div></div>
     </div>
     <div class="ps-label">ACCESS TOKEN</div>
@@ -221,6 +232,6 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: "Segoe
   </div>
 </div>
 
-<script src="/admin.js?v=8"></script>
+<script src="/admin.js?v=10"></script>
 </body>
 </html>

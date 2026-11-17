@@ -340,7 +340,7 @@ def _caller_identity(request: Request, conn):
 def is_account_accessible(rec, filter_owner: str = "", is_admin: bool = False) -> bool:
     """صلاحية الوصول للحساب:
     - الأدمن إذا لم يكن يتصفح مشتركاً محدداً: لا يرى أي حساب نهائياً (مخصص لعرض لوحة التحكم وقائمة المشتركين فقط).
-    - إذا كان هناك filter_owner (مشترك محدد أو أدمن يتصفح حساب مشترك): يتم عرض حساباته المخصصة أو الحسابات العامة.
+    - إذا كان هناك filter_owner: الحساب يظهر في بروفايل المشترك الخاص به فقط.
     """
     if is_admin and not filter_owner:
         return False
@@ -348,10 +348,10 @@ def is_account_accessible(rec, filter_owner: str = "", is_admin: bool = False) -
     if not clean_filter:
         return False
     owner_str = (rec.get("owner_username") or "").strip().lower()
-    if not owner_str or owner_str in ("all", "shared", "*", "public"):
-        return True
+    if not owner_str:
+        return False
     owners = [o.strip() for o in owner_str.split(",") if o.strip()]
-    return clean_filter in owners or "all" in owners or "shared" in owners
+    return clean_filter in owners or "all" in owners or "public" in owners
 
 
 def _one_account(account):
@@ -521,6 +521,10 @@ def admin_list_subs(request: Request):
     _admin_check(request)
     conn = store.db()
     subs = subs_mod.list_subscribers(conn)
+    all_rows = store.list_accounts(conn)
+    for s in subs:
+        s_accs = [r for r in all_rows if is_account_accessible(r, s["name"], False)]
+        s["accounts_count"] = len(s_accs)
     conn.close()
     return {"subscribers": subs}
 
@@ -530,7 +534,13 @@ async def admin_create_sub(request: Request):
     _admin_check(request)
     body = await request.json()
     conn = store.db()
-    result = subs_mod.create_subscriber(conn, body.get("name", ""), body.get("days"), body.get("notes", ""))
+    result = subs_mod.create_subscriber(
+        conn,
+        body.get("name", ""),
+        body.get("days"),
+        body.get("notes", ""),
+        max_accounts=body.get("max_accounts", 1)
+    )
     conn.close()
     return result
 
@@ -542,7 +552,7 @@ async def admin_update_sub(sub_id: int, request: Request):
     conn = store.db()
     result = subs_mod.update_subscriber(conn, sub_id,
         name=body.get("name"), days=body.get("days"), notes=body.get("notes"),
-        is_active=body.get("is_active"))
+        is_active=body.get("is_active"), max_accounts=body.get("max_accounts"))
     conn.close()
     if not result:
         raise HTTPException(404, "subscriber not found")
@@ -718,6 +728,12 @@ def api_accounts(request: Request):
             profile_info["username"] = "Admin"
             profile_info["plan"] = "ADMINISTRATOR"
 
+        sub_limit = None
+        if filter_owner:
+            s_row = conn.execute("SELECT max_accounts FROM subscribers WHERE LOWER(name)=LOWER(?)", (filter_owner,)).fetchone()
+            if s_row:
+                sub_limit = s_row[0] or 1
+
         subscribers_summary = []
         if ident["is_admin"]:
             subs = subs_mod.list_subscribers(conn)
@@ -727,11 +743,12 @@ def api_accounts(request: Request):
                     "id": s["id"],
                     "name": s["name"],
                     "accounts_count": len(s_accs),
+                    "max_accounts": s.get("max_accounts", 1),
                     "accounts": [a["display_name"] or a["name"] for a in s_accs]
                 })
 
         return {"accounts": out, "active": active_name,
-                "capacity": {"used": len(out), "limit": limits["limit"]},
+                "capacity": {"used": len(out), "limit": sub_limit if sub_limit is not None else limits["limit"]},
                 "profile": profile_info,
                 "subscriber": filter_owner or None,
                 "viewing_as": filter_owner or "",
@@ -811,6 +828,19 @@ def api_account_add(request: Request, body: dict = None):
         override = (body.get("owner") or body.get("subscriber") or request.query_params.get("view_as") or request.query_params.get("subscriber") or "").strip()
         if override:
             owner = override
+
+    if owner:
+        conn = store.db()
+        s_row = conn.execute("SELECT max_accounts FROM subscribers WHERE LOWER(name)=LOWER(?)", (owner,)).fetchone()
+        if s_row:
+            max_acc = s_row[0] or 1
+            all_current = [r for r in store.list_accounts(conn) if is_account_accessible(r, owner, False)]
+            token_norm = accounts_mod.normalize_token((body.get("token") or "").strip())
+            already_has = any(r.get("token") == token_norm for r in all_current)
+            if not already_has and len(all_current) >= max_acc:
+                conn.close()
+                raise HTTPException(400, f"عفواً، لقد تم الوصول للحد الأقصى لعدد الحسابات المسموح به لهذا المشترك ({len(all_current)}/{max_acc} حساب). يرجى زيادة الحد من لوحة الأدمن أولاً.")
+        conn.close()
 
     try:
         rec, note = _with_conn(lambda conn: accounts_mod.add(
@@ -1063,6 +1093,14 @@ async def api_account_assign_owner(account_id: str, request: Request):
         rec = store.get_account(conn, account_id)
         if not rec:
             raise HTTPException(404, "Account not found")
+
+        s_row = conn.execute("SELECT max_accounts FROM subscribers WHERE LOWER(name)=LOWER(?)", (target_owner,)).fetchone()
+        if s_row:
+            max_acc = s_row[0] or 1
+            all_current = [r for r in store.list_accounts(conn) if is_account_accessible(r, target_owner, False)]
+            already_has = any(r["id"] == rec["id"] for r in all_current)
+            if not already_has and len(all_current) >= max_acc:
+                raise HTTPException(400, f"عفواً، لقد تم الوصول للحد الأقصى لعدد الحسابات المسموح به لهذا المشترك ({len(all_current)}/{max_acc} حساب). يرجى زيادة الحد من لوحة الأدمن أولاً.")
 
         existing_owners_raw = (rec.get("owner_username") or "").strip()
         owners_list = [o.strip() for o in existing_owners_raw.split(",") if o.strip()]

@@ -85,12 +85,19 @@ function renderList() {
     const stLabel = s.manually_disabled ? "DISABLED" : s.is_expired ? "EXPIRED" : "ACTIVE";
     const days = s.days_left !== null ? (s.days_left <= 0 ? "0 days" : s.days_left + " d left") : "∞ unlimited";
     const daysCls = s.days_left !== null && s.days_left <= 3 ? (s.days_left <= 0 ? "gone" : "warn") : "";
+    const maxAcc = s.max_accounts || 1;
+    const curAcc = s.accounts_count !== undefined ? s.accounts_count : 0;
     return `<div class="sub-row">
       <span class="num">#${s.id}</span>
       <div class="name">${esc(s.name)}<small>Created: ${fmtDate(s.created_at)} · Last login: ${fmtAgo(s.last_login)} · Logins: ${s.login_count}</small></div>
       <div class="token-cell" title="Click to copy" data-token="${esc(s.token)}">${s.token.slice(0,8)}…${s.token.slice(-6)}</div>
       <div class="status ${st}">${stLabel}</div>
       <div class="days ${daysCls}">${days}</div>
+      <div class="acc-limit-box" title="الحد الأقصى لحسابات المشترك (الحالي / المسموح) — عدّل الرقم واضغط Enter للحفظ" style="display:flex; align-items:center; gap:6px; background:rgba(168,85,247,0.1); border:1px solid rgba(168,85,247,0.3); border-radius:8px; padding:3px 8px;">
+        <span style="font-size:12px;">🎮</span>
+        <input type="number" min="1" max="99" value="${maxAcc}" data-acc-limit="${s.id}" style="width:38px; padding:2px 4px; border-radius:6px; border:1px solid rgba(255,255,255,0.15); background:#14141d; color:#fff; font-size:12px; font-weight:800; text-align:center;">
+        <small style="font-size:10px; color:${curAcc >= maxAcc ? '#ef4444' : '#22c55e'}; font-weight:800;">(${curAcc}/${maxAcc})</small>
+      </div>
       <div class="actions">
         <button class="btn btn-green btn-sm" data-viewas="${s.id}" style="font-weight:900; background:linear-gradient(135deg, #22c55e, #16a34a); color:#000; font-size:11px; padding:7px 14px;" title="ادخل حساب المشترك لتصفح ومتابعة وإدارة حسابات اللعبة">👤 ادخل حسابه</button>
         <button class="btn btn-primary btn-sm" data-profile="${s.id}">ℹ DETAILS</button>
@@ -130,6 +137,19 @@ function wireList() {
     await api("/admin/api/subscribers/" + b.dataset.del + "/delete", {});
     toast("✔ Deleted", "ok"); loadAll();
   });
+  document.querySelectorAll("[data-acc-limit]").forEach(inp => {
+    inp.onchange = async () => {
+      const id = inp.dataset.accLimit;
+      const val = Math.max(1, parseInt(inp.value) || 1);
+      inp.value = val;
+      await api("/admin/api/subscribers/" + id + "/update", {max_accounts: val});
+      toast("✔ تم تحديث الحد الأقصى للحسابات إلى " + val, "ok");
+      loadAll();
+    };
+    inp.onkeydown = (e) => {
+      if (e.key === "Enter") inp.blur();
+    };
+  });
 }
 
 // ─── Profile Modal ───
@@ -154,7 +174,13 @@ function openProfile(id) {
   else if (s.days_left <= 3) { daysEl.textContent = s.days_left + " d"; daysEl.style.color = "#f59e0b"; }
   else { daysEl.textContent = s.days_left + " d"; daysEl.style.color = "#e8e8ef"; }
   $("#prf-lastlogin").textContent = fmtAgo(s.last_login);
-  $("#prf-logincount").textContent = s.login_count;
+  const curAcc = s.accounts_count !== undefined ? s.accounts_count : 0;
+  const maxAcc = s.max_accounts || 1;
+  const prfMax = $("#prf-maxaccs");
+  if (prfMax) {
+    prfMax.textContent = `${curAcc} / ${maxAcc} (${curAcc >= maxAcc ? 'مكتمل' : (maxAcc - curAcc) + ' متاح'})`;
+    prfMax.style.color = curAcc >= maxAcc ? '#ef4444' : '#22c55e';
+  }
   $("#prf-notes").textContent = s.notes || "—";
   const tokenBox = $("#prf-token");
   tokenBox.textContent = s.token;
@@ -207,9 +233,10 @@ $("#prf-btn-delete").onclick = async () => {
 $("#btn-create").onclick = async () => {
   const name = $("#c-name").value.trim();
   const days = parseInt($("#c-days").value) || 0;
+  const maxAcc = parseInt($("#c-max-accs")?.value) || 1;
   const notes = $("#c-notes").value.trim();
   if (!name) { toast("Enter a name!", "bad"); return; }
-  const d = await api("/admin/api/subscribers/create", {name, days: days || null, notes});
+  const d = await api("/admin/api/subscribers/create", {name, days: days || null, notes, max_accounts: maxAcc});
   if (d.token) {
     const disp = $("#new-token-display");
     disp.hidden = false;
@@ -218,6 +245,7 @@ $("#btn-create").onclick = async () => {
     navigator.clipboard.writeText(d.token);
     toast("✔ Created! Token copied to clipboard.", "ok");
     $("#c-name").value = ""; $("#c-notes").value = "";
+    if ($("#c-max-accs")) $("#c-max-accs").value = 1;
     loadAll();
   }
 };
@@ -229,13 +257,19 @@ function openEdit(id) {
   EDIT_ID = id;
   $("#edit-title").textContent = "EDIT — " + s.name;
   $("#e-name").value = s.name;
+  if ($("#e-max-accs")) $("#e-max-accs").value = s.max_accounts || 1;
   $("#e-days").value = 0;
   $("#e-set-days").value = "";
   $("#e-notes").value = s.notes || "";
   $("#edit-modal").hidden = false;
 }
 $("#btn-save-edit").onclick = async () => {
-  const body = { name: $("#e-name").value.trim(), notes: $("#e-notes").value.trim() };
+  const maxAcc = parseInt($("#e-max-accs")?.value) || 1;
+  const body = {
+    name: $("#e-name").value.trim(),
+    notes: $("#e-notes").value.trim(),
+    max_accounts: maxAcc
+  };
   const addDays = parseInt($("#e-days").value) || 0;
   const setDays = $("#e-set-days").value.trim();
   if (addDays > 0) {

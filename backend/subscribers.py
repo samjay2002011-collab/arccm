@@ -23,21 +23,30 @@ def _ensure_tables(conn):
         return
     conn.executescript("""
         CREATE TABLE IF NOT EXISTS subscribers (
-            id          INTEGER PRIMARY KEY AUTOINCREMENT,
-            name        TEXT NOT NULL,
-            token       TEXT UNIQUE NOT NULL,
-            created_at  REAL NOT NULL,
-            expires_at  REAL,
-            is_active   INTEGER DEFAULT 1,
-            notes       TEXT DEFAULT '',
-            last_login  REAL,
-            login_count INTEGER DEFAULT 0
+            id           INTEGER PRIMARY KEY AUTOINCREMENT,
+            name         TEXT NOT NULL,
+            token        TEXT UNIQUE NOT NULL,
+            created_at   REAL NOT NULL,
+            expires_at   REAL,
+            is_active    INTEGER DEFAULT 1,
+            notes        TEXT DEFAULT '',
+            last_login   REAL,
+            login_count  INTEGER DEFAULT 0,
+            max_accounts INTEGER DEFAULT 1
         );
         CREATE TABLE IF NOT EXISTS admin_config (
             key   TEXT PRIMARY KEY,
             value TEXT NOT NULL
         );
     """)
+    # Migration if table already exists
+    try:
+        cols = [r[1] for r in conn.execute("PRAGMA table_info(subscribers)").fetchall()]
+        if "max_accounts" not in cols:
+            conn.execute("ALTER TABLE subscribers ADD COLUMN max_accounts INTEGER DEFAULT 1")
+            conn.commit()
+    except Exception:
+        pass
     conn.commit()
     _DB_SETUP_DONE = True
 
@@ -103,23 +112,24 @@ def verify_admin(conn, password):
 
 
 # ──────────────────────────────────────────── إدارة المشتركين
-def create_subscriber(conn, name, days=None, notes=""):
+def create_subscriber(conn, name, days=None, notes="", max_accounts=1):
     """إنشاء مشترك جديد. days=None يعني غير محدود."""
     _ensure_tables(conn)
     token = generate_token()
     now = time.time()
     expires = (now + days * 86400) if days else None
+    max_acc = max(1, int(max_accounts or 1))
     conn.execute(
-        "INSERT INTO subscribers (name, token, created_at, expires_at, notes) VALUES (?, ?, ?, ?, ?)",
-        (name.strip(), token, now, expires, notes.strip()))
+        "INSERT INTO subscribers (name, token, created_at, expires_at, notes, max_accounts) VALUES (?, ?, ?, ?, ?, ?)",
+        (name.strip(), token, now, expires, notes.strip(), max_acc))
     conn.commit()
-    return {"name": name.strip(), "token": token, "created_at": now, "expires_at": expires}
+    return {"name": name.strip(), "token": token, "created_at": now, "expires_at": expires, "max_accounts": max_acc}
 
 
 def list_subscribers(conn):
     _ensure_tables(conn)
     rows = conn.execute(
-        "SELECT id, name, token, created_at, expires_at, is_active, notes, last_login, login_count "
+        "SELECT id, name, token, created_at, expires_at, is_active, notes, last_login, login_count, max_accounts "
         "FROM subscribers ORDER BY created_at DESC").fetchall()
     now = time.time()
     out = []
@@ -135,6 +145,7 @@ def list_subscribers(conn):
             "notes": r[6] or "",
             "last_login": r[7],
             "login_count": r[8] or 0,
+            "max_accounts": r[9] if len(r) > 9 and r[9] is not None else 1,
             "days_left": max(0, round((exp - now) / 86400, 1)) if exp else None,
         })
     return out
@@ -143,7 +154,7 @@ def list_subscribers(conn):
 def get_subscriber(conn, sub_id):
     _ensure_tables(conn)
     r = conn.execute(
-        "SELECT id, name, token, created_at, expires_at, is_active, notes, last_login, login_count "
+        "SELECT id, name, token, created_at, expires_at, is_active, notes, last_login, login_count, max_accounts "
         "FROM subscribers WHERE id=?", (sub_id,)).fetchone()
     if not r:
         return None
@@ -158,6 +169,7 @@ def get_subscriber(conn, sub_id):
         "manually_disabled": not bool(r[5]),
         "notes": r[6] or "",
         "last_login": r[7], "login_count": r[8] or 0,
+        "max_accounts": r[9] if len(r) > 9 and r[9] is not None else 1,
         "days_left": max(0, round((exp - now) / 86400, 1)) if exp else None,
     }
 
@@ -184,8 +196,8 @@ def verify_token(conn, raw_token):
     return {"id": r[0], "name": r[1], "expires_at": r[2]}
 
 
-def update_subscriber(conn, sub_id, name=None, days=None, notes=None, is_active=None):
-    """تعديل مشترك: اسم / مدة / ملاحظات / تفعيل-إيقاف."""
+def update_subscriber(conn, sub_id, name=None, days=None, notes=None, is_active=None, max_accounts=None):
+    """تعديل مشترك: اسم / مدة / ملاحظات / تفعيل-إيقاف / عدد الحسابات."""
     _ensure_tables(conn)
     fields, vals = [], []
     if name is not None:
@@ -199,6 +211,8 @@ def update_subscriber(conn, sub_id, name=None, days=None, notes=None, is_active=
         fields.append("notes=?"); vals.append(notes.strip())
     if is_active is not None:
         fields.append("is_active=?"); vals.append(1 if is_active else 0)
+    if max_accounts is not None:
+        fields.append("max_accounts=?"); vals.append(max(1, int(max_accounts)))
     if not fields:
         return get_subscriber(conn, sub_id)
     vals.append(sub_id)
