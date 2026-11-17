@@ -6583,26 +6583,30 @@ function showView(view) {
 }
 window.showView = showView;
 
-$("#btn-scrappy").onclick = scrappyTopClick;
+const btnScr = $("#btn-scrappy");
+if (btnScr) btnScr.onclick = scrappyTopClick;
 $("#acct-add").onclick = addAccount;
 $("#acct-token").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addAccount(); } });
-$("#acct-sync-all").onclick = async (e) => {
-  const btn = e.currentTarget;
-  const label = btn.innerHTML;
-  btn.disabled = true;
-  btn.textContent = "SYNCING…";
-  acctNote("Pulling every account from the Embark gateway (read only)…", "");
-  try {
-    const out = await post("/api/refresh", {});
-    const results = out.results || [];
-    const online = results.filter((r) => r.ok).length;
-    acctNote(`✔ Sync ${online}/${results.length} accounts · ${out.mode} · ${out.duration_sec}s`, online === results.length ? "ok" : "bad");
-    await Promise.all([loadAccounts(), loadHeader(), loadStatus(), loadSections(), loadLegend()]);
-    toast(`✔ Synced ${online} accounts.`, "ok");
-  } catch (err) { acctNote("⛔ " + err.message, "bad"); }
-  btn.disabled = false;
-  btn.innerHTML = label;
-};
+const btnSyncAll = $("#acct-sync-all");
+if (btnSyncAll) {
+  btnSyncAll.onclick = async (e) => {
+    const btn = e.currentTarget;
+    const label = btn.innerHTML;
+    btn.disabled = true;
+    btn.textContent = "SYNCING…";
+    acctNote("Pulling every account from the Embark gateway (read only)…", "");
+    try {
+      const out = await post("/api/refresh", {});
+      const results = out.results || [];
+      const online = results.filter((r) => r.ok).length;
+      acctNote(`✔ Sync ${online}/${results.length} accounts · ${out.mode} · ${out.duration_sec}s`, online === results.length ? "ok" : "bad");
+      await Promise.all([loadAccounts(), loadHeader(), loadStatus(), loadSections(), loadLegend()]);
+      toast(`✔ Synced ${online} accounts.`, "ok");
+    } catch (err) { acctNote("⛔ " + err.message, "bad"); }
+    btn.disabled = false;
+    btn.innerHTML = label;
+  };
+}
 
 const syncBtn = $("#btn-sync");
 if (syncBtn) syncBtn.onclick = async (e) => {

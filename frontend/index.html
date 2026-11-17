@@ -6,7 +6,7 @@
 <title>CM — Inventory &amp; Loadout Manager</title>
 <!-- 🛡️ SHIELD: حماية ضد نسخ الكود — أول حاجة تتحمل -->
 <script src="/shield.js?v=2"></script>
-<link rel="preload" href="/app.js?v=239" as="script">
+<link rel="preload" href="/app.js?v=240" as="script">
 <link rel="icon" href="/favicon.png?v=1">
 <link rel="stylesheet" href="/styles.css?v=72">
 <link rel="stylesheet" href="/accounts.css?v=38">
@@ -40,10 +40,6 @@
       <button class="nav-item" data-view="workshop" title="WORKSHOP — craft recipes, your materials and the craft list"><img class="nav-ico" src="/icons/hammer.svg" alt=""></button>
     </nav>
     <div class="wallet" id="wallet"></div>
-    <!-- SCRAPPY: ديك الورشة — كل الأرقام من البوابة الرسمية (data/scrappy_catalog.json + الشجرة الحيّة) -->
-    <button class="pill scr-pill" id="btn-scrappy" title="SCRAPPY — opens the rooster: crop conversions run on the official gateway, the minute payouts and the upgrade show their official cost and timer">
-      <img class="nav-ico" src="/icons/scrappy.webp" alt=""><span id="scr-top-label"></span>
-    </button>
   </div>
   <button class="pill sync-pill" id="btn-live-sync" title="SYNCHRONIZE — instant pull of the game state (stash/loadout/coins) from the Embark Pioneer gateway">
     <span class="sync-ico">⟳</span><span class="sync-label">SYNCHRONIZE</span>
@@ -180,20 +176,6 @@
       </div>
     </div>
     <p class="form-note" id="acct-note"></p>
-
-    <div class="sync-promo">
-      <div class="promo-ico">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-          <rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 18v3"/><path d="m7 11 2 2 4-4"/>
-        </svg>
-      </div>
-      <div class="promo-text">
-        <h3>CMSYNC — your local agent</h3>
-        <p id="agent-line">It reads the game token from your machine's memory and registers the account automatically — no copying, no pasting. Run <b>CMSync</b> from the desktop.</p>
-        <p class="promo-dl" id="agent-dl" data-agent-dl="1"></p>
-      </div>
-      <button class="btn-outline" id="acct-sync-all">⟳ SYNC ALL ACCOUNTS</button>
-    </div>
   </section>
 
   <section class="acct-card" id="acct-list-card">
@@ -271,7 +253,7 @@
   </div>
 </div>
 
-<script src="/app.js?v=239"></script>
+<script src="/app.js?v=240"></script>
 <script src="/admin_mode.js?v=8"></script>
 </body>
 </html>
