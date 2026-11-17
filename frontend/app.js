@@ -105,6 +105,12 @@ const FIREARM_TYPES = ["weapon", "smg", "assault rifle", "battle rifle", "shotgu
 
 async function fetchJson(url, opts) {
   const res = await fetch(url, opts);
+  if (res.status === 401) {
+    if (window.location.pathname !== "/login" && !window.location.pathname.startsWith("/login")) {
+      window.location.href = "/login";
+    }
+    return {};
+  }
   const body = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(body.detail || `${url} -> HTTP ${res.status}`);
   return body;
@@ -617,10 +623,19 @@ async function identifyAsset(assetId) {
 }
 
 async function loadLegend() {
-  const f = await json(`/api/filters?account=${state.account}`);
-  state.filters = f;
-  $("#legend-box").innerHTML = RARITY_ORDER.filter((r) => f.counts.rarities[r])
-    .map((r) => `<div><i class="sw" style="background:${rarityColor(r)}"></i>${r} <span class="count">${f.counts.rarities[r]}</span></div>`).join("");
+  try {
+    const f = await json(`/api/filters?account=${state.account}`);
+    state.filters = f || {};
+    if (!f || !f.counts || !f.counts.rarities) {
+      $("#legend-box").innerHTML = "";
+      return;
+    }
+    $("#legend-box").innerHTML = RARITY_ORDER.filter((r) => f.counts.rarities[r])
+      .map((r) => `<div><i class="sw" style="background:${rarityColor(r)}"></i>${r} <span class="count">${f.counts.rarities[r]}</span></div>`).join("");
+  } catch (e) {
+    console.warn("[legend]", e);
+    $("#legend-box").innerHTML = "";
+  }
 }
 
 function rarityColor(r) {
