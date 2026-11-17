@@ -1,0 +1,8 @@
+game_asset_id,game_asset_name,display_name,hint
+2086312520,,Skulker Targeter,"patch item, identified 2026-10-30 by container"
+-236284933,,Laser Level,"patch item, identified 2026-10-30 by container"
+776203914,,Fancy Plate,"patch item, identified 2026-10-30 by container"
+-1526934024,,Colorful Shoes (Red),"patch item, matched by stack/rarity/value + weapon mod-slot children"
+-396572827,,Bantam I,"patch item, matched by stack/rarity/value + weapon mod-slot children"
+973960941,,Railway Lantern,"patch item, identified 2026-10-30 from the in-game card (Trinket/Rare, stack 3/3) = arctracker railway_lantern"
+36123868,,Dam Control Tower Key,"manifest says TheDamUtilityKey2 = Dam Control Center Tower Key; the game UI, arctracker, metaforge and my Eldorado ad all use Dam Control Tower Key"

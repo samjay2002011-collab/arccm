@@ -1,0 +1,155 @@
+===== G18 (2214 عقدة)
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 1 عنصر:
+      - Gunsmith I                 amount=1 asset=291196846 -> weapon_bench LV1
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 1 عنصر:
+      - Workbench                  amount=1 asset=-834400146 -> workbench LV1
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   أسماء فيها كلمة محطة وبره الحاوية:
+      anvil splitter ×2
+      crude explosives ×2
+      utility auxiliary slot ×7
+   المقروء من الشجرة: {'workbench': 1, 'weapon_bench': 1}
+
+===== G22 (5688 عقدة)
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 1 عنصر:
+      - Gunsmith III               amount=1 asset=-1091338374 -> weapon_bench LV3
+   حاوية Workshop Slot (asset=None) فيها 1 عنصر:
+      - Workbench                  amount=1 asset=-834400146 -> workbench LV1
+   حاوية Workshop Slot (asset=None) فيها 1 عنصر:
+      - Gear Bench III             amount=1 asset=-1093740163 -> equipment_bench LV3
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 1 عنصر:
+      - Utility Station III        amount=1 asset=1160802326 -> utility_bench LV3
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 1 عنصر:
+      - Medical Lab III            amount=1 asset=1157010858 -> med_station LV3
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 1 عنصر:
+      - Refiner III                amount=1 asset=81797988 -> refiner LV3
+   حاوية Workshop Slot (asset=None) فيها 1 عنصر:
+      - Explosives Station III     amount=1 asset=-815789211 -> explosives_bench LV3
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   أسماء فيها كلمة محطة وبره الحاوية:
+      anvil i ×6
+      anvil splitter ×10
+      crude explosives ×40
+      rusted shut medical kit ×2
+      stella montis medical storage key ×5
+      unlock craft anvil ×1
+      utility auxiliary slot ×7
+   المقروء من الشجرة: {'refiner': 3, 'equipment_bench': 3, 'med_station': 3, 'explosives_bench': 3, 'utility_bench': 3, 'weapon_bench': 3, 'workbench': 1}
+
+===== RAIDER38830 (2011 عقدة)
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 1 عنصر:
+      - Refiner I                  amount=1 asset=-935249204 -> refiner LV1
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 1 عنصر:
+      - Workbench                  amount=1 asset=-834400146 -> workbench LV1
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 1 عنصر:
+      - Explosives Station I       amount=1 asset=-518683794 -> explosives_bench LV1
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 1 عنصر:
+      - Medical Lab I              amount=1 asset=-1840090314 -> med_station LV1
+   حاوية Workshop Slot (asset=None) فيها 1 عنصر:
+      - Gunsmith I                 amount=1 asset=291196846 -> weapon_bench LV1
+   حاوية Workshop Slot (asset=None) فيها 1 عنصر:
+      - Gear Bench I               amount=1 asset=1415022693 -> equipment_bench LV1
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 1 عنصر:
+      - Utility Station I          amount=1 asset=1140794731 -> utility_bench LV1
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   أسماء فيها كلمة محطة وبره الحاوية:
+      anvil i ×2
+      crude explosives ×1
+      stella montis medical storage key ×1
+      utility auxiliary slot ×7
+   المقروء من الشجرة: {'refiner': 1, 'weapon_bench': 1, 'med_station': 1, 'utility_bench': 1, 'equipment_bench': 1, 'explosives_bench': 1, 'workbench': 1}
+
+===== RAIDER74888 (3320 عقدة)
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 1 عنصر:
+      - Gear Bench II              amount=1 asset=-92567848 -> equipment_bench LV2
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 1 عنصر:
+      - Explosives Station III     amount=1 asset=-815789211 -> explosives_bench LV3
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 1 عنصر:
+      - Utility Station II         amount=1 asset=1553081706 -> utility_bench LV2
+   حاوية Workshop Slot (asset=None) فيها 1 عنصر:
+      - Medical Lab I              amount=1 asset=-1840090314 -> med_station LV1
+   حاوية Workshop Slot (asset=None) فيها 1 عنصر:
+      - Gunsmith I                 amount=1 asset=291196846 -> weapon_bench LV1
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 1 عنصر:
+      - Refiner I                  amount=1 asset=-935249204 -> refiner LV1
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 1 عنصر:
+      - Workbench                  amount=1 asset=-834400146 -> workbench LV1
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   حاوية Workshop Slot (asset=None) فيها 0 عنصر:
+   أسماء فيها كلمة محطة وبره الحاوية:
+      anvil i ×1
+      anvil iv ×2
+      anvil splitter ×1
+      crude explosives ×47
+      stella montis medical storage key ×3
+      utility auxiliary slot ×7
+   المقروء من الشجرة: {'weapon_bench': 1, 'utility_bench': 2, 'explosives_bench': 3, 'equipment_bench': 2, 'med_station': 1, 'refiner': 1, 'workbench': 1}
+

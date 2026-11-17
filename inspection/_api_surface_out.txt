@@ -1,0 +1,96 @@
+accounts: ['G14', 'G18', 'G22', 'RAIDER38830', 'RAIDER74888']
+
+===== G14 =====
+  /v1/pioneer/inventory    ERR توكن الحساب منتهي (2026-10-31 13:53) — جدّده من اللعبة.
+  /v1/pioneer/bonuses      ERR توكن الحساب منتهي (2026-10-31 13:53) — جدّده من اللعبة.
+  /v1/pioneer/quests       ERR توكن الحساب منتهي (2026-10-31 13:53) — جدّده من اللعبة.
+  /v1/pioneer/raiders      ERR توكن الحساب منتهي (2026-10-31 13:53) — جدّده من اللعبة.
+  /v1/pioneer/offers       ERR توكن الحساب منتهي (2026-10-31 13:53) — جدّده من اللعبة.
+  /v1/pioneer/profile      ERR توكن الحساب منتهي (2026-10-31 13:53) — جدّده من اللعبة.
+  /v1/pioneer/settings     ERR توكن الحساب منتهي (2026-10-31 13:53) — جدّده من اللعبة.
+  /v1/pioneer/progression  ERR توكن الحساب منتهي (2026-10-31 13:53) — جدّده من اللعبة.
+  /v1/pioneer/stats        ERR توكن الحساب منتهي (2026-10-31 13:53) — جدّده من اللعبة.
+
+===== G18 =====
+  /v1/pioneer/inventory    keys=['items']
+      items: 2214 nodes
+  /v1/pioneer/bonuses      keys=['effects', 'items']
+      effects        list(0) []
+      items: 0 nodes
+  /v1/pioneer/quests       keys=['quests']
+      quests         list(153) [{"edges": [], "etag": "", "expiresAt": 1793698080, "gameAssetId": 806390138, "instanceId": "e016cc4b-0042-48c8-90d5-3d9a18c885a8", "objectives": [], "state": "ACCEPTED", "updatedAt": 1793113807}]
+  /v1/pioneer/raiders      keys=['raiders']
+      raiders        list(1) [{"createdAt": 1779422737, "raiderId": "d87tc49q7lvs73bqpbg0", "state": "ACTIVE"}]
+  /v1/pioneer/offers       ERR GET /v1/pioneer/offers -> 404: 404 page not found
+
+  /v1/pioneer/profile      ERR GET /v1/pioneer/profile -> 404: 404 page not found
+
+  /v1/pioneer/settings     ERR GET /v1/pioneer/settings -> 404: 404 page not found
+
+  /v1/pioneer/progression  ERR GET /v1/pioneer/progression -> 404: 404 page not found
+
+  /v1/pioneer/stats        ERR GET /v1/pioneer/stats -> 404: 404 page not found
+
+
+===== G22 =====
+  /v1/pioneer/inventory    keys=['items']
+      items: 5688 nodes
+  /v1/pioneer/bonuses      keys=['effects', 'items']
+      effects        list(0) []
+      items: 0 nodes
+  /v1/pioneer/quests       keys=['quests']
+      quests         list(154) [{"edges": [{"questInstanceId": "6ed4cdda-727c-470a-aeb4-7a4d7a2c1270", "requiredState": "COMPLETED"}], "etag": "", "expiresAt": 2524521600, "gameAssetId": 797680199, "instanceId": "b0b8dca4-c27c-41f1
+  /v1/pioneer/raiders      keys=['raiders']
+      raiders        list(1) [{"createdAt": 1779929546, "raiderId": "d8bp3iku4q1c7399ug60", "state": "ACTIVE"}]
+  /v1/pioneer/offers       ERR GET /v1/pioneer/offers -> 404: 404 page not found
+
+  /v1/pioneer/profile      ERR GET /v1/pioneer/profile -> 404: 404 page not found
+
+  /v1/pioneer/settings     ERR GET /v1/pioneer/settings -> 404: 404 page not found
+
+  /v1/pioneer/progression  ERR GET /v1/pioneer/progression -> 404: 404 page not found
+
+  /v1/pioneer/stats        ERR GET /v1/pioneer/stats -> 404: 404 page not found
+
+
+===== RAIDER38830 =====
+  /v1/pioneer/inventory    keys=['items']
+      items: 2011 nodes
+  /v1/pioneer/bonuses      keys=['effects', 'items']
+      effects        list(0) []
+      items: 1 nodes
+  /v1/pioneer/quests       keys=['quests']
+      quests         list(156) [{"edges": [{"questInstanceId": "80dd77ac-8cc0-497c-bc40-09c7ee3f0219", "requiredState": "COMPLETED"}], "etag": "", "expiresAt": 2524521600, "gameAssetId": 798320872, "instanceId": "f627932a-9aca-40f3
+  /v1/pioneer/raiders      keys=['raiders']
+      raiders        list(2) [{"createdAt": 1764456988, "raiderId": "d4lnk740tdsc73f2fci0", "state": "LEFT"}]
+  /v1/pioneer/offers       ERR GET /v1/pioneer/offers -> 404: 404 page not found
+
+  /v1/pioneer/profile      ERR GET /v1/pioneer/profile -> 404: 404 page not found
+
+  /v1/pioneer/settings     ERR GET /v1/pioneer/settings -> 404: 404 page not found
+
+  /v1/pioneer/progression  ERR GET /v1/pioneer/progression -> 404: 404 page not found
+
+  /v1/pioneer/stats        ERR GET /v1/pioneer/stats -> 404: 404 page not found
+
+
+===== RAIDER74888 =====
+  /v1/pioneer/inventory    keys=['items']
+      items: 3320 nodes
+  /v1/pioneer/bonuses      keys=['effects', 'items']
+      effects        list(0) []
+      items: 0 nodes
+  /v1/pioneer/quests       keys=['quests']
+      quests         list(156) [{"edges": [{"questInstanceId": "b5d7dc3e-b5cc-4a4d-a9b9-56d754ce63df", "requiredState": "COMPLETED"}], "etag": "", "expiresAt": 2524521600, "gameAssetId": 695075203, "instanceId": "12cdde1c-879f-4710
+  /v1/pioneer/raiders      keys=['raiders']
+      raiders        list(1) [{"createdAt": 1779805182, "raiderId": "d8aqnvm8hnns73ben9n0", "state": "ACTIVE"}]
+  /v1/pioneer/offers       ERR GET /v1/pioneer/offers -> 404: 404 page not found
+
+  /v1/pioneer/profile      ERR GET /v1/pioneer/profile -> 404: 404 page not found
+
+  /v1/pioneer/settings     ERR GET /v1/pioneer/settings -> 404: 404 page not found
+
+  /v1/pioneer/progression  ERR GET /v1/pioneer/progression -> 404: 404 page not found
+
+  /v1/pioneer/stats        ERR GET /v1/pioneer/stats -> 404: 404 page not found
+

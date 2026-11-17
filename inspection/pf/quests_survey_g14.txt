@@ -1,0 +1,34 @@
+== G14 | quests=156 ==
+الحقول الموجودة:
+   edges                                          156
+   edges.questInstanceId                          150
+   edges.requiredState                            150
+   etag                                           156
+   expiresAt                                      156
+   gameAssetId                                    156
+   instanceId                                     156
+   objectives                                     156
+   objectives.amount                              16
+   objectives.gameAssetId                         16
+   state                                          156
+   updatedAt                                      156
+
+أمثلة قيمة الحقول من أول مهمة:
+{
+ "edges": [
+  {
+   "questInstanceId": "5a820ac6-f946-477f-9e69-d7ac66a48c20",
+   "requiredState": "COMPLETED"
+  }
+ ],
+ "etag": "",
+ "expiresAt": 2524521600,
+ "gameAssetId": 116730936,
+ "instanceId": "8d54464f-cf12-45c4-b128-95fc5f4de29d",
+ "objectives": [],
+ "state": "AWAITING",
+ "updatedAt": 1793197958
+}
+
+== مهام بأسماء فيها الكلمات المفتاحية (13) ==
+  مفيش ولا ضربة — يبقى الصندوق مش مهمة في المسار ده.

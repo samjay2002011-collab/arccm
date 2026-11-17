@@ -1,0 +1,55 @@
+
+===== RAIDER38830
+   المقروء من الشجرة: {'refiner': 1, 'weapon_bench': 1, 'med_station': 1, 'utility_bench': 1, 'equipment_bench': 1, 'explosives_bench': 1, 'workbench': 1}
+   تخزين: ok=True snapshot=RAIDER38830_20261031-202436.json.gz
+   المخزّن دلوقتي: {'weapon_bench': 1, 'refiner': 1, 'med_station': 1, 'utility_bench': 1, 'equipment_bench': 1, 'explosives_bench': 1, 'workbench': 1} | مصدر: {'weapon_bench': 'server', 'refiner': 'server', 'utility_bench': 'server', 'explosives_bench': 'server', 'equipment_bench': 'server', 'workbench': 'server', 'med_station': 'server'}
+   WORKBENCH        LV 1  (server) الوصفات=7 المسموحة=7 الجاهزة=5
+   GEAR BENCH       LV 1  (server) الوصفات=11 المسموحة=5 الجاهزة=4
+   GUNSMITH         LV 1  (server) الوصفات=30 المسموحة=15 الجاهزة=12
+   MEDICAL LAB      LV 1  (server) الوصفات=5 المسموحة=3 الجاهزة=2
+   UTILITY STATION  LV 1  (server) الوصفات=6 المسموحة=5 الجاهزة=5
+   EXPLOSIVES STATION LV 1  (server) الوصفات=10 المسموحة=3 الجاهزة=3
+   REFINER          LV 1  (server) الوصفات=8 المسموحة=4 الجاهزة=4
+   FIELD BENCH      LV 0  (بدون قراءة) الوصفات=5 المسموحة=5 الجاهزة=0
+
+===== G14
+   القراءة فشلت: توكن الحساب منتهي (2026-10-31 13:53) — جدّده من اللعبة.
+
+===== G18
+   المقروء من الشجرة: {'workbench': 1, 'weapon_bench': 1}
+   تخزين: ok=True snapshot=G18_20261031-202437.json.gz
+   المخزّن دلوقتي: {'workbench': 1, 'weapon_bench': 1} | مصدر: {'weapon_bench': 'server', 'workbench': 'server'}
+   WORKBENCH        LV 1  (server) الوصفات=6 المسموحة=6 الجاهزة=4
+   GEAR BENCH       LV 0  (بدون قراءة) الوصفات=10 المسموحة=10 الجاهزة=4
+   GUNSMITH         LV 1  (server) الوصفات=17 المسموحة=15 الجاهزة=5
+   MEDICAL LAB      LV 0  (بدون قراءة) الوصفات=4 المسموحة=4 الجاهزة=2
+   UTILITY STATION  LV 0  (بدون قراءة) الوصفات=4 المسموحة=4 الجاهزة=3
+   EXPLOSIVES STATION LV 0  (بدون قراءة) الوصفات=3 المسموحة=3 الجاهزة=1
+   REFINER          LV 0  (بدون قراءة) الوصفات=7 المسموحة=7 الجاهزة=4
+   FIELD BENCH      LV 0  (بدون قراءة) الوصفات=5 المسموحة=5 الجاهزة=0
+
+===== G22
+   المقروء من الشجرة: {'refiner': 3, 'equipment_bench': 3, 'med_station': 3, 'explosives_bench': 3, 'utility_bench': 3, 'weapon_bench': 3, 'workbench': 1}
+   تخزين: ok=True snapshot=G22_20261031-202437.json.gz
+   المخزّن دلوقتي: {'refiner': 3, 'equipment_bench': 3, 'med_station': 3, 'explosives_bench': 3, 'utility_bench': 3, 'weapon_bench': 3, 'workbench': 1} | مصدر: {'weapon_bench': 'server', 'refiner': 'server', 'utility_bench': 'server', 'explosives_bench': 'server', 'equipment_bench': 'server', 'workbench': 'server', 'med_station': 'server'}
+   WORKBENCH        LV 1  (server) الوصفات=6 المسموحة=6 الجاهزة=6
+   GEAR BENCH       LV 3  (server) الوصفات=12 المسموحة=12 الجاهزة=11
+   GUNSMITH         LV 3  (server) الوصفات=34 المسموحة=34 الجاهزة=30
+   MEDICAL LAB      LV 3  (server) الوصفات=6 المسموحة=6 الجاهزة=6
+   UTILITY STATION  LV 3  (server) الوصفات=6 المسموحة=6 الجاهزة=5
+   EXPLOSIVES STATION LV 3  (server) الوصفات=12 المسموحة=12 الجاهزة=12
+   REFINER          LV 3  (server) الوصفات=10 المسموحة=10 الجاهزة=10
+   FIELD BENCH      LV 0  (بدون قراءة) الوصفات=5 المسموحة=5 الجاهزة=5
+
+===== RAIDER74888
+   المقروء من الشجرة: {'weapon_bench': 1, 'utility_bench': 2, 'explosives_bench': 3, 'equipment_bench': 2, 'med_station': 1, 'refiner': 1, 'workbench': 1}
+   تخزين: ok=True snapshot=RAIDER74888_20261031-202438.json.gz
+   المخزّن دلوقتي: {'weapon_bench': 1, 'utility_bench': 2, 'explosives_bench': 3, 'equipment_bench': 2, 'med_station': 1, 'refiner': 1, 'workbench': 1} | مصدر: {'weapon_bench': 'server', 'refiner': 'server', 'utility_bench': 'server', 'explosives_bench': 'server', 'equipment_bench': 'server', 'workbench': 'server', 'med_station': 'server'}
+   WORKBENCH        LV 1  (server) الوصفات=6 المسموحة=6 الجاهزة=6
+   GEAR BENCH       LV 2  (server) الوصفات=10 المسموحة=9 الجاهزة=8
+   GUNSMITH         LV 1  (server) الوصفات=18 المسموحة=15 الجاهزة=15
+   MEDICAL LAB      LV 1  (server) الوصفات=4 المسموحة=3 الجاهزة=2
+   UTILITY STATION  LV 2  (server) الوصفات=4 المسموحة=4 الجاهزة=4
+   EXPLOSIVES STATION LV 3  (server) الوصفات=6 المسموحة=6 الجاهزة=6
+   REFINER          LV 1  (server) الوصفات=7 المسموحة=4 الجاهزة=4
+   FIELD BENCH      LV 0  (بدون قراءة) الوصفات=5 المسموحة=5 الجاهزة=3

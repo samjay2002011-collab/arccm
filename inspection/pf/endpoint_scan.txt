@@ -1,0 +1,269 @@
+#### .\PioneerGame.exe  (133 runs)
+#### .\steam_api64.dll  (88 runs)
+#### .\Engine\Binaries\ThirdParty\DbgHelp\dbghelp.dll  (60 runs)
+#### .\Engine\Binaries\ThirdParty\MsQuic\v220\win64\msquic.dll  (24 runs)
+#### .\Engine\Binaries\ThirdParty\NVIDIA\NVaftermath\Win64\GFSDK_Aftermath_Lib.x64.dll  (52 runs)
+#### .\Engine\Binaries\ThirdParty\Ogg\Win64\VS2015\libogg_64.dll  (19 runs)
+#### .\Engine\Binaries\ThirdParty\Steamworks\Steamv161\Win64\steam_api64.dll  (88 runs)
+#### .\Engine\Binaries\ThirdParty\Vorbis\Win64\VS2015\libvorbisfile_64.dll  (19 runs)
+#### .\Engine\Binaries\ThirdParty\Vorbis\Win64\VS2015\libvorbis_64.dll  (19 runs)
+#### .\Engine\Binaries\Win64\CrashReportClient.exe  (721 runs)
+#### .\Engine\Binaries\Win64\EOSSDK-Win64-Shipping.dll  (1538 runs)
+#### .\Engine\Binaries\Win64\EpicWebHelper.exe  (61 runs)
+#### .\Engine\Binaries\Win64\tbb12.dll  (26 runs)
+#### .\Engine\Binaries\Win64\tbbmalloc.dll  (23 runs)
+#### .\Engine\Extras\Redist\en-us\vc_redist.arm64.exe  (26 runs)
+#### .\Engine\Extras\Redist\en-us\vc_redist.x64.exe  (26 runs)
+#### .\Engine\Plugins\Embark\EmbarkCrashReporting\Binaries\Win64\crashpad_handler.exe  (73 runs)
+#### .\Engine\Plugins\Embark\EmbarkCrashReporting\Binaries\Win64\embark-crash-helper.exe  (187 runs)
+#### .\Engine\Plugins\Runtime\AMD\FSR\Source\fidelityfx-sdk\Kits\FidelityFX\signedbin\amd_fidelityfx_framegeneration_dx12.dll  (19 runs)
+#### .\Engine\Plugins\Runtime\AMD\FSR\Source\fidelityfx-sdk\Kits\FidelityFX\signedbin\amd_fidelityfx_loader_dx12.dll  (19 runs)
+#### .\Engine\Plugins\Runtime\AMD\FSR\Source\fidelityfx-sdk\Kits\FidelityFX\signedbin\amd_fidelityfx_upscaler_dx12.dll  (19 runs)
+#### .\Engine\Plugins\Runtime\Intel\XeSS\Binaries\ThirdParty\Win64\libxell.dll  (20 runs)
+#### .\Engine\Plugins\Runtime\Intel\XeSS\Binaries\ThirdParty\Win64\libxess.dll  (53 runs)
+#### .\Engine\Plugins\Runtime\Intel\XeSS\Binaries\ThirdParty\Win64\libxess_dx11.dll  (19 runs)
+#### .\Engine\Plugins\Runtime\Intel\XeSS\Binaries\ThirdParty\Win64\libxess_fg.dll  (23 runs)
+#### .\Engine\Plugins\Runtime\Nvidia\DLSS\Binaries\ThirdParty\Win64\nvngx_dlss.dll  (205 runs)
+#### .\Engine\Plugins\Runtime\Nvidia\DLSS\Binaries\ThirdParty\Win64\nvngx_dlssd.dll  (23 runs)
+#### .\Engine\Plugins\Runtime\Nvidia\StreamlineCore\Binaries\ThirdParty\Win64\nvngx_deepdvc.dll  (23 runs)
+#### .\Engine\Plugins\Runtime\Nvidia\StreamlineCore\Binaries\ThirdParty\Win64\nvngx_dlssg.dll  (87 runs)
+#### .\Engine\Plugins\Runtime\Nvidia\StreamlineCore\Binaries\ThirdParty\Win64\sl.common.dll  (34 runs)
+#### .\Engine\Plugins\Runtime\Nvidia\StreamlineCore\Binaries\ThirdParty\Win64\sl.deepdvc.dll  (31 runs)
+#### .\Engine\Plugins\Runtime\Nvidia\StreamlineCore\Binaries\ThirdParty\Win64\sl.dlss_g.dll  (33 runs)
+#### .\Engine\Plugins\Runtime\Nvidia\StreamlineCore\Binaries\ThirdParty\Win64\sl.interposer.dll  (31 runs)
+#### .\Engine\Plugins\Runtime\Nvidia\StreamlineCore\Binaries\ThirdParty\Win64\sl.pcl.dll  (31 runs)
+#### .\Engine\Plugins\Runtime\Nvidia\StreamlineCore\Binaries\ThirdParty\Win64\sl.reflex.dll  (31 runs)
+#### .\Installers\AntiCheatInstaller.exe  (531 runs)
+#### .\Installers\Elytra-Setup.exe  (75 runs)
+#### .\PioneerGame\Binaries\Win64\Cerebro.dll  (19 runs)
+#### .\PioneerGame\Binaries\Win64\discord_krisp.dll  (80 runs)
+#### .\PioneerGame\Binaries\Win64\discord_partner_sdk.dll  (317 runs)
+#### .\PioneerGame\Binaries\Win64\PioneerGame.exe  (541 runs)
+#### .\PioneerGame\Binaries\Win64\platform_core.dll  (142 runs)
+#### .\PioneerGame\Binaries\Win64\preloader.dll  (19 runs)
+#### .\PioneerGame\Binaries\Win64\runtime.dll  (51 runs)
+#### .\PioneerGame\Binaries\Win64\tbb12.dll  (26 runs)
+#### .\PioneerGame\Binaries\Win64\tbbmalloc.dll  (23 runs)
+#### .\PioneerGame\Binaries\Win64\D3D12\x64\D3D12Core.dll  (1 runs)
+
+======== HOSTS ========
+71   http://ocsp.digicert.com0a
+58   https://www.globalsign.com/repository/0
+54   http://ocsp.digicert.com0c
+47   http://ocsp.digicert.com0]
+29   http://ocsp.globalsign.com/codesigningrootr450f
+29   http://secure.globalsign.com/cacert/codesigningrootr45.crt0a
+29   http://secure.globalsign.com/cacert/gsgccr45evcodesignca2020.crt0?
+22   http://ocsp.sectigo.com0
+17   http://www.digicert.com/cps0
+17   http://ocsp.digicert.com0
+16   http://schemas.openxmlformats.org/markup-compatibility/2006
+11   https://sectigo.com/cps0
+7    http://ocsp.digicert.com0x
+7    http://ocsp.comodoca.com0
+7    http://crl.sectigo.com/sectigopubliccodesigningrootr46.crl0
+7    http://crt.sectigo.com/sectigopubliccodesigningrootr46.p7c0#
+4    http://crl.sectigo.com/sectigopublictimestampingrootr46.crl0
+4    http://crt.sectigo.com/sectigopublictimestampingrootr46.p7c0#
+4    http://crl.usertrust.com/usertrustrsacertificationauthority.crl05
+4    http://ocsp.usertrust.com0
+3    http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time
+3    http://www.webrtc.org/experiments/rtp-hdrext/abs-capture-time
+3    http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01
+3    http://appsyndication.org/2006/appsyn
+3    https:///api//envelope/
+3    https://github.com/clap-rs/clap/issuesc:
+3    https://github.com/clap-rs/clap/issues
+3    http://www.w3.org/1999/02/22-rdf-syntax-ns#
+3    http://ns.adobe.com/xap/1.0/
+3    http://purl.org/dc/elements/1.1/
+3    http://ns.adobe.com/photoshop/1.0/
+3    http://ns.adobe.com/xap/1.0/mm/
+3    http://ns.adobe.com/xap/1.0/stype/resourceevent#
+3    http://ns.adobe.com/tiff/1.0/
+3    http://ns.adobe.com/exif/1.0/
+2    https://symweb
+2    https://docs.unrealengine.com/programmingandscripting/programmingwithcpp/unrealarchitecture/objects
+2    https://curl.se/docs/hsts.html
+2    https://curl.se/docs/alt-svc.html
+2    https://curl.se/docs/http-cookies.html
+2    http://www.google.com
+2    http://www.webrtc.org/experiments/rtp-hdrext/video-content-type
+2    http://www.webrtc.org/experiments/rtp-hdrext/video-timing
+2    http://www.webrtc.org/experiments/rtp-hdrext/generic-frame-descriptor-00
+2    https://aomediacodec.github.io/av1-rtp-spec/#dependency-descriptor-rtp-header-extension
+2    http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00
+2    http://www.webrtc.org/experiments/rtp-hdrext/transport-wide-cc-02
+2    http://www.webrtc.org/experiments/rtp-hdrext/playout-delay
+2    http://www.webrtc.org/experiments/rtp-hdrext/color-space
+2    http://www.webrtc.org/experiments/rtp-hdrext/video-frame-tracking-id
+2    http://www.webrtc.org/experiments/rtp-hdrext/inband-cn
+2    https://webrtc.googlesource.com/src/+/refs/heads/main/docs/native-code/rtp-hdrext/playout-delay/,
+2    http://localhost:
+2    http://www.unicode.org/copyright.html
+2    https://support.codefusion.technology/anti-cheat
+1    http://llvm.org/):
+1    http://www.entrust.net/rpa03
+1    http://ocsp.entrust.net02
+1    http://crl.entrust.net/2048ca.crl0
+1    http://ocsp.entrust.net03
+
+======== VERSIONED PATHS ========
+6    /v1/report/ping
+4    /v1/notify/
+4    /v1/telemetryrequest
+4    /v1/telemetryreport
+3    /v1/public/data
+3    /v1/users/
+3    /v1/report/
+2    /v1/getprotectionproof
+2    /v1/close/
+2    /v1/receive/
+2    /v1/send/
+2    /v1/connect
+2    /v1/report/submit
+1    /v1/refs/
+1    /v1/compressed-blobs/
+1    /v6/service/status/
+1    /v1/data/
+1    /v1/copy
+1    /v1/oauth/token
+1    /v1/oauth/jwks
+1    /v1/accounts
+1    /v1/users
+1    /v1/accounts/deviceid
+1    /v1/accounts/self
+1    /v1/turn/credentials
+1    /v1/account-transfers
+1    /v1/accounts/search
+1    /v1/country/agegateinfo
+1    /v1/public/data/clients
+1    /v1/graphql
+1    /v1/purchasetoken
+1    /v1/productuser/
+1    /v1/default
+1    /v1/product/
+1    /v6/qzqzp0a4fszwbxbjxwd6bw6ed0suftrbg5ynjysfculzjtrmfxiuely9qtcw
+1    /v1/crashdump/dumps
+
+======== SHORT RUNS (first 120) ========
+71   http://ocsp.digicert.com0A
+71   5http://cacerts.digicert.com/DigiCertTrustedRootG4.crt0C
+58   &https://www.globalsign.com/repository/0
+54   2http://crl3.digicert.com/DigiCertTrustedRootG4.crl0 
+54   http://ocsp.digicert.com0C
+54   7http://cacerts.digicert.com/DigiCertAssuredIDRootCA.crt0E
+54   4http://crl3.digicert.com/DigiCertAssuredIDRootCA.crl0
+47   http://ocsp.digicert.com0]
+47   Qhttp://cacerts.digicert.com/DigiCertTrustedG4TimeStampingRSA4096SHA2562025CA1.crt0_
+47   Nhttp://crl3.digicert.com/DigiCertTrustedG4TimeStampingRSA4096SHA2562025CA1.crl0 
+29   -http://ocsp.globalsign.com/codesigningrootr450F
+29   :http://secure.globalsign.com/cacert/codesigningrootr45.crt0A
+29   0http://crl.globalsign.com/codesigningrootr45.crl0U
+29   @http://secure.globalsign.com/cacert/gsgccr45evcodesignca2020.crt0?
+29   3http://ocsp.globalsign.com/gsgccr45evcodesignca20200U
+29   6http://crl.globalsign.com/gsgccr45evcodesignca2020.crl0
+27   CloseServiceHandle
+27   OpenServiceW
+22   http://ocsp.sectigo.com0
+18   Embark Studios AB1
+18   Embark Studios AB0
+17   2http://crl3.digicert.com/DigiCertTrustedRootG4.crl0
+17   http://www.digicert.com/CPS0
+17   Mhttp://crl3.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crl0S
+17   http://ocsp.digicert.com0\
+17   Phttp://cacerts.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crt0
+16   Mhttp://crl4.digicert.com/DigiCertTrustedG4CodeSigningRSA4096SHA3842021CA1.crl0
+16   mc;http://schemas.openxmlformats.org/markup-compatibility/2006
+14   Embark Game Boot
+14   QueryServiceConfigW
+14   Denuvo Anti-Cheat Update Service
+11   https://
+11   https://sectigo.com/CPS0
+10   http://
+10   C:\Users\christopher.pons\.cargo\registry\src\index.crates.io-6f17d22bba15001f\http-1.1.0\src\header\map.rs
+9    WINHTTP.dll
+9    AAA Certificate Services0
+9    QueryServiceStatus
+8    ControlService
+8    WinHttpCloseHandle
+8    WinHttpConnect
+8    WinHttpOpen
+8    WinHttpOpenRequest
+8    WinHttpQueryHeaders
+8    WinHttpReceiveResponse
+8    WinHttpSendRequest
+8    Current thread %u callstack:
+8    Google Trust Services LLC1
+8    service
+8    denuvo-anti-cheat-update-service.exe
+7    QueryServiceStatusEx
+7    WinHttpReadData
+7    WinHttpSetTimeouts
+7    Ihttp://crl3.digicert.com/DigiCertTrustedG4RSA4096SHA256TimeStampingCA.crl0
+7    http://ocsp.digicert.com0X
+7    Lhttp://cacerts.digicert.com/DigiCertTrustedG4RSA4096SHA256TimeStampingCA.crt0
+7    HTTP/1.1
+7    2http://crl.comodoca.com/AAACertificateServices.crl04
+7    http://ocsp.comodoca.com0
+7    :http://crl.sectigo.com/SectigoPublicCodeSigningRootR46.crl0{
+7    :http://crt.sectigo.com/SectigoPublicCodeSigningRootR46.p7c0#
+7    8http://crl.sectigo.com/SectigoPublicCodeSigningCAR36.crl0y
+7    8http://crt.sectigo.com/SectigoPublicCodeSigningCAR36.crt0#
+7    System\CurrentControlSet\Services\nvlddmkm\Parameters\NGXCore
+7    System\CurrentControlSet\Services\nvlddmkm\NGXCore
+7    SYSTEM\CurrentControlSet\Services\Denuvo Anti-Cheat Update Service
+6    directory services - algorithms
+6    payment gateway capabilities
+6    serviceLocator
+6    OCSP Service Locator
+6    directory services (X.500)
+6    StartServiceW
+6    WinHttpAddRequestHeaders
+6     HTTP/1.1
+6    Service already exists.
+6    Invalid service owner.
+6    denuvo-anti-cheat-update-service-launcher.dll
+6    Denuvo Anti-Cheat Update Service Launcher
+5    the meth_data stack is corrupt
+5    ambiguous host or service
+5    malformed host or service
+5    no accept addr or service specified
+5    no hostname or service specified
+5    WinHttpQueryDataAvailable
+5    WinHttpSetOption
+5    WinHttpSetStatusCallback
+5    tpeetpio
+5    C rcriiaePio
+5    Service-0x
+5    no stack?
+5    http/1.1
+5    Writer thread %u callstack:
+5     HTTP/1.0
+5    HTTP/1.1 101 Switching Protocols
+5    PioErr
+5    Global\DenuvoAntiCheatUpdateServiceLauncherMutex
+5    SYSTEM\CurrentControlSet\Services\Denuvo Anti-Cheat
+4    %s %s HTTP/1.0
+4    win32_splitter
+4    BN_STACK_push
+4    crypto\stack\stack.c
+4    OCSP_SERVICELOC
+4    parse_http_line1
+4    RtlCaptureStackBackTrace
+4    WinHttpWriteData
+4    CreateServiceW
+4    DeleteService
+4    Consonant_With_Stacker
+4    Invisible_Stacker
+4    Service Unavailable
+4    HTTP Version Not Supported
+4    PRI * HTTP/2.0
+4    Epic Online Services SDK
+4    __itt_stack_caller_create
+4    __itt_stack_caller_destroy
+4    __itt_stack_callee_enter
+4    __itt_stack_callee_leave
+4    HTTP/1.1H
+4    9http://crl.sectigo.com/SectigoPublicTimeStampingCAR36.crl0z
+4    9http://crt.sectigo.com/SectigoPublicTimeStampingCAR36.crt0#

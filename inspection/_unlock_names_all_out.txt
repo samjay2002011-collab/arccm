@@ -1,0 +1,48 @@
+اجمالي صفوف الفهرس=2848  وفيها 'unlock'=132
+
+== أشكال الأسماء ==
+  '%s %s %s %s'            n=54  أمثلة=['Unlock Surge Coil Craft', 'Unlock Craft ARC Circuitry', 'Unlock Craft Barricade Kit', 'Unlock Craft Blaze Grenade', 'Unlock Craft Blue Glowstick', 'Unlock Craft Compensator II']
+  '%s %s %s %s %s'         n=28  أمثلة=['OI Unlock Blue Gate Rounds', 'OI Unlock Buried City Rounds', 'Unlock Craft Advanced Mechanical Components', 'Unlock Craft Advanced Electrical Components', 'Unlock Craft Angled Grip II', 'Unlock Craft Angled Grip III']
+  '%s %s %s'               n=27  أمثلة=['Unlock Canto Craft', 'Unlock Dolabra Craft', 'Unlock Craft Anvil', 'Unlock Craft Aphelion', 'Unlock Craft Arpeggio', 'Unlock Craft Bettina']
+  '%s %s %s %s %s %s'      n=18  أمثلة=['Unlock Craft Combat Augment T3 Aggressive', 'Unlock Craft Combat Augment T3 Flanking', 'Unlock Craft Extended Heavy Mag II', 'Unlock Craft Extended Heavy Mag III', 'Unlock Craft Extended Light Mag II', 'Unlock Craft Extended Light Mag III']
+  '%s %s %s %s %s %s %s'   n=2  أمثلة=['OI Unlock Raider Project Trophy Display Rounds', 'OI Unlock Raider Project Weather Monitor Rounds']
+  '%s %s'                  n=2  أمثلة=['Unlock Expeditions', 'Unlock Mastery']
+  '%s_%s_%s'               n=1  أمثلة=['DA_CharacterSkill_UnlockFieldCraft']
+
+== اللي مش 'Unlock Craft ...' بالظبط ==
+     1074497428 | display='In-Round Crafting' | asset_name='DA_CharacterSkill_UnlockFieldCraft'
+     -736810051 | display='OI Unlock Blue Gate Rounds' | asset_name='DA_OI_Unlock_BlueGate_Rounds'
+    -1545942594 | display='OI Unlock Buried City Rounds' | asset_name='DA_OI_Unlock_BuriedCity_Rounds'
+      852581024 | display='OI Unlock Live Events Rounds' | asset_name='DA_OI_Unlock_LiveEvents_Rounds'
+     -904901659 | display='OI Unlock Practice Range Rounds' | asset_name='DA_OI_Unlock_PracticeRange_Rounds'
+    -1637494236 | display='OI Unlock Raider Project Trophy Display Rounds' | asset_name='DA_OI_Unlock_RaiderProject_TrophyDisplay_Rounds'
+      352082497 | display='OI Unlock Raider Project Weather Monitor Rounds' | asset_name='DA_OI_Unlock_RaiderProject_WeatherMonitor_Rounds'
+     -748382408 | display='OI Unlock Spaceport Rounds' | asset_name='DA_OI_Unlock_Spaceport_Rounds'
+      312047434 | display='OI Unlock Stella Montis Rounds' | asset_name='DA_OI_Unlock_StellaMontis_Rounds'
+    -1655837354 | display='OI Unlock Unlock Codex Rounds' | asset_name='DA_OI_Unlock_UnlockCodex_Rounds'
+     1252663424 | display='OI Unlock Unlock Expeditions Level' | asset_name='DA_OI_Unlock_UnlockExpeditions_Level'
+      704592008 | display='OI Unlock Unlock Mastery Level' | asset_name='DA_OI_Unlock_UnlockMastery_Level'
+     -500614359 | display='OI Unlock Unlock Offers Tier1 Level' | asset_name='DA_OI_Unlock_UnlockOffersTier1_Level'
+    -1576971155 | display='OI Unlock Unlock Offers Tier2 Level' | asset_name='DA_OI_Unlock_UnlockOffersTier2_Level'
+      492330381 | display='OI Unlock Unlock Offers Tier3 Level' | asset_name='DA_OI_Unlock_UnlockOffersTier3_Level'
+     -725866263 | display='OI Unlock Unlock1 Round' | asset_name='DA_OI_Unlock_Unlock1Round'
+    -2022071887 | display='OI Unlock Unlock10 Rounds' | asset_name='DA_OI_Unlock_Unlock10Rounds'
+     -238817754 | display='OI Unlock Unlock11 Rounds' | asset_name='DA_OI_Unlock_Unlock11Rounds'
+     1738689812 | display='OI Unlock Unlock12 Rounds' | asset_name='DA_OI_Unlock_Unlock12Rounds'
+      838464867 | display='OI Unlock Unlock2 Rounds' | asset_name='DA_OI_Unlock_Unlock2Rounds'
+     -294046270 | display='OI Unlock Unlock3 Rounds' | asset_name='DA_OI_Unlock_Unlock3Rounds'
+     1632907849 | display='OI Unlock Unlock4 Rounds' | asset_name='DA_OI_Unlock_Unlock4Rounds'
+    -1356312230 | display='OI Unlock Unlock5 Rounds' | asset_name='DA_OI_Unlock_Unlock5Rounds'
+    -1663566435 | display='OI Unlock Unlock6 Rounds' | asset_name='DA_OI_Unlock_Unlock6Rounds'
+      702257828 | display='OI Unlock Unlock7 Rounds' | asset_name='DA_OI_Unlock_Unlock7Rounds'
+     -654814578 | display='OI Unlock Unlock8 Rounds' | asset_name='DA_OI_Unlock_Unlock8Rounds'
+      876020726 | display='OI Unlock Unlock9 Rounds' | asset_name='DA_OI_Unlock_Unlock9Rounds'
+     1526462764 | display='Unlock Canto Craft' | asset_name=''
+    -1022136874 | display='Unlock Dolabra Craft' | asset_name=''
+     1882538420 | display='Unlock Expeditions' | asset_name='DA_OI_Unlock_UnlockExpeditions'
+    -1032535842 | display='Unlock Level 12' | asset_name='DA_OI_Unlock_Level12'
+     1836847602 | display='Unlock Level 20' | asset_name='DA_OI_Unlock_Level20'
+    -1678592007 | display='Unlock Level 7' | asset_name='DA_OI_Unlock_Level7'
+     1091875246 | display='Unlock Mastery' | asset_name='DA_OI_Unlock_UnlockMastery'
+     -249926565 | display='Unlock Solo Vs Squads' | asset_name='DA_OI_Unlock_UnlockLoneWolf'
+      627013108 | display='Unlock Surge Coil Craft' | asset_name=''

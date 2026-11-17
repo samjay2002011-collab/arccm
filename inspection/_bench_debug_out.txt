@@ -1,0 +1,39 @@
+
+== G18 (2214 عقدة)
+   weapon_bench     LV1  Gunsmith I               أب=Workshop Slot
+   بدون فلتر الأب: {'weapon_bench': 1}
+   بفلاتر الطافية بس: {}
+   bench_levels_from_tree(): {}
+
+== G22 (5688 عقدة)
+   refiner          LV3  Refiner III              أب=Workshop Slot
+   equipment_bench  LV3  Gear Bench III           أب=Workshop Slot
+   med_station      LV3  Medical Lab III          أب=Workshop Slot
+   explosives_bench LV3  Explosives Station III   أب=Workshop Slot
+   utility_bench    LV3  Utility Station III      أب=Workshop Slot
+   weapon_bench     LV3  Gunsmith III             أب=Workshop Slot
+   بدون فلتر الأب: {'refiner': 3, 'equipment_bench': 3, 'med_station': 3, 'explosives_bench': 3, 'utility_bench': 3, 'weapon_bench': 3}
+   بفلاتر الطافية بس: {}
+   bench_levels_from_tree(): {}
+
+== RAIDER38830 (2011 عقدة)
+   refiner          LV1  Refiner I                أب=Workshop Slot
+   weapon_bench     LV1  Gunsmith I               أب=Workshop Slot
+   med_station      LV1  Medical Lab I            أب=Workshop Slot
+   utility_bench    LV1  Utility Station I        أب=Workshop Slot
+   equipment_bench  LV1  Gear Bench I             أب=Workshop Slot
+   explosives_bench LV1  Explosives Station I     أب=Workshop Slot
+   بدون فلتر الأب: {'refiner': 1, 'weapon_bench': 1, 'med_station': 1, 'utility_bench': 1, 'equipment_bench': 1, 'explosives_bench': 1}
+   بفلاتر الطافية بس: {}
+   bench_levels_from_tree(): {}
+
+== RAIDER74888 (3320 عقدة)
+   weapon_bench     LV1  Gunsmith I               أب=Workshop Slot
+   utility_bench    LV2  Utility Station II       أب=Workshop Slot
+   explosives_bench LV3  Explosives Station III   أب=Workshop Slot
+   equipment_bench  LV2  Gear Bench II            أب=Workshop Slot
+   med_station      LV1  Medical Lab I            أب=Workshop Slot
+   refiner          LV1  Refiner I                أب=Workshop Slot
+   بدون فلتر الأب: {'weapon_bench': 1, 'utility_bench': 2, 'explosives_bench': 3, 'equipment_bench': 2, 'med_station': 1, 'refiner': 1}
+   بفلاتر الطافية بس: {}
+   bench_levels_from_tree(): {}

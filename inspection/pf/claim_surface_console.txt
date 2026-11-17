@@ -1,0 +1,23 @@
+== الأساس: توكن G22 | 00:58:16 | https://api-gateway.europe.es-pio.net/v1/pioneer/inventory/v1/mutate ==
+
+== الضوابط (GET) ==
+   /v1/pioneer/inventory/upgrade              -> GET /v1/pioneer/inventory/upgrade -> 405: 
+   /v1/pioneer/offers/accept                  -> GET /v1/pioneer/offers/accept -> 405: 
+   /v1/pioneer/inventory/v1/mutate            -> GET /v1/pioneer/inventory/v1/mutate -> 405: 
+   /v1/pioneer/zzz-not-a-route                -> GET /v1/pioneer/zzz-not-a-route -> 404: 404 page not found
+
+   /v1/pioneer/inventory/v1/zzz               -> GET /v1/pioneer/inventory/v1/zzz -> 404: 404 page not found
+
+
+== مسح مسارات بالـ GET (306 مرشح) ==
+   (المجموع: 0 مسار مش 404 من 306)
+
+== مسح discriminator على mutate (663 اسم، آيدي وهمي) ==
+   (المجموع: 0 اسم مش UNKNOWN من 663)
+
+== ضوابط mutate ==
+   update       -> INVENTORY_ITEM_ZERO_AMOUNT
+   recycle      -> INVENTORY_ITEM_NOT_FOUND
+   split        -> UNKNOWN
+
+الملف: C:\Users\Administrator\Desktop\rr\inspection\pf\claim_surface_20261031_0059.txt

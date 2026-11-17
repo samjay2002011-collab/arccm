@@ -1,0 +1,980 @@
+{
+ "Anvil": {
+  "key": "anvil",
+  "levels": {
+   "2": {
+    "cost": {
+     "1959573223": 3,
+     "-574262619": 1
+    },
+    "raw_cost": {
+     "mechanical_components": 3,
+     "simple_gun_parts": 1
+    },
+    "rarity": "Rare"
+   },
+   "3": {
+    "cost": {
+     "-1903407680": 1,
+     "1959573223": 4
+    },
+    "raw_cost": {
+     "heavy_gun_parts": 1,
+     "mechanical_components": 4
+    },
+    "rarity": "Rare"
+   },
+   "4": {
+    "cost": {
+     "-1903407680": 1,
+     "1959573223": 4
+    },
+    "raw_cost": {
+     "heavy_gun_parts": 1,
+     "mechanical_components": 4
+    },
+    "rarity": "Rare"
+   }
+  }
+ },
+ "Aphelion": {
+  "key": "aphelion",
+  "levels": {
+   "2": {
+    "cost": {
+     "-926389249": 1,
+     "-1903407680": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 1,
+     "heavy_gun_parts": 2
+    },
+    "rarity": "Legendary"
+   },
+   "3": {
+    "cost": {
+     "-926389249": 2,
+     "-1903407680": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "heavy_gun_parts": 2
+    },
+    "rarity": "Legendary"
+   },
+   "4": {
+    "cost": {
+     "-926389249": 2,
+     "-1903407680": 3
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "heavy_gun_parts": 3
+    },
+    "rarity": "Legendary"
+   }
+  }
+ },
+ "Arpeggio": {
+  "key": "arpeggio",
+  "levels": {
+   "2": {
+    "cost": {
+     "1959573223": 4,
+     "-574262619": 1
+    },
+    "raw_cost": {
+     "mechanical_components": 4,
+     "simple_gun_parts": 1
+    },
+    "rarity": "Uncommon"
+   },
+   "3": {
+    "cost": {
+     "1959573223": 5,
+     "-637598838": 1
+    },
+    "raw_cost": {
+     "mechanical_components": 5,
+     "medium_gun_parts": 1
+    },
+    "rarity": "Uncommon"
+   },
+   "4": {
+    "cost": {
+     "1959573223": 5,
+     "-637598838": 1
+    },
+    "raw_cost": {
+     "mechanical_components": 5,
+     "medium_gun_parts": 1
+    },
+    "rarity": "Uncommon"
+   }
+  }
+ },
+ "Bantam": {
+  "key": "bantam",
+  "levels": {
+   "2": {
+    "cost": {
+     "1959573223": 3,
+     "-574262619": 1
+    },
+    "raw_cost": {
+     "mechanical_components": 3,
+     "simple_gun_parts": 1
+    },
+    "rarity": "Uncommon"
+   },
+   "3": {
+    "cost": {
+     "1959573223": 4,
+     "-637598838": 1
+    },
+    "raw_cost": {
+     "mechanical_components": 4,
+     "medium_gun_parts": 1
+    },
+    "rarity": "Uncommon"
+   },
+   "4": {
+    "cost": {
+     "1959573223": 4,
+     "-1903407680": 1
+    },
+    "raw_cost": {
+     "mechanical_components": 4,
+     "heavy_gun_parts": 1
+    },
+    "rarity": "Uncommon"
+   }
+  }
+ },
+ "Bettina": {
+  "key": "bettina",
+  "levels": {
+   "2": {
+    "cost": {
+     "-926389249": 1,
+     "-1903407680": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 1,
+     "heavy_gun_parts": 2
+    },
+    "rarity": "Epic"
+   },
+   "3": {
+    "cost": {
+     "-926389249": 1,
+     "-1903407680": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 1,
+     "heavy_gun_parts": 2
+    },
+    "rarity": "Epic"
+   },
+   "4": {
+    "cost": {
+     "-926389249": 2,
+     "-1903407680": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "heavy_gun_parts": 2
+    },
+    "rarity": "Epic"
+   }
+  }
+ },
+ "Bobcat": {
+  "key": "bobcat",
+  "levels": {
+   "2": {
+    "cost": {
+     "-926389249": 2,
+     "-1385889770": 1
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "light_gun_parts": 1
+    },
+    "rarity": "Epic"
+   },
+   "3": {
+    "cost": {
+     "-926389249": 2,
+     "-1385889770": 3
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "light_gun_parts": 3
+    },
+    "rarity": "Epic"
+   },
+   "4": {
+    "cost": {
+     "-926389249": 2,
+     "-1385889770": 3
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "light_gun_parts": 3
+    },
+    "rarity": "Epic"
+   }
+  }
+ },
+ "Burletta": {
+  "key": "burletta",
+  "levels": {
+   "2": {
+    "cost": {
+     "1959573223": 3,
+     "-574262619": 1
+    },
+    "raw_cost": {
+     "mechanical_components": 3,
+     "simple_gun_parts": 1
+    },
+    "rarity": "Uncommon"
+   },
+   "3": {
+    "cost": {
+     "1959573223": 3,
+     "-574262619": 1
+    },
+    "raw_cost": {
+     "mechanical_components": 3,
+     "simple_gun_parts": 1
+    },
+    "rarity": "Uncommon"
+   },
+   "4": {
+    "cost": {
+     "-1385889770": 1,
+     "1959573223": 4
+    },
+    "raw_cost": {
+     "light_gun_parts": 1,
+     "mechanical_components": 4
+    },
+    "rarity": "Uncommon"
+   }
+  }
+ },
+ "Canto": {
+  "key": "canto",
+  "levels": {
+   "2": {
+    "cost": {
+     "-926389249": 1,
+     "-637598838": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 1,
+     "medium_gun_parts": 2
+    },
+    "rarity": "Rare"
+   },
+   "3": {
+    "cost": {
+     "-926389249": 1,
+     "-637598838": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 1,
+     "medium_gun_parts": 2
+    },
+    "rarity": "Rare"
+   },
+   "4": {
+    "cost": {
+     "-926389249": 2,
+     "-637598838": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "medium_gun_parts": 2
+    },
+    "rarity": "Rare"
+   }
+  }
+ },
+ "Dolabra": {
+  "key": "dolabra",
+  "levels": {
+   "2": {
+    "cost": {
+     "-926389249": 1,
+     "-1903407680": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 1,
+     "heavy_gun_parts": 2
+    },
+    "rarity": "Legendary"
+   },
+   "3": {
+    "cost": {
+     "-926389249": 2,
+     "-1903407680": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "heavy_gun_parts": 2
+    },
+    "rarity": "Legendary"
+   },
+   "4": {
+    "cost": {
+     "-926389249": 2,
+     "-1903407680": 3
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "heavy_gun_parts": 3
+    },
+    "rarity": "Legendary"
+   }
+  }
+ },
+ "Equalizer": {
+  "key": "equalizer",
+  "levels": {
+   "2": {
+    "cost": {
+     "-926389249": 1,
+     "-1903407680": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 1,
+     "heavy_gun_parts": 2
+    },
+    "rarity": "Legendary"
+   },
+   "3": {
+    "cost": {
+     "-926389249": 2,
+     "-1903407680": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "heavy_gun_parts": 2
+    },
+    "rarity": "Legendary"
+   },
+   "4": {
+    "cost": {
+     "-926389249": 2,
+     "-1903407680": 3
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "heavy_gun_parts": 3
+    },
+    "rarity": "Legendary"
+   }
+  }
+ },
+ "Ferro": {
+  "key": "ferro",
+  "levels": {
+   "2": {
+    "cost": {
+     "-1437131902": 7
+    },
+    "raw_cost": {
+     "metal_parts": 7
+    },
+    "rarity": "Common"
+   },
+   "3": {
+    "cost": {
+     "-1437131902": 9,
+     "-574262619": 1
+    },
+    "raw_cost": {
+     "metal_parts": 9,
+     "simple_gun_parts": 1
+    },
+    "rarity": "Common"
+   },
+   "4": {
+    "cost": {
+     "1959573223": 1,
+     "-574262619": 1
+    },
+    "raw_cost": {
+     "mechanical_components": 1,
+     "simple_gun_parts": 1
+    },
+    "rarity": "Common"
+   }
+  }
+ },
+ "Hairpin": {
+  "key": "hairpin",
+  "levels": {
+   "2": {
+    "cost": {
+     "-1437131902": 8
+    },
+    "raw_cost": {
+     "metal_parts": 8
+    },
+    "rarity": "Common"
+   },
+   "3": {
+    "cost": {
+     "-1437131902": 9,
+     "-574262619": 1
+    },
+    "raw_cost": {
+     "metal_parts": 9,
+     "simple_gun_parts": 1
+    },
+    "rarity": "Common"
+   },
+   "4": {
+    "cost": {
+     "1959573223": 1,
+     "-574262619": 1
+    },
+    "raw_cost": {
+     "mechanical_components": 1,
+     "simple_gun_parts": 1
+    },
+    "rarity": "Common"
+   }
+  }
+ },
+ "Hullcracker": {
+  "key": "hullcracker",
+  "levels": {
+   "2": {
+    "cost": {
+     "-926389249": 1,
+     "-1903407680": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 1,
+     "heavy_gun_parts": 2
+    },
+    "rarity": "Epic"
+   },
+   "3": {
+    "cost": {
+     "-926389249": 2,
+     "-1903407680": 1
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "heavy_gun_parts": 1
+    },
+    "rarity": "Epic"
+   },
+   "4": {
+    "cost": {
+     "-926389249": 2,
+     "-1903407680": 3
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "heavy_gun_parts": 3
+    },
+    "rarity": "Epic"
+   }
+  }
+ },
+ "Il Toro": {
+  "key": "il_toro",
+  "levels": {
+   "2": {
+    "cost": {
+     "1959573223": 4,
+     "-574262619": 1
+    },
+    "raw_cost": {
+     "mechanical_components": 4,
+     "simple_gun_parts": 1
+    },
+    "rarity": "Uncommon"
+   },
+   "3": {
+    "cost": {
+     "-1903407680": 1,
+     "1959573223": 4
+    },
+    "raw_cost": {
+     "heavy_gun_parts": 1,
+     "mechanical_components": 4
+    },
+    "rarity": "Uncommon"
+   },
+   "4": {
+    "cost": {
+     "-1903407680": 1,
+     "1959573223": 5
+    },
+    "raw_cost": {
+     "heavy_gun_parts": 1,
+     "mechanical_components": 5
+    },
+    "rarity": "Uncommon"
+   }
+  }
+ },
+ "Jupiter": {
+  "key": "jupiter",
+  "levels": {
+   "2": {
+    "cost": {
+     "-926389249": 1,
+     "-1903407680": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 1,
+     "heavy_gun_parts": 2
+    },
+    "rarity": "Legendary"
+   },
+   "3": {
+    "cost": {
+     "-926389249": 2,
+     "-1903407680": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "heavy_gun_parts": 2
+    },
+    "rarity": "Legendary"
+   },
+   "4": {
+    "cost": {
+     "-926389249": 2,
+     "-1903407680": 3
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "heavy_gun_parts": 3
+    },
+    "rarity": "Legendary"
+   }
+  }
+ },
+ "Kettle": {
+  "key": "kettle",
+  "levels": {
+   "2": {
+    "cost": {
+     "-1437131902": 7
+    },
+    "raw_cost": {
+     "metal_parts": 7
+    },
+    "rarity": "Common"
+   },
+   "3": {
+    "cost": {
+     "-1437131902": 9,
+     "-574262619": 1
+    },
+    "raw_cost": {
+     "metal_parts": 9,
+     "simple_gun_parts": 1
+    },
+    "rarity": "Common"
+   },
+   "4": {
+    "cost": {
+     "1959573223": 1,
+     "-574262619": 1
+    },
+    "raw_cost": {
+     "mechanical_components": 1,
+     "simple_gun_parts": 1
+    },
+    "rarity": "Common"
+   }
+  }
+ },
+ "Osprey": {
+  "key": "osprey",
+  "levels": {
+   "2": {
+    "cost": {
+     "-926389249": 1,
+     "-637598838": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 1,
+     "medium_gun_parts": 2
+    },
+    "rarity": "Rare"
+   },
+   "3": {
+    "cost": {
+     "-926389249": 1,
+     "-637598838": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 1,
+     "medium_gun_parts": 2
+    },
+    "rarity": "Rare"
+   },
+   "4": {
+    "cost": {
+     "-926389249": 2,
+     "-637598838": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "medium_gun_parts": 2
+    },
+    "rarity": "Rare"
+   }
+  }
+ },
+ "Rascal": {
+  "key": "rascal",
+  "levels": {
+   "2": {
+    "cost": {
+     "-926389249": 1,
+     "-637598838": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 1,
+     "medium_gun_parts": 2
+    },
+    "rarity": "Rare"
+   },
+   "3": {
+    "cost": {
+     "-926389249": 1,
+     "-637598838": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 1,
+     "medium_gun_parts": 2
+    },
+    "rarity": "Rare"
+   },
+   "4": {
+    "cost": {
+     "-926389249": 2,
+     "-637598838": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "medium_gun_parts": 2
+    },
+    "rarity": "Rare"
+   }
+  }
+ },
+ "Rattler": {
+  "key": "rattler",
+  "levels": {
+   "2": {
+    "cost": {
+     "-1437131902": 7
+    },
+    "raw_cost": {
+     "metal_parts": 7
+    },
+    "rarity": "Common"
+   },
+   "3": {
+    "cost": {
+     "-1437131902": 8,
+     "-574262619": 1
+    },
+    "raw_cost": {
+     "metal_parts": 8,
+     "simple_gun_parts": 1
+    },
+    "rarity": "Common"
+   },
+   "4": {
+    "cost": {
+     "1959573223": 1,
+     "-574262619": 1
+    },
+    "raw_cost": {
+     "mechanical_components": 1,
+     "simple_gun_parts": 1
+    },
+    "rarity": "Common"
+   }
+  }
+ },
+ "Renegade": {
+  "key": "renegade",
+  "levels": {
+   "2": {
+    "cost": {
+     "-926389249": 1,
+     "-637598838": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 1,
+     "medium_gun_parts": 2
+    },
+    "rarity": "Rare"
+   },
+   "3": {
+    "cost": {
+     "-926389249": 1,
+     "-637598838": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 1,
+     "medium_gun_parts": 2
+    },
+    "rarity": "Rare"
+   },
+   "4": {
+    "cost": {
+     "-926389249": 2,
+     "-637598838": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "medium_gun_parts": 2
+    },
+    "rarity": "Rare"
+   }
+  }
+ },
+ "Stiletto": {
+  "key": "stiletto",
+  "levels": {
+   "2": {
+    "cost": {
+     "1959573223": 4,
+     "-574262619": 1
+    },
+    "raw_cost": {
+     "mechanical_components": 4,
+     "simple_gun_parts": 1
+    },
+    "rarity": "Uncommon"
+   },
+   "3": {
+    "cost": {
+     "1959573223": 5,
+     "-637598838": 1
+    },
+    "raw_cost": {
+     "mechanical_components": 5,
+     "medium_gun_parts": 1
+    },
+    "rarity": "Uncommon"
+   },
+   "4": {
+    "cost": {
+     "1959573223": 5,
+     "-637598838": 1
+    },
+    "raw_cost": {
+     "mechanical_components": 5,
+     "medium_gun_parts": 1
+    },
+    "rarity": "Uncommon"
+   }
+  }
+ },
+ "Stitcher": {
+  "key": "stitcher",
+  "levels": {
+   "2": {
+    "cost": {
+     "-1437131902": 8
+    },
+    "raw_cost": {
+     "metal_parts": 8
+    },
+    "rarity": "Common"
+   },
+   "3": {
+    "cost": {
+     "-1437131902": 9,
+     "-574262619": 1
+    },
+    "raw_cost": {
+     "metal_parts": 9,
+     "simple_gun_parts": 1
+    },
+    "rarity": "Common"
+   },
+   "4": {
+    "cost": {
+     "1959573223": 1,
+     "-574262619": 1
+    },
+    "raw_cost": {
+     "mechanical_components": 1,
+     "simple_gun_parts": 1
+    },
+    "rarity": "Common"
+   }
+  }
+ },
+ "Tempest": {
+  "key": "tempest",
+  "levels": {
+   "2": {
+    "cost": {
+     "-926389249": 2,
+     "-637598838": 1
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "medium_gun_parts": 1
+    },
+    "rarity": "Epic"
+   },
+   "3": {
+    "cost": {
+     "-926389249": 2,
+     "-637598838": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "medium_gun_parts": 2
+    },
+    "rarity": "Epic"
+   },
+   "4": {
+    "cost": {
+     "-926389249": 2,
+     "-637598838": 3
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "medium_gun_parts": 3
+    },
+    "rarity": "Epic"
+   }
+  }
+ },
+ "Torrente": {
+  "key": "torrente",
+  "levels": {
+   "2": {
+    "cost": {
+     "-926389249": 1,
+     "-637598838": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 1,
+     "medium_gun_parts": 2
+    },
+    "rarity": "Rare"
+   },
+   "3": {
+    "cost": {
+     "-926389249": 2,
+     "-637598838": 1
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "medium_gun_parts": 1
+    },
+    "rarity": "Rare"
+   },
+   "4": {
+    "cost": {
+     "-926389249": 2,
+     "-637598838": 3
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "medium_gun_parts": 3
+    },
+    "rarity": "Rare"
+   }
+  }
+ },
+ "Venator": {
+  "key": "venator",
+  "levels": {
+   "2": {
+    "cost": {
+     "-926389249": 1,
+     "-637598838": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 1,
+     "medium_gun_parts": 2
+    },
+    "rarity": "Rare"
+   },
+   "3": {
+    "cost": {
+     "-926389249": 1,
+     "-637598838": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 1,
+     "medium_gun_parts": 2
+    },
+    "rarity": "Rare"
+   },
+   "4": {
+    "cost": {
+     "-926389249": 2,
+     "-637598838": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "medium_gun_parts": 2
+    },
+    "rarity": "Rare"
+   }
+  }
+ },
+ "Vulcano": {
+  "key": "vulcano",
+  "levels": {
+   "2": {
+    "cost": {
+     "-926389249": 1,
+     "-1903407680": 2
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 1,
+     "heavy_gun_parts": 2
+    },
+    "rarity": "Epic"
+   },
+   "3": {
+    "cost": {
+     "-926389249": 2,
+     "-1903407680": 1
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "heavy_gun_parts": 1
+    },
+    "rarity": "Epic"
+   },
+   "4": {
+    "cost": {
+     "-926389249": 2,
+     "-1903407680": 3
+    },
+    "raw_cost": {
+     "advanced_mechanical_components": 2,
+     "heavy_gun_parts": 3
+    },
+    "rarity": "Epic"
+   }
+  }
+ }
+}

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CM — Login</title>
+<style>
+:root {
+  --bg: #08080c; --panel: #101017; --panel-2: #14141d;
+  --line: rgba(255,255,255,.07); --text: #e8e8ef; --muted: #8b8b9a;
+  --purple: #a855f7; --violet: #8b5cf6; --fuchsia: #d946ef;
+  --green: #22c55e; --red: #ef4444; --amber: #f59e0b;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(1200px 600px at 15% -10%, rgba(139,92,246,.16), transparent 60%),
+              radial-gradient(900px 500px at 95% 0%, rgba(217,70,239,.10), transparent 55%), var(--bg);
+  color: var(--text); font-family: "Segoe UI", system-ui, sans-serif;
+}
+.login-card {
+  width: min(420px, 92vw); background: var(--panel); border: 1px solid var(--line);
+  border-radius: 20px; padding: 40px 32px; text-align: center;
+  box-shadow: 0 24px 60px rgba(0,0,0,.5);
+}
+.logo { margin-bottom: 24px; }
+.logo svg { width: 56px; height: 56px; }
+h1 { margin: 0 0 6px; font-size: 22px; font-weight: 900; letter-spacing: 1px; }
+.sub { color: var(--muted); font-size: 13px; margin-bottom: 28px; }
+.field { text-align: left; margin-bottom: 18px; }
+.field label { display: block; font-size: 10px; font-weight: 800; letter-spacing: 2px; color: var(--muted); margin-bottom: 8px; }
+.field input {
+  width: 100%; background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px;
+  color: var(--text); padding: 14px 16px; font: inherit; font-size: 14px; letter-spacing: .5px;
+  transition: border-color .2s;
+}
+.field input:focus { outline: none; border-color: rgba(168,85,247,.6); }
+.field input::placeholder { color: rgba(139,143,163,.4); }
+.btn {
+  width: 100%; padding: 14px; border: 0; border-radius: 12px; cursor: pointer;
+  font: inherit; font-size: 14px; font-weight: 800; letter-spacing: 1.5px;
+  color: #fff; background: linear-gradient(135deg, var(--purple), var(--fuchsia));
+  transition: opacity .2s;
+}
+.btn:hover { opacity: .9; }
+.btn:disabled { opacity: .4; cursor: wait; }
+.msg { margin-top: 14px; font-size: 12px; font-weight: 600; min-height: 18px; }
+.msg.err { color: var(--red); }
+.msg.ok { color: var(--green); }
+.footer { margin-top: 28px; font-size: 10px; color: rgba(139,143,163,.4); letter-spacing: 1px; }
+</style>
+</head>
+<body>
+<div class="login-card">
+  <div class="logo">
+    <svg viewBox="0 0 44 44" role="img">
+      <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a855f7"/><stop offset="1" stop-color="#d946ef"/></linearGradient></defs>
+      <rect x="1.6" y="1.6" width="40.8" height="40.8" rx="12" fill="#0e0e15"/>
+      <rect x="1.6" y="1.6" width="40.8" height="40.8" rx="12" fill="url(#g)" opacity=".16"/>
+      <rect x="1.6" y="1.6" width="40.8" height="40.8" rx="12" fill="none" stroke="url(#g)" stroke-width="2"/>
+      <text x="22" y="22.5" text-anchor="middle" dominant-baseline="central" font-family="Segoe UI" font-size="17" font-weight="900" fill="#fff">CM</text>
+      <circle cx="32.6" cy="11.4" r="2.7" fill="#e0b64a"/>
+    </svg>
+  </div>
+  <h1>ACCESS REQUIRED</h1>
+  <p class="sub">Enter your access token to use the dashboard</p>
+  <form id="login-form">
+    <div class="field">
+      <label>ACCESS TOKEN</label>
+      <input id="token" type="password" placeholder="Paste your token here…" autocomplete="off" spellcheck="false" autofocus>
+    </div>
+    <button class="btn" type="submit" id="btn" style="margin-top: 10px;">ENTER</button>
+  </form>
+  <div class="msg" id="msg"></div>
+  <div class="footer">CM — INVENTORY & LOADOUT MANAGER</div>
+</div>
+<script src="/login.js?v=4"></script>
+</body>
+</html>

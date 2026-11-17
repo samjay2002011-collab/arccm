@@ -1,0 +1,51 @@
+{
+ "_base": {
+  "base_scrappy": "/assets/hideout/base_scrappy.webp",
+  "base_gunsmith": "/assets/hideout/base_gunsmith.webp",
+  "base_gear_bench": "/assets/hideout/base_gear_bench.webp",
+  "base_utility_station": "/assets/hideout/base_utility_station.webp",
+  "base_explosives_station": "/assets/hideout/base_explosives_station.webp",
+  "base_refiner": "/assets/hideout/base_refiner.webp",
+  "base_medical_lab": "/assets/hideout/base_medical_lab.webp",
+  "base_workbench": "/assets/hideout/base_workbench.webp",
+  "base_research_station": "/assets/hideout/base_research_station.webp",
+  "base_stash": "/assets/hideout/base_stash.webp"
+ },
+ "equipment_bench": {
+  "1": "/assets/hideout/equipment_bench/1.webp",
+  "2": "/assets/hideout/equipment_bench/2.webp",
+  "3": "/assets/hideout/equipment_bench/3.webp"
+ },
+ "explosives_bench": {
+  "1": "/assets/hideout/explosives_bench/1.webp",
+  "2": "/assets/hideout/explosives_bench/2.webp",
+  "3": "/assets/hideout/explosives_bench/3.webp"
+ },
+ "med_station": {
+  "1": "/assets/hideout/med_station/1.webp",
+  "2": "/assets/hideout/med_station/2.webp",
+  "3": "/assets/hideout/med_station/3.webp"
+ },
+ "refiner": {
+  "1": "/assets/hideout/refiner/1.webp",
+  "2": "/assets/hideout/refiner/2.webp",
+  "3": "/assets/hideout/refiner/3.webp"
+ },
+ "research_station": {
+  "1": "/assets/hideout/research_station/1.webp",
+  "2": "/assets/hideout/research_station/2.webp",
+  "3": "/assets/hideout/research_station/3.webp",
+  "4": "/assets/hideout/research_station/4.webp"
+ },
+ "utility_bench": {
+  "1": "/assets/hideout/utility_bench/1.webp",
+  "2": "/assets/hideout/utility_bench/2.webp",
+  "3": "/assets/hideout/utility_bench/3.webp"
+ },
+ "weapon_bench": {
+  "1": "/assets/hideout/weapon_bench/1.webp",
+  "2": "/assets/hideout/weapon_bench/2.webp",
+  "3": "/assets/hideout/weapon_bench/3.webp",
+  "4": "/assets/hideout/weapon_bench/4.webp"
+ }
+}

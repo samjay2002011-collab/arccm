@@ -1,0 +1,116 @@
+/* SCRAPPY — لوحة الديك: بتاعة الهيدر + نافذة التحويلات.
+   الألوان والساعات كلها من البوابة الرسمية (data/scrappy_catalog.json + الشجرة الحيّة). */
+.scr-pill #scr-top-label {
+  min-width: 0;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .5px;
+  color: #e9d5ff;
+  font-variant-numeric: tabular-nums;
+}
+
+.modal-card.scr-modal { width: min(660px, 100%); }
+/* اللوحة كلها لازم تبان من غير سكرول داخلي — الهيدر والصفوف مضغوطة عمدًا */
+.scr-modal .buy-head { gap: 12px; padding: 0 0 10px; }
+.scr-modal .buy-hero { width: 68px; height: 68px; border-radius: 13px; }
+.scr-modal .buy-hero img { max-width: 54px; max-height: 54px; }
+.scr-modal .buy-name { font-size: 18px; }
+.scr-modal .buy-label { margin: 8px 0 6px; }
+.scr-modal .buy-foot { margin-top: 12px; }
+.scr-modal .buy-note { margin-top: 7px; }
+.scr-modal .ws-lines { margin-top: 0; padding: 9px 11px; }
+
+.scr-noimg {
+  display: inline-block;
+  width: 16px; height: 16px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, .1);
+  vertical-align: -3px;
+}
+.scr-noimg.rounds { width: 15px; height: 15px; background: rgba(0, 240, 255, .35); }
+
+.buy-count, .scr-count {
+  margin-left: 8px;
+  padding: 2px 7px;
+  border-radius: 7px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, .04);
+  font-size: 9.5px;
+  letter-spacing: 1px;
+  color: #cbd5e1;
+}
+
+/* المواعيد الشغّالة */
+.scr-timers { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+.scr-timer {
+  display: grid; grid-template-columns: 1fr 130px 52px; align-items: center; gap: 10px;
+  padding: 5px 10px; border-radius: 10px; border: 1px solid var(--line);
+  background: rgba(255, 255, 255, .03);
+}
+.scr-t-main { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
+.scr-t-main b { font-size: 12.5px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.scr-t-main i { font-style: normal; font-size: 11px; color: var(--muted); font-weight: 800; }
+.scr-t-bar { height: 6px; border-radius: 4px; background: rgba(255, 255, 255, .07); overflow: hidden; }
+.scr-t-bar > span { display: block; height: 100%; background: linear-gradient(90deg, rgba(139, 92, 246, .8), rgba(0, 240, 255, .7)); }
+.scr-t-left { text-align: right; font-size: 13px; font-weight: 900; color: #fcd34d; font-variant-numeric: tabular-nums; }
+
+/* اللي نزل فعلًا: سطر واحد فيه كل ميعاد خلص وكل زيادة مقاسة على الشجرة */
+.scr-drops { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+.scr-settle {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 8px; border-radius: 9px; border: 1px solid var(--line);
+  background: rgba(255, 255, 255, .025); font-size: 11px;
+}
+.scr-settle img { width: 15px; height: 15px; object-fit: contain; }
+.scr-settle b { font-weight: 900; }
+.scr-settle i { font-style: normal; color: #86efac; font-weight: 800; font-variant-numeric: tabular-nums; }
+.scr-settle.in { border-color: rgba(34, 197, 94, .35); background: rgba(34, 197, 94, .07); }
+
+/* صفوف التحويلات — سطر واحد مضغوط عشان اللوحة كلها تبان من غير سكرول */
+.scr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.scr-grid + .scr-more { margin-top: 6px; }
+.scr-claims { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 6px; }
+.scr-row {
+  display: grid; grid-template-columns: 26px 1fr auto auto; align-items: center; gap: 7px;
+  height: 40px; padding: 5px 9px;
+  border-radius: 10px; border: 1px solid var(--line);
+  background: rgba(255, 255, 255, .028);
+  color: #e5e7eb; text-align: left; cursor: pointer; overflow: hidden;
+  transition: background .12s ease, border-color .12s ease;
+}
+.scr-row:hover { background: rgba(255, 255, 255, .07); border-color: rgba(168, 85, 247, .5); }
+.scr-row.short { border-color: rgba(239, 68, 68, .3); background: rgba(239, 68, 68, .05); }
+.scr-row.claim { grid-template-columns: 26px 1fr auto auto; cursor: default; opacity: .82; }
+.scr-row.claim:hover { background: rgba(255, 255, 255, .028); border-color: var(--line); }
+.scr-row-ico { display: grid; place-items: center; }
+.scr-row-ico img { width: 23px; height: 23px; object-fit: contain; }
+.scr-row-main { min-width: 0; display: flex; align-items: baseline; gap: 6px; }
+.scr-row-main b { flex: 0 0 auto; font-size: 12.5px; font-weight: 900; }
+.scr-row-main i { font-style: normal; font-size: 10px; font-weight: 800; color: var(--muted); font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.scr-row.short .scr-row-main i { color: #fca5a5; }
+.scr-row-out { display: flex; align-items: center; gap: 4px; }
+.scr-row-time { font-size: 10.5px; font-weight: 900; color: #94a3b8; font-variant-numeric: tabular-nums; min-width: 28px; text-align: right; }
+
+.scr-chip {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 6px; border-radius: 8px;
+  border: 1px solid var(--line); background: rgba(255, 255, 255, .05);
+  font-size: 11px; font-weight: 800; font-variant-numeric: tabular-nums;
+}
+.scr-chip img { width: 15px; height: 15px; object-fit: contain; }
+.scr-chip b { color: #86efac; }
+.scr-pool { font-style: normal; font-size: 9.5px; font-weight: 900; letter-spacing: .5px; color: #a5b4fc; }
+
+.scr-more {
+  display: flex; align-items: center; gap: 7px; width: 100%;
+  margin-top: 9px; padding: 7px 10px;
+  border-radius: 9px; border: 1px dashed var(--line);
+  background: transparent; color: var(--muted);
+  font-size: 10px; font-weight: 900; letter-spacing: 1.5px; cursor: pointer;
+}
+.scr-more:hover { color: #cbd5e1; border-color: rgba(168, 85, 247, .45); }
+.scr-more i { font-style: normal; margin-left: auto; color: #a78bfa; letter-spacing: .5px; }
+
+@media (max-width: 700px) {
+  .scr-grid, .scr-claims { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CM — Admin Panel</title>
+<style>
+:root {
+  --bg: #08080c; --panel: #101017; --panel-2: #14141d;
+  --line: rgba(255,255,255,.07); --text: #e8e8ef; --muted: #8b8b9a;
+  --purple: #a855f7; --fuchsia: #d946ef; --green: #22c55e; --red: #ef4444; --amber: #f59e0b;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: "Segoe UI", system-ui, sans-serif; font-size: 14px; }
+.topbar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 14px; padding: 12px 24px; background: rgba(8,8,12,.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.topbar h1 { margin: 0; font-size: 16px; font-weight: 900; letter-spacing: 2px; flex: 1; }
+.topbar .badge { font-size: 10px; background: rgba(139,92,246,.2); color: var(--purple); padding: 4px 10px; border-radius: 8px; font-weight: 800; letter-spacing: 1px; }
+
+/* Login overlay */
+.login-overlay { position: fixed; inset: 0; z-index: 100; background: var(--bg); display: flex; align-items: center; justify-content: center; }
+.login-box { width: min(400px, 90vw); background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 36px 28px; text-align: center; }
+.login-box h2 { margin: 0 0 20px; font-size: 18px; letter-spacing: 2px; }
+.login-box input { width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel-2); color: var(--text); font: inherit; margin-bottom: 14px; }
+.login-box input:focus { outline: none; border-color: rgba(168,85,247,.6); }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+/* Stats */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.stat-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+.stat-card .label { font-size: 10px; font-weight: 800; letter-spacing: 2px; color: var(--muted); margin-bottom: 6px; }
+.stat-card .value { font-size: 28px; font-weight: 900; }
+.stat-card .value.green { color: var(--green); }
+.stat-card .value.red { color: var(--red); }
+.stat-card .value.amber { color: var(--amber); }
+
+/* Create form */
+.create-section { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-bottom: 24px; }
+.create-section h2 { margin: 0 0 16px; font-size: 13px; letter-spacing: 3px; font-weight: 800; }
+.create-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+.create-row .field { flex: 1; min-width: 140px; }
+.create-row .field label { display: block; font-size: 10px; font-weight: 800; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 6px; }
+.create-row .field input { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel-2); color: var(--text); font: inherit; }
+.create-row .field input:focus { outline: none; border-color: rgba(168,85,247,.6); }
+.btn { padding: 10px 20px; border: 0; border-radius: 10px; cursor: pointer; font: inherit; font-size: 11px; font-weight: 800; letter-spacing: 1.5px; color: #fff; transition: opacity .2s; }
+.btn:hover { opacity: .85; }
+.btn-primary { background: linear-gradient(135deg, var(--purple), var(--fuchsia)); }
+.btn-green { background: var(--green); color: #000; }
+.btn-red { background: var(--red); }
+.btn-amber { background: var(--amber); color: #000; }
+.btn-ghost { background: var(--panel-2); border: 1px solid var(--line); color: var(--muted); }
+.btn-ghost:hover { color: var(--text); }
+.btn-sm { padding: 6px 12px; font-size: 9px; }
+
+/* Subscribers table */
+.table-section { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.table-head { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+.table-head h2 { margin: 0; font-size: 13px; letter-spacing: 3px; font-weight: 800; flex: 1; }
+.sub-list { max-height: 60vh; overflow-y: auto; }
+.sub-row { display: grid; grid-template-columns: 35px 1fr 130px 90px 90px auto; gap: 12px; align-items: center; padding: 14px 20px; border-bottom: 1px solid var(--line); transition: background .15s; }
+.sub-row:hover { background: rgba(255,255,255,.02); }
+.sub-row .num { font-size: 11px; color: var(--muted); font-weight: 700; }
+.sub-row .name { font-weight: 800; font-size: 14px; }
+.sub-row .name small { font-weight: 600; color: var(--muted); font-size: 11px; display: block; margin-top: 2px; }
+.sub-row .token-cell { font-family: ui-monospace, Consolas, monospace; font-size: 10px; color: var(--muted); cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sub-row .token-cell:hover { color: var(--text); }
+.sub-row .status { font-size: 10px; font-weight: 900; letter-spacing: 1.2px; }
+.sub-row .status.active { color: var(--green); }
+.sub-row .status.expired { color: var(--red); }
+.sub-row .status.disabled { color: var(--muted); }
+.sub-row .days { font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.sub-row .days.warn { color: var(--amber); }
+.sub-row .days.gone { color: var(--red); }
+.sub-row .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.empty-state { padding: 40px; text-align: center; color: var(--muted); font-size: 13px; }
+
+/* Modal */
+.modal-bg { position: fixed; inset: 0; z-index: 90; background: rgba(0,0,0,.72); display: flex; align-items: center; justify-content: center; padding: 20px; }
+.modal-card { width: min(500px, 100%); max-height: 80vh; overflow-y: auto; padding: 24px; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; }
+.modal-card h3 { margin: 0 0 16px; font-size: 14px; font-weight: 800; letter-spacing: 2px; }
+.modal-card .field { margin-bottom: 14px; }
+.modal-card .field label { display: block; font-size: 10px; font-weight: 800; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 6px; }
+.modal-card .field input { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel-2); color: var(--text); font: inherit; }
+.modal-card .field input:focus { outline: none; border-color: rgba(168,85,247,.6); }
+.modal-foot { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+.token-display { background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px; font-family: ui-monospace, Consolas, monospace; font-size: 11px; word-break: break-all; color: var(--green); cursor: pointer; margin-top: 10px; }
+.token-display:hover { color: #fff; }
+[hidden] { display: none !important; }
+
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: 26px; z-index: 95; padding: 11px 20px; border-radius: 12px; font-size: 12px; font-weight: 700; background: rgba(16,16,23,.97); border: 1px solid var(--line); box-shadow: 0 18px 40px rgba(0,0,0,.6); }
+.toast.ok { border-color: rgba(34,197,94,.5); color: #bbf7d0; }
+.toast.bad { border-color: rgba(239,68,68,.5); color: #fecaca; }
+
+@media (max-width: 900px) { .sub-row { grid-template-columns: 1fr 1fr; } }
+
+/* Profile Modal */
+.profile-modal-card { width: min(680px, 100%); }
+.profile-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.profile-avatar { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--purple), var(--fuchsia)); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; color: #fff; flex-shrink: 0; }
+.profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.profile-stat { background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+.profile-stat .ps-label { font-size: 9px; font-weight: 800; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 4px; }
+.profile-stat .ps-value { font-size: 14px; font-weight: 800; word-break: break-word; }
+.profile-token-box { background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-family: ui-monospace, Consolas, monospace; font-size: 11px; word-break: break-all; color: var(--green); cursor: pointer; margin-bottom: 16px; }
+.profile-token-box:hover { color: #fff; }
+.profile-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.ps-label { font-size: 9px; font-weight: 800; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<!-- Login overlay -->
+<div class="login-overlay" id="login-overlay">
+  <div class="login-box">
+    <h2>🔐 ADMIN LOGIN</h2>
+    <input id="admin-pw" type="password" placeholder="Admin password…" autofocus>
+    <button class="btn btn-primary" style="width:100%" id="admin-login-btn">LOGIN</button>
+    <div class="msg" id="admin-msg" style="margin-top:12px;font-size:12px;min-height:18px"></div>
+  </div>
+</div>
+
+<!-- Main UI -->
+<div id="main-ui" hidden>
+<div class="topbar">
+  <h1>⚙ ADMIN PANEL</h1>
+  <span class="badge" id="admin-pw-badge"></span>
+  <a href="/" class="btn btn-ghost btn-sm" id="btn-dashboard" style="text-decoration:none; display:inline-flex; align-items:center;">← DASHBOARD</a>
+  <a href="/auth/logout" class="btn btn-ghost btn-sm" id="btn-logout" style="text-decoration:none; display:inline-flex; align-items:center;">LOGOUT</a>
+</div>
+
+<div class="container">
+  <!-- Stats -->
+  <div class="stats" id="stats"></div>
+
+  <!-- Admin Credentials & Reset -->
+  <div class="create-section" style="border: 1px solid rgba(168,85,247,0.3); background: linear-gradient(180deg, rgba(168,85,247,0.04), var(--panel));">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h2 style="margin:0; color:#c084fc;">🔑 ADMIN CREDENTIALS &amp; RESET</h2>
+      <span style="font-size:11px; color:var(--muted); font-weight:600;">Manage external token &amp; admin mode password</span>
+    </div>
+    
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:16px;">
+      <!-- Outside Login Token -->
+      <div style="background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:16px;">
+        <label style="display:block; font-size:10px; font-weight:800; letter-spacing:1.5px; color:var(--muted); margin-bottom:8px;">
+          OUTSIDE LOGIN TOKEN (ENTERED ON /login)
+        </label>
+        <div style="display:flex; gap:8px; margin-bottom:10px;">
+          <input id="cfg-admin-token" type="text" style="flex:1; padding:10px 12px; border-radius:10px; border:1px solid var(--line); background:var(--panel); color:var(--text); font-family:ui-monospace, Consolas, monospace; font-size:12px;" placeholder="Admin token…">
+          <button class="btn btn-ghost btn-sm" id="btn-gen-admin-token" title="Generate 50-character random token">🎲 RANDOM</button>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:11px; color:var(--muted);">Decides Admin vs Subscriber on login</span>
+          <button class="btn btn-primary btn-sm" id="btn-save-admin-token">SAVE TOKEN</button>
+        </div>
+      </div>
+
+      <!-- Admin Mode Password -->
+      <div style="background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:16px;">
+        <label style="display:block; font-size:10px; font-weight:800; letter-spacing:1.5px; color:var(--muted); margin-bottom:8px;">
+          ADMIN MODE PASSWORD (ENTERED ON ⚙️ ADMIN MODE BUTTON)
+        </label>
+        <div style="display:flex; gap:8px; margin-bottom:10px;">
+          <input id="cfg-admin-password" type="text" style="flex:1; padding:10px 12px; border-radius:10px; border:1px solid var(--line); background:var(--panel); color:var(--text); font-family:ui-monospace, Consolas, monospace; font-size:12px;" placeholder="Admin password…">
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:11px; color:var(--muted);">Protects access to this Admin Panel</span>
+          <button class="btn btn-primary btn-sm" id="btn-save-admin-password">SAVE PASSWORD</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create -->
+  <div class="create-section">
+    <h2>+ NEW SUBSCRIBER</h2>
+    <div class="create-row">
+      <div class="field"><label>NAME</label><input id="c-name" placeholder="e.g. Ahmed"></div>
+      <div class="field"><label>DAYS (0 = unlimited)</label><input id="c-days" type="number" value="30" min="0"></div>
+      <div class="field"><label>NOTES (optional)</label><input id="c-notes" placeholder="e.g. paid $10"></div>
+      <button class="btn btn-primary" id="btn-create">+ CREATE</button>
+    </div>
+    <div class="token-display" id="new-token-display" hidden></div>
+  </div>
+
+  <!-- Subscribers -->
+  <div class="table-section">
+    <div class="table-head">
+      <h2>SUBSCRIBERS</h2>
+      <button class="btn btn-ghost btn-sm" id="btn-refresh">↻ REFRESH</button>
+    </div>
+    <div class="sub-list" id="sub-list"></div>
+  </div>
+</div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-bg" id="edit-modal" hidden>
+  <div class="modal-card">
+    <h3 id="edit-title">EDIT SUBSCRIBER</h3>
+    <div class="field"><label>NAME</label><input id="e-name"></div>
+    <div class="field"><label>ADD DAYS (from now or from current expiry)</label><input id="e-days" type="number" value="0" min="0"></div>
+    <div class="field"><label>SET EXACT DAYS (replaces current — 0 = unlimited)</label><input id="e-set-days" type="number" value="" min="0" placeholder="Leave empty to keep current"></div>
+    <div class="field"><label>NOTES</label><input id="e-notes"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" id="btn-cancel-edit">CANCEL</button>
+      <button class="btn btn-primary" id="btn-save-edit">SAVE</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- User Profile Modal -->
+<div class="modal-bg" id="profile-modal" hidden>
+  <div class="modal-card profile-modal-card">
+    <div class="profile-header">
+      <div class="profile-avatar" id="prf-avatar">?</div>
+      <div>
+        <h3 style="margin:0 0 4px; font-size:18px; font-weight:900;" id="prf-name">—</h3>
+        <span id="prf-status-badge" style="font-size:10px; font-weight:800; letter-spacing:1.2px;">—</span>
+        &nbsp;<span style="font-size:11px; color:var(--muted);" id="prf-id">—</span>
+      </div>
+    </div>
+    <div class="profile-grid">
+      <div class="profile-stat"><div class="ps-label">CREATED</div><div class="ps-value" id="prf-created">—</div></div>
+      <div class="profile-stat"><div class="ps-label">EXPIRES</div><div class="ps-value" id="prf-expires">—</div></div>
+      <div class="profile-stat"><div class="ps-label">DAYS LEFT</div><div class="ps-value" id="prf-days">—</div></div>
+      <div class="profile-stat"><div class="ps-label">LAST LOGIN</div><div class="ps-value" id="prf-lastlogin">—</div></div>
+      <div class="profile-stat"><div class="ps-label">TOTAL LOGINS</div><div class="ps-value" id="prf-logincount">—</div></div>
+      <div class="profile-stat"><div class="ps-label">NOTES</div><div class="ps-value" id="prf-notes" style="font-size:12px; font-weight:600;">—</div></div>
+    </div>
+    <div class="ps-label">ACCESS TOKEN</div>
+    <div class="profile-token-box" id="prf-token" title="Click to copy">—</div>
+    <div class="profile-actions">
+      <button class="btn btn-ghost btn-sm" id="prf-btn-edit">✎ EDIT</button>
+      <button class="btn btn-green btn-sm" id="prf-btn-viewas">📂 VIEW ITEMS</button>
+      <button class="btn btn-ghost btn-sm" id="prf-btn-copy-token">⧉ COPY TOKEN</button>
+      <button class="btn btn-ghost btn-sm" id="prf-btn-reset-token">🔄 NEW TOKEN</button>
+      <button class="btn btn-ghost btn-sm" id="prf-btn-toggle">⏸ DISABLE</button>
+      <button class="btn btn-red btn-sm" id="prf-btn-delete">✕ DELETE</button>
+      <button class="btn btn-ghost btn-sm" id="prf-btn-close" style="margin-left:auto;">✕ CLOSE</button>
+    </div>
+  </div>
+</div>
+
+<script src="/admin.js?v=7"></script>
+</body>
+</html>

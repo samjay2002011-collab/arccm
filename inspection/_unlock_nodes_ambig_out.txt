@@ -1,0 +1,107 @@
+== عقد بأكتر من هدف (1) ==
+  {"name": "Extended Barrel", "slug": "", "gates": ["extended_barrel_ii", "extended_barrel_iii"], "assets": []}
+
+== عقد بلا هدف (21) ==
+  {"name": "Advanced Mechanical Components", "slug": "", "gates": [], "assets": ["-926389249"]}
+  {"name": "Advanced Electrical Components", "slug": "", "gates": [], "assets": ["-770265029"]}
+  {"name": "ARC Circuitry", "slug": "", "gates": [], "assets": ["1107192907"]}
+  {"name": "ARC Motion Core", "slug": "", "gates": [], "assets": ["-900569094"]}
+  {"name": "Arpeggio", "slug": "", "gates": [], "assets": ["-1174500500"]}
+  {"name": "Door Blocker", "slug": "", "gates": [], "assets": ["-699310837"]}
+  {"name": "Energy Clip", "slug": "", "gates": [], "assets": ["1619184001"]}
+  {"name": "Extended Heavy Mag II", "slug": "", "gates": [], "assets": []}
+  {"name": "Extended Heavy Mag III", "slug": "", "gates": [], "assets": []}
+  {"name": "Gas Grenade", "slug": "", "gates": [], "assets": ["866643291"]}
+  {"name": "Heavy Fuze Grenade", "slug": "", "gates": [], "assets": ["787027311"]}
+  {"name": "Mod Components", "slug": "", "gates": [], "assets": ["464233263"]}
+  {"name": "Photoelectric Cloak", "slug": "", "gates": [], "assets": ["2058762606"]}
+  {"name": "Power Rod", "slug": "", "gates": [], "assets": ["313149189"]}
+  {"name": "Rattler", "slug": "", "gates": [], "assets": ["549375413"]}
+  {"name": "Renegade", "slug": "", "gates": [], "assets": ["1443595066"]}
+  {"name": "Shield Recharger", "slug": "", "gates": [], "assets": ["-34507507"]}
+  {"name": "Shotgun Parts", "slug": "", "gates": [], "assets": []}
+  {"name": "Snap Blast", "slug": "", "gates": [], "assets": []}
+  {"name": "Sterilized Bandage", "slug": "", "gates": [], "assets": ["951468812"]}
+  {"name": "Zipline", "slug": "", "gates": [], "assets": ["793992947"]}
+
+== أزواج (أصل العقدة -> أصول العنصر) ==
+  Angled Grip II                           node=['-1681246336'] target=['-1681246336'] delta=[0]
+  Angled Grip III                          node=['-1131982378'] target=['-1131982378'] delta=[0]
+  Anvil                                    node=['1951118983'] target=['1951118983'] delta=[0]
+  Aphelion                                 node=['-1483497543'] target=['-1483497543'] delta=[0]
+  Barricade Kit                            node=['1671732587'] target=['1671732587'] delta=[0]
+  Bettina                                  node=['-1236612582'] target=['-1236612582'] delta=[0]
+  Blaze Grenade                            node=['697558734'] target=['697558734'] delta=[0]
+  Blue Glowstick                           node=['-1411069838'] target=['-1411069838'] delta=[0]
+  Bobcat                                   node=['637354931'] target=['637354931'] delta=[0]
+  Burletta                                 node=['-1921925959'] target=['-1921925959'] delta=[0]
+  Combat Augment T3 Aggressive             node=['-89981619', '-468025815'] target=['-89981619', '-468025815'] delta=[0, 378044196, -378044196, 0]
+  Combat Augment T3 Flanking               node=['12511734'] target=['12511734'] delta=[0]
+  Compensator II                           node=['-1072384644'] target=['-1072384644'] delta=[0]
+  Compensator III                          node=['-518509289'] target=['-518509289'] delta=[0]
+  Complex Gun Parts                        node=['1608603820'] target=['1608603820'] delta=[0]
+  Deadline                                 node=['409593267'] target=['409593267'] delta=[0]
+  Defibrillator                            node=['-1688501435'] target=['-1688501435'] delta=[0]
+  Equalizer                                node=['-1441495265'] target=['-1441495265'] delta=[0]
+  Explosive Mine                           node=['1228913912'] target=['1228913912'] delta=[0]
+  Extended Light Mag II                    node=['-1666910412'] target=['-1666910412'] delta=[0]
+  Extended Light Mag III                   node=['-1915685401'] target=['-1915685401'] delta=[0]
+  Extended Medium Mag II                   node=['-728135783'] target=['-728135783'] delta=[0]
+  Extended Medium Mag III                  node=['1670090314'] target=['1670090314'] delta=[0]
+  Extended Shotgun Mag II                  node=['592639485'] target=['592639485'] delta=[0]
+  Extended Shotgun Mag III                 node=['922097959'] target=['922097959'] delta=[0]
+  Fireworks Box                            node=['-1616698820'] target=['-1616698820'] delta=[0]
+  Gas Mine                                 node=['458133629'] target=['458133629'] delta=[0]
+  Green Glowstick                          node=['-1318412075'] target=['-1318412075'] delta=[0]
+  Heavy Gun Parts                          node=['-1903407680'] target=['-1903407680'] delta=[0]
+  Hullcracker                              node=['-1868876009'] target=['-1868876009'] delta=[0]
+  Il Toro                                  node=['-1123417641'] target=['-1123417641'] delta=[0]
+  Jolt Mine                                node=['-643273323'] target=['-643273323'] delta=[0]
+  Jupiter                                  node=['-537173438'] target=['-537173438'] delta=[0]
+  Light Gun Parts                          node=['-1385889770'] target=['-1385889770'] delta=[0]
+  Lightweight Stock                        node=['-2095596285'] target=['-2095596285'] delta=[0]
+  Looting Mk. 3 (Safekeeper)               node=['1295057931', '947411243'] target=['1295057931', '947411243'] delta=[0, 347646688, -347646688, 0]
+  Looting Mk. 3 (Survivor)                 node=['-1799813225', '303567898'] target=['-1799813225', '303567898'] delta=[0, -2103381123, 2103381123, 0]
+  Lure Grenade                             node=['-486727826'] target=['-486727826'] delta=[0]
+  Medium Gun Parts                         node=['-637598838'] target=['-637598838'] delta=[0]
+  Muzzle Brake II                          node=['1363078343'] target=['1363078343'] delta=[0]
+  Muzzle Brake III                         node=['-1113070540'] target=['-1113070540'] delta=[0]
+  Osprey                                   node=['-1435588212'] target=['-1435588212'] delta=[0]
+  Padded Stock                             node=['1682428740'] target=['1682428740'] delta=[0]
+  Pulse Mine                               node=['-100594742'] target=['-100594742'] delta=[0]
+  Red Glowstick                            node=['1967335777'] target=['1967335777'] delta=[0]
+  Remote Raider Flare                      node=['1117029558'] target=['1117029558'] delta=[0]
+  Seeker Grenade                           node=['-922322200'] target=['-922322200'] delta=[0]
+  Shotgun Choke II                         node=['-1682300422'] target=['-1682300422'] delta=[0]
+  Shotgun Choke III                        node=['-1295139142'] target=['-1295139142'] delta=[0]
+  Shotgun Silencer                         node=['-319966965'] target=['-319966965'] delta=[0]
+  Showstopper                              node=['-2035840261'] target=['-2035840261'] delta=[0]
+  Silencer I                               node=['-409081322'] target=['-409081322'] delta=[0]
+  Silencer II                              node=['1921518029'] target=['1921518029'] delta=[0]
+  Smoke Grenade                            node=['984123027'] target=['984123027'] delta=[0]
+  Snap Hook                                node=['-1963108876'] target=['-1963108876'] delta=[0]
+  Stable Stock II                          node=['1287783108'] target=['1287783108'] delta=[0]
+  Stable Stock III                         node=['-123856886'] target=['-123856886'] delta=[0]
+  Tactical Mk. 3 (Defensive)               node=['-1640916197', '1101815928'] target=['-1640916197', '1101815928'] delta=[0, -2742732125, 2742732125, 0]
+  Tactical Mk. 3 (Healing)                 node=['-349134473', '-1561038837'] target=['-349134473', '-1561038837'] delta=[0, 1211904364, -1211904364, 0]
+  Tactical Mk. 3 (Revival)                 node=['-1328608435', '-1328695953'] target=['-1328608435', '-1328695953'] delta=[0, 87518, -87518, 0]
+  Tagging Grenade                          node=['537092188'] target=['537092188'] delta=[0]
+  Tempest                                  node=['1433303640'] target=['1433303640'] delta=[0]
+  Torrente                                 node=['1316261334'] target=['1316261334'] delta=[0]
+  Trailblazer                              node=['-153748567'] target=['-153748567'] delta=[0]
+  Trigger Nade                             node=[] target=[] delta=[]
+  Venator                                  node=['1858816158'] target=['1858816158'] delta=[0]
+  Vertical Grip II                         node=['-295158634'] target=['-295158634'] delta=[0]
+  Vertical Grip III                        node=['-1074924798'] target=['-1074924798'] delta=[0]
+  Vita Shot                                node=['2041238290'] target=['2041238290'] delta=[0]
+  Vita Spray                               node=['1795670982'] target=['1795670982'] delta=[0]
+  Vulcano                                  node=['1123609629'] target=['1123609629'] delta=[0]
+  Wolfpack                                 node=['-1074160440'] target=['-1074160440'] delta=[0]
+  Yellow Glowstick                         node=['-237588358'] target=['-237588358'] delta=[0]
+
+delta counts: [(0, 78), (378044196, 1), (-378044196, 1), (-2103381123, 1), (2103381123, 1), (87518, 1), (-87518, 1), (347646688, 1), (-347646688, 1), (-2742732125, 1)]
+
+== الفهرس: كل أصل اسمه فيه Extended ==
+   1934437826 | Extended Barrel Blueprint | DA_Item_Recipe_Recipe_ExtendedBarrel
+   1407760402 | Extended Barrel | DA_Item_WeaponMod_Muzzle_BarrelExtender_01
+   -12855733 | Unlock Craft Extended Barrel | DA_OI_Unlock_CraftExtendedBarrel

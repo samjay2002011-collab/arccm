@@ -1,0 +1,587 @@
+===== G18
+   id=-2076477526    أب=(عائم) dur=1/1 أولاد=1
+        - Firearm Slot  | hint=
+   id=-984290723     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-2143608986    أب=(عائم) dur=1/1 أولاد=2
+        - Safe Pocket Slot  | hint=
+        - Safe Pocket Slot  | hint=
+   id=-449948883     أب=Inventory Root dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-984895585     أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Greet  | hint=
+   id=-1597227626    أب=(عائم) dur=1/1 أولاد=1
+        - Medium Shield Slot  | hint=
+   id=-816438250     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1827322245    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1425626814    أب=(عائم) dur=1/1 أولاد=2
+        - Utility Auxiliary Slot  | hint=
+        - Utility Auxiliary Slot  | hint=
+   id=952446854      أب=Inventory Root dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1461982949    أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Sorry  | hint=
+   id=-1561056263    أب=Outfit dur=1/1 أولاد=8
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+   id=-89748338      أب=(عائم) dur=1/1 أولاد=8
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+   id=1143970783     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-242292194     أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Team Up  | hint=
+   id=-550664907     أب=(عائم) dur=1/1 أولاد=1
+        - Firearm Slot  | hint=
+   id=59742319       أب=(عائم) dur=1/1 أولاد=19
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+   id=-1127267396    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=1604244329     أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Don't Shoot  | hint=
+   id=1668088411     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1397485822    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1132144391    أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - No  | hint=
+   id=-1213453526    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-827056206     أب=(عائم) dur=1/1 أولاد=5
+        - Quick Use Slot  | hint=
+        - Quick Use Slot  | hint=
+        - Quick Use Slot  | hint=
+        - Quick Use Slot  | hint=
+        - Quick Use Slot  | hint=
+   id=-745251425     أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Yes  | hint=
+   id=-183408588     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-2136437061    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1508859667    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-470741017     أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Dance 01  | hint=
+   id=-1926941311    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=355732461      أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Thank  | hint=
+   id=-524130849     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1300323133    أب=(عائم) dur=1/1 أولاد=1
+        - Melee Weapon Slot  | hint=
+   id=125599708      أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1451151083    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=1402964174     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+
+===== G22
+   id=-1692924029    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=1900576838     أب=(عائم) dur=1/1 أولاد=11
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+   id=-242292194     أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Team Up  | hint=
+   id=-2143608986    أب=(عائم) dur=1/1 أولاد=2
+        - Safe Pocket Slot  | hint=
+        - Safe Pocket Slot  | hint=
+   id=-995245161     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1461982949    أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-409781512     أب=(عائم) dur=1/1 أولاد=8
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+   id=-1451151083    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1827322245    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-89748338      أب=(عائم) dur=1/1 أولاد=8
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+   id=125599708      أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=583752969      أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-2057224611    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=261139496      أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=2026040918     أب=(عائم) dur=0.430001/1 أولاد=4
+        - Muzzle Mod Slot  | hint=
+        - Underbarrel Mod Slot  | hint=
+        - Stock Mod Slot  | hint=
+        - (مجهول)  | hint=
+   id=796882913      أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-867333101     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-524130849     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-279323072     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=1604244329     أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Don't Shoot  | hint=
+   id=-1393968002    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=1649762265     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-460316826     أب=Outfit dur=1/1 أولاد=5
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+   id=1824709016     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=1578822704     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=59742319       أب=(عائم) dur=1/1 أولاد=19
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+   id=-745251425     أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Yes  | hint=
+   id=955405569      أب=(عائم) dur=0.950561/1 أولاد=4
+        - Muzzle Mod Slot  | hint=
+        - Underbarrel Mod Slot  | hint=
+        - Stock Mod Slot  | hint=
+        - (مجهول)  | hint=
+   id=355732461      أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Thank  | hint=
+   id=-1508859667    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=1399905984     أب=(عائم) dur=0.47/1 أولاد=4
+        - Muzzle Mod Slot  | hint=
+        - Underbarrel Mod Slot  | hint=
+        - Stock Mod Slot  | hint=
+        - (مجهول)  | hint=
+   id=-1300323133    أب=(عائم) dur=1/1 أولاد=1
+        - Melee Weapon Slot  | hint=
+   id=1386698017     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=369532659      أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1425626814    أب=(عائم) dur=1/1 أولاد=2
+        - Utility Auxiliary Slot  | hint=
+        - Utility Auxiliary Slot  | hint=
+   id=-867333101     أب=(عائم) dur=0.899337/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-827056206     أب=(عائم) dur=1/1 أولاد=5
+        - Quick Use Slot  | hint=
+        - Quick Use Slot  | hint=
+        - Quick Use Slot  | hint=
+        - Quick Use Slot  | hint=
+        - Quick Use Slot  | hint=
+   id=-2076477526    أب=(عائم) dur=1/1 أولاد=1
+        - Firearm Slot  | hint=
+   id=-404166372     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1213453526    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-550664907     أب=(عائم) dur=1/1 أولاد=1
+        - Firearm Slot  | hint=
+   id=1795206754     أب=(عائم) dur=1/1 أولاد=6
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+   id=-1237865436    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=621539456      أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1597227626    أب=(عائم) dur=1/1 أولاد=1
+        - Medium Shield Slot  | hint=
+   id=-828018877     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=1143970783     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1132144391    أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - No  | hint=
+   id=1212153334     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=952446854      أب=Inventory Root dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-251238898     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-984895585     أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Greet  | hint=
+   id=-1127267396    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1313907301    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-233214685     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=1961197997     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-449948883     أب=Inventory Root dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=852733009      أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1077830666    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=1227102323     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=348882590      أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=662612254      أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-178378681     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-470741017     أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Dance 01  | hint=
+   id=-1344253756    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-2000021800    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=454450767      أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1411540088    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+
+===== RAIDER38830
+   id=-1508859667    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-524130849     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=565382537      أب=Expeditioner dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-2076477526    أب=(عائم) dur=1/1 أولاد=1
+        - Firearm Slot  | hint=
+   id=-1300323133    أب=(عائم) dur=1/1 أولاد=1
+        - Melee Weapon Slot  | hint=
+   id=-1597227626    أب=(عائم) dur=1/1 أولاد=1
+        - Medium Shield Slot  | hint=
+   id=355732461      أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Thank  | hint=
+   id=-550664907     أب=(عائم) dur=1/1 أولاد=1
+        - Firearm Slot  | hint=
+   id=-745251425     أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Yes  | hint=
+   id=1143970783     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1132144391    أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - No  | hint=
+   id=351513025      أب=Expeditioner dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1444592514    أب=Scout Backpack dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=59742319       أب=(عائم) dur=1/1 أولاد=19
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+   id=-1451151083    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-242292194     أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Team Up  | hint=
+   id=1604244329     أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Don't Shoot  | hint=
+   id=-89748338      أب=(عائم) dur=1/1 أولاد=8
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+   id=-1127267396    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=125599708      أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=1226875262     أب=T-Volt Pack dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1213453526    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1425626814    أب=(عائم) dur=1/1 أولاد=2
+        - Utility Auxiliary Slot  | hint=
+        - Utility Auxiliary Slot  | hint=
+   id=-827056206     أب=(عائم) dur=1/1 أولاد=5
+        - Quick Use Slot  | hint=
+        - Quick Use Slot  | hint=
+        - Quick Use Slot  | hint=
+        - Quick Use Slot  | hint=
+        - Quick Use Slot  | hint=
+   id=749071126      أب=Expeditioner dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1461982949    أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Sorry  | hint=
+   id=-470741017     أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Dance 01  | hint=
+   id=-984895585     أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Greet  | hint=
+   id=952446854      أب=Inventory Root dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1827322245    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-449948883     أب=Inventory Root dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-2143608986    أب=(عائم) dur=1/1 أولاد=2
+        - Safe Pocket Slot  | hint=
+        - Safe Pocket Slot  | hint=
+
+===== RAIDER74888
+   id=1143970783     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1393968002    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-827056206     أب=(عائم) dur=1/1 أولاد=5
+        - Quick Use Slot  | hint=
+        - Quick Use Slot  | hint=
+        - Quick Use Slot  | hint=
+        - Quick Use Slot  | hint=
+        - Quick Use Slot  | hint=
+   id=-524130849     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1213453526    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=621539456      أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-2076477526    أب=(عائم) dur=1/1 أولاد=1
+        - Firearm Slot  | hint=
+   id=-995245161     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=1961197997     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1451151083    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1692924029    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1077830666    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-404166372     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=125599708      أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-460316826     أب=Outfit dur=1/1 أولاد=5
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+   id=-867333101     أب=(عائم) dur=0.627192/1 أولاد=1
+        - (مجهول)  | hint=
+   id=1399905984     أب=(عائم) dur=1/1 أولاد=4
+        - Muzzle Mod Slot  | hint=
+        - Underbarrel Mod Slot  | hint=
+        - Stock Mod Slot  | hint=
+        - (مجهول)  | hint=
+   id=-1827322245    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-449948883     أب=Inventory Root dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=952446854      أب=Inventory Root dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=1900576838     أب=(عائم) dur=1/1 أولاد=11
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+   id=261139496      أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-984895585     أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Greet  | hint=
+   id=1604244329     أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Don't Shoot  | hint=
+   id=-1132144391    أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1508859667    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1344253756    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-2057224611    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=1578822704     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1313907301    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=1227102323     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1127267396    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1300323133    أب=(عائم) dur=1/1 أولاد=1
+        - Melee Weapon Slot  | hint=
+   id=-242292194     أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-178378681     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=583752969      أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=454450767      أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-251238898     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-2000021800    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=59742319       أب=(عائم) dur=1/1 أولاد=19
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+        - Item Slot  | hint=
+   id=-745251425     أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Yes  | hint=
+   id=-1411540088    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=1649762265     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-89748338      أب=(عائم) dur=1/1 أولاد=8
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+   id=355732461      أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Thank  | hint=
+   id=-1425626814    أب=(عائم) dur=1/1 أولاد=2
+        - Utility Auxiliary Slot  | hint=
+        - Utility Auxiliary Slot  | hint=
+   id=852733009      أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-279323072     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1237865436    أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-550664907     أب=(عائم) dur=1/1 أولاد=1
+        - Firearm Slot  | hint=
+   id=369532659      أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-2143608986    أب=(عائم) dur=1/1 أولاد=2
+        - Safe Pocket Slot  | hint=
+        - Safe Pocket Slot  | hint=
+   id=662612254      أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1597227626    أب=(عائم) dur=1/1 أولاد=1
+        - Medium Shield Slot  | hint=
+   id=-409781512     أب=(عائم) dur=1/1 أولاد=8
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+        - (مجهول)  | hint=
+   id=1212153334     أب=(عائم) dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+   id=-1461982949    أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - Sorry  | hint=
+   id=-470741017     أب=Character Expression Wheel 01 dur=1/1 أولاد=1
+        - (مجهول)  | hint=
+
+===== ملخص: كل أصل مجهول بالاسم وبتقبله خانات مرفقات إيه =====

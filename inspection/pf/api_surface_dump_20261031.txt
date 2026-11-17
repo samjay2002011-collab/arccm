@@ -1,0 +1,85 @@
+accounts: ['G14', 'G18', 'G22', 'RAIDER74888']
+
+===== G14 =====
+  /v1/pioneer/inventory    keys=['items']
+      items: 2400 nodes
+  /v1/pioneer/bonuses      keys=['effects', 'items']
+      effects        list(0) []
+      items: 0 nodes
+  /v1/pioneer/quests       keys=['quests']
+      quests         list(156) [{"edges": [{"questInstanceId": "a19cf0df-2e58-4eef-b92d-dd77ec73fc9f", "requiredState": "COMPLETED"}], "etag": "", "expiresAt": 2524521600, "gameAssetId": 252130520, "instanceId": "934d0985-ab87-4851
+  /v1/pioneer/raiders      keys=['raiders']
+      raiders        list(1) [{"createdAt": 1777000542, "raiderId": "d7le0nk9pi4c73d62u7g", "state": "ACTIVE"}]
+  /v1/pioneer/offers       ERR GET /v1/pioneer/offers -> 404: 404 page not found
+
+  /v1/pioneer/profile      ERR GET /v1/pioneer/profile -> 404: 404 page not found
+
+  /v1/pioneer/settings     ERR GET /v1/pioneer/settings -> 404: 404 page not found
+
+  /v1/pioneer/progression  ERR GET /v1/pioneer/progression -> 404: 404 page not found
+
+  /v1/pioneer/stats        ERR GET /v1/pioneer/stats -> 404: 404 page not found
+
+
+===== G18 =====
+  /v1/pioneer/inventory    keys=['items']
+      items: 2246 nodes
+  /v1/pioneer/bonuses      keys=['effects', 'items']
+      effects        list(0) []
+      items: 0 nodes
+  /v1/pioneer/quests       keys=['quests']
+      quests         list(153) [{"edges": [{"questInstanceId": "b5626677-d0be-41b5-92ea-1369e2b3562f", "requiredState": "COMPLETED"}, {"questInstanceId": "53e9544f-b654-4c97-954c-a5c037ea2f30", "requiredState": "COMPLETED"}], "etag
+  /v1/pioneer/raiders      keys=['raiders']
+      raiders        list(1) [{"createdAt": 1779422737, "raiderId": "d87tc49q7lvs73bqpbg0", "state": "ACTIVE"}]
+  /v1/pioneer/offers       ERR GET /v1/pioneer/offers -> 404: 404 page not found
+
+  /v1/pioneer/profile      ERR GET /v1/pioneer/profile -> 404: 404 page not found
+
+  /v1/pioneer/settings     ERR GET /v1/pioneer/settings -> 404: 404 page not found
+
+  /v1/pioneer/progression  ERR GET /v1/pioneer/progression -> 404: 404 page not found
+
+  /v1/pioneer/stats        ERR GET /v1/pioneer/stats -> 404: 404 page not found
+
+
+===== G22 =====
+  /v1/pioneer/inventory    keys=['items']
+      items: 5719 nodes
+  /v1/pioneer/bonuses      keys=['effects', 'items']
+      effects        list(0) []
+      items: 0 nodes
+  /v1/pioneer/quests       keys=['quests']
+      quests         list(157) [{"edges": [{"questInstanceId": "d921f0a7-406f-4abc-8f1b-533f962482ba", "requiredState": "COMPLETED"}], "etag": "", "expiresAt": 2524521600, "gameAssetId": 665128450, "instanceId": "80ba7e51-65e0-4e87
+  /v1/pioneer/raiders      keys=['raiders']
+      raiders        list(1) [{"createdAt": 1779929546, "raiderId": "d8bp3iku4q1c7399ug60", "state": "ACTIVE"}]
+  /v1/pioneer/offers       ERR GET /v1/pioneer/offers -> 404: 404 page not found
+
+  /v1/pioneer/profile      ERR GET /v1/pioneer/profile -> 404: 404 page not found
+
+  /v1/pioneer/settings     ERR GET /v1/pioneer/settings -> 404: 404 page not found
+
+  /v1/pioneer/progression  ERR GET /v1/pioneer/progression -> 404: 404 page not found
+
+  /v1/pioneer/stats        ERR GET /v1/pioneer/stats -> 404: 404 page not found
+
+
+===== RAIDER74888 =====
+  /v1/pioneer/inventory    keys=['items']
+      items: 3357 nodes
+  /v1/pioneer/bonuses      keys=['effects', 'items']
+      effects        list(0) []
+      items: 0 nodes
+  /v1/pioneer/quests       keys=['quests']
+      quests         list(156) [{"edges": [{"questInstanceId": "8998dddc-cc95-4b74-a157-18801bc75036", "requiredState": "COMPLETED"}], "etag": "", "expiresAt": 2524521600, "gameAssetId": 797680199, "instanceId": "4b89c81c-48d7-4e07
+  /v1/pioneer/raiders      keys=['raiders']
+      raiders        list(1) [{"createdAt": 1779805182, "raiderId": "d8aqnvm8hnns73ben9n0", "state": "ACTIVE"}]
+  /v1/pioneer/offers       ERR GET /v1/pioneer/offers -> 404: 404 page not found
+
+  /v1/pioneer/profile      ERR GET /v1/pioneer/profile -> 404: 404 page not found
+
+  /v1/pioneer/settings     ERR GET /v1/pioneer/settings -> 404: 404 page not found
+
+  /v1/pioneer/progression  ERR GET /v1/pioneer/progression -> 404: 404 page not found
+
+  /v1/pioneer/stats        ERR GET /v1/pioneer/stats -> 404: 404 page not found
+

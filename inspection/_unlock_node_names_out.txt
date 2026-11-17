@@ -1,0 +1,162 @@
+unlock node distinct names = 95
+
+== كل اسماء العقد ==
+  'Advanced Electrical Components'                        slug=''                             gates=[]
+  'Advanced Mechanical Components'                        slug=''                             gates=[]
+  'Angled Grip II'                                        slug='angled_grip_ii'               gates=['angled_grip_ii']
+  'Angled Grip III'                                       slug='angled_grip_iii'              gates=['angled_grip_iii']
+  'Anvil'                                                 slug='anvil_i'                      gates=['anvil_i']
+  'Aphelion'                                              slug='aphelion'                     gates=['aphelion']
+  'ARC Circuitry'                                         slug=''                             gates=[]
+  'ARC Motion Core'                                       slug=''                             gates=[]
+  'Arpeggio'                                              slug=''                             gates=[]
+  'Barricade Kit'                                         slug='barricade_kit'                gates=['barricade_kit']
+  'Bettina'                                               slug='bettina_i'                    gates=['bettina_i']
+  'Blaze Grenade'                                         slug='blaze_grenade'                gates=['blaze_grenade']
+  'Blue Glowstick'                                        slug='blue_light_stick'             gates=['blue_light_stick']
+  'Bobcat'                                                slug='bobcat_i'                     gates=['bobcat_i']
+  'Burletta'                                              slug='burletta_i'                   gates=['burletta_i']
+  'Combat Augment T3 Aggressive'                          slug='combat_mk3_aggressive'        gates=['combat_mk3_aggressive']
+  'Combat Augment T3 Flanking'                            slug='combat_mk3_flanking'          gates=['combat_mk3_flanking']
+  'Compensator II'                                        slug='compensator_ii'               gates=['compensator_ii']
+  'Compensator III'                                       slug='compensator_iii'              gates=['compensator_iii']
+  'Complex Gun Parts'                                     slug='complex_gun_parts'            gates=['complex_gun_parts']
+  'Deadline'                                              slug='deadline'                     gates=['deadline']
+  'Defibrillator'                                         slug='defibrillator'                gates=['defibrillator']
+  'Door Blocker'                                          slug=''                             gates=[]
+  'Energy Clip'                                           slug=''                             gates=[]
+  'Equalizer'                                             slug='equalizer'                    gates=['equalizer']
+  'Explosive Mine'                                        slug='explosive_mine'               gates=['explosive_mine']
+  'Extended Barrel'                                       slug=''                             gates=['extended_barrel_ii', 'extended_barrel_iii']
+  'Extended Heavy Mag II'                                 slug=''                             gates=[]
+  'Extended Heavy Mag III'                                slug=''                             gates=[]
+  'Extended Light Mag II'                                 slug='extended_light_mag_ii'        gates=['extended_light_mag_ii']
+  'Extended Light Mag III'                                slug='extended_light_mag_iii'       gates=['extended_light_mag_iii']
+  'Extended Medium Mag II'                                slug='extended_medium_mag_ii'       gates=['extended_medium_mag_ii']
+  'Extended Medium Mag III'                               slug='extended_medium_mag_iii'      gates=['extended_medium_mag_iii']
+  'Extended Shotgun Mag II'                               slug='extended_shotgun_mag_ii'      gates=['extended_shotgun_mag_ii']
+  'Extended Shotgun Mag III'                              slug='extended_shotgun_mag_iii'     gates=['extended_shotgun_mag_iii']
+  'Fireworks Box'                                         slug='fireworks_box'                gates=['fireworks_box']
+  'Gas Grenade'                                           slug=''                             gates=[]
+  'Gas Mine'                                              slug='gas_mine'                     gates=['gas_mine']
+  'Green Glowstick'                                       slug='green_light_stick'            gates=['green_light_stick']
+  'Heavy Fuze Grenade'                                    slug=''                             gates=[]
+  'Heavy Gun Parts'                                       slug='heavy_gun_parts'              gates=['heavy_gun_parts']
+  'Hullcracker'                                           slug='hullcracker_i'                gates=['hullcracker_i']
+  'Il Toro'                                               slug='il_toro_i'                    gates=['il_toro_i']
+  'Jolt Mine'                                             slug='jolt_mine'                    gates=['jolt_mine']
+  'Jupiter'                                               slug='jupiter'                      gates=['jupiter']
+  'Light Gun Parts'                                       slug='light_gun_parts'              gates=['light_gun_parts']
+  'Lightweight Stock'                                     slug='lightweight_stock'            gates=['lightweight_stock']
+  'Looting Mk. 3 (Safekeeper)'                            slug='looting_mk3_safekeeper'       gates=['looting_mk3_safekeeper']
+  'Looting Mk. 3 (Survivor)'                              slug='looting_mk3_survivor'         gates=['looting_mk3_survivor']
+  'Lure Grenade'                                          slug='lure_grenade'                 gates=['lure_grenade']
+  'Medium Gun Parts'                                      slug='medium_gun_parts'             gates=['medium_gun_parts']
+  'Mod Components'                                        slug=''                             gates=[]
+  'Muzzle Brake II'                                       slug='muzzle_brake_ii'              gates=['muzzle_brake_ii']
+  'Muzzle Brake III'                                      slug='muzzle_brake_iii'             gates=['muzzle_brake_iii']
+  'Osprey'                                                slug='osprey_i'                     gates=['osprey_i']
+  'Padded Stock'                                          slug='padded_stock'                 gates=['padded_stock']
+  'Photoelectric Cloak'                                   slug=''                             gates=[]
+  'Power Rod'                                             slug=''                             gates=[]
+  'Pulse Mine'                                            slug='pulse_mine'                   gates=['pulse_mine']
+  'Rattler'                                               slug=''                             gates=[]
+  'Red Glowstick'                                         slug='red_light_stick'              gates=['red_light_stick']
+  'Remote Raider Flare'                                   slug='remote_raider_flare'          gates=['remote_raider_flare']
+  'Renegade'                                              slug=''                             gates=[]
+  'Seeker Grenade'                                        slug='seeker_grenade'               gates=['seeker_grenade']
+  'Shield Recharger'                                      slug=''                             gates=[]
+  'Shotgun Choke II'                                      slug='shotgun_choke_ii'             gates=['shotgun_choke_ii']
+  'Shotgun Choke III'                                     slug='shotgun_choke_iii'            gates=['shotgun_choke_iii']
+  'Shotgun Parts'                                         slug=''                             gates=[]
+  'Shotgun Silencer'                                      slug='shotgun_silencer'             gates=['shotgun_silencer']
+  'Showstopper'                                           slug='showstopper'                  gates=['showstopper']
+  'Silencer I'                                            slug='silencer_i'                   gates=['silencer_i']
+  'Silencer II'                                           slug='silencer_ii'                  gates=['silencer_ii']
+  'Smoke Grenade'                                         slug='smoke_grenade'                gates=['smoke_grenade']
+  'Snap Blast'                                            slug=''                             gates=[]
+  'Snap Hook'                                             slug='snap_hook'                    gates=['snap_hook']
+  'Stable Stock II'                                       slug='stable_stock_ii'              gates=['stable_stock_ii']
+  'Stable Stock III'                                      slug='stable_stock_iii'             gates=['stable_stock_iii']
+  'Sterilized Bandage'                                    slug=''                             gates=[]
+  'Tactical Mk. 3 (Defensive)'                            slug='tactical_mk3_defensive'       gates=['tactical_mk3_defensive']
+  'Tactical Mk. 3 (Healing)'                              slug='tactical_mk3_healing'         gates=['tactical_mk3_healing']
+  'Tactical Mk. 3 (Revival)'                              slug='tactical_mk3_revival'         gates=['tactical_mk3_revival']
+  'Tagging Grenade'                                       slug='tagging_grenade'              gates=['tagging_grenade']
+  'Tempest'                                               slug='tempest_i'                    gates=['tempest_i']
+  'Torrente'                                              slug='torrente_i'                   gates=['torrente_i']
+  'Trailblazer'                                           slug='trailblazer'                  gates=['trailblazer']
+  'Trigger Nade'                                          slug='trigger_nade'                 gates=['trigger_nade']
+  'Venator'                                               slug='venator_i'                    gates=['venator_i']
+  'Vertical Grip II'                                      slug='vertical_grip_ii'             gates=['vertical_grip_ii']
+  'Vertical Grip III'                                     slug='vertical_grip_iii'            gates=['vertical_grip_iii']
+  'Vita Shot'                                             slug='vita_shot'                    gates=['vita_shot']
+  'Vita Spray'                                            slug='vita_spray'                   gates=['vita_spray']
+  'Vulcano'                                               slug='vulcano_i'                    gates=['vulcano_i']
+  'Wolfpack'                                              slug='wolfpack'                     gates=['wolfpack']
+  'Yellow Glowstick'                                      slug='yellow_light_stick'           gates=['yellow_light_stick']
+  'Zipline'                                               slug=''                             gates=[]
+
+== وصفات مقفولة بلا عقدة (21) + اقرب اسم عقدة ==
+  'Advanced Camera'                        bp='advanced_camera_blueprint'         overlap=[(1, 'Advanced Mechanical Components'), (1, 'Advanced Electrical Components'), (0, 'Zipline')]
+  'Banjo'                                  bp='banjo_blueprint'                   overlap=[(0, 'Zipline'), (0, 'Yellow Glowstick'), (0, 'Wolfpack')]
+  'Bantam I'                               bp='bantam_blueprint'                  overlap=[(1, 'Silencer I'), (0, 'Zipline'), (0, 'Yellow Glowstick')]
+  'Blaze Grenade Trap'                     bp=None                                overlap=[(2, 'Blaze Grenade'), (1, 'Tagging Grenade'), (1, 'Smoke Grenade')]
+  'Canto I'                                bp='canto_blueprint'                   overlap=[(1, 'Silencer I'), (0, 'Zipline'), (0, 'Yellow Glowstick')]
+  'Crash Mat'                              bp='crash_mat_blueprint'               overlap=[(0, 'Zipline'), (0, 'Yellow Glowstick'), (0, 'Wolfpack')]
+  'Dolabra'                                bp='dolabra_blueprint'                 overlap=[(0, 'Zipline'), (0, 'Yellow Glowstick'), (0, 'Wolfpack')]
+  'Emperor Gateway Conduit'                bp='emperor_gateway_conduit_blueprint' overlap=[(0, 'Zipline'), (0, 'Yellow Glowstick'), (0, 'Wolfpack')]
+  'Gas Grenade Trap'                       bp=None                                overlap=[(2, 'Gas Grenade'), (1, 'Tagging Grenade'), (1, 'Smoke Grenade')]
+  'Grappling Hook'                         bp='grappling_hook_blueprint'          overlap=[(1, 'Snap Hook'), (0, 'Zipline'), (0, 'Yellow Glowstick')]
+  'Lure Grenade Trap'                      bp=None                                overlap=[(2, 'Lure Grenade'), (1, 'Tagging Grenade'), (1, 'Smoke Grenade')]
+  'Mountaineer’s Detector'                 bp=None                                overlap=[(0, 'Zipline'), (0, 'Yellow Glowstick'), (0, 'Wolfpack')]
+  'Powered Descender'                      bp='powered_descender_blueprint'       overlap=[(0, 'Zipline'), (0, 'Yellow Glowstick'), (0, 'Wolfpack')]
+  'Rascal I'                               bp='rascal_blueprint'                  overlap=[(1, 'Silencer I'), (0, 'Zipline'), (0, 'Yellow Glowstick')]
+  'Smoke Grenade Trap'                     bp=None                                overlap=[(2, 'Smoke Grenade'), (1, 'Tagging Grenade'), (1, 'Seeker Grenade')]
+  'Stiletto I'                             bp='stiletto_blueprint'                overlap=[(1, 'Silencer I'), (0, 'Zipline'), (0, 'Yellow Glowstick')]
+  'Surge Coil'                             bp='surge_coil_blueprint'              overlap=[(0, 'Zipline'), (0, 'Yellow Glowstick'), (0, 'Wolfpack')]
+  'Tactical Mk. 3 (Smoke)'                 bp='tactical_mk3_smoke_blueprint'      overlap=[(3, 'Tactical Mk. 3 (Revival)'), (3, 'Tactical Mk. 3 (Healing)'), (3, 'Tactical Mk. 3 (Defensive)')]
+  'Tether Launcher'                        bp='tether_launcher_blueprint'         overlap=[(0, 'Zipline'), (0, 'Yellow Glowstick'), (0, 'Wolfpack')]
+  'White Flag'                             bp='white_flag_blueprint'              overlap=[(0, 'Zipline'), (0, 'Yellow Glowstick'), (0, 'Wolfpack')]
+  'Yank Grenade'                           bp='yank_grenade_blueprint'            overlap=[(1, 'Tagging Grenade'), (1, 'Smoke Grenade'), (1, 'Seeker Grenade')]
+
+== اسماء عقد مالهاش وصفة في items_db (26) ==
+   Anvil
+   Arpeggio
+   Bettina
+   Blue Glowstick
+   Bobcat
+   Burletta
+   Combat Augment T3 Aggressive
+   Combat Augment T3 Flanking
+   Extended Barrel
+   Extended Heavy Mag II
+   Extended Heavy Mag III
+   Green Glowstick
+   Hullcracker
+   Il Toro
+   Osprey
+   Rattler
+   Red Glowstick
+   Renegade
+   Shotgun Parts
+   Snap Blast
+   Tempest
+   Torrente
+   Trigger Nade
+   Venator
+   Vulcano
+   Yellow Glowstick
+
+asset index rows=2848
+rows بلا display_name = 1276
+
+== G14: rows=0 measured=False
+
+== G18: rows=0 measured=True
+
+== G22: rows=34 measured=True
+
+== RAIDER38830: rows=26 measured=True
+
+== RAIDER74888: rows=4 measured=True

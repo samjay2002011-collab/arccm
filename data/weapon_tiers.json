@@ -1,0 +1,691 @@
+{
+ "families": {
+  "AssaultRifle_Bullpup_01": {
+   "1": {
+    "asset": "1433303640",
+    "name": "Tempest I"
+   },
+   "2": {
+    "asset": "-1259129540",
+    "name": "Tempest II"
+   },
+   "3": {
+    "asset": "-672186450",
+    "name": "Tempest III"
+   },
+   "4": {
+    "asset": "1629645384",
+    "name": "Tempest IV"
+   }
+  },
+  "AssaultRifle_Burst_01": {
+   "1": {
+    "asset": "-1174500500",
+    "name": "Arpeggio I"
+   },
+   "2": {
+    "asset": "-1010165368",
+    "name": "Arpeggio II"
+   },
+   "3": {
+    "asset": "-868064320",
+    "name": "Arpeggio III"
+   },
+   "4": {
+    "asset": "1657712312",
+    "name": "Arpeggio IV"
+   }
+  },
+  "AssaultRifle_Heavy_01": {
+   "1": {
+    "asset": "-1236612582",
+    "name": "Bettina I"
+   },
+   "2": {
+    "asset": "392764783",
+    "name": "Bettina II"
+   },
+   "3": {
+    "asset": "-1884805671",
+    "name": "Bettina III"
+   },
+   "4": {
+    "asset": "1506939307",
+    "name": "Bettina IV"
+   }
+  },
+  "AssaultRifle_LowTier_01": {
+   "1": {
+    "asset": "549375413",
+    "name": "Rattler I"
+   },
+   "2": {
+    "asset": "1766749662",
+    "name": "Rattler II"
+   },
+   "3": {
+    "asset": "-980968159",
+    "name": "Rattler III"
+   },
+   "4": {
+    "asset": "1984849488",
+    "name": "Rattler IV"
+   }
+  },
+  "AssaultRifle_Pneumatic_01": {
+   "1": {
+    "asset": "209734646",
+    "name": "Kettle I"
+   },
+   "2": {
+    "asset": "-624801890",
+    "name": "Kettle II"
+   },
+   "3": {
+    "asset": "-1374119783",
+    "name": "Kettle III"
+   },
+   "4": {
+    "asset": "1349673826",
+    "name": "Kettle IV"
+   }
+  },
+  "BattleRifle_BreachAction_01": {
+   "1": {
+    "asset": "-1300343709",
+    "name": "Ferro I"
+   },
+   "2": {
+    "asset": "-1347969810",
+    "name": "Ferro II"
+   },
+   "3": {
+    "asset": "1143818817",
+    "name": "Ferro III"
+   },
+   "4": {
+    "asset": "-14963185",
+    "name": "Ferro IV"
+   }
+  },
+  "BattleRifle_LeverAction_01": {
+   "1": {
+    "asset": "1443595066",
+    "name": "Renegade I"
+   },
+   "2": {
+    "asset": "-595215449",
+    "name": "Renegade II"
+   },
+   "3": {
+    "asset": "-1520827186",
+    "name": "Renegade III"
+   },
+   "4": {
+    "asset": "1650182822",
+    "name": "Renegade IV"
+   }
+  },
+  "HandCannon_SingleAction_01": {
+   "1": {
+    "asset": "1951118983",
+    "name": "Anvil I"
+   },
+   "2": {
+    "asset": "-1974459892",
+    "name": "Anvil II"
+   },
+   "3": {
+    "asset": "-39940538",
+    "name": "Anvil III"
+   },
+   "4": {
+    "asset": "-163859490",
+    "name": "Anvil IV"
+   }
+  },
+  "Launcher_AntiArc_Medium_01": {
+   "1": {
+    "asset": "-1868876009",
+    "name": "Hullcracker I"
+   },
+   "2": {
+    "asset": "-1858367047",
+    "name": "Hullcracker II"
+   },
+   "3": {
+    "asset": "-1390078682",
+    "name": "Hullcracker III"
+   },
+   "4": {
+    "asset": "1343472835",
+    "name": "Hullcracker IV"
+   }
+  },
+  "LMG_Medium_01": {
+   "1": {
+    "asset": "1316261334",
+    "name": "Torrente I"
+   },
+   "2": {
+    "asset": "-595016198",
+    "name": "Torrente II"
+   },
+   "3": {
+    "asset": "2125834231",
+    "name": "Torrente III"
+   },
+   "4": {
+    "asset": "747891994",
+    "name": "Torrente IV"
+   }
+  },
+  "Pistol_01": {
+   "1": {
+    "asset": "-1921925959",
+    "name": "Burletta I"
+   },
+   "2": {
+    "asset": "-2054621793",
+    "name": "Burletta II"
+   },
+   "3": {
+    "asset": "276503907",
+    "name": "Burletta III"
+   },
+   "4": {
+    "asset": "1407799927",
+    "name": "Burletta IV"
+   }
+  },
+  "Pistol_HighPower_01": {
+   "1": {
+    "asset": "1858816158",
+    "name": "Venator I"
+   },
+   "2": {
+    "asset": "-853744599",
+    "name": "Venator II"
+   },
+   "3": {
+    "asset": "-119018899",
+    "name": "Venator III"
+   },
+   "4": {
+    "asset": "168902929",
+    "name": "Venator IV"
+   }
+  },
+  "Pistol_Silenced_01": {
+   "1": {
+    "asset": "-1119818372",
+    "name": "Hairpin I"
+   },
+   "2": {
+    "asset": "1992585880",
+    "name": "Hairpin II"
+   },
+   "3": {
+    "asset": "1370600620",
+    "name": "Hairpin III"
+   },
+   "4": {
+    "asset": "1920326798",
+    "name": "Hairpin IV"
+   }
+  },
+  "Shotgun_PumpAction_01": {
+   "1": {
+    "asset": "-1123417641",
+    "name": "Il Toro I"
+   },
+   "2": {
+    "asset": "269867465",
+    "name": "Il Toro II"
+   },
+   "3": {
+    "asset": "226834931",
+    "name": "Il Toro III"
+   },
+   "4": {
+    "asset": "331271227",
+    "name": "Il Toro IV"
+   }
+  },
+  "Shotgun_SemiAuto_01": {
+   "1": {
+    "asset": "1123609629",
+    "name": "Vulcano I"
+   },
+   "2": {
+    "asset": "-131543983",
+    "name": "Vulcano II"
+   },
+   "3": {
+    "asset": "737182316",
+    "name": "Vulcano III"
+   },
+   "4": {
+    "asset": "-630279513",
+    "name": "Vulcano IV"
+   }
+  },
+  "SMG_01": {
+   "1": {
+    "asset": "637354931",
+    "name": "Bobcat I"
+   },
+   "2": {
+    "asset": "1768889427",
+    "name": "Bobcat II"
+   },
+   "3": {
+    "asset": "708897469",
+    "name": "Bobcat III"
+   },
+   "4": {
+    "asset": "-1631078332",
+    "name": "Bobcat IV"
+   }
+  },
+  "SMG_LowTier_01": {
+   "1": {
+    "asset": "-302696283",
+    "name": "Stitcher I"
+   },
+   "2": {
+    "asset": "1549911570",
+    "name": "Stitcher II"
+   },
+   "3": {
+    "asset": "-2007835076",
+    "name": "Stitcher III"
+   },
+   "4": {
+    "asset": "1516184045",
+    "name": "Stitcher IV"
+   }
+  },
+  "SniperRifle_BoltAction_Medium_01": {
+   "1": {
+    "asset": "-1435588212",
+    "name": "Osprey I"
+   },
+   "2": {
+    "asset": "1640126922",
+    "name": "Osprey II"
+   },
+   "3": {
+    "asset": "30472313",
+    "name": "Osprey III"
+   },
+   "4": {
+    "asset": "352204774",
+    "name": "Osprey IV"
+   }
+  }
+ },
+ "assets": {
+  "1433303640": {
+   "family": "AssaultRifle_Bullpup_01",
+   "level": 1,
+   "name": "Tempest I"
+  },
+  "-1259129540": {
+   "family": "AssaultRifle_Bullpup_01",
+   "level": 2,
+   "name": "Tempest II"
+  },
+  "-672186450": {
+   "family": "AssaultRifle_Bullpup_01",
+   "level": 3,
+   "name": "Tempest III"
+  },
+  "1629645384": {
+   "family": "AssaultRifle_Bullpup_01",
+   "level": 4,
+   "name": "Tempest IV"
+  },
+  "-1174500500": {
+   "family": "AssaultRifle_Burst_01",
+   "level": 1,
+   "name": "Arpeggio I"
+  },
+  "-1010165368": {
+   "family": "AssaultRifle_Burst_01",
+   "level": 2,
+   "name": "Arpeggio II"
+  },
+  "-868064320": {
+   "family": "AssaultRifle_Burst_01",
+   "level": 3,
+   "name": "Arpeggio III"
+  },
+  "1657712312": {
+   "family": "AssaultRifle_Burst_01",
+   "level": 4,
+   "name": "Arpeggio IV"
+  },
+  "-1236612582": {
+   "family": "AssaultRifle_Heavy_01",
+   "level": 1,
+   "name": "Bettina I"
+  },
+  "392764783": {
+   "family": "AssaultRifle_Heavy_01",
+   "level": 2,
+   "name": "Bettina II"
+  },
+  "-1884805671": {
+   "family": "AssaultRifle_Heavy_01",
+   "level": 3,
+   "name": "Bettina III"
+  },
+  "1506939307": {
+   "family": "AssaultRifle_Heavy_01",
+   "level": 4,
+   "name": "Bettina IV"
+  },
+  "549375413": {
+   "family": "AssaultRifle_LowTier_01",
+   "level": 1,
+   "name": "Rattler I"
+  },
+  "1766749662": {
+   "family": "AssaultRifle_LowTier_01",
+   "level": 2,
+   "name": "Rattler II"
+  },
+  "-980968159": {
+   "family": "AssaultRifle_LowTier_01",
+   "level": 3,
+   "name": "Rattler III"
+  },
+  "1984849488": {
+   "family": "AssaultRifle_LowTier_01",
+   "level": 4,
+   "name": "Rattler IV"
+  },
+  "209734646": {
+   "family": "AssaultRifle_Pneumatic_01",
+   "level": 1,
+   "name": "Kettle I"
+  },
+  "-624801890": {
+   "family": "AssaultRifle_Pneumatic_01",
+   "level": 2,
+   "name": "Kettle II"
+  },
+  "-1374119783": {
+   "family": "AssaultRifle_Pneumatic_01",
+   "level": 3,
+   "name": "Kettle III"
+  },
+  "1349673826": {
+   "family": "AssaultRifle_Pneumatic_01",
+   "level": 4,
+   "name": "Kettle IV"
+  },
+  "-1300343709": {
+   "family": "BattleRifle_BreachAction_01",
+   "level": 1,
+   "name": "Ferro I"
+  },
+  "-1347969810": {
+   "family": "BattleRifle_BreachAction_01",
+   "level": 2,
+   "name": "Ferro II"
+  },
+  "1143818817": {
+   "family": "BattleRifle_BreachAction_01",
+   "level": 3,
+   "name": "Ferro III"
+  },
+  "-14963185": {
+   "family": "BattleRifle_BreachAction_01",
+   "level": 4,
+   "name": "Ferro IV"
+  },
+  "1443595066": {
+   "family": "BattleRifle_LeverAction_01",
+   "level": 1,
+   "name": "Renegade I"
+  },
+  "-595215449": {
+   "family": "BattleRifle_LeverAction_01",
+   "level": 2,
+   "name": "Renegade II"
+  },
+  "-1520827186": {
+   "family": "BattleRifle_LeverAction_01",
+   "level": 3,
+   "name": "Renegade III"
+  },
+  "1650182822": {
+   "family": "BattleRifle_LeverAction_01",
+   "level": 4,
+   "name": "Renegade IV"
+  },
+  "1951118983": {
+   "family": "HandCannon_SingleAction_01",
+   "level": 1,
+   "name": "Anvil I"
+  },
+  "-1974459892": {
+   "family": "HandCannon_SingleAction_01",
+   "level": 2,
+   "name": "Anvil II"
+  },
+  "-39940538": {
+   "family": "HandCannon_SingleAction_01",
+   "level": 3,
+   "name": "Anvil III"
+  },
+  "-163859490": {
+   "family": "HandCannon_SingleAction_01",
+   "level": 4,
+   "name": "Anvil IV"
+  },
+  "-1868876009": {
+   "family": "Launcher_AntiArc_Medium_01",
+   "level": 1,
+   "name": "Hullcracker I"
+  },
+  "-1858367047": {
+   "family": "Launcher_AntiArc_Medium_01",
+   "level": 2,
+   "name": "Hullcracker II"
+  },
+  "-1390078682": {
+   "family": "Launcher_AntiArc_Medium_01",
+   "level": 3,
+   "name": "Hullcracker III"
+  },
+  "1343472835": {
+   "family": "Launcher_AntiArc_Medium_01",
+   "level": 4,
+   "name": "Hullcracker IV"
+  },
+  "1316261334": {
+   "family": "LMG_Medium_01",
+   "level": 1,
+   "name": "Torrente I"
+  },
+  "-595016198": {
+   "family": "LMG_Medium_01",
+   "level": 2,
+   "name": "Torrente II"
+  },
+  "2125834231": {
+   "family": "LMG_Medium_01",
+   "level": 3,
+   "name": "Torrente III"
+  },
+  "747891994": {
+   "family": "LMG_Medium_01",
+   "level": 4,
+   "name": "Torrente IV"
+  },
+  "-1921925959": {
+   "family": "Pistol_01",
+   "level": 1,
+   "name": "Burletta I"
+  },
+  "-2054621793": {
+   "family": "Pistol_01",
+   "level": 2,
+   "name": "Burletta II"
+  },
+  "276503907": {
+   "family": "Pistol_01",
+   "level": 3,
+   "name": "Burletta III"
+  },
+  "1407799927": {
+   "family": "Pistol_01",
+   "level": 4,
+   "name": "Burletta IV"
+  },
+  "1858816158": {
+   "family": "Pistol_HighPower_01",
+   "level": 1,
+   "name": "Venator I"
+  },
+  "-853744599": {
+   "family": "Pistol_HighPower_01",
+   "level": 2,
+   "name": "Venator II"
+  },
+  "-119018899": {
+   "family": "Pistol_HighPower_01",
+   "level": 3,
+   "name": "Venator III"
+  },
+  "168902929": {
+   "family": "Pistol_HighPower_01",
+   "level": 4,
+   "name": "Venator IV"
+  },
+  "-1119818372": {
+   "family": "Pistol_Silenced_01",
+   "level": 1,
+   "name": "Hairpin I"
+  },
+  "1992585880": {
+   "family": "Pistol_Silenced_01",
+   "level": 2,
+   "name": "Hairpin II"
+  },
+  "1370600620": {
+   "family": "Pistol_Silenced_01",
+   "level": 3,
+   "name": "Hairpin III"
+  },
+  "1920326798": {
+   "family": "Pistol_Silenced_01",
+   "level": 4,
+   "name": "Hairpin IV"
+  },
+  "-1123417641": {
+   "family": "Shotgun_PumpAction_01",
+   "level": 1,
+   "name": "Il Toro I"
+  },
+  "269867465": {
+   "family": "Shotgun_PumpAction_01",
+   "level": 2,
+   "name": "Il Toro II"
+  },
+  "226834931": {
+   "family": "Shotgun_PumpAction_01",
+   "level": 3,
+   "name": "Il Toro III"
+  },
+  "331271227": {
+   "family": "Shotgun_PumpAction_01",
+   "level": 4,
+   "name": "Il Toro IV"
+  },
+  "1123609629": {
+   "family": "Shotgun_SemiAuto_01",
+   "level": 1,
+   "name": "Vulcano I"
+  },
+  "-131543983": {
+   "family": "Shotgun_SemiAuto_01",
+   "level": 2,
+   "name": "Vulcano II"
+  },
+  "737182316": {
+   "family": "Shotgun_SemiAuto_01",
+   "level": 3,
+   "name": "Vulcano III"
+  },
+  "-630279513": {
+   "family": "Shotgun_SemiAuto_01",
+   "level": 4,
+   "name": "Vulcano IV"
+  },
+  "637354931": {
+   "family": "SMG_01",
+   "level": 1,
+   "name": "Bobcat I"
+  },
+  "1768889427": {
+   "family": "SMG_01",
+   "level": 2,
+   "name": "Bobcat II"
+  },
+  "708897469": {
+   "family": "SMG_01",
+   "level": 3,
+   "name": "Bobcat III"
+  },
+  "-1631078332": {
+   "family": "SMG_01",
+   "level": 4,
+   "name": "Bobcat IV"
+  },
+  "-302696283": {
+   "family": "SMG_LowTier_01",
+   "level": 1,
+   "name": "Stitcher I"
+  },
+  "1549911570": {
+   "family": "SMG_LowTier_01",
+   "level": 2,
+   "name": "Stitcher II"
+  },
+  "-2007835076": {
+   "family": "SMG_LowTier_01",
+   "level": 3,
+   "name": "Stitcher III"
+  },
+  "1516184045": {
+   "family": "SMG_LowTier_01",
+   "level": 4,
+   "name": "Stitcher IV"
+  },
+  "-1435588212": {
+   "family": "SniperRifle_BoltAction_Medium_01",
+   "level": 1,
+   "name": "Osprey I"
+  },
+  "1640126922": {
+   "family": "SniperRifle_BoltAction_Medium_01",
+   "level": 2,
+   "name": "Osprey II"
+  },
+  "30472313": {
+   "family": "SniperRifle_BoltAction_Medium_01",
+   "level": 3,
+   "name": "Osprey III"
+  },
+  "352204774": {
+   "family": "SniperRifle_BoltAction_Medium_01",
+   "level": 4,
+   "name": "Osprey IV"
+  }
+ },
+ "source": "asset_index.csv"
+}

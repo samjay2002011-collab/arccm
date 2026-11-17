@@ -1,0 +1,20 @@
+
+######## /v1/pioneer/
+HIT /v1/pioneer/inventory                    500 internal error 
+HIT /v1/pioneer/quests                       500 internal error 
+
+######## /v1/shared/
+HIT /v1/shared/profile                       200 {"accountId":166200091153119717,"countryCode":"EG","createdAt":1779929
+HIT /v1/shared/manifest                      405 
+HIT /v1/shared/notifications                 405 
+HIT /v1/shared/party                         405 
+HIT /v1/shared/clan                          405 
+
+======== non-404 summary ========
+  /v1/pioneer/inventory
+  /v1/pioneer/quests
+  /v1/shared/profile
+  /v1/shared/manifest
+  /v1/shared/notifications
+  /v1/shared/party
+  /v1/shared/clan

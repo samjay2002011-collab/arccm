@@ -1,0 +1,3396 @@
+{
+ "version": 1,
+ "built_at": 1793498389,
+ "source": "GET /v1/pioneer/game-data -> offer-descriptions (offerType RoundCrafting) — الكتالوج الرسمي نفسه، من غير أي وسيط",
+ "accept_path": "/v1/pioneer/offers/accept",
+ "rounds_asset": "-1869396984",
+ "generators": [
+  {
+   "tier": 1,
+   "asset_id": "1657228973",
+   "label": "Scrappy I"
+  },
+  {
+   "tier": 2,
+   "asset_id": "2041317243",
+   "label": "Scrappy II"
+  },
+  {
+   "tier": 3,
+   "asset_id": "1434069496",
+   "label": "Scrappy III"
+  },
+  {
+   "tier": 4,
+   "asset_id": "2080275953",
+   "label": "Scrappy IV"
+  },
+  {
+   "tier": 5,
+   "asset_id": "1781867314",
+   "label": "Scrappy V"
+  }
+ ],
+ "upgrades": [
+  {
+   "tier": 1,
+   "asset_id": "1657228973",
+   "label": "Scrappy I",
+   "next_asset_id": "2041317243",
+   "next_label": "Scrappy II",
+   "cost": [
+    {
+     "asset_id": "-1726424272",
+     "name": "Dog Collar",
+     "image": "arctracker/dog_collar.png",
+     "amount": 1
+    }
+   ]
+  },
+  {
+   "tier": 2,
+   "asset_id": "2041317243",
+   "label": "Scrappy II",
+   "next_asset_id": "1434069496",
+   "next_label": "Scrappy III",
+   "cost": [
+    {
+     "asset_id": "599997416",
+     "name": "Lemon",
+     "image": "arctracker/lemon.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "1219069540",
+     "name": "Apricot",
+     "image": "arctracker/apricot.png",
+     "amount": 3
+    }
+   ]
+  },
+  {
+   "tier": 3,
+   "asset_id": "1434069496",
+   "label": "Scrappy III",
+   "next_asset_id": "2080275953",
+   "next_label": "Scrappy IV",
+   "cost": [
+    {
+     "asset_id": "721769094",
+     "name": "Prickly Pear",
+     "image": "arctracker/prickly_pear.png",
+     "amount": 6
+    },
+    {
+     "asset_id": "-944742704",
+     "name": "Olives",
+     "image": "arctracker/olives.png",
+     "amount": 6
+    },
+    {
+     "asset_id": "1793382961",
+     "name": "Cat Bed",
+     "image": "arctracker/cat_bed.png",
+     "amount": 1
+    }
+   ]
+  },
+  {
+   "tier": 4,
+   "asset_id": "2080275953",
+   "label": "Scrappy IV",
+   "next_asset_id": "1781867314",
+   "next_label": "Scrappy V",
+   "cost": [
+    {
+     "asset_id": "-2014230306",
+     "name": "Mushroom",
+     "image": "arctracker/mushroom.png",
+     "amount": 12
+    },
+    {
+     "asset_id": "1219069540",
+     "name": "Apricot",
+     "image": "arctracker/apricot.png",
+     "amount": 12
+    },
+    {
+     "asset_id": "-1286103237",
+     "name": "Very Comfortable Pillow",
+     "image": "arctracker/very_comfortable_pillow.png",
+     "amount": 3
+    }
+   ]
+  },
+  {
+   "tier": 5,
+   "asset_id": "1781867314",
+   "label": "Scrappy V",
+   "next_asset_id": "",
+   "next_label": "",
+   "cost": []
+  }
+ ],
+ "stats": {
+  "offers": 38,
+  "rounds": 30,
+  "food": 8,
+  "tiers": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ]
+ },
+ "offers": [
+  {
+   "offer_id": 577312011,
+   "tier": 1,
+   "kind": "rounds",
+   "title": "Generator Level 1 - Minute 1",
+   "duration_seconds": 60,
+   "order_index": 0,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 3
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 28
+  },
+  {
+   "offer_id": 818300937,
+   "tier": 1,
+   "kind": "rounds",
+   "title": "Generator Level 1 - Minute 1 - Extracted",
+   "duration_seconds": 60,
+   "order_index": 1,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 3
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 18
+  },
+  {
+   "offer_id": 404888468,
+   "tier": 1,
+   "kind": "rounds",
+   "title": "Generator Level 1 - Minute 6",
+   "duration_seconds": 360,
+   "order_index": 2,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 9
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 9
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 9
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 9
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 9
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 4
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 49
+  },
+  {
+   "offer_id": 348098726,
+   "tier": 1,
+   "kind": "rounds",
+   "title": "Generator Level 1 - Minute 6 - Extracted",
+   "duration_seconds": 360,
+   "order_index": 3,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 4
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 4
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 4
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 4
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 4
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 4
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 24
+  },
+  {
+   "offer_id": 577343568,
+   "tier": 1,
+   "kind": "food",
+   "title": "ScrappyLemon",
+   "duration_seconds": 360,
+   "order_index": 30,
+   "cost": [
+    {
+     "asset_id": "599997416",
+     "name": "Lemon",
+     "image": "arctracker/lemon.png",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 5
+    }
+   ],
+   "reward_pool": [
+    {
+     "asset_id": "1370841463",
+     "name": "ARC Alloy",
+     "image": "arctracker/arc_alloy.png",
+     "amount": 1,
+     "weight": 0.0758
+    },
+    {
+     "asset_id": "1039185396",
+     "name": "Battery",
+     "image": "arctracker/battery.png",
+     "amount": 1,
+     "weight": 0.0758
+    },
+    {
+     "asset_id": "-668588724",
+     "name": "Canister",
+     "image": "arctracker/canister.png",
+     "amount": 1,
+     "weight": 0.0758
+    },
+    {
+     "asset_id": "1625205858",
+     "name": "Crude Explosives",
+     "image": "arctracker/crude_explosives.png",
+     "amount": 1,
+     "weight": 0.0758
+    },
+    {
+     "asset_id": "1741060583",
+     "name": "Oil",
+     "image": "arctracker/oil.png",
+     "amount": 1,
+     "weight": 0.0758
+    },
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "image": "arctracker/wires.png",
+     "amount": 1,
+     "weight": 0.0758
+    },
+    {
+     "asset_id": "-923201933",
+     "name": "Electrical Components",
+     "image": "arctracker/electrical_components.png",
+     "amount": 1,
+     "weight": 0.053
+    },
+    {
+     "asset_id": "303320919",
+     "name": "Processor",
+     "image": "arctracker/processor.png",
+     "amount": 1,
+     "weight": 0.053
+    },
+    {
+     "asset_id": "-17247411",
+     "name": "Sensors",
+     "image": "arctracker/sensors.png",
+     "amount": 1,
+     "weight": 0.053
+    },
+    {
+     "asset_id": "-503792599",
+     "name": "Synthesized Fuel",
+     "image": "arctracker/synthesized_fuel.png",
+     "amount": 1,
+     "weight": 0.053
+    },
+    {
+     "asset_id": "1552920566",
+     "name": "Voltage Converter",
+     "image": "arctracker/voltage_converter.png",
+     "amount": 1,
+     "weight": 0.053
+    },
+    {
+     "asset_id": "-770265029",
+     "name": "Advanced Electrical Components",
+     "image": "arctracker/advanced_electrical_components.png",
+     "amount": 1,
+     "weight": 0.0379
+    },
+    {
+     "asset_id": "1004246812",
+     "name": "Explosive Compound",
+     "image": "arctracker/explosive_compound.png",
+     "amount": 1,
+     "weight": 0.0379
+    },
+    {
+     "asset_id": "-922322200",
+     "name": "Seeker Grenade",
+     "image": "arctracker/seeker_grenade.png",
+     "amount": 1,
+     "weight": 0.0379
+    },
+    {
+     "asset_id": "2121538320",
+     "name": "Shrapnel Grenade",
+     "image": "arctracker/shrapnel_grenade.png",
+     "amount": 1,
+     "weight": 0.0379
+    },
+    {
+     "asset_id": "-853193179",
+     "name": "Trigger Nade",
+     "image": "arctracker/trigger_nade.png",
+     "amount": 1,
+     "weight": 0.0379
+    },
+    {
+     "asset_id": "697558734",
+     "name": "Blaze Grenade",
+     "image": "arctracker/blaze_grenade.png",
+     "amount": 1,
+     "weight": 0.0227
+    },
+    {
+     "asset_id": "787027311",
+     "name": "Heavy Fuze Grenade",
+     "image": "arctracker/heavy_fuze_grenade.png",
+     "amount": 1,
+     "weight": 0.0227
+    },
+    {
+     "asset_id": "-2035840261",
+     "name": "Showstopper",
+     "image": "arctracker/showstopper.png",
+     "amount": 1,
+     "weight": 0.0227
+    },
+    {
+     "asset_id": "409593267",
+     "name": "Deadline",
+     "image": "arctracker/deadline.png",
+     "amount": 1,
+     "weight": 0.0114
+    },
+    {
+     "asset_id": "-1074160440",
+     "name": "Wolfpack",
+     "image": "arctracker/wolfpack.png",
+     "amount": 1,
+     "weight": 0.0114
+    }
+   ],
+   "reward_total": 5
+  },
+  {
+   "offer_id": 430899606,
+   "tier": 1,
+   "kind": "food",
+   "title": "ScrappyApricot",
+   "duration_seconds": 360,
+   "order_index": 31,
+   "cost": [
+    {
+     "asset_id": "1219069540",
+     "name": "Apricot",
+     "image": "arctracker/apricot.png",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 5
+    }
+   ],
+   "reward_pool": [
+    {
+     "asset_id": "-863904193",
+     "name": "Magnet",
+     "image": "arctracker/magnet.png",
+     "amount": 1,
+     "weight": 0.1206
+    },
+    {
+     "asset_id": "1741060583",
+     "name": "Oil",
+     "image": "arctracker/oil.png",
+     "amount": 1,
+     "weight": 0.1206
+    },
+    {
+     "asset_id": "-574262619",
+     "name": "Simple Gun Parts",
+     "image": "arctracker/simple_gun_parts.png",
+     "amount": 1,
+     "weight": 0.1206
+    },
+    {
+     "asset_id": "-1517601046",
+     "name": "Steel Spring",
+     "image": "arctracker/steel_spring.png",
+     "amount": 1,
+     "weight": 0.1206
+    },
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "image": "arctracker/wires.png",
+     "amount": 1,
+     "weight": 0.1206
+    },
+    {
+     "asset_id": "-1903407680",
+     "name": "Heavy Gun Parts",
+     "image": "arctracker/heavy_gun_parts.png",
+     "amount": 1,
+     "weight": 0.0724
+    },
+    {
+     "asset_id": "-1385889770",
+     "name": "Light Gun Parts",
+     "image": "arctracker/light_gun_parts.png",
+     "amount": 1,
+     "weight": 0.0724
+    },
+    {
+     "asset_id": "1959573223",
+     "name": "Mechanical Components",
+     "image": "arctracker/mechanical_components.png",
+     "amount": 1,
+     "weight": 0.0724
+    },
+    {
+     "asset_id": "-637598838",
+     "name": "Medium Gun Parts",
+     "image": "arctracker/medium_gun_parts.png",
+     "amount": 1,
+     "weight": 0.0724
+    },
+    {
+     "asset_id": "-926389249",
+     "name": "Advanced Mechanical Components",
+     "image": "arctracker/advanced_mechanical_components.png",
+     "amount": 1,
+     "weight": 0.0362
+    },
+    {
+     "asset_id": "1608603820",
+     "name": "Complex Gun Parts",
+     "image": "arctracker/complex_gun_parts.png",
+     "amount": 1,
+     "weight": 0.0241
+    },
+    {
+     "asset_id": "-1177716644",
+     "name": "Exodus Modules",
+     "image": "arctracker/exodus_modules.png",
+     "amount": 1,
+     "weight": 0.0241
+    },
+    {
+     "asset_id": "717605649",
+     "name": "Magnetic Accelerator",
+     "image": "arctracker/magnetic_accelerator.png",
+     "amount": 1,
+     "weight": 0.0181
+    },
+    {
+     "asset_id": "-752661468",
+     "name": "Matriarch Reactor",
+     "image": "arctracker/matriarch_reactor.png",
+     "amount": 1,
+     "weight": 0.0024
+    },
+    {
+     "asset_id": "-876378926",
+     "name": "Queen Reactor",
+     "image": "arctracker/queen_reactor.png",
+     "amount": 1,
+     "weight": 0.0024
+    }
+   ],
+   "reward_total": 5
+  },
+  {
+   "offer_id": 312658374,
+   "tier": 1,
+   "kind": "food",
+   "title": "ScrappyAgave",
+   "duration_seconds": 360,
+   "order_index": 32,
+   "cost": [
+    {
+     "asset_id": "-127927282",
+     "name": "Agave",
+     "image": "arctracker/agave.png",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 5
+    }
+   ],
+   "reward_pool": [
+    {
+     "asset_id": "1224404530",
+     "name": "Duct Tape",
+     "image": "arctracker/duct_tape.png",
+     "amount": 1,
+     "weight": 0.1092
+    },
+    {
+     "asset_id": "1959573223",
+     "name": "Mechanical Components",
+     "image": "arctracker/mechanical_components.png",
+     "amount": 1,
+     "weight": 0.1092
+    },
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "image": "arctracker/wires.png",
+     "amount": 1,
+     "weight": 0.1092
+    },
+    {
+     "asset_id": "346923872",
+     "name": "Angled Grip I",
+     "image": "arctracker/angled_grip_i.png",
+     "amount": 1,
+     "weight": 0.0437
+    },
+    {
+     "asset_id": "-1888542545",
+     "name": "Compensator I",
+     "image": "arctracker/compensator_i.png",
+     "amount": 1,
+     "weight": 0.0437
+    },
+    {
+     "asset_id": "-283948665",
+     "name": "Extended Light Mag I",
+     "image": "arctracker/extended_light_mag_i.png",
+     "amount": 1,
+     "weight": 0.0437
+    },
+    {
+     "asset_id": "-566520716",
+     "name": "Extended Medium Mag I",
+     "image": "arctracker/extended_medium_mag_i.png",
+     "amount": 1,
+     "weight": 0.0437
+    },
+    {
+     "asset_id": "-814658911",
+     "name": "Extended Shotgun Mag I",
+     "image": "arctracker/extended_shotgun_mag_i.png",
+     "amount": 1,
+     "weight": 0.0437
+    },
+    {
+     "asset_id": "464233263",
+     "name": "Mod Components",
+     "image": "arctracker/mod_components.png",
+     "amount": 1,
+     "weight": 0.0437
+    },
+    {
+     "asset_id": "-450689218",
+     "name": "Muzzle Brake I",
+     "image": "arctracker/muzzle_brake_i.png",
+     "amount": 1,
+     "weight": 0.0437
+    },
+    {
+     "asset_id": "-1570319542",
+     "name": "Shotgun Choke I",
+     "image": "arctracker/shotgun_choke_i.png",
+     "amount": 1,
+     "weight": 0.0437
+    },
+    {
+     "asset_id": "775298648",
+     "name": "Stable Stock I",
+     "image": "arctracker/stable_stock_i.png",
+     "amount": 1,
+     "weight": 0.0437
+    },
+    {
+     "asset_id": "-1404148784",
+     "name": "Vertical Grip I",
+     "image": "arctracker/vertical_grip_i.png",
+     "amount": 1,
+     "weight": 0.0437
+    },
+    {
+     "asset_id": "-1177716644",
+     "name": "Exodus Modules",
+     "image": "arctracker/exodus_modules.png",
+     "amount": 1,
+     "weight": 0.0273
+    },
+    {
+     "asset_id": "-1681246336",
+     "name": "Angled Grip II",
+     "image": "arctracker/angled_grip_ii.png",
+     "amount": 1,
+     "weight": 0.0164
+    },
+    {
+     "asset_id": "-1072384644",
+     "name": "Compensator II",
+     "image": "arctracker/compensator_ii.png",
+     "amount": 1,
+     "weight": 0.0164
+    },
+    {
+     "asset_id": "-1666910412",
+     "name": "Extended Light Mag II",
+     "image": "arctracker/extended_light_mag_ii.png",
+     "amount": 1,
+     "weight": 0.0164
+    },
+    {
+     "asset_id": "-728135783",
+     "name": "Extended Medium Mag II",
+     "image": "arctracker/extended_medium_mag_ii.png",
+     "amount": 1,
+     "weight": 0.0164
+    },
+    {
+     "asset_id": "592639485",
+     "name": "Extended Shotgun Mag II",
+     "image": "arctracker/extended_shotgun_mag_ii.png",
+     "amount": 1,
+     "weight": 0.0164
+    },
+    {
+     "asset_id": "1363078343",
+     "name": "Muzzle Brake II",
+     "image": "arctracker/muzzle_brake_ii.png",
+     "amount": 1,
+     "weight": 0.0164
+    },
+    {
+     "asset_id": "-1682300422",
+     "name": "Shotgun Choke II",
+     "image": "arctracker/shotgun_choke_ii.png",
+     "amount": 1,
+     "weight": 0.0164
+    },
+    {
+     "asset_id": "-409081322",
+     "name": "Silencer I",
+     "image": "arctracker/silencer_i.png",
+     "amount": 1,
+     "weight": 0.0164
+    },
+    {
+     "asset_id": "1287783108",
+     "name": "Stable Stock II",
+     "image": "arctracker/stable_stock_ii.png",
+     "amount": 1,
+     "weight": 0.0164
+    },
+    {
+     "asset_id": "-295158634",
+     "name": "Vertical Grip II",
+     "image": "arctracker/vertical_grip_ii.png",
+     "amount": 1,
+     "weight": 0.0164
+    },
+    {
+     "asset_id": "313149189",
+     "name": "Power Rod",
+     "image": "arctracker/power_rod.png",
+     "amount": 1,
+     "weight": 0.0109
+    },
+    {
+     "asset_id": "-1131982378",
+     "name": "Angled Grip III",
+     "image": "arctracker/angled_grip_iii.png",
+     "amount": 1,
+     "weight": 0.0022
+    },
+    {
+     "asset_id": "-518509289",
+     "name": "Compensator III",
+     "image": "arctracker/compensator_iii.png",
+     "amount": 1,
+     "weight": 0.0022
+    },
+    {
+     "asset_id": "1407760402",
+     "name": "Extended Barrel",
+     "image": "arctracker/extended_barrel_i.png",
+     "amount": 1,
+     "weight": 0.0022
+    },
+    {
+     "asset_id": "-1915685401",
+     "name": "Extended Light Mag III",
+     "image": "arctracker/extended_light_mag_iii.png",
+     "amount": 1,
+     "weight": 0.0022
+    },
+    {
+     "asset_id": "1670090314",
+     "name": "Extended Medium Mag III",
+     "image": "arctracker/extended_medium_mag_iii.png",
+     "amount": 1,
+     "weight": 0.0022
+    },
+    {
+     "asset_id": "922097959",
+     "name": "Extended Shotgun Mag III",
+     "image": "arctracker/extended_shotgun_mag_iii.png",
+     "amount": 1,
+     "weight": 0.0022
+    },
+    {
+     "asset_id": "-2095596285",
+     "name": "Lightweight Stock",
+     "image": "arctracker/lightweight_stock.png",
+     "amount": 1,
+     "weight": 0.0022
+    },
+    {
+     "asset_id": "-1113070540",
+     "name": "Muzzle Brake III",
+     "image": "arctracker/muzzle_brake_iii.png",
+     "amount": 1,
+     "weight": 0.0022
+    },
+    {
+     "asset_id": "1682428740",
+     "name": "Padded Stock",
+     "image": "arctracker/padded_stock.png",
+     "amount": 1,
+     "weight": 0.0022
+    },
+    {
+     "asset_id": "-1295139142",
+     "name": "Shotgun Choke III",
+     "image": "arctracker/shotgun_choke_iii.png",
+     "amount": 1,
+     "weight": 0.0022
+    },
+    {
+     "asset_id": "-319966965",
+     "name": "Shotgun Silencer",
+     "image": "arctracker/shotgun_silencer.png",
+     "amount": 1,
+     "weight": 0.0022
+    },
+    {
+     "asset_id": "1921518029",
+     "name": "Silencer II",
+     "image": "arctracker/silencer_ii.png",
+     "amount": 1,
+     "weight": 0.0022
+    },
+    {
+     "asset_id": "-123856886",
+     "name": "Stable Stock III",
+     "image": "arctracker/stable_stock_iii.png",
+     "amount": 1,
+     "weight": 0.0022
+    },
+    {
+     "asset_id": "-1074924798",
+     "name": "Vertical Grip III",
+     "image": "arctracker/vertical_grip_iii.png",
+     "amount": 1,
+     "weight": 0.0022
+    },
+    {
+     "asset_id": "1013182792",
+     "name": "Horizontal Grip",
+     "image": "arctracker/horizontal_grip.png",
+     "amount": 1,
+     "weight": 0.0011
+    },
+    {
+     "asset_id": "668021707",
+     "name": "Kinetic Converter",
+     "image": "arctracker/kinetic_converter.png",
+     "amount": 1,
+     "weight": 0.0011
+    },
+    {
+     "asset_id": "-621597590",
+     "name": "Silencer III",
+     "image": "arctracker/silencer_iii.png",
+     "amount": 1,
+     "weight": 0.0011
+    }
+   ],
+   "reward_total": 5
+  },
+  {
+   "offer_id": 960463364,
+   "tier": 1,
+   "kind": "food",
+   "title": "ScrappyPricklyPear",
+   "duration_seconds": 360,
+   "order_index": 33,
+   "cost": [
+    {
+     "asset_id": "721769094",
+     "name": "Prickly Pear",
+     "image": "arctracker/prickly_pear.png",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 5
+    }
+   ],
+   "reward_pool": [
+    {
+     "asset_id": "-668588724",
+     "name": "Canister",
+     "image": "arctracker/canister.png",
+     "amount": 1,
+     "weight": 0.1117
+    },
+    {
+     "asset_id": "-923201933",
+     "name": "Electrical Components",
+     "image": "arctracker/electrical_components.png",
+     "amount": 1,
+     "weight": 0.1117
+    },
+    {
+     "asset_id": "1959573223",
+     "name": "Mechanical Components",
+     "image": "arctracker/mechanical_components.png",
+     "amount": 1,
+     "weight": 0.1117
+    },
+    {
+     "asset_id": "130254116",
+     "name": "Rope",
+     "image": "arctracker/rope.png",
+     "amount": 1,
+     "weight": 0.1117
+    },
+    {
+     "asset_id": "-17247411",
+     "name": "Sensors",
+     "image": "arctracker/sensors.png",
+     "amount": 1,
+     "weight": 0.1117
+    },
+    {
+     "asset_id": "-1622446317",
+     "name": "Speaker Component",
+     "image": "arctracker/speaker_component.png",
+     "amount": 1,
+     "weight": 0.1117
+    },
+    {
+     "asset_id": "984123027",
+     "name": "Smoke Grenade",
+     "image": "arctracker/smoke_grenade.png",
+     "amount": 1,
+     "weight": 0.0559
+    },
+    {
+     "asset_id": "537092188",
+     "name": "Tagging Grenade",
+     "image": "arctracker/tagging_grenade.png",
+     "amount": 1,
+     "weight": 0.0559
+    },
+    {
+     "asset_id": "793992947",
+     "name": "Zipline",
+     "image": "arctracker/zipline.png",
+     "amount": 1,
+     "weight": 0.0559
+    },
+    {
+     "asset_id": "-770265029",
+     "name": "Advanced Electrical Components",
+     "image": "arctracker/advanced_electrical_components.png",
+     "amount": 1,
+     "weight": 0.0447
+    },
+    {
+     "asset_id": "-926389249",
+     "name": "Advanced Mechanical Components",
+     "image": "arctracker/advanced_mechanical_components.png",
+     "amount": 1,
+     "weight": 0.0447
+    },
+    {
+     "asset_id": "-1177716644",
+     "name": "Exodus Modules",
+     "image": "arctracker/exodus_modules.png",
+     "amount": 1,
+     "weight": 0.0223
+    },
+    {
+     "asset_id": "-902952774",
+     "name": "Raider Hatch Key",
+     "image": "arctracker/raider_hatch_key.png",
+     "amount": 1,
+     "weight": 0.0223
+    },
+    {
+     "asset_id": "2058762606",
+     "name": "Photoelectric Cloak",
+     "image": "arctracker/photoelectric_cloak.png",
+     "amount": 1,
+     "weight": 0.0112
+    },
+    {
+     "asset_id": "313149189",
+     "name": "Power Rod",
+     "image": "arctracker/power_rod.png",
+     "amount": 1,
+     "weight": 0.0112
+    },
+    {
+     "asset_id": "-1963108876",
+     "name": "Snap Hook",
+     "image": "arctracker/snap_hook.png",
+     "amount": 1,
+     "weight": 0.0056
+    }
+   ],
+   "reward_total": 5
+  },
+  {
+   "offer_id": 128191464,
+   "tier": 1,
+   "kind": "food",
+   "title": "ScrappyOlives",
+   "duration_seconds": 360,
+   "order_index": 34,
+   "cost": [
+    {
+     "asset_id": "-944742704",
+     "name": "Olives",
+     "image": "arctracker/olives.png",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 5
+    }
+   ],
+   "reward_pool": [
+    {
+     "asset_id": "-1447314005",
+     "name": "ARC Powercell",
+     "image": "arctracker/arc_powercell.png",
+     "amount": 1,
+     "weight": 0.1136
+    },
+    {
+     "asset_id": "-668588724",
+     "name": "Canister",
+     "image": "arctracker/canister.png",
+     "amount": 1,
+     "weight": 0.1136
+    },
+    {
+     "asset_id": "-631032368",
+     "name": "Great Mullein",
+     "image": "arctracker/great_mullein.png",
+     "amount": 1,
+     "weight": 0.1136
+    },
+    {
+     "asset_id": "246081482",
+     "name": "Advanced ARC Powercell",
+     "image": "arctracker/advanced_arc_powercell.png",
+     "amount": 1,
+     "weight": 0.0909
+    },
+    {
+     "asset_id": "-799395426",
+     "name": "Durable Cloth",
+     "image": "arctracker/durable_cloth.png",
+     "amount": 1,
+     "weight": 0.0909
+    },
+    {
+     "asset_id": "-923201933",
+     "name": "Electrical Components",
+     "image": "arctracker/electrical_components.png",
+     "amount": 1,
+     "weight": 0.0909
+    },
+    {
+     "asset_id": "1146379657",
+     "name": "Moss",
+     "image": "arctracker/moss.png",
+     "amount": 1,
+     "weight": 0.0909
+    },
+    {
+     "asset_id": "-647887968",
+     "name": "Syringe",
+     "image": "arctracker/syringe.png",
+     "amount": 1,
+     "weight": 0.0909
+    },
+    {
+     "asset_id": "1332241414",
+     "name": "Antiseptic",
+     "image": "arctracker/antiseptic.png",
+     "amount": 1,
+     "weight": 0.0682
+    },
+    {
+     "asset_id": "1827408349",
+     "name": "Herbal Bandage",
+     "image": "arctracker/herbal_bandage.png",
+     "amount": 1,
+     "weight": 0.0455
+    },
+    {
+     "asset_id": "951468812",
+     "name": "Sterilized Bandage",
+     "image": "arctracker/sterilized_bandage.png",
+     "amount": 1,
+     "weight": 0.0455
+    },
+    {
+     "asset_id": "2041238290",
+     "name": "Vita Shot",
+     "image": "arctracker/vita_shot.png",
+     "amount": 1,
+     "weight": 0.0227
+    },
+    {
+     "asset_id": "1795670982",
+     "name": "Vita Spray",
+     "image": "arctracker/vita_spray.png",
+     "amount": 1,
+     "weight": 0.0227
+    }
+   ],
+   "reward_total": 5
+  },
+  {
+   "offer_id": 294994382,
+   "tier": 1,
+   "kind": "food",
+   "title": "ScrappyMushroom",
+   "duration_seconds": 360,
+   "order_index": 35,
+   "cost": [
+    {
+     "asset_id": "-2014230306",
+     "name": "Mushroom",
+     "image": "arctracker/mushroom.png",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 5
+    }
+   ],
+   "reward_pool": [
+    {
+     "asset_id": "1370841463",
+     "name": "ARC Alloy",
+     "image": "arctracker/arc_alloy.png",
+     "amount": 1,
+     "weight": 0.1399
+    },
+    {
+     "asset_id": "1039185396",
+     "name": "Battery",
+     "image": "arctracker/battery.png",
+     "amount": 1,
+     "weight": 0.1399
+    },
+    {
+     "asset_id": "-863904193",
+     "name": "Magnet",
+     "image": "arctracker/magnet.png",
+     "amount": 1,
+     "weight": 0.1399
+    },
+    {
+     "asset_id": "-923201933",
+     "name": "Electrical Components",
+     "image": "arctracker/electrical_components.png",
+     "amount": 1,
+     "weight": 0.0699
+    },
+    {
+     "asset_id": "1505999062",
+     "name": "Light Shield",
+     "image": "arctracker/light_shield.png",
+     "amount": 1,
+     "weight": 0.0699
+    },
+    {
+     "asset_id": "303320919",
+     "name": "Processor",
+     "image": "arctracker/processor.png",
+     "amount": 1,
+     "weight": 0.0699
+    },
+    {
+     "asset_id": "1552920566",
+     "name": "Voltage Converter",
+     "image": "arctracker/voltage_converter.png",
+     "amount": 1,
+     "weight": 0.0699
+    },
+    {
+     "asset_id": "-770265029",
+     "name": "Advanced Electrical Components",
+     "image": "arctracker/advanced_electrical_components.png",
+     "amount": 1,
+     "weight": 0.035
+    },
+    {
+     "asset_id": "1107192907",
+     "name": "ARC Circuitry",
+     "image": "arctracker/arc_circuitry.png",
+     "amount": 1,
+     "weight": 0.035
+    },
+    {
+     "asset_id": "-1489261627",
+     "name": "Combat Mk. 2",
+     "image": "arctracker/combat_mk2.png",
+     "amount": 1,
+     "weight": 0.035
+    },
+    {
+     "asset_id": "-1156830089",
+     "name": "Looting Mk. 2",
+     "image": "arctracker/looting_mk2.png",
+     "amount": 1,
+     "weight": 0.035
+    },
+    {
+     "asset_id": "1237209984",
+     "name": "Medium Shield",
+     "image": "arctracker/medium_shield.png",
+     "amount": 1,
+     "weight": 0.035
+    },
+    {
+     "asset_id": "-1240487285",
+     "name": "Tactical Mk. 2",
+     "image": "arctracker/tactical_mk2.png",
+     "amount": 1,
+     "weight": 0.035
+    },
+    {
+     "asset_id": "313149189",
+     "name": "Power Rod",
+     "image": "arctracker/power_rod.png",
+     "amount": 1,
+     "weight": 0.021
+    },
+    {
+     "asset_id": "203993527",
+     "name": "Heavy Shield",
+     "image": "arctracker/heavy_shield.png",
+     "amount": 1,
+     "weight": 0.014
+    },
+    {
+     "asset_id": "-468025815",
+     "name": "Combat Mk. 3 (Aggressive)",
+     "image": "arctracker/combat_mk3_aggressive.png",
+     "amount": 1,
+     "weight": 0.007
+    },
+    {
+     "asset_id": "-1068447725",
+     "name": "Combat Mk.3 (Flanking)",
+     "image": "arctracker/combat_mk3_flanking.png",
+     "amount": 1,
+     "weight": 0.007
+    },
+    {
+     "asset_id": "433079423",
+     "name": "Looting MK. 3 (Cautious)",
+     "image": "arctracker/looting_mk3_cautious.png",
+     "amount": 1,
+     "weight": 0.007
+    },
+    {
+     "asset_id": "947411243",
+     "name": "Looting MK. 3 (Safekeeper)",
+     "image": "arctracker/looting_mk3_safekeeper.png",
+     "amount": 1,
+     "weight": 0.007
+    },
+    {
+     "asset_id": "303567898",
+     "name": "Looting MK. 3 (Survivor)",
+     "image": "arctracker/looting_mk3_survivor.png",
+     "amount": 1,
+     "weight": 0.007
+    },
+    {
+     "asset_id": "1101815928",
+     "name": "Tactical Mk. 3 (Defensive)",
+     "image": "arctracker/tactical_mk3_defensive.png",
+     "amount": 1,
+     "weight": 0.007
+    },
+    {
+     "asset_id": "-1561038837",
+     "name": "Tactical Mk. 3 (Healing)",
+     "image": "arctracker/tactical_mk3_healing.png",
+     "amount": 1,
+     "weight": 0.007
+    },
+    {
+     "asset_id": "-1328695953",
+     "name": "Tactical Mk. 3 (Revival)",
+     "image": "arctracker/tactical_mk3_revival.png",
+     "amount": 1,
+     "weight": 0.007
+    }
+   ],
+   "reward_total": 5
+  },
+  {
+   "offer_id": 194099286,
+   "tier": 1,
+   "kind": "food",
+   "title": "ScrappyFruitMix",
+   "duration_seconds": 360,
+   "order_index": 36,
+   "cost": [
+    {
+     "asset_id": "561161842",
+     "name": "Fruit Mix",
+     "image": "arctracker/fruit_mix.png",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 5
+    }
+   ],
+   "reward_pool": [
+    {
+     "asset_id": "1370841463",
+     "name": "ARC Alloy",
+     "image": "arctracker/arc_alloy.png",
+     "amount": 2,
+     "weight": 0.045
+    },
+    {
+     "asset_id": "-1447314005",
+     "name": "ARC Powercell",
+     "image": "arctracker/arc_powercell.png",
+     "amount": 2,
+     "weight": 0.045
+    },
+    {
+     "asset_id": "1039185396",
+     "name": "Battery",
+     "image": "arctracker/battery.png",
+     "amount": 2,
+     "weight": 0.045
+    },
+    {
+     "asset_id": "-668588724",
+     "name": "Canister",
+     "image": "arctracker/canister.png",
+     "amount": 2,
+     "weight": 0.045
+    },
+    {
+     "asset_id": "1625205858",
+     "name": "Crude Explosives",
+     "image": "arctracker/crude_explosives.png",
+     "amount": 2,
+     "weight": 0.045
+    },
+    {
+     "asset_id": "-631032368",
+     "name": "Great Mullein",
+     "image": "arctracker/great_mullein.png",
+     "amount": 2,
+     "weight": 0.045
+    },
+    {
+     "asset_id": "-863904193",
+     "name": "Magnet",
+     "image": "arctracker/magnet.png",
+     "amount": 2,
+     "weight": 0.045
+    },
+    {
+     "asset_id": "1741060583",
+     "name": "Oil",
+     "image": "arctracker/oil.png",
+     "amount": 2,
+     "weight": 0.045
+    },
+    {
+     "asset_id": "-574262619",
+     "name": "Simple Gun Parts",
+     "image": "arctracker/simple_gun_parts.png",
+     "amount": 2,
+     "weight": 0.045
+    },
+    {
+     "asset_id": "-1517601046",
+     "name": "Steel Spring",
+     "image": "arctracker/steel_spring.png",
+     "amount": 2,
+     "weight": 0.045
+    },
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "image": "arctracker/wires.png",
+     "amount": 2,
+     "weight": 0.045
+    },
+    {
+     "asset_id": "246081482",
+     "name": "Advanced ARC Powercell",
+     "image": "arctracker/advanced_arc_powercell.png",
+     "amount": 2,
+     "weight": 0.0315
+    },
+    {
+     "asset_id": "-923201933",
+     "name": "Electrical Components",
+     "image": "arctracker/electrical_components.png",
+     "amount": 2,
+     "weight": 0.0315
+    },
+    {
+     "asset_id": "1004246812",
+     "name": "Explosive Compound",
+     "image": "arctracker/explosive_compound.png",
+     "amount": 2,
+     "weight": 0.0315
+    },
+    {
+     "asset_id": "-1903407680",
+     "name": "Heavy Gun Parts",
+     "image": "arctracker/heavy_gun_parts.png",
+     "amount": 2,
+     "weight": 0.0315
+    },
+    {
+     "asset_id": "-1385889770",
+     "name": "Light Gun Parts",
+     "image": "arctracker/light_gun_parts.png",
+     "amount": 2,
+     "weight": 0.0315
+    },
+    {
+     "asset_id": "1959573223",
+     "name": "Mechanical Components",
+     "image": "arctracker/mechanical_components.png",
+     "amount": 2,
+     "weight": 0.0315
+    },
+    {
+     "asset_id": "-637598838",
+     "name": "Medium Gun Parts",
+     "image": "arctracker/medium_gun_parts.png",
+     "amount": 2,
+     "weight": 0.0315
+    },
+    {
+     "asset_id": "303320919",
+     "name": "Processor",
+     "image": "arctracker/processor.png",
+     "amount": 2,
+     "weight": 0.0315
+    },
+    {
+     "asset_id": "130254116",
+     "name": "Rope",
+     "image": "arctracker/rope.png",
+     "amount": 2,
+     "weight": 0.0315
+    },
+    {
+     "asset_id": "-17247411",
+     "name": "Sensors",
+     "image": "arctracker/sensors.png",
+     "amount": 2,
+     "weight": 0.0315
+    },
+    {
+     "asset_id": "-1622446317",
+     "name": "Speaker Component",
+     "image": "arctracker/speaker_component.png",
+     "amount": 2,
+     "weight": 0.0315
+    },
+    {
+     "asset_id": "-503792599",
+     "name": "Synthesized Fuel",
+     "image": "arctracker/synthesized_fuel.png",
+     "amount": 2,
+     "weight": 0.0315
+    },
+    {
+     "asset_id": "1552920566",
+     "name": "Voltage Converter",
+     "image": "arctracker/voltage_converter.png",
+     "amount": 2,
+     "weight": 0.0315
+    },
+    {
+     "asset_id": "-770265029",
+     "name": "Advanced Electrical Components",
+     "image": "arctracker/advanced_electrical_components.png",
+     "amount": 2,
+     "weight": 0.0135
+    },
+    {
+     "asset_id": "-926389249",
+     "name": "Advanced Mechanical Components",
+     "image": "arctracker/advanced_mechanical_components.png",
+     "amount": 2,
+     "weight": 0.0135
+    },
+    {
+     "asset_id": "1608603820",
+     "name": "Complex Gun Parts",
+     "image": "arctracker/complex_gun_parts.png",
+     "amount": 1,
+     "weight": 0.0135
+    },
+    {
+     "asset_id": "-1177716644",
+     "name": "Exodus Modules",
+     "image": "arctracker/exodus_modules.png",
+     "amount": 1,
+     "weight": 0.0135
+    },
+    {
+     "asset_id": "717605649",
+     "name": "Magnetic Accelerator",
+     "image": "arctracker/magnetic_accelerator.png",
+     "amount": 1,
+     "weight": 0.0135
+    },
+    {
+     "asset_id": "313149189",
+     "name": "Power Rod",
+     "image": "arctracker/power_rod.png",
+     "amount": 1,
+     "weight": 0.0135
+    },
+    {
+     "asset_id": "-752661468",
+     "name": "Matriarch Reactor",
+     "image": "arctracker/matriarch_reactor.png",
+     "amount": 1,
+     "weight": 0.0068
+    },
+    {
+     "asset_id": "-876378926",
+     "name": "Queen Reactor",
+     "image": "arctracker/queen_reactor.png",
+     "amount": 1,
+     "weight": 0.0068
+    }
+   ],
+   "reward_total": 30
+  },
+  {
+   "offer_id": 651591212,
+   "tier": 1,
+   "kind": "food",
+   "title": "ScrappyCandleberries",
+   "duration_seconds": 360,
+   "order_index": 37,
+   "cost": [
+    {
+     "asset_id": "-373455872",
+     "name": "Candleberries",
+     "image": "arctracker/candleberries.png",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "1086410133",
+     "name": "Planks",
+     "image": "arctracker/planks.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "-730174445",
+     "name": "SheetMetal",
+     "image": "arctracker/sheetmetal.png",
+     "amount": 5
+    }
+   ],
+   "reward_pool": [
+    {
+     "asset_id": "1622100049",
+     "name": "Battered Paperback",
+     "image": "arctracker/battered_paperback.png",
+     "amount": 1,
+     "weight": 0.1043
+    },
+    {
+     "asset_id": "1018894577",
+     "name": "Cable Stripper",
+     "image": "arctracker/cable_stripper.png",
+     "amount": 1,
+     "weight": 0.0938
+    },
+    {
+     "asset_id": "-1729529998",
+     "name": "Mini Pump",
+     "image": "arctracker/mini_pump.png",
+     "amount": 1,
+     "weight": 0.0938
+    },
+    {
+     "asset_id": "331753631",
+     "name": "Stencil Parts",
+     "image": "arctracker/stencil_parts.png",
+     "amount": 1,
+     "weight": 0.0938
+    },
+    {
+     "asset_id": "-315100731",
+     "name": "Calculator",
+     "image": "arctracker/calculator.png",
+     "amount": 1,
+     "weight": 0.073
+    },
+    {
+     "asset_id": "-605737193",
+     "name": "Hand Drill",
+     "image": "arctracker/hand_drill.png",
+     "amount": 1,
+     "weight": 0.073
+    },
+    {
+     "asset_id": "-353819882",
+     "name": "Raider Logbook",
+     "image": "arctracker/raider_logbook.png",
+     "amount": 1,
+     "weight": 0.073
+    },
+    {
+     "asset_id": "-1872918924",
+     "name": "Steel Cable",
+     "image": "arctracker/steel_cable.png",
+     "amount": 1,
+     "weight": 0.073
+    },
+    {
+     "asset_id": "-1472796710",
+     "name": "-1472796710",
+     "image": "",
+     "amount": 1,
+     "weight": 0.0417
+    },
+    {
+     "asset_id": "327409590",
+     "name": "327409590",
+     "image": "",
+     "amount": 1,
+     "weight": 0.0417
+    },
+    {
+     "asset_id": "-1547707894",
+     "name": "Exodus Technical Handbook",
+     "image": "arctracker/exodus_technical_handbook.png",
+     "amount": 1,
+     "weight": 0.0417
+    },
+    {
+     "asset_id": "1923062356",
+     "name": "ARC Data Module",
+     "image": "arctracker/arc_data_module.png",
+     "amount": 1,
+     "weight": 0.0313
+    },
+    {
+     "asset_id": "-236284933",
+     "name": "Laser Level",
+     "image": "arctracker/laser_level.png",
+     "amount": 1,
+     "weight": 0.0313
+    },
+    {
+     "asset_id": "1369039748",
+     "name": "1369039748",
+     "image": "",
+     "amount": 1,
+     "weight": 0.0209
+    },
+    {
+     "asset_id": "713324351",
+     "name": "Radial Press",
+     "image": "arctracker/radial_press.png",
+     "amount": 1,
+     "weight": 0.0209
+    },
+    {
+     "asset_id": "-504807066",
+     "name": "Thermal Shaker",
+     "image": "arctracker/thermal_shaker.png",
+     "amount": 1,
+     "weight": 0.0209
+    },
+    {
+     "asset_id": "-2006529502",
+     "name": "-2006529502",
+     "image": "",
+     "amount": 1,
+     "weight": 0.0083
+    },
+    {
+     "asset_id": "-262336922",
+     "name": "-262336922",
+     "image": "",
+     "amount": 1,
+     "weight": 0.0083
+    },
+    {
+     "asset_id": "1252047436",
+     "name": "1252047436",
+     "image": "",
+     "amount": 1,
+     "weight": 0.0083
+    },
+    {
+     "asset_id": "2101826983",
+     "name": "Fluted Rotor Core",
+     "image": "arctracker/fluted_rotor_core.png",
+     "amount": 1,
+     "weight": 0.0083
+    },
+    {
+     "asset_id": "1545024611",
+     "name": "Fossilized Lightning",
+     "image": "arctracker/fossilized_lightning.png",
+     "amount": 1,
+     "weight": 0.0083
+    },
+    {
+     "asset_id": "1015139423",
+     "name": "Turbine Compressor",
+     "image": "arctracker/turbine_compressor.png",
+     "amount": 1,
+     "weight": 0.0083
+    },
+    {
+     "asset_id": "-1061683355",
+     "name": "-1061683355",
+     "image": "",
+     "amount": 1,
+     "weight": 0.0073
+    },
+    {
+     "asset_id": "-752661468",
+     "name": "Matriarch Reactor",
+     "image": "arctracker/matriarch_reactor.png",
+     "amount": 1,
+     "weight": 0.0052
+    },
+    {
+     "asset_id": "-876378926",
+     "name": "Queen Reactor",
+     "image": "arctracker/queen_reactor.png",
+     "amount": 1,
+     "weight": 0.0052
+    },
+    {
+     "asset_id": "-1509481691",
+     "name": "Frigate Diagnostic Node",
+     "image": "arctracker/frigate_diagnostic_node.png",
+     "amount": 1,
+     "weight": 0.0042
+    }
+   ],
+   "reward_total": 10
+  },
+  {
+   "offer_id": 837552807,
+   "tier": 1,
+   "kind": "rounds",
+   "title": "Generator Level 1 - Minute 15",
+   "duration_seconds": 900,
+   "order_index": 4,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 12
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 12
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 12
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 12
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 12
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 5
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 65
+  },
+  {
+   "offer_id": 134083130,
+   "tier": 1,
+   "kind": "rounds",
+   "title": "Generator Level 1 - Minute 15 - Extracted",
+   "duration_seconds": 900,
+   "order_index": 5,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 6
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 6
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 6
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 6
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 6
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 5
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 35
+  },
+  {
+   "offer_id": 453953178,
+   "tier": 2,
+   "kind": "rounds",
+   "title": "Generator Level 2 - Minute 1",
+   "duration_seconds": 60,
+   "order_index": 6,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 3
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 28
+  },
+  {
+   "offer_id": 469371983,
+   "tier": 2,
+   "kind": "rounds",
+   "title": "Generator Level 2 - Minute 1 - Extracted",
+   "duration_seconds": 60,
+   "order_index": 7,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 3
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 18
+  },
+  {
+   "offer_id": 472226045,
+   "tier": 2,
+   "kind": "rounds",
+   "title": "Generator Level 2 - Minute 6",
+   "duration_seconds": 360,
+   "order_index": 8,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 10
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 10
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 10
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 10
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 10
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 5
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 55
+  },
+  {
+   "offer_id": 484550193,
+   "tier": 2,
+   "kind": "rounds",
+   "title": "Generator Level 2 - Minute 6 - Extracted",
+   "duration_seconds": 360,
+   "order_index": 9,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 5
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 30
+  },
+  {
+   "offer_id": 393983841,
+   "tier": 2,
+   "kind": "rounds",
+   "title": "Generator Level 2 - Minute 15",
+   "duration_seconds": 900,
+   "order_index": 10,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 13
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 13
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 13
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 13
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 13
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 7
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 72
+  },
+  {
+   "offer_id": 220831601,
+   "tier": 2,
+   "kind": "rounds",
+   "title": "Generator Level 2 - Minute 15 - Extracted",
+   "duration_seconds": 900,
+   "order_index": 11,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 7
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 7
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 7
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 7
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 7
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 7
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 42
+  },
+  {
+   "offer_id": 422073670,
+   "tier": 3,
+   "kind": "rounds",
+   "title": "Generator Level 3 - Minute 1",
+   "duration_seconds": 60,
+   "order_index": 12,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 3
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 28
+  },
+  {
+   "offer_id": 227426011,
+   "tier": 3,
+   "kind": "rounds",
+   "title": "Generator Level 3 - Minute 1 - Extracted",
+   "duration_seconds": 60,
+   "order_index": 13,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 3
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 18
+  },
+  {
+   "offer_id": 705768477,
+   "tier": 3,
+   "kind": "rounds",
+   "title": "Generator Level 3 - Minute 6",
+   "duration_seconds": 360,
+   "order_index": 14,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 11
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 11
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 11
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 11
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 11
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 6
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 61
+  },
+  {
+   "offer_id": 873447931,
+   "tier": 3,
+   "kind": "rounds",
+   "title": "Generator Level 3 - Minute 6 - Extracted",
+   "duration_seconds": 360,
+   "order_index": 15,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 6
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 6
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 6
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 6
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 6
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 6
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 36
+  },
+  {
+   "offer_id": 210286248,
+   "tier": 3,
+   "kind": "rounds",
+   "title": "Generator Level 3 - Minute 15",
+   "duration_seconds": 900,
+   "order_index": 16,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 14
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 14
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 14
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 14
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 14
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 9
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 79
+  },
+  {
+   "offer_id": 745293473,
+   "tier": 3,
+   "kind": "rounds",
+   "title": "Generator Level 3 - Minute 15 - Extracted",
+   "duration_seconds": 900,
+   "order_index": 17,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 7
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 7
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 7
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 7
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 7
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 9
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 44
+  },
+  {
+   "offer_id": 115564565,
+   "tier": 4,
+   "kind": "rounds",
+   "title": "Generator Level 4 - Minute 1",
+   "duration_seconds": 60,
+   "order_index": 18,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 6
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 6
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 6
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 6
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 6
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 3
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 33
+  },
+  {
+   "offer_id": 752471690,
+   "tier": 4,
+   "kind": "rounds",
+   "title": "Generator Level 4 - Minute 1 - Extracted",
+   "duration_seconds": 60,
+   "order_index": 19,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 3
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 18
+  },
+  {
+   "offer_id": 606061881,
+   "tier": 4,
+   "kind": "rounds",
+   "title": "Generator Level 4 - Minute 6",
+   "duration_seconds": 360,
+   "order_index": 20,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 12
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 12
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 12
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 12
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 12
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 7
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 67
+  },
+  {
+   "offer_id": 657984885,
+   "tier": 4,
+   "kind": "rounds",
+   "title": "Generator Level 4 - Minute 6 - Extracted",
+   "duration_seconds": 360,
+   "order_index": 21,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 7
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 32
+  },
+  {
+   "offer_id": 871630759,
+   "tier": 4,
+   "kind": "rounds",
+   "title": "Generator Level 4 - Minute 15",
+   "duration_seconds": 900,
+   "order_index": 22,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 15
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 15
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 15
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 15
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 15
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 11
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 86
+  },
+  {
+   "offer_id": 115511823,
+   "tier": 4,
+   "kind": "rounds",
+   "title": "Generator Level 4 - Minute 15 - Extracted",
+   "duration_seconds": 900,
+   "order_index": 23,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 8
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 8
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 8
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 8
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 8
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 11
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 51
+  },
+  {
+   "offer_id": 458276432,
+   "tier": 5,
+   "kind": "rounds",
+   "title": "Generator Level 5 - Minute 1",
+   "duration_seconds": 60,
+   "order_index": 24,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 5
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 3
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 28
+  },
+  {
+   "offer_id": 527649346,
+   "tier": 5,
+   "kind": "rounds",
+   "title": "Generator Level 5 - Minute 1 - Extracted",
+   "duration_seconds": 60,
+   "order_index": 25,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 3
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 3
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 18
+  },
+  {
+   "offer_id": 741731381,
+   "tier": 5,
+   "kind": "rounds",
+   "title": "Generator Level 5 - Minute 6",
+   "duration_seconds": 360,
+   "order_index": 26,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 13
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 13
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 13
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 13
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 13
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 8
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 73
+  },
+  {
+   "offer_id": 411553282,
+   "tier": 5,
+   "kind": "rounds",
+   "title": "Generator Level 5 - Minute 6 - Extracted",
+   "duration_seconds": 360,
+   "order_index": 27,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 8
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 8
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 8
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 8
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 8
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 8
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 48
+  },
+  {
+   "offer_id": 365534666,
+   "tier": 5,
+   "kind": "rounds",
+   "title": "Generator Level 5 - Minute 15",
+   "duration_seconds": 900,
+   "order_index": 28,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 16
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 16
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 16
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 16
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 16
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 13
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 93
+  },
+  {
+   "offer_id": 473275938,
+   "tier": 5,
+   "kind": "rounds",
+   "title": "Generator Level 5 - Minute 15 - Extracted",
+   "duration_seconds": 900,
+   "order_index": 29,
+   "cost": [
+    {
+     "asset_id": "-1869396984",
+     "name": "Rounds Played",
+     "image": "",
+     "amount": 1
+    }
+   ],
+   "reward": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "image": "arctracker/metal_parts.png",
+     "amount": 8
+    },
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "image": "arctracker/fabric.png",
+     "amount": 8
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "image": "arctracker/plastic_parts.png",
+     "amount": 8
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "image": "arctracker/chemicals.png",
+     "amount": 8
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "image": "arctracker/rubber_parts.png",
+     "amount": 8
+    },
+    {
+     "asset_id": "1051518749",
+     "name": "Assorted Seeds",
+     "image": "arctracker/assorted_seeds.png",
+     "amount": 13
+    }
+   ],
+   "reward_pool": [],
+   "reward_total": 53
+  }
+ ]
+}

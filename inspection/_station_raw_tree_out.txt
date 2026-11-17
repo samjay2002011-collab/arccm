@@ -1,0 +1,592 @@
+
+===== G18 | 2214 عقدة خام
+   -- حقول العقدة الخام --
+      amount                   2214
+      durability               2214
+      etag                     2214
+      gameAssetId              2214
+      instanceId               2214
+      maxDurability            2214
+      slots                    2214
+      updatedAt                2214
+   -- عقد أسماء المحطات --
+      character expression wheel 02    {"amount": 1, "durability": 1, "etag": "29vmf4vs3e0so", "gameAssetId": 2915815, "instanceId": "05d9127f-19e2-46b4-8b63-3e23eebbd89b", "maxDurability": 1, "updatedAt": 1779422737848384000}
+      character expression wheel slot  {"amount": 1, "durability": 1, "etag": "3ckxxu9yhart5", "gameAssetId": 2009955329, "instanceId": "0c53034e-097f-4392-9a6e-542a480476c2", "maxDurability": 1, "updatedAt": 1779422737848384000}
+      utility auxiliary slot           {"amount": 1, "durability": 1, "etag": "c65vhmuwr598", "gameAssetId": -22259425, "instanceId": "0cf26c48-77d7-47bf-a8c9-dc73f70f6ce4", "maxDurability": 1, "updatedAt": 1779422737848384000}
+      character expression wheel 01    {"amount": 1, "durability": 1, "etag": "2s3vrtn17n904", "gameAssetId": 708753323, "instanceId": "295b4a57-dc41-4ffe-bfed-997cd48ec083", "maxDurability": 1, "updatedAt": 1779422737848384000}
+      character expression action slot {"amount": 1, "durability": 1, "etag": "hs35g3e0rgcy", "gameAssetId": 2009997924, "instanceId": "31cf321e-2a8d-4ff8-a571-daff52839577", "maxDurability": 1, "updatedAt": 1781970127044092000}
+      utility auxiliary slot           {"amount": 1, "durability": 1, "etag": "2ual8hpymxwd6", "gameAssetId": -22259425, "instanceId": "376a5a04-2a7d-43e9-a5f3-45a7cd64655c", "maxDurability": 1, "updatedAt": 1779422737848384000}
+      character expression action slot {"amount": 1, "durability": 1, "etag": "185g0k7uiz9uy", "gameAssetId": 2009997924, "instanceId": "37cbeb23-8649-41bc-a417-7b5fb5a85cdc", "maxDurability": 1, "updatedAt": 1781970127044092000}
+      utility auxiliary slot           {"amount": 1, "durability": 1, "etag": "3dex49jpsmqhj", "gameAssetId": -22259425, "instanceId": "3d62f671-b5fa-4c6e-abd3-80dccfa4a3b6", "maxDurability": 1, "updatedAt": 1779422737848384000}
+      character expression action slot {"amount": 1, "durability": 1, "etag": "1l7m723yrt95q", "gameAssetId": 2009997924, "instanceId": "3e2d4597-0cb1-45b3-8f10-e4994b675b9c", "maxDurability": 1, "updatedAt": 1781970127044092000}
+      utility auxiliary slot           {"amount": 1, "durability": 1, "etag": "56nih1y0jwc5", "gameAssetId": -22259425, "instanceId": "5bbd9dc4-85d5-4a96-bd18-09444ba62b9f", "maxDurability": 1, "updatedAt": 1779422737848384000}
+      crude explosives                 {"amount": 1, "durability": 1, "etag": "11zhkm99lcvhx", "gameAssetId": 1625205858, "instanceId": "62e1bb76-5f4b-4ae1-a7e5-53ec5e7eec3b", "maxDurability": 1, "updatedAt": 1793305225127603000}
+      character expression action slot {"amount": 1, "durability": 1, "etag": "jgb0kga35j79", "gameAssetId": 2009997924, "instanceId": "64d57d24-2fe7-40f3-9c97-ab6807d8b130", "maxDurability": 1, "updatedAt": 1781970127044092000}
+      anvil splitter                   {"amount": 1, "durability": 1, "etag": "31nyjlr6kux38", "gameAssetId": -2130292638, "instanceId": "6c70c2c3-61af-4e2d-8c31-9049419ee4a4", "maxDurability": 1, "updatedAt": 1779580504244093000}
+      utility auxiliary slot           {"amount": 1, "durability": 1, "etag": "2s4dl6o9m4tzm", "gameAssetId": -22259425, "instanceId": "787ce0a4-9b5a-4c39-a736-af5a5d85013b", "maxDurability": 1, "updatedAt": 1779422737848384000}
+      character expression action slot {"amount": 1, "durability": 1, "etag": "1kfgke4rmhxen", "gameAssetId": 2009997924, "instanceId": "7c143052-c18b-4887-80fc-70523c084c2e", "maxDurability": 1, "updatedAt": 1781970127044092000}
+      crude explosives                 {"amount": 1, "durability": 1, "etag": "8kog1fzn45vi", "gameAssetId": 1625205858, "instanceId": "7deb8e15-a87f-4f26-a8f2-37405003187c", "maxDurability": 1, "updatedAt": 1793407424079434000}
+      workbench                        {"amount": 1, "durability": 1, "etag": "1jsfjr33p8ylx", "gameAssetId": -834400146, "instanceId": "8fd09cba-4868-4baa-821b-287ab90581dd", "maxDurability": 1, "updatedAt": 1779422737848384000}
+      utility auxiliary slot           {"amount": 1, "durability": 1, "etag": "sas9kfyz7rvb", "gameAssetId": -22259425, "instanceId": "94998ae1-bff8-4b3e-bd56-f59cdc37fa4c", "maxDurability": 1, "updatedAt": 1779422737848384000}
+      character expression action slot {"amount": 1, "durability": 1, "etag": "37wi7a76k4f66", "gameAssetId": 2009997924, "instanceId": "9b52b439-98a0-46a1-bc1d-b7d1d517c03e", "maxDurability": 1, "updatedAt": 1781970127044092000}
+      character expression action slot {"amount": 1, "durability": 1, "etag": "2rlgivvbr79c9", "gameAssetId": 2009997924, "instanceId": "a7cc69b6-68fe-4cf6-8f40-788c5bb7c02b", "maxDurability": 1, "updatedAt": 1781970127044092000}
+      gunsmith i                       {"amount": 1, "durability": 1, "etag": "90170ftm28l0", "gameAssetId": 291196846, "instanceId": "a8080edb-4ee0-446a-b09a-3f3f04343aa8", "maxDurability": 1, "updatedAt": 1786825093079767000}
+      utility auxiliary slot           {"amount": 1, "durability": 1, "etag": "lix76azpabhk", "gameAssetId": -22259425, "instanceId": "ca9d7445-7c5e-47da-b1a9-76414595b3fa", "maxDurability": 1, "updatedAt": 1779422737848384000}
+      character expression action slot {"amount": 1, "durability": 1, "etag": "27gv17z5zh7sa", "gameAssetId": 2009997924, "instanceId": "e21ea85d-5877-49a6-b0a4-600450d62dc8", "maxDurability": 1, "updatedAt": 1781970127044092000}
+      chemicals                        {"amount": 21, "durability": 1, "etag": "1heksqqkt5nhl", "gameAssetId": -1565478080, "instanceId": "e5145456-9634-47b6-b65a-d3373d33e354", "maxDurability": 1, "updatedAt": 1793359781791775000}
+      character expression wheel slot  {"amount": 1, "durability": 1, "etag": "2mzfk67ctmuln", "gameAssetId": -1441122968, "instanceId": "f05cac3e-00c2-42c1-bceb-030878d2049c", "maxDurability": 1, "updatedAt": 1779422737848384000}
+      anvil splitter                   {"amount": 1, "durability": 1, "etag": "gb6nsch15oee", "gameAssetId": -2130292638, "instanceId": "f693a6ac-af6e-428d-ac70-14df07102588", "maxDurability": 1, "updatedAt": 1779579729933648000}
+      الإجمالي: 26
+   -- عقد ليها حقل level/tier/stage/rank --
+      الإجمالي: 0
+   -- الجذور (عقد بلا أب) --
+      عدد الجذور: 2214
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      Rounds Played                      asset=-1869396984 amount=105 slots=0
+      Quick Use Slot                     asset=-1277506061 amount=1 slots=0
+      Kinetic Converter                  asset=668021707 amount=1 slots=0
+      Extended Barrel                    asset=1407760402 amount=1 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Tactical Mk. 3 (Defensive) Backpac asset=-1990910379 amount=1 slots=1
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Free Loadout Weapon 1              asset=-668596565 amount=1 slots=1
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      Combat Mk. 2 Weapon 1              asset=753492342 amount=1 slots=1
+      (بلا اسم)                          asset=95563781 amount=1 slots=0
+      Recruit Headgear                   asset=-801164250 amount=1 slots=1
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Combat Mk. 1 Quick Use Slot        asset=-560137962 amount=1 slots=1
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Tactical Mk. 2 Quick Use Slot      asset=1396280748 amount=1 slots=1
+      Looting Mk. 3 (Survivor) Weapon 1  asset=-720305360 amount=1 slots=1
+      Looting Mk. 3 (Cautious) Backpack  asset=1508621632 amount=1 slots=1
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      Extended Shotgun Mag III           asset=922097959 amount=1 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Combat Mk. 3 (Flanking) Weapon 1   asset=-682383645 amount=1 slots=1
+      Quick Use Slot                     asset=-1277506061 amount=1 slots=0
+      Workshop Slot                      asset=407 amount=1 slots=0
+      Face 15                            asset=316059420 amount=1 slots=0
+      (بلا اسم)                          asset=-1580377729 amount=1 slots=0
+      Light Magazine Slot                asset=-1337209565 amount=1 slots=1
+      Kinetic Converter                  asset=668021707 amount=1 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      OI Unlock Practice Range Rounds    asset=-904901659 amount=1 slots=0
+      Combat Mk. 2 Shield Slot           asset=-452616269 amount=1 slots=1
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      Burletta IV                        asset=1407799927 amount=1 slots=3
+      Melee Weapon Slot                  asset=-666604429 amount=1 slots=0
+      Muzzle Mod Slot                    asset=-377848428 amount=1 slots=1
+      (بلا اسم)                          asset=-2076477526 amount=1 slots=1
+      No Backpack Attachment             asset=338295859 amount=1 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      Character Expression Wheel 02      asset=2915815 amount=1 slots=8
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Tactical Free Loadout Quick Use Sl asset=-248326389 amount=1 slots=1
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Enforcer Mesh Toggle2              asset=-1911193360 amount=1 slots=1
+      Character                          asset=1580756609 amount=1 slots=11
+      DA_Inventory_LF_Raider01_Container asset=-451505170 amount=1 slots=1
+      Tactical Mk. 1 Weapon 1 Slot       asset=-2142772724 amount=1 slots=1
+      Recruit Colors                     asset=-241770798 amount=1 slots=1
+      Il Toro IV                         asset=331271227 amount=1 slots=5
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      DA_Inventory_LF_Raider02_Container asset=554150035 amount=1 slots=1
+      Light Magazine Slot                asset=-1337209565 amount=1 slots=1
+      Medium Gun Parts Blueprint         asset=-1511047275 amount=1 slots=0
+      (بلا اسم)                          asset=1622100049 amount=1 slots=0
+      DA_Inventory_LF_Raider02_Container asset=-92162265 amount=1 slots=6
+
+===== G22 | 5688 عقدة خام
+   -- حقول العقدة الخام --
+      amount                   5688
+      durability               5688
+      etag                     5688
+      gameAssetId              5688
+      instanceId               5688
+      maxDurability            5688
+      slots                    5688
+      updatedAt                5688
+   -- عقد أسماء المحطات --
+      unlock craft anvil               {"amount": 1, "durability": 1, "etag": "r4f2o0qrs05d", "gameAssetId": 970997170, "instanceId": "008d7833-8978-4b21-b827-6914c5945bd1", "maxDurability": 1, "updatedAt": 1790547118007558000}
+      utility auxiliary slot           {"amount": 1, "durability": 1, "etag": "ioqmuba0g6b6", "gameAssetId": -22259425, "instanceId": "019fe018-6fd4-4fa4-972f-3a93a79f272c", "maxDurability": 1, "updatedAt": 1779929546661809000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "1uychjb42tgzd", "gameAssetId": -1565478080, "instanceId": "025f09c5-5b0e-4c14-b820-b88b202f2a0b", "maxDurability": 1, "updatedAt": 1792163909979456000}
+      explosive mine blueprint         {"amount": 1, "durability": 1, "etag": "19eqzls37bz0c", "gameAssetId": 1266735983, "instanceId": "037057f6-13d2-4de3-9f59-79f55f008b05", "maxDurability": 1, "updatedAt": 1792463060085054000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "jwrg0tsp7hev", "gameAssetId": -1565478080, "instanceId": "04de0d46-f9cb-4c79-8861-6f1fd3e6d7f1", "maxDurability": 1, "updatedAt": 1791489627530495000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "2bu9asbm31t72", "gameAssetId": -1565478080, "instanceId": "04efd3b3-356e-4e75-8b6b-c78b65497a58", "maxDurability": 1, "updatedAt": 1792187637864878000}
+      character expression action slot {"amount": 1, "durability": 1, "etag": "796jwlqmib6l", "gameAssetId": 2009997924, "instanceId": "05452617-3137-434c-90b1-e462bfd178d8", "maxDurability": 1, "updatedAt": 1783449896693201000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "2hzo9ok3jesop", "gameAssetId": -1565478080, "instanceId": "054850fa-7ed3-479f-b608-d815b75f1479", "maxDurability": 1, "updatedAt": 1791816560026201000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "1gqj5gwio9nfw", "gameAssetId": -1565478080, "instanceId": "07fd1c3f-a730-413d-aee8-8e68fa0cdf30", "maxDurability": 1, "updatedAt": 1791931338432485000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "os2thv93ij3m", "gameAssetId": -1565478080, "instanceId": "08003525-1a62-46d5-bf0e-fd851ff24ca8", "maxDurability": 1, "updatedAt": 1792687547004305000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "32jbv0ra1gs8i", "gameAssetId": -1565478080, "instanceId": "0ca71d75-f100-45eb-8e70-fad0e0cc986f", "maxDurability": 1, "updatedAt": 1791026636475457000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "27vcpzyx0ruka", "gameAssetId": -1565478080, "instanceId": "0d5c6da6-68e6-4224-94c6-269daf7da4de", "maxDurability": 1, "updatedAt": 1792192992650688000}
+      explosive compound               {"amount": 5, "durability": 1, "etag": "1pqscr0ge8jwm", "gameAssetId": 1004246812, "instanceId": "0d80fa71-744f-484c-a117-9410a125eacd", "maxDurability": 1, "updatedAt": 1793241358789780000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "3k6ssh36jyzfz", "gameAssetId": -1565478080, "instanceId": "0f122046-4276-4838-aadd-e7f9264e674c", "maxDurability": 1, "updatedAt": 1793397766762443000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "zgine3u42mph", "gameAssetId": -1565478080, "instanceId": "0f6c6aae-2d98-4559-b8fe-daf8926b3a28", "maxDurability": 1, "updatedAt": 1791513757675588000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "3esfe6rtxr1l8", "gameAssetId": -1565478080, "instanceId": "11959010-e83a-4c3d-ad33-4955a95918bf", "maxDurability": 1, "updatedAt": 1791426798008224000}
+      utility auxiliary slot           {"amount": 1, "durability": 1, "etag": "2omz2b46jkjpz", "gameAssetId": -22259425, "instanceId": "135156da-0198-48c7-aa6f-f0203e8b5970", "maxDurability": 1, "updatedAt": 1790991753793857000}
+      utility auxiliary slot           {"amount": 1, "durability": 1, "etag": "1w0cerz2mxgfm", "gameAssetId": -22259425, "instanceId": "14d3b64e-a485-4958-8a1c-6b4127b6d58d", "maxDurability": 1, "updatedAt": 1779929546661809000}
+      anvil splitter                   {"amount": 1, "durability": 1, "etag": "7ijvh4msctgw", "gameAssetId": -2130292638, "instanceId": "1548edcd-85e2-4dda-ba5a-c75a854259f6", "maxDurability": 1, "updatedAt": 1790902512641233000}
+      stella montis medical storage ke {"amount": 1, "durability": 1, "etag": "37faidj04pjl1", "gameAssetId": 189050774, "instanceId": "16a50f1b-92ba-4af5-b776-9fa32eee61cf", "maxDurability": 1, "updatedAt": 1789265200773330000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "3sx6qthjjmt1r", "gameAssetId": -1565478080, "instanceId": "197cbd9d-ae2e-476e-800d-ccf61e73ea0d", "maxDurability": 1, "updatedAt": 1793241357479377000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "3licbtec11ij7", "gameAssetId": -1565478080, "instanceId": "198cf7e7-9df7-4a1e-a82f-52b1003b4a44", "maxDurability": 1, "updatedAt": 1793241357479377000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "2iuoetzkxajy8", "gameAssetId": -1565478080, "instanceId": "19d0c0c2-e63b-49e9-91a6-38b670d16a81", "maxDurability": 1, "updatedAt": 1791489627530495000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "2qcxqs70jcmvh", "gameAssetId": -1565478080, "instanceId": "1a5a1b7e-c7ff-44b7-9341-d1cdf688da0e", "maxDurability": 1, "updatedAt": 1790807127338894000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "2vx7y3g86t2e1", "gameAssetId": -1565478080, "instanceId": "1b05ae6c-92c8-4d47-93ef-42b81fde34cf", "maxDurability": 1, "updatedAt": 1791589121205966000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "27tcs80t8jhgn", "gameAssetId": -1565478080, "instanceId": "1c1c3a49-f5d7-4056-bcd5-6af610e76476", "maxDurability": 1, "updatedAt": 1793397766762443000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "1m9xajb4v7zzx", "gameAssetId": -1565478080, "instanceId": "1d6180f1-b806-4ed4-aabd-064b88099082", "maxDurability": 1, "updatedAt": 1791513757675588000}
+      crude explosives                 {"amount": 10, "durability": 1, "etag": "1ynv2xbli5fgt", "gameAssetId": 1625205858, "instanceId": "1d748298-1469-4071-a3e8-4eebd6dd3493", "maxDurability": 1, "updatedAt": 1793241359237356000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "3ve24uj44qucc", "gameAssetId": -1565478080, "instanceId": "1e1cacb3-68ea-4240-880b-7a9fb191a5b7", "maxDurability": 1, "updatedAt": 1792192992650688000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "17r691ihicfln", "gameAssetId": -1565478080, "instanceId": "1e8bbdca-c55a-415c-8a98-5e9292db37f8", "maxDurability": 1, "updatedAt": 1791589121205966000}
+      anvil splitter                   {"amount": 1, "durability": 1, "etag": "25al1unayyi4w", "gameAssetId": -2130292638, "instanceId": "1f2593e3-820e-4b21-971a-767e713c9ccd", "maxDurability": 1, "updatedAt": 1790902512641233000}
+      chemicals                        {"amount": 12, "durability": 1, "etag": "1seegjnf61eda", "gameAssetId": -1565478080, "instanceId": "1f8ed079-5775-4c23-9dfd-d41894062c7f", "maxDurability": 1, "updatedAt": 1793403260358406000}
+      anvil splitter                   {"amount": 1, "durability": 1, "etag": "2qx00tk8657bv", "gameAssetId": -2130292638, "instanceId": "1f96d8f9-6b96-484e-85c4-905ec24954da", "maxDurability": 1, "updatedAt": 1790902512641233000}
+      anvil splitter                   {"amount": 1, "durability": 1, "etag": "2osr75dmydafq", "gameAssetId": -2130292638, "instanceId": "23a8672b-007c-4ddf-992c-8a3f953dba83", "maxDurability": 1, "updatedAt": 1790902512641233000}
+      crude explosives                 {"amount": 1, "durability": 1, "etag": "3k3u2az2ic8q", "gameAssetId": 1625205858, "instanceId": "2567b801-8606-4179-86ff-c319cf3e820a", "maxDurability": 1, "updatedAt": 1793404786007659000}
+      explosive compound               {"amount": 5, "durability": 1, "etag": "1wu9ccdvfd6sg", "gameAssetId": 1004246812, "instanceId": "25dd7811-cb00-49ca-add9-4054a4b3dedb", "maxDurability": 1, "updatedAt": 1792179474758306000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "1nd39pjoz6dch", "gameAssetId": -1565478080, "instanceId": "25f20f51-f271-4bb7-aa18-93765dd4ce3a", "maxDurability": 1, "updatedAt": 1792767121163828000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "1psu92gq9gv5c", "gameAssetId": -1565478080, "instanceId": "27b7f09e-28d3-46fc-8b88-afca040ddfef", "maxDurability": 1, "updatedAt": 1791931338432485000}
+      utility auxiliary slot           {"amount": 1, "durability": 1, "etag": "2xvdctsogkyly", "gameAssetId": -22259425, "instanceId": "27d0eef5-15ae-4431-a3d8-91fe83aac034", "maxDurability": 1, "updatedAt": 1779929546661809000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "3091t0ybbvqye", "gameAssetId": -1565478080, "instanceId": "29d96b1a-1a55-4ad3-96a1-c6c41c49c9fb", "maxDurability": 1, "updatedAt": 1790364258231406000}
+      الإجمالي: 213
+   -- عقد ليها حقل level/tier/stage/rank --
+      الإجمالي: 0
+   -- الجذور (عقد بلا أب) --
+      عدد الجذور: 5688
+      (بلا اسم)                          asset=928384146 amount=1 slots=0
+      Seeker Grenade Blueprint           asset=1383004532 amount=1 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Bob Slick (Grey)                   asset=1943607055 amount=1 slots=0
+      Underbarrel Mod Slot               asset=-1923186072 amount=1 slots=0
+      Heavy Gun Parts                    asset=-1903407680 amount=5 slots=0
+      Underbarrel Mod Slot               asset=-1923186072 amount=1 slots=0
+      Colorful Shoes (Red)               asset=-1526934024 amount=3 slots=0
+      Heavy Fuze Grenade                 asset=787027311 amount=3 slots=0
+      Empty Wine Bottle                  asset=-1506763647 amount=1 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      Exodus Modules                     asset=-1177716644 amount=3 slots=0
+      Surge Shield Recharger             asset=-380745354 amount=5 slots=0
+      DA_Inventory_LF_Raider03_Container asset=771048769 amount=1 slots=1
+      Pop Trigger                        asset=1041760181 amount=3 slots=0
+      Unlock Craft Anvil                 asset=970997170 amount=1 slots=0
+      (بلا اسم)                          asset=-730174445 amount=9 slots=0
+      Shotgun Magazine Slot              asset=1011082201 amount=1 slots=0
+      Combat Mk. 3 (Flanking) Blueprint  asset=-553283088 amount=1 slots=0
+      Extended Shotgun Mag II Blueprint  asset=-255420364 amount=1 slots=0
+      Industrial Magnet                  asset=628543086 amount=3 slots=0
+      Trigger Nade Blueprint             asset=1380531218 amount=1 slots=0
+      Silencer I                         asset=-409081322 amount=1 slots=0
+      Power Cable                        asset=1502122136 amount=3 slots=0
+      Oil                                asset=1741060583 amount=1 slots=0
+      Metal Parts                        asset=-1437131902 amount=50 slots=0
+      Rope                               asset=130254116 amount=5 slots=0
+      Sample Cleaner                     asset=-1997648523 amount=3 slots=0
+      Utility Auxiliary Slot             asset=-22259425 amount=1 slots=0
+      Oil                                asset=1741060583 amount=15 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Combat Mk. 3 (Aggressive) Quick Us asset=1966717441 amount=1 slots=1
+      Cooling Coil                       asset=1928875024 amount=3 slots=0
+      OI Unlock Unlock7 Rounds           asset=702257828 amount=1 slots=0
+      (بلا اسم)                          asset=-1692924029 amount=1 slots=1
+      Water Pump                         asset=-1637094497 amount=3 slots=0
+      Telemetry Transceiver              asset=-25914444 amount=3 slots=0
+      Surge Coil                         asset=-828273506 amount=3 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Deadline Blueprint                 asset=-386705321 amount=1 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      OI Unlock Unlock Offers Tier3 Leve asset=492330381 amount=1 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      Light Magazine Slot                asset=-1337209565 amount=1 slots=0
+      Fabric                             asset=-1580114534 amount=50 slots=0
+      Medium Magazine Slot               asset=-88515549 amount=1 slots=0
+      Chemicals                          asset=-1565478080 amount=50 slots=0
+      (بلا اسم)                          asset=-1896657797 amount=1 slots=0
+      DA_Inventory_LF_Raider03_Container asset=1487115454 amount=1 slots=1
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Toaster                            asset=-1789285630 amount=3 slots=0
+      Combat Mk. 2 Weapon 2              asset=874940549 amount=1 slots=1
+      (بلا اسم)                          asset=732670678 amount=1 slots=0
+      Looting MK. 3 (Cautious)           asset=433079423 amount=1 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Adrenaline Shot                    asset=923438116 amount=5 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Unlock Craft Vita Spray            asset=-2117381160 amount=1 slots=0
+      Great Mullein                      asset=-631032368 amount=15 slots=0
+      Firearm Slot                       asset=-620731692 amount=1 slots=0
+
+===== RAIDER38830 | 2011 عقدة خام
+   -- حقول العقدة الخام --
+      amount                   2011
+      durability               2011
+      etag                     2011
+      gameAssetId              2011
+      instanceId               2011
+      maxDurability            2011
+      slots                    2011
+      updatedAt                2011
+   -- عقد أسماء المحطات --
+      refiner i                        {"amount": 1, "durability": 1, "etag": "wkz54ffjc1rn", "gameAssetId": -935249204, "instanceId": "01fc32bd-45b7-42aa-a4f2-900ddb589930", "maxDurability": 1, "updatedAt": 1793465755533845000}
+      utility auxiliary slot           {"amount": 1, "durability": 1, "etag": "34lvk922pn42h", "gameAssetId": -22259425, "instanceId": "0c6a77ec-3583-4eaf-845a-02c6882ff67e", "maxDurability": 1, "updatedAt": 1784575400617639000}
+      utility auxiliary slot           {"amount": 1, "durability": 1, "etag": "2fbtxrodw3lh0", "gameAssetId": -22259425, "instanceId": "11c39896-d3a5-4172-9479-1ae07022925e", "maxDurability": 1, "updatedAt": 1766401797564662000}
+      character expression wheel slot  {"amount": 1, "durability": 1, "etag": "2user27wp1xp2", "gameAssetId": 2009955329, "instanceId": "143d6fcb-8e2f-49a4-9f96-75acf26751d3", "maxDurability": 1, "updatedAt": 1764456988732878000}
+      utility auxiliary slot           {"amount": 1, "durability": 1, "etag": "20vzrxv0vfhw3", "gameAssetId": -22259425, "instanceId": "1a04b857-efb1-49c9-bafc-2b2cf512b5dd", "maxDurability": 1, "updatedAt": 1766401797564662000}
+      gunsmith i                       {"amount": 1, "durability": 1, "etag": "2e9by72muhuzw", "gameAssetId": 291196846, "instanceId": "2fabb1b3-f4eb-4739-b9f4-524cfd61a19a", "maxDurability": 1, "updatedAt": 1766438108696901000}
+      crude explosives                 {"amount": 3, "durability": 1, "etag": "1vusgo9xg3oln", "gameAssetId": 1625205858, "instanceId": "30290586-7b58-42cf-b1b8-d25db4b225d9", "maxDurability": 1, "updatedAt": 1766437051399748000}
+      medical lab i                    {"amount": 1, "durability": 1, "etag": "2z158a05g0n5u", "gameAssetId": -1840090314, "instanceId": "3c3cdc07-ca17-4aa1-80f0-0f5f1e373b43", "maxDurability": 1, "updatedAt": 1767130377037980000}
+      character expression wheel 01    {"amount": 1, "durability": 1, "etag": "3gubreovmv1mf", "gameAssetId": 708753323, "instanceId": "3e623543-bd7d-48a1-a006-cdf7694715b9", "maxDurability": 1, "updatedAt": 1784575400617639000}
+      utility auxiliary slot           {"amount": 1, "durability": 1, "etag": "1awgawhzgzqap", "gameAssetId": -22259425, "instanceId": "400ceb9a-88a6-43d9-8312-890e5700c4f3", "maxDurability": 1, "updatedAt": 1766401797564662000}
+      character expression action slot {"amount": 1, "durability": 1, "etag": "2m56nxi53h92l", "gameAssetId": 2009997924, "instanceId": "549411c3-1b27-41d7-9f9a-334dab9ae38b", "maxDurability": 1, "updatedAt": 1765900806894840000}
+      utility station i                {"amount": 1, "durability": 1, "etag": "27fmdq7ci5yrx", "gameAssetId": 1140794731, "instanceId": "565209a8-41e4-4b0e-bf7c-bedb46ab5e95", "maxDurability": 1, "updatedAt": 1767130382453703000}
+      character expression action slot {"amount": 1, "durability": 1, "etag": "33q9a3iqm570t", "gameAssetId": 2009997924, "instanceId": "6ae15b2f-432f-4505-a7a7-2a2609aebfa5", "maxDurability": 1, "updatedAt": 1765900806894840000}
+      utility auxiliary slot           {"amount": 1, "durability": 1, "etag": "1z3kjb0tbhera", "gameAssetId": -22259425, "instanceId": "7f892c7c-aed4-4844-a660-c46ed28a4c1d", "maxDurability": 1, "updatedAt": 1784575400617639000}
+      character expression action slot {"amount": 1, "durability": 1, "etag": "3mc40gdoypw8d", "gameAssetId": 2009997924, "instanceId": "8d087df5-789d-4233-8311-5ffb89176dc8", "maxDurability": 1, "updatedAt": 1765900806894840000}
+      utility auxiliary slot           {"amount": 1, "durability": 1, "etag": "xb65o21a2ik2", "gameAssetId": -22259425, "instanceId": "8f63a083-e1a9-4e68-a8a6-c16eafcc76ca", "maxDurability": 1, "updatedAt": 1793444610827578000}
+      gear bench i                     {"amount": 1, "durability": 1, "etag": "1xqls5vsxfbso", "gameAssetId": 1415022693, "instanceId": "941df77b-4c41-4e00-aac6-20ad93639257", "maxDurability": 1, "updatedAt": 1766438117283847000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "1celjls4zlv4b", "gameAssetId": -1565478080, "instanceId": "9924c5a9-394d-43fd-b501-c466d514b02e", "maxDurability": 1, "updatedAt": 1793446470423940000}
+      character expression wheel 02    {"amount": 1, "durability": 1, "etag": "8c2ga2id1wxo", "gameAssetId": 2915815, "instanceId": "9c10c034-9abe-4958-8da2-ee66e3db35d3", "maxDurability": 1, "updatedAt": 1764456988732878000}
+      unlock craft explosive mine      {"amount": 1, "durability": 1, "etag": "18kj621s34d5e", "gameAssetId": -1295524363, "instanceId": "a3b3a492-83d0-493c-a836-2c39fb77e39d", "maxDurability": 1, "updatedAt": 1766440456874099000}
+      character expression action slot {"amount": 1, "durability": 1, "etag": "1rcwcrrfsbzk7", "gameAssetId": 2009997924, "instanceId": "aae9fa40-a16b-4d2f-a659-4676d799e021", "maxDurability": 1, "updatedAt": 1765900806894840000}
+      character expression action slot {"amount": 1, "durability": 1, "etag": "12f0a4ctqnq4c", "gameAssetId": 2009997924, "instanceId": "b6e98a34-7943-43e4-936f-deb7e702708b", "maxDurability": 1, "updatedAt": 1765900806894840000}
+      stella montis medical storage ke {"amount": 1, "durability": 1, "etag": "34qo4j1slasz4", "gameAssetId": 189050774, "instanceId": "b787aa5a-1112-4d8a-971e-cf886f3d6729", "maxDurability": 1, "updatedAt": 1766697381593981000}
+      explosives station i             {"amount": 1, "durability": 1, "etag": "10dxgj00sao0h", "gameAssetId": -518683794, "instanceId": "bcb93fae-dbb9-4985-a5e6-e99253de888c", "maxDurability": 1, "updatedAt": 1793465762323788000}
+      workbench                        {"amount": 1, "durability": 1, "etag": "3ozf1jsdhj2m8", "gameAssetId": -834400146, "instanceId": "bdbdca38-4299-40ab-845b-a4e83566da9d", "maxDurability": 1, "updatedAt": 1766401797564662000}
+      explosive compound               {"amount": 1, "durability": 1, "etag": "1bjoy4cvwbdgr", "gameAssetId": 1004246812, "instanceId": "c298b242-4bf5-4114-a3ce-dd1ebe05d913", "maxDurability": 1, "updatedAt": 1766437051399748000}
+      character expression wheel slot  {"amount": 1, "durability": 1, "etag": "lygtflbcwbnd", "gameAssetId": -1441122968, "instanceId": "c38ee271-b817-43c3-a7ae-5e70e0364b03", "maxDurability": 1, "updatedAt": 1764456988732878000}
+      chemicals                        {"amount": 13, "durability": 1, "etag": "y2pbce2pqp90", "gameAssetId": -1565478080, "instanceId": "c4397804-4ce8-4f61-9d6a-36cccbfc7744", "maxDurability": 1, "updatedAt": 1793446732209160000}
+      character expression action slot {"amount": 1, "durability": 1, "etag": "1dju6y117avuw", "gameAssetId": 2009997924, "instanceId": "d1d4ab1d-8a59-4dc1-a26c-2d1b6dacf10f", "maxDurability": 1, "updatedAt": 1765900806894840000}
+      character expression action slot {"amount": 1, "durability": 1, "etag": "qehp8zaih2zu", "gameAssetId": 2009997924, "instanceId": "db7bb548-0343-45a4-b91e-2bfa57d303e3", "maxDurability": 1, "updatedAt": 1765900806894840000}
+      anvil i                          {"amount": 1, "durability": 0.197513, "etag": "2w5mu2132hvso", "gameAssetId": 1951118983, "instanceId": "de43f5f3-e9e4-46ad-b862-c9b5db7c369f", "maxDurability": 1, "updatedAt": 1793444562390717000}
+      anvil i                          {"amount": 1, "durability": 0.26, "etag": "2ke1wnwk1zjau", "gameAssetId": 1951118983, "instanceId": "ed40aede-3558-4d43-b7de-bd27107dca59", "maxDurability": 1, "updatedAt": 1793444562390717000}
+      utility auxiliary slot           {"amount": 1, "durability": 1, "etag": "3g8anpv5pz6f3", "gameAssetId": -22259425, "instanceId": "f5e1fc96-4a8e-4659-946d-2ea16409b1aa", "maxDurability": 1, "updatedAt": 1766401797564662000}
+      character expression action slot {"amount": 1, "durability": 1, "etag": "e3nirdmf4wgj", "gameAssetId": 2009997924, "instanceId": "fbc44e9d-a047-4b59-a182-40366b892fcf", "maxDurability": 1, "updatedAt": 1765900806894840000}
+      الإجمالي: 34
+   -- عقد ليها حقل level/tier/stage/rank --
+      الإجمالي: 0
+   -- الجذور (عقد بلا أب) --
+      عدد الجذور: 2011
+      Combat Mk. 3 (Aggressive) Melee We asset=-1324415871 amount=1 slots=1
+      Enforcer Mesh Toggle1              asset=-1541419663 amount=1 slots=1
+      Safe Pocket Slot                   asset=-3680536 amount=1 slots=0
+      Advanced Electrical Components     asset=-770265029 amount=1 slots=0
+      Combat Mk. 3 (Aggressive) Safe Poc asset=1381051701 amount=1 slots=1
+      DA_OI_Outfit_Pauldroid_MeshToggle2 asset=-338427638 amount=1 slots=0
+      Tactical Mk. 3 (Healing) Quick Use asset=-2088267260 amount=1 slots=4
+      Free Loadout Backpack              asset=1258778631 amount=1 slots=12
+      Workshop Room D                    asset=13529440 amount=1 slots=17
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Expeditioner Mesh Toggle3          asset=1714230368 amount=1 slots=1
+      DA_Inventory_LF_Raider01_Container asset=-451505170 amount=1 slots=1
+      Mechanical Components              asset=1959573223 amount=7 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Light Impact Grenade               asset=877778759 amount=5 slots=0
+      Quick Use Slot                     asset=-1277506061 amount=1 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Quick Use Slot                     asset=-1277506061 amount=1 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      (بلا اسم)                          asset=483596378 amount=1 slots=0
+      Light Shield Slot                  asset=-1537698006 amount=1 slots=0
+      Burletta II                        asset=-2054621793 amount=1 slots=3
+      Refiner I                          asset=-935249204 amount=1 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Medium Shield Slot                 asset=719434862 amount=1 slots=0
+      (بلا اسم)                          asset=-1508859667 amount=1 slots=1
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Light Shield                       asset=1505999062 amount=1 slots=0
+      Bomber Helmet (On)                 asset=-395201445 amount=1 slots=0
+      Bandage                            asset=583877119 amount=5 slots=0
+      Afro Fade (Red)                    asset=1928011832 amount=1 slots=0
+      Recede Messy (Grey)                asset=-2034536159 amount=1 slots=0
+      Short Stubble (Black)              asset=1852954932 amount=1 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      (بلا اسم)                          asset=-836975388 amount=1 slots=0
+      Firecracker                        asset=-823752633 amount=5 slots=0
+      Underbarrel Mod Slot               asset=-1923186072 amount=1 slots=1
+      Welder (Green)                     asset=-1535813943 amount=1 slots=0
+      Tactical Mk. 3 (Revival) Quick Use asset=1898865666 amount=1 slots=1
+      Welder                             asset=606920996 amount=1 slots=4
+      Skulker Targeter                   asset=2086312520 amount=1 slots=0
+      Medium Ammo                        asset=313013500 amount=80 slots=0
+      Scout Backpack (White)             asset=-2069842691 amount=1 slots=0
+      No Rooster Outfit                  asset=-978004585 amount=1 slots=0
+      Looting Mk. 2 Shield Slot          asset=1402437787 amount=1 slots=1
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      Looting Mk. 1                      asset=-448345380 amount=1 slots=7
+      DA_OI_Outfit_Macrame_MeshToggle2   asset=-254713447 amount=1 slots=1
+      Workshop Slot                      asset=407 amount=1 slots=0
+      Enforcer Gasmask (Off)             asset=-2144948459 amount=1 slots=0
+      Looting Mk. 2 Quick Use            asset=838324696 amount=1 slots=4
+      Enforcer Goggles (Off)             asset=-458872839 amount=1 slots=0
+      Mullet (Red)                       asset=-926812918 amount=1 slots=0
+      Safe Pocket Slot                   asset=-3680536 amount=1 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=0
+
+===== RAIDER74888 | 3320 عقدة خام
+   -- حقول العقدة الخام --
+      amount                   3320
+      durability               3320
+      etag                     3320
+      gameAssetId              3320
+      instanceId               3320
+      maxDurability            3320
+      slots                    3320
+      updatedAt                3320
+   -- عقد أسماء المحطات --
+      crude explosives                 {"amount": 10, "durability": 1, "etag": "1v08ijpdhv4xs", "gameAssetId": 1625205858, "instanceId": "01d8357c-1383-4b51-9f7a-ba50e92b333f", "maxDurability": 1, "updatedAt": 1788396402221033000}
+      character expression wheel slot  {"amount": 1, "durability": 1, "etag": "1nnnaf556rs4r", "gameAssetId": -1441122968, "instanceId": "02a7d1a0-8ff8-4425-8491-606e5929200b", "maxDurability": 1, "updatedAt": 1779805182286562000}
+      crude explosives                 {"amount": 10, "durability": 1, "etag": "3r3ei7bys0fia", "gameAssetId": 1625205858, "instanceId": "036117a2-df83-4bf8-9c9c-6f4cb8550443", "maxDurability": 1, "updatedAt": 1788619580450618000}
+      crude explosives                 {"amount": 10, "durability": 1, "etag": "3kucidt4h8vrc", "gameAssetId": 1625205858, "instanceId": "056ea958-f355-4b87-92ed-a15f990c70c8", "maxDurability": 1, "updatedAt": 1788619580450618000}
+      crude explosives                 {"amount": 10, "durability": 1, "etag": "19evzgluxagjn", "gameAssetId": 1625205858, "instanceId": "06214673-0a70-4897-bb69-2adac1fefde1", "maxDurability": 1, "updatedAt": 1788619580450618000}
+      anvil iv                         {"amount": 1, "durability": 0, "etag": "1bu34jlfuxyu6", "gameAssetId": -163859490, "instanceId": "062c197d-e483-43e0-adb2-34ca979dec80", "maxDurability": 1, "updatedAt": 1792846825457999000}
+      crude explosives                 {"amount": 10, "durability": 1, "etag": "196477mvlrzeh", "gameAssetId": 1625205858, "instanceId": "0a7a8ab6-14b5-46ef-9598-dd0a34b1726e", "maxDurability": 1, "updatedAt": 1788396402221033000}
+      crude explosives                 {"amount": 10, "durability": 1, "etag": "2xgpls3s6xf9z", "gameAssetId": 1625205858, "instanceId": "12665b6f-32a7-4c19-a8fe-a107126c53bb", "maxDurability": 1, "updatedAt": 1789939863881966000}
+      crude explosives                 {"amount": 10, "durability": 1, "etag": "2bcq2ck8ysfw0", "gameAssetId": 1625205858, "instanceId": "130aa0d4-de3d-49b9-9998-ab0a0078d7de", "maxDurability": 1, "updatedAt": 1788700378333724000}
+      character expression action slot {"amount": 1, "durability": 1, "etag": "1ok5yjt247cxs", "gameAssetId": 2009997924, "instanceId": "18001800-3cfb-4b07-ac1b-cc5f0ebc4894", "maxDurability": 1, "updatedAt": 1779805182286562000}
+      gunsmith i                       {"amount": 1, "durability": 1, "etag": "32rz8dh92g16a", "gameAssetId": 291196846, "instanceId": "196ec60a-d034-4c94-bc1d-a4436f00f63f", "maxDurability": 1, "updatedAt": 1783803432341831000}
+      crude explosives                 {"amount": 10, "durability": 1, "etag": "k4fa2hxfn0tf", "gameAssetId": 1625205858, "instanceId": "1e3c9587-1096-4698-8889-63f50c39eae7", "maxDurability": 1, "updatedAt": 1788615199946951000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "3c7jmzqjq1umc", "gameAssetId": -1565478080, "instanceId": "20a929a2-80ea-4051-9210-ebdd3f3d3730", "maxDurability": 1, "updatedAt": 1790196719405516000}
+      crude explosives                 {"amount": 10, "durability": 1, "etag": "18inqye20vqwm", "gameAssetId": 1625205858, "instanceId": "227bc0af-3faf-4ae3-a69a-54f7db2b9193", "maxDurability": 1, "updatedAt": 1788396402221033000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "18h2051v7y7jx", "gameAssetId": -1565478080, "instanceId": "234d499e-bcf7-4656-8685-d9cfb5780ffa", "maxDurability": 1, "updatedAt": 1790196719405516000}
+      crude explosives                 {"amount": 10, "durability": 1, "etag": "5mfcmwd3be1a", "gameAssetId": 1625205858, "instanceId": "266bc22e-f22d-417a-b2eb-c86bbf1c768c", "maxDurability": 1, "updatedAt": 1788704568181712000}
+      crude explosives                 {"amount": 10, "durability": 1, "etag": "262w397gy0ckk", "gameAssetId": 1625205858, "instanceId": "313e94ea-8fd3-476b-a3f1-4cdeb405ed79", "maxDurability": 1, "updatedAt": 1792298286229079000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "1pf875xb7kpmq", "gameAssetId": -1565478080, "instanceId": "329e4c64-a148-4419-a6d7-a78b7053e77d", "maxDurability": 1, "updatedAt": 1790281880286630000}
+      character expression action slot {"amount": 1, "durability": 1, "etag": "34741qu8bfnpf", "gameAssetId": 2009997924, "instanceId": "32b483e1-565b-49fc-a8ee-8bd6a93ac445", "maxDurability": 1, "updatedAt": 1779805182286562000}
+      crude explosives                 {"amount": 10, "durability": 1, "etag": "26opsdduffvd", "gameAssetId": 1625205858, "instanceId": "3479e1e8-332b-4d52-add9-c76f01def404", "maxDurability": 1, "updatedAt": 1788704568181712000}
+      explosive compound               {"amount": 5, "durability": 1, "etag": "298o2n5uskulr", "gameAssetId": 1004246812, "instanceId": "37ddfa6c-8489-4758-8a28-7641f00d70d0", "maxDurability": 1, "updatedAt": 1792178359105103000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "2g4f83yhja294", "gameAssetId": -1565478080, "instanceId": "3c9f02cc-a4c8-420e-9991-362cb58eec04", "maxDurability": 1, "updatedAt": 1790196719405516000}
+      character expression wheel 01    {"amount": 1, "durability": 1, "etag": "8uumokibuzk0", "gameAssetId": 708753323, "instanceId": "3db442c6-68f9-4e54-8928-b2542fe84193", "maxDurability": 1, "updatedAt": 1779805182286562000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "1sl3fo71okjt4", "gameAssetId": -1565478080, "instanceId": "3de9b23f-b137-4501-beb4-31458e9ffca4", "maxDurability": 1, "updatedAt": 1790089662337110000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "3acbca2w7dnol", "gameAssetId": -1565478080, "instanceId": "4001af8c-ac06-491a-8b1d-3847fb828ed6", "maxDurability": 1, "updatedAt": 1790281880286630000}
+      stella montis medical storage ke {"amount": 1, "durability": 1, "etag": "3a66zux0nq5mg", "gameAssetId": 189050774, "instanceId": "484dfe7a-74c9-4a10-9e56-7843ef754732", "maxDurability": 1, "updatedAt": 1788044746895528000}
+      crude explosives                 {"amount": 10, "durability": 1, "etag": "ogmbgaphrvl1", "gameAssetId": 1625205858, "instanceId": "4b585e13-2ade-4c26-92e0-46e0a975818d", "maxDurability": 1, "updatedAt": 1792380218576930000}
+      crude explosives                 {"amount": 10, "durability": 1, "etag": "2lfg2cm81w1q", "gameAssetId": 1625205858, "instanceId": "4be9ec02-9c70-46f9-915b-5174d5956e47", "maxDurability": 1, "updatedAt": 1790188307742868000}
+      crude explosives                 {"amount": 10, "durability": 1, "etag": "3ngxjpjsd9ql4", "gameAssetId": 1625205858, "instanceId": "4f8495a5-6d60-4321-aff4-f1b02b27d6f9", "maxDurability": 1, "updatedAt": 1779927885952350000}
+      stella montis medical storage ke {"amount": 1, "durability": 1, "etag": "15epegk9xr9rj", "gameAssetId": 189050774, "instanceId": "52c1e3e5-b85f-4413-898d-41eb8b26ac96", "maxDurability": 1, "updatedAt": 1788040926904767000}
+      chemicals                        {"amount": 7, "durability": 1, "etag": "3n17wu0umot2g", "gameAssetId": -1565478080, "instanceId": "52d496af-b22a-4495-a513-fceccd45f076", "maxDurability": 1, "updatedAt": 1793359789044413000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "f1t4ohrfbf75", "gameAssetId": -1565478080, "instanceId": "548ebe5f-2dc4-4e40-9a5b-09e00c47be62", "maxDurability": 1, "updatedAt": 1790196719405516000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "3phi310j5d2ux", "gameAssetId": -1565478080, "instanceId": "549065fa-937c-4f68-9ba9-4005bc2143f6", "maxDurability": 1, "updatedAt": 1790020583035405000}
+      crude explosives                 {"amount": 10, "durability": 1, "etag": "17l0znbzzwqqe", "gameAssetId": 1625205858, "instanceId": "550d9c82-08e4-4eb6-84ec-e397065dc118", "maxDurability": 1, "updatedAt": 1790196719405516000}
+      crude explosives                 {"amount": 10, "durability": 1, "etag": "1g0bwx08jmlvi", "gameAssetId": 1625205858, "instanceId": "5675ec52-f9f0-4a3e-9fb3-e5212c295a10", "maxDurability": 1, "updatedAt": 1793027322742863000}
+      crude explosives                 {"amount": 10, "durability": 1, "etag": "2q5yfb0b5z69s", "gameAssetId": 1625205858, "instanceId": "5686f248-f014-4e65-b52d-254bfb646b32", "maxDurability": 1, "updatedAt": 1787895840457441000}
+      crude explosives                 {"amount": 10, "durability": 1, "etag": "3mn39x4flmehq", "gameAssetId": 1625205858, "instanceId": "59cc2cc1-cfaa-49af-9408-581bfccdddfe", "maxDurability": 1, "updatedAt": 1790196719405516000}
+      chemicals                        {"amount": 50, "durability": 1, "etag": "36jit6yd5ugko", "gameAssetId": -1565478080, "instanceId": "5a39c5e3-15d1-40b0-9b4d-f1840076bda7", "maxDurability": 1, "updatedAt": 1793359789044413000}
+      character expression wheel slot  {"amount": 1, "durability": 1, "etag": "59hk7ykpknct", "gameAssetId": 2009955329, "instanceId": "5aa81fb9-4a93-4ecd-84b8-feeb0cad4e0f", "maxDurability": 1, "updatedAt": 1779805182286562000}
+      crude explosives                 {"amount": 10, "durability": 1, "etag": "2s1w23erht7pd", "gameAssetId": 1625205858, "instanceId": "5bfbbc90-f21f-4f54-a4cd-f60cd64d9344", "maxDurability": 1, "updatedAt": 1788396402221033000}
+      الإجمالي: 122
+   -- عقد ليها حقل level/tier/stage/rank --
+      الإجمالي: 0
+   -- الجذور (عقد بلا أب) --
+      عدد الجذور: 3320
+      Zipline                            asset=793992947 amount=3 slots=0
+      Backpack Attachment                asset=579331733 amount=1 slots=1
+      Tactical Mk. 3 (Healing) Melee Wea asset=-801279261 amount=1 slots=1
+      Firearm Slot                       asset=-620731692 amount=1 slots=0
+      Looting Mk. 1 Melee Weapon         asset=-1989158897 amount=1 slots=1
+      Mod Components                     asset=464233263 amount=4 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Rounds Played                      asset=-1869396984 amount=575 slots=0
+      Wires                              asset=-633851525 amount=15 slots=0
+      Extended Shotgun Mag III           asset=922097959 amount=1 slots=0
+      Extended Medium Mag III            asset=1670090314 amount=1 slots=0
+      Metal Parts                        asset=-1437131902 amount=50 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Extended Medium Mag III            asset=1670090314 amount=1 slots=0
+      Toaster                            asset=-1789285630 amount=3 slots=0
+      Underbarrel Mod Slot               asset=-1923186072 amount=1 slots=1
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      Wires                              asset=-633851525 amount=15 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      Medium Ammo                        asset=313013500 amount=43 slots=0
+      ARC Alloy                          asset=1370841463 amount=15 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      ARC Coolant                        asset=421801273 amount=3 slots=0
+      Standard Backpack (Basic)          asset=1911290765 amount=1 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      Crude Explosives                   asset=1625205858 amount=10 slots=0
+      Heavy Gun Parts                    asset=-1903407680 amount=5 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      (بلا اسم)                          asset=1400014392 amount=1 slots=0
+      Rope                               asset=130254116 amount=5 slots=0
+      ARC Alloy                          asset=1370841463 amount=15 slots=0
+      Light Shield Slot                  asset=-1537698006 amount=1 slots=0
+      ARC Powercell                      asset=-1447314005 amount=5 slots=0
+      Fried Motherboard                  asset=748926448 amount=3 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      Compensator II                     asset=-1072384644 amount=1 slots=0
+      Lance                              asset=1308805230 amount=1 slots=0
+      Safe Pocket Slot                   asset=-3680536 amount=1 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      (بلا اسم)                          asset=1143970783 amount=1 slots=1
+      Character Expression Wheel Slot 02 asset=-1441122968 amount=1 slots=1
+      Tactical Free Loadout Backpack Slo asset=-1731892715 amount=1 slots=1
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      Muzzle Mod Slot                    asset=-377848428 amount=1 slots=1
+      (بلا اسم)                          asset=-1393968002 amount=1 slots=1
+      Combat Mk. 2 Weapon 2 Slot         asset=-531431256 amount=1 slots=1
+      Quick Use Slot                     asset=-1277506061 amount=1 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      Underbarrel Mod Slot               asset=-1923186072 amount=1 slots=0
+      Crude Explosives                   asset=1625205858 amount=10 slots=0
+      Quick Use Slot                     asset=-1277506061 amount=1 slots=0
+      Bald                               asset=439318886 amount=1 slots=0
+      ARC Alloy                          asset=1370841463 amount=15 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=0
+      (بلا اسم)                          asset=-1700484784 amount=1 slots=0
+      Item Slot                          asset=1440007245 amount=1 slots=1
+      (بلا اسم)                          asset=-376351167 amount=1 slots=0
+      ARC Alloy                          asset=1370841463 amount=15 slots=0
+      DA_Inventory_LF_Raider_02          asset=-140762359 amount=1 slots=7
+
+===== أصول موجودة عند حساب ومفيضة عند حساب تاني (بالاسم) =====
+   10 Mil Tool Raider Tool              في=RAIDER38830                              
+   Adrenaline Shot                      في=G22,RAIDER38830,RAIDER74888              
+   Advanced ARC Powercell               في=G22,RAIDER74888                          
+   Agave                                في=G22,RAIDER74888                          
+   Air Freshener                        في=G22,RAIDER74888                          
+   Alarm Clock                          في=G22,RAIDER74888                          
+   Angled Grip I                        في=RAIDER38830                              
+   Angled Grip II                       في=G22,RAIDER74888                          
+   Angled Grip II Blueprint             في=G22,RAIDER74888                          
+   Angled Grip III                      في=G22,RAIDER74888                          
+   Antiseptic                           في=G22,RAIDER74888                          
+   Anvil I                              في=G22,RAIDER38830,RAIDER74888              محطة
+   Anvil IV                             في=RAIDER74888                              محطة
+   Anvil Splitter                       في=G18,G22,RAIDER74888                      محطة
+   Aphelion Blueprint                   في=G18,G22,RAIDER74888                      
+   Apricot                              في=G22,RAIDER38830,RAIDER74888              
+   ARC Circuitry                        في=G22,RAIDER74888                          
+   ARC Coolant                          في=G18,G22,RAIDER74888                      
+   ARC Flex Rubber                      في=G22,RAIDER74888                          
+   ARC Motion Core                      في=G22,RAIDER74888                          
+   ARC Performance Steel                في=G22,RAIDER74888                          
+   ARC Powercell                        في=G18,G22,RAIDER74888                      
+   ARC Synthetic Resin                  في=G22,RAIDER74888                          
+   ARC Thermo Lining                    في=G22,RAIDER74888                          
+   Arpeggio I                           في=G22,RAIDER38830                          
+   Arpeggio II                          في=G22                                      
+   Bandaid Cheek                        في=RAIDER38830                              
+   Bantam I                             في=G22,RAIDER74888                          
+   Barricade Kit                        في=G22,RAIDER38830,RAIDER74888              
+   Bastion Cell                         في=G22,RAIDER74888                          
+   Battery                              في=G22,RAIDER38830,RAIDER74888              
+   Bettina Blueprint                    في=G22,RAIDER74888                          
+   Bettina I                            في=G22                                      
+   Bettina IV                           في=G18,G22,RAIDER74888                      
+   Bicycle Pump                         في=G22                                      
+   Black Eye                            في=RAIDER38830                              
+   Blaze Grenade Blueprint              في=G22,RAIDER74888                          
+   Blaze Grenade Trap                   في=G22                                      
+   Bloated Tuna Can                     في=G22                                      
+   Blue Gate Cellar Key                 في=G22,RAIDER74888                          
+   Blue Gate Communication Tower Key    في=G22,RAIDER74888                          
+   Blue Gate Village Key                في=G22,RAIDER74888                          
+   Blue Light Stick Blueprint           في=G22,RAIDER74888                          
+   Bobcat I                             في=RAIDER38830,RAIDER74888                  
+   Bobcat IV                            في=G18,G22                                  
+   Bolt Buddies Backpack Charm          في=RAIDER38830                              
+   Bombardier Cell                      في=G22,RAIDER74888                          
+   Bomber                               في=RAIDER38830                              
+   Bomber (Orange)                      في=RAIDER38830                              
+   Bomber (Red)                         في=RAIDER38830                              
+   Bomber (Yellow Gray)                 في=RAIDER38830                              
+   Bomber Colors                        في=RAIDER38830                              
+   Bomber Gasmask                       في=RAIDER38830                              
+   Bomber Gasmask (Off)                 في=RAIDER38830                              
+   Bomber Gasmask (On)                  في=RAIDER38830                              
+   Bomber Helmet                        في=RAIDER38830                              
+   Bomber Helmet (Off)                  في=RAIDER38830                              
+   Bomber Helmet (On)                   في=RAIDER38830                              
+   Bomber Mesh Toggle1                  في=RAIDER38830                              
+   Bomber Mesh Toggle1 (Off)            في=RAIDER38830                              
+   Bomber Mesh Toggle1 (On)             في=RAIDER38830                              
+   Bomber Mesh Toggle2                  في=RAIDER38830                              
+   Bomber Mesh Toggle2 (Off)            في=RAIDER38830                              
+   Bomber Mesh Toggle2 (On)             في=RAIDER38830                              
+   Bowl Cut Messy                       في=RAIDER38830                              
+   Bowl Cut Messy (Black)               في=RAIDER38830                              
+   Bowl Cut Messy (Blonde)              في=RAIDER38830                              
+   Bowl Cut Messy (Brown)               في=RAIDER38830                              
+   Bowl Cut Messy (Grey)                في=RAIDER38830                              
+   Bowl Cut Messy (Red)                 في=RAIDER38830                              
+   Bowl Cut Messy Colors                في=RAIDER38830                              
+   Breathtaking Snow Globe              في=G22                                      
+   Broken Flashlight                    في=G22                                      
+   Broken Guidance System               في=G22,RAIDER74888                          
+   Broken Handheld Radio                في=G22,RAIDER74888                          
+   Broken Taser                         في=G22,RAIDER74888                          
+   Bucket Backpack Attachment           في=RAIDER38830                              
+   Buried City Hospital Key             في=G22,RAIDER38830,RAIDER74888              
+   Buried City JKV Employee Access Card في=G22                                      
+   Buried City Residential Master Key   في=G22                                      
+   Buried City Town Hall Key            في=G18,RAIDER74888                          
+   Burletta Blueprint                   في=G22                                      
+   Burletta I                           في=G22,RAIDER38830                          
+   Burletta II                          في=G22,RAIDER38830                          
+   Burletta III                         في=RAIDER38830                              
+   Burletta IV                          في=G18,RAIDER74888                          
+   Camera Lens                          في=G22,RAIDER74888                          
+   Can Six Pack Backpack Attachment     في=RAIDER38830                              
+   Can't Hear You                       في=RAIDER38830                              
+   Candle Holder                        في=G22,RAIDER74888                          
+   Candleberries                        في=G22                                      
+   Canister                             في=G22,RAIDER74888                          
+   Canto Blueprint                      في=G22                                      
+   Canto IV                             في=G22                                      
+   Cat Bed                              في=G22                                      
+   Check Compass                        في=RAIDER38830                              
+   Cheer                                في=RAIDER38830                              
+   Coffee Pot                           في=G22                                      
+   Colorful Shoes (Red)                 في=G22                                      
+   Combat Mk. 2                         في=G22,RAIDER74888                          
+   Combat Mk. 3 (Aggressive)            في=G22                                      
+   Combat Mk. 3 (Flanking) Blueprint    في=G22                                      
+   Combat Mk.3 (Aggressive) Blueprint   في=G22                                      
+   Combat Mk.3 (Flanking)               في=G22                                      
+   Comet Igniter                        في=G22,RAIDER74888                          
+   Compensator II                       في=G18,G22,RAIDER74888                      
+   Compensator II Blueprint             في=G22                                      
+   Compensator III                      في=G18,RAIDER74888                          
+   Complex Gun Parts                    في=G22,RAIDER38830,RAIDER74888              
+   Complex Gun Parts Blueprint          في=G22                                      
+   Coolant                              في=G22                                      
+   Cooling Coil                         في=G22,RAIDER74888                          
+   Cooling Fan                          في=G22,RAIDER38830,RAIDER74888              
+   Cracked Bioscanner                   في=G22,RAIDER38830,RAIDER74888              
+   Crumpled Plastic Bottle              في=G22                                      
+   DA_Emote_PowerPose_00                في=RAIDER38830                              
+   DA_Item_Currency_LiveEvent03         في=RAIDER38830                              
+   DA_Item_Currency_LiveEventCurrency   في=RAIDER38830                              
+   DA_Item_Currency_WinterEvent         في=RAIDER38830                              
+   DA_Item_Salvage_Accordion_01         في=G22                                      
+   Explosive Compound                   في=G22,RAIDER38830,RAIDER74888              محطة
+   Explosive Mine                       في=G22                                      محطة
+   Explosive Mine Blueprint             في=G22,RAIDER74888                          محطة
+   Explosives Station I                 في=RAIDER38830                              محطة
+   Explosives Station III               في=G22,RAIDER74888                          محطة
+   Gear Bench I                         في=RAIDER38830                              محطة
+   Gear Bench II                        في=RAIDER74888                              محطة
+   Gear Bench III                       في=G22                                      محطة
+   Gunsmith I                           في=G18,RAIDER38830,RAIDER74888              محطة
+   Gunsmith III                         في=G22                                      محطة
+   Medical Lab I                        في=RAIDER38830,RAIDER74888                  محطة
+   Medical Lab III                      في=G22                                      محطة
+   Refiner I                            في=RAIDER38830,RAIDER74888                  محطة
+   Refiner III                          في=G22                                      محطة
+   Rusted Shut Medical Kit              في=G22                                      محطة
+   Stella Montis Medical Storage Key    في=G22,RAIDER38830,RAIDER74888              محطة
+   Unlock Craft Anvil                   في=G22                                      محطة
+   Unlock Craft Explosive Mine          في=G22,RAIDER38830,RAIDER74888              محطة
+   Utility Station I                    في=RAIDER38830                              محطة
+   Utility Station II                   في=RAIDER74888                              محطة
+   Utility Station III                  في=G22                                      محطة
+   الإجمالي: 663 أصل مشترك بشكل متفاوت

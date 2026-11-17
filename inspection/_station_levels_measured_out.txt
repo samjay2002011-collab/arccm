@@ -1,0 +1,265 @@
+===== أسماء المحطات في فهرس الأصول (كل النسخ) =====
+   888005088      Anti-Tick Field                    in_raid|anti-tick field|
+   1951118983     Anvil I                            anvil|anvil i|1
+   -1974459892    Anvil II                           anvil|anvil ii|2
+   -39940538      Anvil III                          anvil|anvil iii|3
+   -163859490     Anvil IV                           anvil|anvil iv|4
+   -2130292638    Anvil Splitter                     anvil|anvil splitter|
+   1625205858     Crude Explosives                   explosives_bench|crude explosives|
+   -1881410282    DA_OI_BackpackCharm_FieldGlass_01_ in_raid|da_oi_backpackcharm_fieldglass_01_a|
+   1004246812     Explosive Compound                 explosives_bench|explosive compound|
+   1228913912     Explosive Mine                     explosives_bench|explosive mine|
+   -518683794     Explosives Station I               explosives_bench|explosives station i|1
+   -44778840      Explosives Station II              explosives_bench|explosives station ii|2
+   -815789211     Explosives Station III             explosives_bench|explosives station iii|3
+   1415022693     Gear Bench I                       equipment_bench|gear bench i|1
+   -92567848      Gear Bench II                      equipment_bench|gear bench ii|2
+   -1093740163    Gear Bench III                     equipment_bench|gear bench iii|3
+   291196846      Gunsmith I                         weapon_bench|gunsmith i|1
+   348416871      Gunsmith II                        weapon_bench|gunsmith ii|2
+   -1091338374    Gunsmith III                       weapon_bench|gunsmith iii|3
+   1693686894     Health Regen (1hp/5s)              med_station|health regen (1hp/5s)|
+   -468568924     Health Regen (2hp/5s)              med_station|health regen (2hp/5s)|
+   -758926874     Health Regen (deprecated)          med_station|health regen (deprecated)|
+   -1840090314    Medical Lab I                      med_station|medical lab i|1
+   -1409422086    Medical Lab II                     med_station|medical lab ii|2
+   1157010858     Medical Lab III                    med_station|medical lab iii|3
+   510            OI Field Crafting Offer Owner      in_raid|oi field crafting offer owner|
+   511            OI Field Salvage Offer Owner       in_raid|oi field salvage offer owner|
+   1305834322     Portable TV                        in_raid|portable tv|
+   -935249204     Refiner I                          refiner|refiner i|1
+   1517102401     Refiner II                         refiner|refiner ii|2
+   81797988       Refiner III                        refiner|refiner iii|3
+   189050774      Stella Montis Medical Storage Key  med_station|stella montis medical storage key|
+   1140794731     Utility Station I                  utility_bench|utility station i|1
+   1553081706     Utility Station II                 utility_bench|utility station ii|2
+   1160802326     Utility Station III                utility_bench|utility station iii|3
+   -834400146     Workbench                          workbench|workbench|
+   الإجمالي: 36 أصل على شكل محطة
+
+===== لكل حساب: محطات الشجرة الخام =====
+
+== G18 (2214 عقدة)
+   anvil            Anvil Splitter                 asset=-2130292638   amount=1 inst=6c70c2c3
+   anvil            Anvil Splitter                 asset=-2130292638   amount=1 inst=f693a6ac
+   explosives_bench Crude Explosives               asset=1625205858    amount=1 inst=62e1bb76
+   explosives_bench Crude Explosives               asset=1625205858    amount=1 inst=7deb8e15
+   weapon_bench     Gunsmith I                     asset=291196846     amount=1 inst=a8080edb
+   workbench        Workbench                      asset=-834400146    amount=1 inst=8fd09cba
+
+== G22 (5688 عقدة)
+   anvil            Anvil I                        asset=1951118983    amount=1 inst=4cbcf79c
+   anvil            Anvil I                        asset=1951118983    amount=1 inst=a837fe4e
+   anvil            Anvil I                        asset=1951118983    amount=1 inst=a95d86ba
+   anvil            Anvil I                        asset=1951118983    amount=1 inst=b3dcfd2f
+   anvil            Anvil I                        asset=1951118983    amount=1 inst=c6febf81
+   anvil            Anvil I                        asset=1951118983    amount=1 inst=e6530ad6
+   anvil            Anvil Splitter                 asset=-2130292638   amount=1 inst=1548edcd
+   anvil            Anvil Splitter                 asset=-2130292638   amount=1 inst=1f2593e3
+   anvil            Anvil Splitter                 asset=-2130292638   amount=1 inst=1f96d8f9
+   anvil            Anvil Splitter                 asset=-2130292638   amount=1 inst=23a8672b
+   anvil            Anvil Splitter                 asset=-2130292638   amount=1 inst=2e20cdb8
+   anvil            Anvil Splitter                 asset=-2130292638   amount=1 inst=607d0d03
+   anvil            Anvil Splitter                 asset=-2130292638   amount=1 inst=6be071c5
+   anvil            Anvil Splitter                 asset=-2130292638   amount=1 inst=a189ac7b
+   anvil            Anvil Splitter                 asset=-2130292638   amount=1 inst=d527136c
+   anvil            Anvil Splitter                 asset=-2130292638   amount=1 inst=dad10396
+   equipment_bench  Gear Bench III                 asset=-1093740163   amount=1 inst=71532fc6
+   explosives_bench Crude Explosives               asset=1625205858    amount=1 inst=2567b801
+   explosives_bench Crude Explosives               asset=1625205858    amount=1 inst=39142e17
+   explosives_bench Crude Explosives               asset=1625205858    amount=1 inst=cd41017f
+   explosives_bench Crude Explosives               asset=1625205858    amount=1 inst=d1e242e4
+   explosives_bench Crude Explosives               asset=1625205858    amount=5 inst=5d42fe82
+   explosives_bench Crude Explosives               asset=1625205858    amount=7 inst=df798501
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=1d748298
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=3f81cb55
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=47c1d7fc
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=4c228b99
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=571595c9
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=59612edb
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=646ccd84
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=6b894082
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=73ecfc5d
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=7ae23b00
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=7e054c96
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=7ef070ac
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=8e5087af
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=9f71347a
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=a7b03df3
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=a7e44730
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=b0f84d99
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=b1fe3896
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=b83d9041
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=bb33d66b
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=bb7f63d5
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=be25ef1c
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=c42fabed
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=c8e96ce8
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=c94d8f37
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=ca3b6ea6
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=d83c135b
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=d86b67ac
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=dc83c8db
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=dd158da5
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=de67636b
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=f8944b45
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=fb0c9294
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=fdecac9e
+   explosives_bench Explosive Compound             asset=1004246812    amount=1 inst=67c12ccb
+   explosives_bench Explosive Compound             asset=1004246812    amount=2 inst=508828eb
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=0d80fa71
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=25dd7811
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=2bef017d
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=3020e77a
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=3318e1df
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=41144c4d
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=420ea3b0
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=4a69708b
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=594df469
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=8c414241
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=8ddd8f19
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=90ed8c8e
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=985e4bb5
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=9f362482
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=b7bcbb80
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=b8fca8fd
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=d0c2ba30
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=d8e5cb01
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=e6dced5c
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=edc7ca94
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=f615296f
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=f9fae382
+   explosives_bench Explosive Mine                 asset=1228913912    amount=2 inst=46384005
+   explosives_bench Explosive Mine                 asset=1228913912    amount=3 inst=991a3824
+   explosives_bench Explosives Station III         asset=-815789211    amount=1 inst=b8b966a5
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=07b08f1e
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=0c3cdc79
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=21e3c77e
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=26d2183f
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=28265094
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=39779d35
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=44e10496
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=4982ac4f
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=4f703111
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=51bf823b
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=551b8103
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=5bbed5be
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=77979f6f
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=78246bf7
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=8de005c1
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=8fd8d6bd
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=90540d94
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=a431ca97
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=b79e546e
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=bd8f17a3
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=cfaa59b3
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=d92881c6
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=df091a21
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=e14bd98d
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=e160eff3
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=fa99c130
+   med_station      Medical Lab III                asset=1157010858    amount=1 inst=85e8e85d
+   med_station      Stella Montis Medical Storage  asset=189050774     amount=1 inst=16a50f1b
+   med_station      Stella Montis Medical Storage  asset=189050774     amount=1 inst=544e91c5
+   med_station      Stella Montis Medical Storage  asset=189050774     amount=1 inst=5f337d10
+   med_station      Stella Montis Medical Storage  asset=189050774     amount=1 inst=5f3cfb46
+   med_station      Stella Montis Medical Storage  asset=189050774     amount=1 inst=b46d7511
+   refiner          Refiner III                    asset=81797988      amount=1 inst=68db0244
+   utility_bench    Utility Station III            asset=1160802326    amount=1 inst=d2c059cd
+   weapon_bench     Gunsmith III                   asset=-1091338374   amount=1 inst=d4086f46
+   workbench        Workbench                      asset=-834400146    amount=1 inst=f60ef3b2
+
+== RAIDER38830 (2011 عقدة)
+   anvil            Anvil I                        asset=1951118983    amount=1 inst=de43f5f3
+   anvil            Anvil I                        asset=1951118983    amount=1 inst=ed40aede
+   equipment_bench  Gear Bench I                   asset=1415022693    amount=1 inst=941df77b
+   explosives_bench Crude Explosives               asset=1625205858    amount=3 inst=30290586
+   explosives_bench Explosive Compound             asset=1004246812    amount=1 inst=c298b242
+   explosives_bench Explosives Station I           asset=-518683794    amount=1 inst=bcb93fae
+   med_station      Medical Lab I                  asset=-1840090314   amount=1 inst=3c3cdc07
+   med_station      Stella Montis Medical Storage  asset=189050774     amount=1 inst=b787aa5a
+   refiner          Refiner I                      asset=-935249204    amount=1 inst=01fc32bd
+   utility_bench    Utility Station I              asset=1140794731    amount=1 inst=565209a8
+   weapon_bench     Gunsmith I                     asset=291196846     amount=1 inst=2fabb1b3
+   workbench        Workbench                      asset=-834400146    amount=1 inst=bdbdca38
+
+== RAIDER74888 (3320 عقدة)
+   anvil            Anvil I                        asset=1951118983    amount=1 inst=f3beea79
+   anvil            Anvil IV                       asset=-163859490    amount=1 inst=062c197d
+   anvil            Anvil IV                       asset=-163859490    amount=1 inst=dbaf3e7a
+   anvil            Anvil Splitter                 asset=-2130292638   amount=1 inst=c2fe5ae7
+   equipment_bench  Gear Bench II                  asset=-92567848     amount=1 inst=ca7b36f5
+   explosives_bench Crude Explosives               asset=1625205858    amount=6 inst=e0fb6bf7
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=01d8357c
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=036117a2
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=056ea958
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=06214673
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=0a7a8ab6
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=12665b6f
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=130aa0d4
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=1e3c9587
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=227bc0af
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=266bc22e
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=313e94ea
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=3479e1e8
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=4b585e13
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=4be9ec02
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=4f8495a5
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=550d9c82
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=5675ec52
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=5686f248
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=59cc2cc1
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=5bfbbc90
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=5fca9565
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=608c8463
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=686826d0
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=73752c92
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=7465cf98
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=783a7e3d
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=7ab4e28d
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=82a5c5d1
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=854106c9
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=89137330
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=98664785
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=a00b5b89
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=a10998be
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=a4bd03cb
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=ab8c71c7
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=ad6be41e
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=b5ed6e7e
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=c44500a6
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=c5840ad1
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=d3cfd5ff
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=d7aa9f33
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=e2ed8a7b
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=ec2b6bc8
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=ed2a9142
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=f683f90d
+   explosives_bench Crude Explosives               asset=1625205858    amount=10 inst=fb1bc4c5
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=37ddfa6c
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=69c5e2a9
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=71abb8c7
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=d52b275a
+   explosives_bench Explosive Compound             asset=1004246812    amount=5 inst=e6c81f72
+   explosives_bench Explosives Station III         asset=-815789211    amount=1 inst=92327c19
+   in_raid          Portable TV                    asset=1305834322    amount=1 inst=d43e4a9d
+   med_station      Medical Lab I                  asset=-1840090314   amount=1 inst=d38fa468
+   med_station      Stella Montis Medical Storage  asset=189050774     amount=1 inst=484dfe7a
+   med_station      Stella Montis Medical Storage  asset=189050774     amount=1 inst=52c1e3e5
+   med_station      Stella Montis Medical Storage  asset=189050774     amount=1 inst=d162331f
+   refiner          Refiner I                      asset=-935249204    amount=1 inst=e1216c25
+   utility_bench    Utility Station II             asset=1553081706    amount=1 inst=5ea65d64
+   weapon_bench     Gunsmith I                     asset=291196846     amount=1 inst=196ec60a
+   workbench        Workbench                      asset=-834400146    amount=1 inst=ee1b7f26
+
+===== مصفوفة المحطة×الحساب (اللي ظهر عند حساب ومفيش عند التاني) =====
+station           G18             G22             RAIDER38830     RAIDER74888     
+anvil             Anvil Splitter  Anvil I/Anvil S Anvil I         Anvil I/Anvil I 
+equipment_bench   —               Gear Bench III  Gear Bench I    Gear Bench II   
+explosives_bench  Crude Explosive Crude Explosive Crude Explosive Crude Explosive 
+in_raid           —               Portable TV     —               Portable TV     
+med_station       —               Medical Lab III Medical Lab I/S Medical Lab I/S 
+refiner           —               Refiner III     Refiner I       Refiner I       
+utility_bench     —               Utility Station Utility Station Utility Station 
+weapon_bench      Gunsmith I      Gunsmith III    Gunsmith I      Gunsmith I      
+workbench         Workbench       Workbench       Workbench       Workbench       

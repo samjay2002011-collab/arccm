@@ -1,0 +1,6 @@
+{
+  "alive": true,
+  "checked_at": 1794876497,
+  "endpoint": "/v1/pioneer/v1/batch-operation",
+  "detail": "HTTP 400 {\"message\":\"internal error\",\"reason\":\"UNKNOWN\"}\n"
+}

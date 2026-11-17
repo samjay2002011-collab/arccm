@@ -1,0 +1,19 @@
+== عناصر في DEFAULT_UNLOCKED_RECIPES وليها مخطوطة في اللعبة
+   arpeggio_i                   مخطوطة=- | عقدة تفعيل=True | locked=False | اسم=Arpeggio I
+   rattler_i                    مخطوطة=- | عقدة تفعيل=True | locked=False | اسم=Rattler I
+   renegade_i                   مخطوطة=- | عقدة تفعيل=True | locked=False | اسم=Renegade I
+
+== G14 | كروت مش learned لكن مسموحة (3): ['arpeggio_i', 'rattler_i', 'renegade_i']
+   learned بس مش مسموحة (0): []
+
+== G18 | كروت مش learned لكن مسموحة (3): ['arpeggio_i', 'rattler_i', 'renegade_i']
+   learned بس مش مسموحة (0): []
+
+== G22 | كروت مش learned لكن مسموحة (3): ['arpeggio_i', 'rattler_i', 'renegade_i']
+   learned بس مش مسموحة (0): []
+
+== RAIDER38830 | كروت مش learned لكن مسموحة (3): ['arpeggio_i', 'rattler_i', 'renegade_i']
+   learned بس مش مسموحة (0): []
+
+== RAIDER74888 | كروت مش learned لكن مسموحة (3): ['arpeggio_i', 'rattler_i', 'renegade_i']
+   learned بس مش مسموحة (0): []

@@ -1,0 +1,550 @@
+pid: [3584, 1104] | فلتر: (الكل)
+  pid 3584: اتقرا 202 MB
+  (وقفة أمان بعد 300 ثانية)
+  pid 1104: اتقرا 5,617 MB
+
+== هوستات ==
+     host api-gateway.europe.es-pio.net left intact
+    $client2pubsub-ipv4.europe.es-pio.net
+    (Host="http://zen.k8s.embark.net:80", Namespace="pioneer.ddc", EnvHostOverride=UE-ZenSharedDataCacheHost, CommandLineHostOverride=ZenSharedDataCacheHo
+    (Path="//files.embark.net/Applications/Spot/Upload")
+    (Type=P4SourceControl, Server="ssl64:ci-edge.se.embark.net:1666", DepotPath="//bulk_data")
+    (Type=P4SourceControl, Server="ssl64:perforce.embark.net:1666", DepotPath="//bulk_data")
+    *.auth.embark.net
+    *.europe.es-pio.net
+    *.europe.es-pio.net0
+    .europe.es-pio.net left intact
+    //files.embark.net/Applications/Spot/Upload
+    0/443/api-gateway.europe.es-pio.net
+    0/443/client2pubsub.europe.es-pio.net
+    C:\Windows\SYSTEauth.embark.net
+    Host: api-gateway.europe.es-pio.net
+    Host: client2pubsub.europe.es-pio.net
+    Phttps://api-gateway.europe.es-pio.net
+    Phttps://pioneer.embark.net
+    Re-using existing connection with host api-gateway.europe.es-pio.net
+    \\files.embark.net\Projects\Pioneer\CollectedPSOs
+    \https://d7u.es-cf.net/rules/d9d97179580f5f348ba378e0800fecd70e9c9b8e82533a269659954fb17fbd84
+    api-gateway.europe.es-pio.net
+    api-gateway.europe.es-pio.net/v1/shared/anticheat/config
+    api-gateway.europe.es-pio.net:443
+    api-gateway.europe.es-pio.net:443:IMPL-OpenSSL/1.1.1t
+    api-gateway.europe.es-pio.net:kZwN96eHtZftBWrOZUsd6cA4es80n3NzSk/XtYz2EqQ=;C5+lpZ7tcVwmwQIMcRtPbsQtWLABXhQzejna0wHFr8M=
+    auth.embark.net
+    auth.embark.net/oauth2/token?skip_link=false
+    auth.embark.net:kZwN96eHtZftBWrOZUsd6cA4es80n3NzSk/XtYz2EqQ=;C5+lpZ7tcVwmwQIMcRtPbsQtWLABXhQzejna0wHFr8M=
+    b.europe.es-pio.net
+    b.europe.es-pio.net/client2pubsub.Client2PubSub/TransferBatca
+    b.europe.es-pio.net/client2pubsub.Client2PubSub/TransferBatched
+    client2pubsub-ipv4.europe.es-pio.net
+    client2pubsub-ipv4.europe.es-pio.net:443:IMPL-OpenSSL/1.1.1t
+    client2pubsub.europe.es-pio.net
+    client2pubsub.europe.es-pio.net/
+    client2pubsub.europe.es-pio.net/client2pubsub.Client2PubSub/TransferBatched
+    client2pubsub.europe.es-pio.net:443:IMPL-OpenSSL/1.1.1t
+    client2pubsub.europe.es-pio.net:kZwN96eHtZftBWrOZUsd6cA4es80n3NzSk/XtYz2EqQ=;C5+lpZ7tcVwmwQIMcRtPbsQtWLABXhQzejna0wHFr8M=
+    crashdump.europe.es-pio.net
+
+== مسارات/أسطر فيها /v1/ أو api (7880) ==
+     1x  host api-gateway.europe.es-pio.net left intact
+     1x !__StaticType_APioneerGameModeOnboarding
+     1x "https://api.Q
+     1x "https://api8
+     1x "setupapi.offline.log
+     1x %SystemRoot%\System32\Speech\SpeechUX\sapi.cpl
+     2x %SystemRoot%\system32\NLAapi.dll
+     1x %SystemRoot%\system32\rundll32.exe shell32.dll,Control_RunDLL %SystemRoot%\system32\Speech\SpeechUX\sapi.cpl
+     1x %ls\twinapi.appcore.dll
+     1x %s/IAuthenticationService/RevokeToken/v1/
+     2x -XT;aPI.
+     1x ../../../PioneerGame/Config/DefaultEmbarkApiGateway.ini
+     1x ../../../PioneerGame/Config/VulkanPC/VulkanPCEmbarkApiGateway.ini
+     1x ../../../PioneerGame/Config/Windows/WindowsEmbarkApiGateway.ini
+     1x ../../../PioneerGame/Platforms/VulkanPC/Config/VulkanPCEmbarkApiGateway.ini
+     1x ../../../PioneerGame/Platforms/Windows/Config/WindowsEmbarkApiGateway.ini
+     2x ../../../third_party/opus/src/silk/dec_API.c
+     2x ../../../third_party/opus/src/silk/enc_API.c
+     1x .?AVCAPIJobGetAppDependenciesBatched@@
+     1x .?AVCAPIJobUpdateInventoryItems@@
+     1x .ApiGatewayDiscoveryServerBatchAddQuestsV2ProgressResponse
+     1x .ApiGatewaySharedClaimClanTimelineMessageRequestPayloadPartyUp
+     1x .text$lp00dnsapi.dll!20_pri7
+     1x .text$lp00iphlpapi.dll!20_pri7
+     1x .text$lp00profapi.dll!20_pri7
+     1x .text$lp00setupapi.dll!20_pri7
+     1x .text$lp00shlwapi.dll!20_pri7
+     1x .text$lp00wevtapi.dll!20_pri7
+     1x .text$lp01dnsapi.dll!20_pri7
+     1x .text$lp01dpapi.dll!20_pri7
+     1x .text$lp01gpapi.dll!20_pri7
+     1x .text$lp01iphlpapi.dll!20_pri7
+     1x .text$lp01profapi.dll!20_pri7
+     1x .text$lp01psapi.dll!20_pri7
+     1x .text$lp01setupapi.dll!20_pri7
+     1x .text$lp01shlwapi.dll!20_pri7
+     1x .text$lp01wevtapi.dll!20_pri7
+     1x .text$lp03iphlpapi.dll!30_clientonly
+     1x .text$lp03psapi.dll!30_clientonly
+     1x .text$lp03setupapi.dll!30_clientonly
+     1x .text$lp03shlwapi.dll!30_clientonly
+     1x .text$lp03wevtapi.dll!30_clientonly
+     1x .text$lp04setupapi.dll!30_clientonly
+     1x .text$lp04shlwapi.dll!30_clientonly
+     1x .text$lp04wevtapi.dll!30_clientonly
+     1x .text$lp05dpapi.dll!50_coldboot
+     1x .text$lp05psapi.dll!50_coldboot
+     1x .text$lp06dnsapi.dll!35_hybridboot
+     1x .text$lp06gpapi.dll!35_hybridboot
+     1x .text$lp06iphlpapi.dll!35_hybridboot
+     1x .text$lp06profapi.dll!35_hybridboot
+     1x .text$lp06psapi.dll!50_coldboot
+     1x .text$lp06setupapi.dll!35_hybridboot
+     1x .text$lp06shlwapi.dll!35_hybridboot
+     1x .text$lp06wevtapi.dll!35_hybridboot
+     1x .text$lp07dnsapi.dll!35_hybridboot
+     1x .text$lp07iphlpapi.dll!35_hybridboot
+     1x .text$lp08profapi.dll!50_coldboot
+     1x .text$lp09dnsapi.dll!50_coldboot
+     1x .text$lp09iphlpapi.dll!50_coldboot
+     1x .text$lp09profapi.dll!50_coldboot
+     1x .text$lp09shlwapi.dll!40_serveronly
+     1x .text$lp10gpapi.dll!40_serveronly
+     1x .text$lp11setupapi.dll!50_coldboot
+     1x .text$lp12setupapi.dll!50_coldboot
+     1x /+dCQJml7LEBK/8CDcaxXQChsvJgP1VJAAQAAAAAAAAAAAAAAAAAAAAAAAAEIAAAAUGxhbmU1OAABAQAAAAAFAAAATm9uZQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+     2x /-------- FStatsCollector Log ---------------------
+     1x /-/Game/Pioneer/Items/Salvage/GrenadeCasing_01/MI_GrenadeCasing_01_A.MI_GrenadeCasing_01_A
+     1x /.CInventory_GetEligiblePromoItemDefIDs_Response"
+     5x // Parameters and resource read/write functions
+     7x // Resource Indexing
+     1x // These are the hooks we need to track resources
+     1x ///+8/3lOqWwEASUCuSBjHbQBJQCELWchCFgI9AQAAAAAAAAABAAAASBiQiP/ZiEmCF4eeTazRagAAAAAAAAABBgAAAFBsYW5lAAAABQAAAE5vbmUASBiQiP/ZiEmCF4eeTazRagAAAAAAAAAAAAAA
+     1x //////9IQOyukd5TFAI9AQAAAAAAAAAAAAAAAAAAAAAAAAEJAAAAUGxhbmUzNDIAAQEAAAAABQAAAE5vbmUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=,None;
+     1x ////9IQJPPqeCXDk0/AQAAAAAAAAAAAAAAAAAAAAAAAAEIAAAAUGxhbmUyOQABAQAAAAAFAAAATm9uZQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==,None;/G
+     1x ////X6qWPkD///+fHxNLQP///9+BFUpAAQAAAAAAAAAAAAAAAAAAAAAAAAEZAAAAU01fUlNfQ2xvdGhpbmdSYWNrXzAxX0E1AAEBAAAAAAUAAABOb25lAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+     1x ///8/j0AAAAAAAECPQAAAAAAAQI9AAQAAAAAAAAAAAAAAAAAAAAAAAAEMAAAAUmVjdExpZ2h0MTMAAAAYAAAATlBDUm9vbXMvQmlsZ3Vubi9saWdodHMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+     1x ///8hCFJAAQAAAAAAAAAAAAAAAAAAAAAAAAESAAAAU3RhdGljTWVzaEFjdG9yNDAAAQEAAAAABQAAAE5vbmUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=,None
+     1x //78CNlxAAQAAAAAAAAAAAAAAAAAAAAAAAAEcAAAAU01fUnNyX0NhcnRDb21wdXRlcl9NXzAxX0E5AAEBAAAAAAUAAABOb25lAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+     1x //8hCFJAAQAAAAAAAAAAAAAAAAAAAAAAAAESAAAAU3RhdGljTWVzaEFjdG9yMzgAAQEAAAAABQAAAE5vbmUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=,None;
+     4x //Game/Pioneer/Characters/Avatar/Avatar_Skeleton
+     1x //Game/Pioneer/Effects/Materials/Lensflare/M_FX_Lensflare_ScreenDir
+     2x //files.embark.net/Applications/Spot/Upload
+     1x //fv8mwVwIAAOA/A7PjIjeFWkBw+PVAREIiQNV3kw6nJXE/AQAAAAAAAAAAAAAAAAAAAAAAAAEQAAAAU01fRGVjYWxNZXNoXzc4AAEBAAAAAAUAAABOb25lAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+     1x //fvyx52aAAAOA/KTtgNrOWAT8C9waIi8JIQLDTH7PLmTxAAQAAAAAAAAAAAAAAAAAAAAAAAAEJAAAAUGxhbmUxODYAAQEAAAAABQAAAE5vbmUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+     1x /2YhJgheHnk2s0WoAAAAAAAAAARQAAABOU19FbnZfTGVha2luZ1dhdGVyAAAABQAAAE5vbmUASBiQiP/ZiEmCF4eeTazRagAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=,None;/Game/Pione
+     1x /4JkLIK6VP0AAA0yZuZ8/QAAAAIA0f0FAAQAAAAAAAAAAAAAAAAAAAAAAAAEUAAAAU01fSG1lX1BsYW50XzAxX0IxNAABAQAAAAAFAAAATm9uZQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+     1x /9fQAEAAAABAAAAAAAAAAEAAAD23t7fuFLKTLEa3i5ED+UCAAAAAAAAAAEeAAAAVkZYX05TX0ZyaWdhdGVfUm90b3JCb3R0b21fRkwAAAAFAAAATm9uZQD23t7fuFLKTLEa3i5ED+UCAAAAAAAAAAA
+     1x /AAAAAAAAQEAAAAAAAABAQAAAAAAAAEBAAQAAAAAAAAAAAAAAAAAAAAAAAAEWAAAASGVpZ2h0TWFwX0RlZ3JlZXNfMjQ3AAAABQAAAE5vbmUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+     1x /AAAAAAAAaUAAAADAxtA/QAAAAKDc5DBAAQAAAAAAAAAAAAAAAAAAAAAAAAEWAAAAU01fQWlyRHVjdF8wMl94NDAwX0EyAAEBAAAAAAUAAABOb25lAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+     1x /AAAAAOAoGUAAAACAl+s8QAAAAMCOgSJAAQAAAAAAAAAAAAAAAAAAAAAAAAEQAAAAU01fQm9va3NfMDJfQTIyAAEBAAAAAAUAAABOb25lAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+     1x /AQAAAAAAAAAAAAAAAAAAAAAAAAEQAAAAU01fQ2FibGVzXzAxX0Y5AAEBAAAAABAAAABVcGdyYWRlXzA1X1Nob3cAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=,
+     1x /ARC_Lamp_01/BP_ARC_Lamp_01_C_01.BP_ARC_Lamp_01_C_01_C;/Game/Pioneer/Interactables/Frigate/LI_FrigateBlockout_Packed.LI_FrigateBlockout_Packed:Persist
+     1x /ARC_Lamp_01/BP_ARC_Lamp_01_C_Frigate.BP_ARC_Lamp_01_C_Frigate_C;/Game/Pioneer/Interactables/Frigate/LI_FrigateBlockout_Packed.LI_FrigateBlockout_Pack
+     1x /Acoustic_Guitar_Ragtime_06/Game/Pioneer/Items/Gadgets/Instrument_AcousticGuitar/DA_Item_Gadget_
+     1x /Administrator/AppData/Local/PioneerGame/Saved/Config/WindowsClient/EditorPerProjectUserSettings.ini
+     1x /Angelscript.EnvironmentalDamageSourceDataAsset",bHasBlueprintClasses=False,bIsEditorOnly=False,Directories=((Path="/Game/Pioneer/Online/PersistenceDa
+     1x /Antenna/MI_BG_Antenna_01_PropTrim_Metal_01_A_01.MI_BG_Antenna_01_PropTrim_Metal_01_A_01'>Concrete_Damaged,'/Game/Pioneer/MaterialLibrary/Material_Ins
+     1x /AntennaSet_01/MI_AntennaSet_01_A.MI_AntennaSet_01_A'>M_Cable,'/Game/Pioneer/Environment/Props/_Generic/AntennaSet_01/MI_AntennaSet_01_Cables_01_A.MI_
+     1x /Arc/ARC_Lamp_01/BP_ARC_Lamp_01_C_01.BP_ARC_Lamp_01_C_01_C;/Game/Pioneer/Interactables/Frigate/LI_FrigateBlockout_Packed.LI_FrigateBlockout_Packed:Per
+     1x /Arc_Payload_01/MI_WalkerInterior_01_Metal_Payload_05.MI_WalkerInterior_01_Metal_Payload_05'>M_Cable,'/Game/Pioneer/Environment/Props/Arc/ARC_Tech_L_0
+     1x /Avatar/Avatar_Skeleton_CtrlRig/Avatar_CtrlRig_AimCorrection.Avatar_CtrlRig_AimCorrection_C")),(ReferenceNodePath="/Game/Pioneer/Characters/Avatar/Ava
+     1x /BC_Building_School_01/MI_BC_School_01_ConcreteFlat.MI_BC_School_01_ConcreteFlat'>MI_Concrete_02,'/Game/Pioneer/Environment/Architecture/BuriedCity/St
+     1x /BP_FrigateFireHazardVolume.BP_FrigateFireHazardVolume_C;/Game/Pioneer/Interactables/Frigate/LI_FrigateBlockout_Packed.LI_FrigateBlockout_Packed:Persi
+     1x /BP_PioneerPlayerState.BP_PioneerPlayerState_C
+     1x /BlueprintTypeEngineNoneBP_UnarmedItem_CDefault__BP_UnarmedItem_C/Game/Pioneer/Items/Misc/Unarmed/BP_UnarmedItem
+     1x /CEcon_GetInventoryItemsWithDescriptions_Request
+     1x /CRNormalRefractionDepthBiasT_Roots_01_CRT_Roots_01_NOMUse DetailUse Slice MaskMI_Roots_01_A/Game/Pioneer/Items/Salvage/Roots/MI_Roots_01_A
+     1x /CRjHbQBJQCELWchCFgI9AQAAAAAAAAABAAAAPPS1d3VmDUesVZk7P5l2AQAAAAAAAAABCAAAAFBsYW5lMjYAAAAFAAAATm9uZQA89LV3dWYNR6xVmTs/mXYBAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+     1x /Ceiling_01/MI_Wrh_Ceiling_01_PropTrim_PaintedBeams_01_A.MI_Wrh_Ceiling_01_PropTrim_PaintedBeams_01_A'>M_PropTrims_02,'/Game/Pioneer/Environment/Props
+     1x /Characters/Skins/Outfit/Helix/DA_OI_Outfit_Helix_Color_BlackGreengeCustomizationVisualPartSetMaterialModifier/Game/Pioneer/Items/Characters/Skins/Out
+     1x /Codex/WithinEntry/T_UI_RaiderCamps_SquareT_UI_Codex_ARC_Kebab_LandscapeT_UI_Codex_History_Deforester_LandscapeT_UI_Codex_Topside_HotelPanoramaAzzurro
+     1x /Commercial/TicketBooth_02/MI_Cmr_TicketBooth_02_A_Door_A.MI_Cmr_TicketBooth_02_A_Door_A'>MI_Blinds,'/Game/Pioneer/Environment/Props/Commercial/Ticket
+     1x /ConstructionLight_01/MI_ConstructionLight_01_A.MI_ConstructionLight_01_A'>Emissive,'/Game/Pioneer/Environment/Props/_Generic/ConstructionLight_01/MI_
+     2x /Content/Pioneer/UI/Localization/ST_IngameInteractions
+     3x /Content/Pioneer/UI/Localization/ST_IngameInteractions.uasset
+     6x /Content/Pioneer/UI/Localization/ST_IngameInteractions.umap
+     2x /Content/Pioneer/UI/Localization/ST_Inventory.uasset
+     1x /Customize/BP_PioneerCustomizeActor.BP_PioneerCustomizeActor_C;/Game/Pioneer/Maps/FrontEnd/EndofRound.EndofRound:PersistentLevel.BP_BC_Mechanic_C_5,/S
+     1x /Decals/Leaks/MI_Decal_Leaks_Large_02_POI16_A.MI_Decal_Leaks_Large_02_POI16_A'>MI_Wall_03,'/Game/Pioneer/MaterialLibrary/Material_Instances/Themes/Res
+     1x /DeepForest/Vegetation/Bush_Holly_01/MI_Bush_Holly_Debris_01_B.MI_Bush_Holly_Debris_01_B'>MI_Bush_Holly_Branches_01_B,'/Game/Pioneer/Environment/South
+     1x /DeepForest/Vegetation/Bush_Holly_01/MI_Bush_Holly_Debris_01_C.MI_Bush_Holly_Debris_01_C'>MI_Bush_Holly_Branches_01_C,'/Game/Pioneer/Environment/South
+     1x /DeepForest/Vegetation/Tree_L_03/MI_South_DeepForest_Tree_L_03_BarkShreds.MI_South_DeepForest_Tree_L_03_BarkShreds'>M_Stem,'/Game/Pioneer/Environment/
+     3x /Engine/EditorResources/AI/S_NavLink
+     3x /Engine/EditorResources/BSPVertex
+     3x /Engine/EditorResources/BSPVertex.BSPVertex
+     3x /Engine/EditorResources/Bad
+     3x /Engine/EditorResources/Bkgnd
+     3x /Engine/EditorResources/BkgndHi
+     3x /Engine/EditorResources/EmptyActor.EmptyActor
+     3x /Engine/EditorResources/LightIcons/S_LightDirectional
+     3x /Engine/EditorResources/LightIcons/S_LightDirectionalMove
+     3x /Engine/EditorResources/LightIcons/S_LightError
+     3x /Engine/EditorResources/LightIcons/S_LightPoint
+     3x /Engine/EditorResources/LightIcons/S_LightPointMove
+     3x /Engine/EditorResources/LightIcons/S_LightSpot
+     3x /Engine/EditorResources/LightIcons/S_LightSpotMove
+     3x /Engine/EditorResources/MatInstActSprite
+     3x /Engine/EditorResources/S_Actor
+     3x /Engine/EditorResources/S_Emitter
+     3x /Engine/EditorResources/S_ExpoHeightFog
+     5x /Engine/EditorResources/S_KBSJoint
+     3x /Engine/EditorResources/S_KHinge
+     3x /Engine/EditorResources/S_KPrismatic
+     3x /Engine/EditorResources/S_LevelSequence
+     3x /Engine/EditorResources/S_NavP
+     3x /Engine/EditorResources/S_Note
+     3x /Engine/EditorResources/S_Player
+     3x /Engine/EditorResources/S_RadForce
+     3x /Engine/EditorResources/S_ReflActorIcon
+     2x /Engine/EditorResources/S_Solver.S_Solver
+     3x /Engine/EditorResources/S_TextRenderActorIcon
+     3x /Engine/EditorResources/S_Thruster
+     3x /Engine/EditorResources/S_Trigger
+     3x /Engine/EditorResources/S_VectorFieldVol
+     3x /Engine/EditorResources/SceneManager
+     3x /Engine/EditorResources/SmallFont
+     2x /Engine/EngineResources/AICON-Green.AICON-Green
+     2x /Engine/EngineResources/AICON-Red.AICON-Red
+     5x /Engine/EngineResources/Black
+     3x /Engine/EngineResources/Development/ZenIcon
+     3x /Engine/EngineResources/Development/ZenLogo_64.ZenLogo_64
+     3x /Engine/EngineResources/FilmGrains/Marcie_Grain_v3_128_M2_000.Marcie_Grain_v3_128_M2_000
+     3x /Engine/EngineResources/M_StreamingPause
+     3x /Engine/EngineResources/SlatePost0_RT.SlatePost0_RT
+     3x /Engine/EngineResources/SlatePost1_RT.SlatePost1_RT
+     3x /Engine/EngineResources/SlatePost2_RT.SlatePost2_RT
+     3x /Engine/EngineResources/SlatePost3_RT.SlatePost3_RT
+     3x /Engine/EngineResources/SlatePost4_RT.SlatePost4_RT
+     3x /Engine/MobileResources/HUD/DefaultVirtualJoysticks.DefaultVirtualJoysticks
+     2x /Engine/Private/DiaphragmDOF/DOFRecombine.usf
+     2x /Engine/Private/GeometryCollectionVertexFactory.ush
+     2x /Engine/Private/Nanite/NaniteSplit.usf
+     2x /Engine/Private/OITCombine.usf
+     2x /Engine/Private/PostProcessCombineLUTs.usf
+     2x /Engine/Private/VariableRateShading/VRSShadingRateCombine.usf
+     1x /Engine/Transient.EmbarkGameEngine_2147482518:PioneerAssetManager_2147482451.StreamableManager
+     1x /EntryModule/MI_MCP_EntryModule_Concrete_01.MI_MCP_EntryModule_Concrete_01'>Concrete_Damaged,'/Game/Pioneer/Environment/POI/MountainCompound/Props/Ent
+     1x /Environment/POI/FrozenTrail/Observatory/MI_InteriorMetalSheets_03.MI_InteriorMetalSheets_03'>InteroirWalls_02,'/Game/Pioneer/Environment/POI/FrozenTr
+     1x /Environment/POI/FrozenTrail/Village/MI_FZT_Village_TilingWood_01_A.MI_FZT_Village_TilingWood_01_A'>M_WoodenBeams_01,'/Game/Pioneer/Environment/POI/Fr
+     1x /Environment/POI/FrozenTrail/Walker_01/WalkerInterior/MI_WalkerInterior_01_Metal_01.MI_WalkerInterior_01_Metal_01'>M_PropTrims_BareMetal,'/Game/Pionee
+     1x /Environment/POI/Minor/SupportBuildingSmall_09/MI_SupportBuildingSmall_09_Trim_A.MI_SupportBuildingSmall_09_Trim_A'>MI_Concrete_02,'/Game/Pioneer/Envi
+     1x /Environment/POI/POI09/Prefabs/LaunchTower_01/MI_LaunchTowerInnerWalls_01.MI_LaunchTowerInnerWalls_01'>MI_Concrete_Wall_Slab_01_B,'/Game/Pioneer/Envir
+     1x /Environment/POI/POI16/FloodedPowerhouse/MI_POI16_FloodedPowerhouse_ConcreteCeiling_01_A.MI_POI16_FloodedPowerhouse_ConcreteCeiling_01_A'>MI_Decal_Lea
+     1x /Environment/POI/TheBlueGate/AntennaBuilding/MI_TBG_AntennaBuilding_Floor_01_A.MI_TBG_AntennaBuilding_Floor_01_A'>M_Concrete_06_008,'/Game/Pioneer/Env
+     1x /Environment/POI/TheBlueGate/Support_Structures/MI_BG_SupportStructure_Cables_01_A.MI_BG_SupportStructure_Cables_01_A'>M_Concrete_08,'/Game/Pioneer/En
+     1x /Environment/POI/TheBlueGate/TunnelMain/MI_TBG_Ceiling_Utility_02.MI_TBG_Ceiling_Utility_02'>Concrete_Trims,'/Game/Pioneer/Environment/POI/TheBlueGate
+     1x /Environment/Props/Interactables/ExtractionFan_01/MI_ExtractionFan_01_Grating_01_A.MI_ExtractionFan_01_Grating_01_A'>M_Cable,'/Game/Pioneer/Environmen
+     1x /Environment/Props/Residential/ModulesKitchen/MI_Res_ModulesKitchen_A_PropTrim_PolyWood.MI_Res_ModulesKitchen_A_PropTrim_PolyWood'>M_PropTrims_WoodInt
+     1x /Environment/Props/Residential/ModulesKitchen/MI_Res_ModulesKitchen_A_PropTrim_PolyWood.MI_Res_ModulesKitchen_A_PropTrim_PolyWood'>M_Wall,'/Game/Pione
+     1x /Environment/Props/_Generic/Catwalk_01/MI_Catwalk01_SteelGrates_NoVTDirt.MI_Catwalk01_SteelGrates_NoVTDirt'>M_PropTrimsClean,'/Game/Pioneer/Environmen
+     1x /FE.Actors.NPC.LanceItem.NPC.LanceOnline.Release.BaseDA_Item_NPC_Lance/Game/Pioneer/Items/NPC/Lance/DA_Item_NPC_LancePC_TianWenx
+     1x /FE_ScrappysBoxClaim
+     1x /FireSprinkler_01/MI_FireSprinkler_01_PropTrim_Metal_01_A.MI_FireSprinkler_01_PropTrim_Metal_01_A'>Cables,'/Game/Pioneer/Environment/Props/_Generic/Fi
+     1x /Firearms/BattleRifle_EnergyBurst_01/MI_BattleRifle_EnergyBurst_01_B.MI_BattleRifle_EnergyBurst_01_B'>M_Glass_01,'/Game/Pioneer/Items/Firearms/Shared/
+     1x /Fountain_01/MI_Concrete_Trim_02_A.MI_Concrete_Trim_02_A'>M_PropTrim,'/Game/Pioneer/Environment/POI/TheBlueGate/Support_Structures/MI_BG_SupportStruct
+     1x /Frigate/BP_LootContainer_Frigate_Dynamic.BP_LootContainer_Frigate_Dynamic_C;/Game/Pioneer/Interactables/Frigate/LI_FrigateBlockout_Packed.LI_FrigateB
+     1x /FrontEnd/Workshop_01/MI_Workshop_Wall_01_A.MI_Workshop_Wall_01_A'>CeilingPanels,'/Game/Pioneer/Environment/POI/Minor/Bunker_01/Props/Bunker_B_Ceiling
+     1x /FrozenTrail/CentralStation/PlatformCanopy_01/MI_FZT_Rebar_PlatFormCanopy.MI_FZT_Rebar_PlatFormCanopy'>M_TrimTint,'/Game/Pioneer/Environment/POI/Froze
+     1x /FrozenTrail/Railyard/Materials/MI_FZT_Railyard_Concrete_Int_01_A.MI_FZT_Railyard_Concrete_Int_01_A'>M_Concrete_01,'/Game/Pioneer/Environment/POI/Froz
+
+== سلاسل تانية فيها كلمات مفتاحية (46370) ==
+    11x                <rdf:li rdf:parseType="Resource">
+     3x             xmlns:stEvt="http://ns.adobe.com/xap/1.0/sType/ResourceEvent#"
+     1x             xmlns:stEvt="http://ns.adobe.com/xap/1.0/sType/ResourceEvent#">
+     1x         can't read stack
+     1x         moved ebp to stack at %X
+     1x         moved ebp to stack at %d
+     1x         stack %x, found direct call %x to %x
+     1x         stack %x, found indirect call %x to %x
+     1x         stack %x, guessing direct call
+     1x         stack %x, guessing indirect call
+     1x         stack %x, guessing likely direct call
+     1x         stack %x, guessing likely indirect call
+     1x         stack %x, guessing likely unk indirect call
+     1x         stack %x, guessing unk indirect call
+     1x         swu found call %X for stack %X
+     1x         unable to read stack to validate ebp
+     1x       SearchForReturnAddress: stack %X, EBP %X func %X:%X, guess %d:%X
+     1x    {       "description": "Late progression",       "action": "base_package",       "packageId": 891063842     },     {       "description": "Stash & 
+     3x   <0 (default) indicates no tiling and disables reserved resources. 
+     3x   >0 will use the given tile-size and attempt to use reserved resources, but falls back to a regular buffer if not available.
+     1x   NONE( Inventory.ItemType.Armor,
+     2x   merged
+     1x  ((MaterialParameterCollectionInstanceResource
+     1x  (Note: one or more stacks were not captured)
+     2x  (via h1 upgrade)
+     1x  *** A stack buffer overrun occurred in %ws:%s
+     1x  *** Resource timeout (%p) in %ws:%s
+     1x  *** Restarting wait on critsec or resource at %p (in %ws:%s)
+     1x  *** then kb to get the faulting stack
+     1x  .CInventory_ExchangeItem_Request
+     1x  .CInventory_GetInventory_Request
+     1x  .CInventory_PurchaseInit_Request
+     1x  /Game/Pioneer/Environment/Props/Residential/DrawerMedical_01/MI_DrawerMedical_01_B.MI_DrawerMedical_01_B
+     1x  02Weathering TilingMI_DrawerMedical_01_A/Game/Pioneer/Environment/Props/Residential/DrawerMedical_01/MI_DrawerMedical_01_A
+     3x  0: A pass that is not marked async will mark the entire parallel pass set as awaited. 1: A pass that does not match the task mode of the current batc
+     3x  0: Allocate resources based on view requirement, 
+     3x  0: Disable split barriers
+     3x  0: Do not collapse to a single memory barrier, useful for tracking single resource transitions in external tools
+     3x  0: Renders during the depth pass. This splits the depth pass into 2 phases: with and without velocity.
+     3x  0: full quality (Combined Burley and Separable pass. Separable is not optimized, as reference)
+     3x  0: off (default), triangle pass is interleaved with vertex pass, requires resource barriers in between. 
+     3x  1: Allocate resources based on view requirement, but can only grow over frame to minimize resources reallocation and hitches, 
+     3x  1: Allow split barriers using Synchronization2 events (default)
+     3x  1: Re-order by distance (default, less batching, less artifacts when widgets overlap)
+     3x  1: Release objects and force garbage collection (iterative);
+     3x  1: on, batch triangle passes together, resource barrier, followed by vertex passes together, cost more memory. 
+     3x  2: Allocate resources based on platform settings.
+     3x  2: Release objects and force garbage collection (complete)
+     1x  ALL(  ANY( Inventory.ItemType ) )
+     1x  ALL(  ANY( Inventory.ItemType ),
+     1x  ALL( Inventory.Structure.LoadoutFrame.ContainerItem.Auxiliary,
+     1x  ALL( Inventory.Structure.LoadoutFrame.ContainerItem.Backpack,
+     7x  ALL( Inventory.Structure.LoadoutFrame.Type.ColonyRun,
+     1x  ALL( Inventory.Structure.LoadoutFrame.Type.Combat,
+     1x  ALL( Inventory.Structure.LoadoutFrame.Type.Combat_T1,
+     1x  ALL( Inventory.Structure.LoadoutFrame.Type.Combat_T3_Flanking,
+     1x  ALL( Inventory.Structure.LoadoutFrame.Type.Looting_T2,
+     1x  ALL( Inventory.Structure.LoadoutFrame.Type.Looting_T3_DBNO,
+     5x  ALL( Inventory.Structure.LoadoutFrame.Type.Standard,
+     1x  ALL( Inventory.Structure.LoadoutFrame.Type.Utility_T2,
+     2x  ANY( FE.Background.FeedScrappy )
+    10x  ANY( Inventory.ItemType )
+     1x  ANY( Inventory.ItemType.Armor )
+     1x  ANY( Inventory.ItemType.Armor.Heavy,
+     1x  ANY( Inventory.ItemType.Armor.Light )
+     1x  ANY( Inventory.ItemType.Armor.Medium,
+     2x  ANY( Inventory.ItemType.Augment )
+     1x  ANY( Inventory.ItemType.Consumable )
+     1x  ANY( Inventory.ItemType.Consumable,
+     1x  ANY( Inventory.ItemType.Deployable )
+     1x  ANY( Inventory.ItemType.Gadget )
+     1x  ANY( Inventory.ItemType.Misc.Trinket )
+    19x  ANY( Inventory.ItemType.Modification.Firearm.MagazineLight )
+    27x  ANY( Inventory.ItemType.Modification.Firearm.MagazineMedium )
+    18x  ANY( Inventory.ItemType.Modification.Firearm.MagazineShotgun )
+     4x  ANY( Inventory.ItemType.Modification.Firearm.Muzzle )
+    19x  ANY( Inventory.ItemType.Modification.Firearm.ShotgunMuzzle )
+     7x  ANY( Inventory.ItemType.Modification.Firearm.Stock )
+     1x  ANY( Inventory.ItemType.Modification.Firearm.Tech.HandCannon )
+    48x  ANY( Inventory.ItemType.Modification.Firearm.UnderBarrel )
+     1x  ANY( Inventory.ItemType.Throwable )
+     2x  ANY( Inventory.ItemType.Weapon )
+     1x  ANY( Inventory.ItemType.Weapon.Firearm )
+     1x  ANY( Inventory.ItemType.Weapon.Melee )
+     2x  ANY( Inventory.Structure.AugmentContainer )
+     1x  ANY( Inventory.Structure.StashContainer )
+     1x  ANY( Inventory.Structure.StashContainer.Bonus )
+     1x  ANY( Inventory.Structure.StashContainer.Expedition )
+     1x  ANY( Inventory.Structure.StashContainer.Secret )
+     1x  ANY( Outpost.ItemType.Workbench )
+     1x  ANY( UI.ItemClassification.Category.CraftingMaterial )
+     1x  Anvil Splitter
+     1x  Bay,'/Game/Pioneer/Environment/POI/MountainCompound/Materials/FloorLines/Lobby/MI_MCP_Lobby_FloorLines_LoadingBay_A.MI_MCP_Lobby_FloorLines_LoadingBa
+     1x  CInventory_PurchaseInit_Response
+     1x  Callstack
+     1x  Character.Archetype.Scrappy_Rooster )
+     3x  Character.Archetype.Scrappy_Rooster,
+     1x  Character.Slot.RoosterBody )
+     1x  Character.Slot.RoosterOutfit )
+     1x  Character.Slot.RoosterOutfit,
+     3x  Check-In Reward
+     1x  Consumes input for keybinding
+     1x  Craft
+     1x  Daily Mission Reward
+     4x  Daily Mission reward.
+     2x  FE.Background.RaiderDen.CharacterCustomization.ScrappyBody )
+     1x  FPioneerOnl
+     1x  FPioneerSer
+     2x  FrameRate, and transforms the result from local to world space. Consumed by cloth VAT derived materials via a MaterialFunctionCall node to drive Worl
+     1x  Generator Room
+     1x  Inventory.ItemType.Armor.Light )
+     1x  Inventory.ItemType.Armor.Light,
+     1x  Inventory.ItemType.Armor.Medium )
+     1x  Inventory.ItemType.Deployable,
+     1x  Inventory.ItemType.Gadget )
+     1x  Inventory.ItemType.Misc.Trinket ),
+     1x  Inventory.ItemType.Throwable,
+     1x  Inventory.ItemType.Weapon ) )
+     2x  Inventory.Structure.LoadoutFrame.ContainerItem.Armor )
+     1x  Inventory.Structure.LoadoutFrame.ContainerItem.Augment )
+     7x  Inventory.Structure.LoadoutFrame.ContainerItem.Auxiliary )
+     1x  Inventory.Structure.LoadoutFrame.ContainerItem.Backpack )
+     3x  Inventory.Structure.LoadoutFrame.ContainerItem.Belt )
+     2x  Inventory.Structure.LoadoutFrame.ContainerItem.Firearm.Primary )
+     2x  Inventory.Structure.LoadoutFrame.ContainerItem.Firearm.Secondary )
+     3x  Inventory.Structure.LoadoutFrame.ContainerItem.Gadget )
+     3x  Inventory.Structure.LoadoutFrame.ContainerItem.MeleeWeapon )
+     2x  Inventory.Structure.LoadoutFrame.ContainerItem.SafePocket )
+     1x  Inventory.Structure.LoadoutFrame.Type.ColonyRun )
+     1x  Inventory.Structure.LoadoutFrame.Type.Utility_T3_Smoke )
+     1x  Leaked Block 0x%p size 0x%p (stack %p depth %u)
+     1x  MID_M_UI_ItemUpgradeLevel_2147400378
+     1x  MaterialParameterCollectionInstanceResource
+     3x  Mode 1: Basic information of the first 20 compile jobs per batch (Default).
+     3x  Montis. Materials you donate will count towards the community progress, and speed up the expansion. Contributing to the efforts also earns you up to 
+     2x  Offers | Reconcile Stores | Transaction Expirations             | Auto Claim Battle Passes  | PCCafe Events
+     1x  Replaces the Anvil's bullets with rounds that split into four weaker projectiles.
+     2x  Rewards!
+     1x  Rewards:
+     1x  Space Efficient Stacking
+     1x  TextEntriess__StaticType_UPioneerOffersDescription
+     1x  TriplanarUse Triplanar MaskMI_Hme_Floor_04/Game/Pioneer/Environment/Props/FrontEnd/Materials/MI_Hme_Floor_04
+     2x  Vertices in group "{1}" in the Collection: {2}
+     1x  alairas elfogadasanak feltetele az eloirt ellenorzesi eljaras megtetele. Az eljaras leirasa megtalalhato a NetLock Kft. Internet honlapjan a https://
+     4x  and claim your rewards before the event ends.
+     3x  and watch the supplies stack up! Play ARC Raiders every day to collect your rewards.
+     1x  application/grpc-web+proto
+     1x  basis, collecting samples and data from the soil before returning back to orbit.
+     3x  batched together in the same translate job.
+     1x  become quite crafty at weaving bandages from Fabric, but to my sham(
+     7x  celebrate Soul's Offering by building shrines to the Raiders who came before.
+     1x  check-in reward.
+     1x  collection is visible to everyone.
+     1x  collection.
+     1x  craft a Wolfpack
+     1x  doesn't have a LearnRecipeOffer but there is a corresponding offer for ApplySkinOffer. If one exists we assume both should exist!
+     1x  doesn't have an ApplySkinOffer but there is a corresponding offer for LearnRecipeOffer. If one exists we assume both should exist!
+     1x  hoped the seawalls at Riven Tides might offer us some protection fr(
+     1x  https://repository.tsp.zetes.com0
+     1x  https://www.catcert.net/verarrel05
+     1x  layout merge, the layout will not be modified and blocks will be ig(
+     1x  must be cleared to complete this merge. 
+     2x  provided you have the right resources.
+     1x  resources for the iOS platform
+     1x  resources redirected towards the Exodus Initiative.
+     3x  rewards are here
+     3x  rewards are here!
+     3x  rewards have arrived
+     4x  rewards have arrived!
+     1x  stack.
+     1x  to create a new Geometry Collection to begin fracturing.  Choose one of the fracture tools to break apart the selected Geometry Collection.
+     1x  to inventory!
+     1x  which reward 
+     3x  will receive rewards based on your final rank.
+     1x  | Rank                       | Seasonal Rewards | 
+     1x ! Stack unknown ind target
+     1x ! Stack unknown lea esp
+     1x !"unexpected split SRC packet"
+     1x !.CInventory_PurchaseInit_Response"
+     1x !/Game/Pioneer/Environment/Props/Commercial/Table_01/MI_Table_01_A_PropTrim_Wood.MI_Table_01_A_PropTrim_Wood
+     1x !/Game/Pioneer/Items/Firearms/Shared/Cartridges/Mag_Shotgun_Shell_01/MI_Mag_Shotgun_01_Shell_A.MI_Mag_Shotgun_01_Shell_A
+     1x !/Game/Pioneer/Maps/LobbyLobbyDA_Level_Lobby/Game/Pioneer/Maps/DA_Level_Lobby
+     1x !:(Collect missing Artifact 1
+     1x !CInventory_DevSetNextDrop_Request
+     1x !CInventory_GetItemDefMeta_Request
+     1x !CInventory_SplitItemStack_Request
+     1x !GetInventoryItemsWithDescriptions
+     1x !SetSubscriptionListFromCollection
+     1x !https://ocsp.quovadisoffshore.com0
+     1x !https://www.anf.es/AC/ACTAS/789230
+     1x !k_EMsgAMCancelEasyCollectResponse
+     1x !pTracker->IsClaimed( pKey )
+     1x ""},"tags":{"unreal.platform":"Windows","unreal.target":"Client","unreal.executable":"PioneerGame","unreal.project":"PioneerGame"},"breadcrumbs":[],"c
+     3x "),(Heavy, "/Game/Pioneer/Items/Armor/HeavyBody/SK_Armor_01_Default_Heavy.SK_Armor_01_Default_Heavy"))
+     3x ", "ID_FRONTEND_MATCHMAKING")),(Status_Playing, LOCTABLE("/Game/Pioneer/UI/Localization/ST_RichPresence.ST_RichPresence", "ID_RICH_PRESENCE_IN_GAME"))
+     3x ", "ID_RICH_PRESENCE_IN_PARTY_INVENTORY")),((TagName="UI.Nav.PreRound.InventoryOverview"), LOCTABLE("/Game/Pioneer/UI/Localization/ST_RichPresence.ST_
+     1x ","thirdPartyUserId":"76561198877184090"},"tenancyUserId":2744411947827419595},{"playedAt":"2026-10-30T22:33:50.237Z","profile":{"displayName":{"discr
+     1x ",HostObject="/Game/Pioneer/Characters/Avatar/Avatar_Skeleton_CtrlRig/Avatar_CtrlRig_WeaponLocalAdditives.Avatar_CtrlRig_WeaponLocalAdditives_C")),(Re
+     1x ".CInventory_DevSetNextDrop_Request
+     1x ".CInventory_GetItemDefMeta_Request
+     1x ".CInventory_SplitItemStack_Request
+     1x "/Game/Pioneer/Environment/Props/_Generic/ConcreteWeeds_01/MI_ConcreteWeeds_01.MI_ConcreteWeeds_01
+     1x "CCloud_BeginAppUploadBatch_Request
+     1x "CInventory_ConsumePlaytime_Request
+     1x "CInventory_GetItemDefMeta_Response
+     1x "Generic warning text on screens that gives your rewards you can claim (battlepass, mastery, quests,...)"
+     2x "INVENTORY
+     1x "Module_Pioneer_Debug_PioneerDebugHUDComponentStatics")
+     4x "Original Version" refers to the collection of Font Software components as
+     2x "Short warning next to the player' stash on the inventory screen, letting them know that their stash has entered the soft limit (too many things in th
+     2x "UPGRADE MODIFIERS
+     1x "discriminator":"7334","name":"G22"},"email":"","emailIsVerified":false,"tenancyUserId":2128353869928409954,"thirdPartyLastSeenAccountName":"pidt1332"
+     1x "k_EMsgBSUpdateInventoryFromProPack
+     1x "key":"l0c4l1z3d_163458260","namespace":"RaiderProjects","source":"","value":"Build emergency caches to help both the nomads and Raiders stay alive on
+     1x "v.resource.headertsias
+     1x "{0}" can not be edited as it is being driven from the parent MaterialParameterCollection
+     2x "{0}" has been merged with parameter "{1}".
+     1x "{0}" is already the name of another parameter in this collection.
+     1x "},{"amount":0,"milestoneRewardStates":["LOCKED","LOCKED","LOCKED"],"objectiveId":230055164,"rankWindowId":219993511,"streakPoints":0,"streakState":"N
+     3x # Your HSTS cache. https://curl.se/docs/hsts.html
+     3x # Your alt-svc cache. https://curl.se/docs/alt-svc.html
+     3x # https://curl.se/docs/http-cookies.html
+     1x ##CompReg.Resource_Dex
+     1x #.CCloud_BeginAppUploadBatch_Request
+     1x #.CInventory_ConsumePlaytime_Request
+     1x #.CInventory_GetItemDefMeta_Response"
+     1x #/Game/Pioneer/Environment/Props/FrontEnd/WorkshopStations/WorkshopStation_Meds_01/MI_WorkshopStation_Meds_01_B.MI_WorkshopStation_Meds_01_B
+     1x #CCloud_BeginAppUploadBatch_Response
+     1x #CInventory_PurchaseFinalize_Request
+     1x #bHasPrintedErrorCallstackOnce
+     1x #d/Game/Pioneer/Environment/Props/_Generic/StickyNotes_01/MI_StickyNotes_01.MI_StickyNotes_01
+     1x #https://wwww.certigna.fr/autorites/0m
+     1x #pioneer-spot
+     2x $$A6AXPEAVMachineLearnedBehaviorEvaluator@rl4@@@Z@std@@@5@$$QEAV?$vector@V?$vector@V?$vector@GV?$PolyAllocator@G$07VDefaultMemoryResource@pma@@@pma@@@
+     1x $.CCloud_BeginAppUploadBatch_Response
+     1x $.CInventory_PurchaseFinalize_Request
+     1x $/Game/Pioneer/Effects/Materials/Environment/Screen_Glitched/M_FX_FlickeringScreen.M_FX_FlickeringScreen
+     1x $/Game/Pioneer/Items/Augment/Shared/IntegratedItems/IntegratedShieldRepair/DA_Item_IntegratedShieldRepair.DA_Item_IntegratedShieldRepair
+     1x $/Game/Pioneer/UI/MetaData/PurchasableOffers
+     1x $CInventory_CombineItemStacks_Request
+     1x $Kernel.Smartlocker.OriginClaim
+     2x $NeuralNetInference@MU?$T256@UF128@sse@trimd@@@fallback@trimd@@UF128@sse@3@@cpu@ml@rl4@@$07VDefaultMemoryResource@pma@@@pma@@@4@$$QEAV?$vector@IV?$Pol
+     1x $Tracked resource
+     1x $k_EMsgAMClaimUnownedUserGiftResponse
+     1x $k_EMsgUFSUpdateRecordBatchedResponse
+     1x $k_ESplitScalingFilter_NIS_Deprecated
+     2x %!PS-Adobe-3.0 Resource-CIDFont
+     1x %.CInventory_CombineItemStacks_Request
+     1x %/Game/Pioneer/UI/Widgets/WBP_RoundedBox/Game/Pioneer/UI/Localization/ST_Mastery/Game/Pioneer/UI/Localization/ST_Frontend/Game/Pioneer/UI/Assets/Icons
+     1x %CCloud_CompleteAppUploadBatch_Request
+     1x %V%&'(&U&('.(Security relies on Raiders to do patrolling and reconnaissance tasks while topside, gathering or confirming intel. They are rewarded from
+     2x %d merged vertex(es) but %d baked -- stale bake
+     1x %https://crl.anf.es/AC/ANFServerCA.crl0
+     1x %https://www.anf.es/AC/ANFServerCA.crl0+
+     1x %i'PioneerGame/Content/Paks/pakchunk9-WindowsClient.sig
+     1x %k_EContentReportSubjectAction_Claimed
+     1x %k_EMsgEconFlushInventoryCacheResponse
+     2x %lld frames collected over %4.2f seconds, disregarding %4.2f seconds (%d frames) for a %4.2f FPS average
+     1x %p size of stack commit
+     1x %p size of stack reserve
+     1x %s    uniformResourceIdentifier : 
+     2x %s - (Level: %.2f. Stacks: %d)
+     2x %s Stacks%s
+     1x %s double claimed!
+     2x %s%s(Shadow BatchSize=%d) %dx%d
+     1x %s/%sresource/filter_%s_%s.txt.gz
+     1x %s/IGameInventory/GetItemDefArchive/v0001
+     1x %s/IGameInventory/GetItemDefPrices/v0001
+     2x %s: Merged(
+     2x %s: client ws-over-h2 upgrade not supported yet
+     2x %sCustomProperties ResourceDefinition Name="%s" Type="%s" DataDomain="%s"
+     1x &.CCloud_CompleteAppUploadBatch_Request
+     1x &/Game/Pioneer/Items/Salvage/RailwayLantern_01/MI_FerrovioOffering_01_A.MI_FerrovioOffering_01_A
+     1x &CCloud_CompleteAppUploadBatch_Response"
+     1x &CEcon_GetTradeOfferAccessToken_Request
+     1x &CInventoryClient_NewItems_Notification
+     1x &CInventory_GetUserPurchaseInfo_Request"<
+     1x &display_brightness_overdrive_hdr_split
+     1x ' but reward the unlock '
+     1x ' for another. Skipping this offer. OfferType=
+     1x '.CCloud_CompleteAppUploadBatch_Response
+     1x '.CEcon_GetTradeOfferAccessToken_Request
+     1x '.CInventoryClient_NewItems_Notification
+     1x '.CInventory_GetUserPurchaseInfo_Request
+     3x '/Game/Pioneer/Environment/Architecture/BuriedCity/Structures/BC_Building_ParkingGarage_01/MI_ParkingGarage_Damage.MI_ParkingGarage_Damage'>Concrete_T
+     1x '/Game/Pioneer/Environment/Architecture/BuriedCity/Structures/BC_Building_ParkingGarage_01/MI_ParkingGarage_Trim_A.MI_ParkingGarage_Trim_A'>Concrete_D
+     1x '/Game/Pioneer/Environment/Architecture/SucessfulLaunchPadFacility/Modules/LaunchTower/MI_MetalPanelPainted_01.MI_MetalPanelPainted_01'>
+     1x '/Game/Pioneer/Environment/POI/FrozenTrail/Railyard/Materials/MI_FZT_Railyard_01_FloorElevator_A.MI_FZT_Railyard_01_FloorElevator_A'>FloorInterior_01,
+     1x '/Game/Pioneer/Environment/POI/FrozenTrail/Railyard/Materials/MI_FZT_Railyarrd_ConcreteTrim_01_A.MI_FZT_Railyarrd_ConcreteTrim_01_A'>Concrete_Damaged,
+     1x '/Game/Pioneer/Environment/POI/FrozenTrail/Village/MI_FZT_VillageHouse_01_A_Trims.MI_FZT_VillageHouse_01_A_Trims'>
+     1x '/Game/Pioneer/Environment/POI/FrozenTrail/Walker_01/WalkerInterior/MI_WalkerInterior_01_Metal_01.MI_WalkerInterior_01_Metal_01'>M_PropTrims_BeigeMeta
+     1x '/Game/Pioneer/Environment/POI/Minor/SupportBuildingSmall_04/MI_SupportBuildingSmall_04_Roof_A.MI_SupportBuildingSmall_04_Roof_A'>Concrete_Trims,'/Gam
+     1x '/Game/Pioneer/Environment/POI/MountainCompound/Materials/MI_MCP_Ceiling_Admin_01_A.MI_MCP_Ceiling_Admin_01_A'>
+     1x '/Game/Pioneer/Environment/POI/MountainCompound/Materials/MI_MCP_FloorLobby_01_Snow_B.MI_MCP_FloorLobby_01_Snow_B'>
+     1x '/Game/Pioneer/Environment/POI/MountainCompound/Materials/MI_MCP_Wall_Admin_01_A.MI_MCP_Wall_Admin_01_A'>M_Concrete_02_008,'/Game/Pioneer/Environment/
+     1x '/Game/Pioneer/Environment/POI/MountainCompound/Materials/MI_MCP_Wall_Admin_01_A.MI_MCP_Wall_Admin_01_A'>M_Concrete_02_022,'/Game/Pioneer/Environment/
+     1x '/Game/Pioneer/Environment/POI/MountainCompound/Materials/MI_MCP_Wall_Admin_02_A.MI_MCP_Wall_Admin_02_A'>
+     1x '/Game/Pioneer/Environment/POI/MountainCompound/SeedVault/MI_MCP_DecalSnowLeaks_01_A.MI_MCP_DecalSnowLeaks_01_A'>M_PropTrims_PaintedMetal,'/Game/Pione
+     1x '/Game/Pioneer/Environment/POI/POI09/Prefabs/Administration_01/MI_AdminBuilding_01_InnerWall_A.MI_AdminBuilding_01_InnerWall_A'>MI_Concrete_Floor_Slab
+     1x '/Game/Pioneer/Environment/POI/TheBlueGate/AntennaBuilding/MI_TBG_AntennaBuilding_PlasterWall_01.MI_TBG_AntennaBuilding_PlasterWall_01'>M_Concrete_03,

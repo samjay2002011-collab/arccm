@@ -1,0 +1,10 @@
+== ضوابط ==
+   /v1/pioneer/inventory/v1/mutate            -> 405
+   /v1/pioneer/inventory/upgrade              -> 405
+   /v1/pioneer/offers/accept                  -> 405
+   /v1/pioneer/zzz-not-a-route                -> 404
+
+== 960 مرشح ==
+   *** /v1/pioneer/inventory/v1/mutate                      -> 405
+
+النتيجة: 1 مسار مش 404 من 960

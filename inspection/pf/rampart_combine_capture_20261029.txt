@@ -1,0 +1,42 @@
+== دمجة حقيقية على rampart.su ملتقطة حرفياً (RAIDER60766 / G14#0847، Light Ammo) ==
+التاريخ: 2026-10-29 02:20 (UTC-ish epoch 1793248830)
+
+قبل (من البوابة الرسمية Embark):
+  011302ae-b1b1-4dfc-8029-b32dcb6fdc3e x25  etag=1uppf9icx2atr  أب=54feb2a0 (backpack cell)
+  496fb16a-4628-4440-a041-b6f018d5ed72 x25  etag=3r6f4mc7h3n4m  أب=6217f815 (backpack cell)
+  d17ce592-825a-4a5c-8f23-03f85399f8d1 x50  etag=2q07cmnn4p0tz  أب=overflow
+  Σ = 100
+
+الطلب اللي طلع من المتصفح (سحبة ستاك على التاني في BACKPACK):
+  POST https://api.rampart.su/inventory/batch-mutate
+  Authorization: Bearer <rampart session token>
+  Content-Type: application/json
+  {"mutations":[{"discriminator":"combine","instanceId":"011302ae-b1b1-4dfc-8029-b32dcb6fdc3e",
+                 "targetInstanceId":"496fb16a-4628-4440-a041-b6f018d5ed72","amount":25}]}
+
+الرد (200) — ده changeset بتاع Embark حرفياً (etags + updatedAt بنانوثانية 18 رقم):
+  {"status":"success","changeset":{"items":{
+     "created":[],
+     "deleted":["011302ae-b1b1-4dfc-8029-b32dcb6fdc3e"],
+     "updated":[
+       {"amount":1,"etag":"chlpamujl1x1","gameAssetId":1440007245,
+        "instanceId":"54feb2a0-0eba-4d43-9536-2e72b5cec33f","slots":[""],
+        "updatedAt":1793248830392550000},
+       {"amount":50,"etag":"3bxa8tb9lt3x5","gameAssetId":-1875547390,
+        "instanceId":"496fb16a-4628-4440-a041-b6f018d5ed72","slots":null,
+        "updatedAt":1793248830392550000}]},
+   "notifications":[],"offers":{"transactionsCreated":[],"transactionsDeleted":[],"transactionsUpdated":[]},
+   "projects":{...null},"quests":{"created":null,"createdObjectives":[],"updated":null,"updatedObjectives":[]},
+   "stats":{"scopedPlayerStats":null}}}
+
+بعد (قراينة من البوابة الرسمية بعد الدمجة):
+  496fb16a-4628-4440-a041-b6f018d5ed72 x50  أب=6217f815
+  d17ce592-825a-4a5c-8f23-03f85399f8d1 x50  أب=overflow
+  Σ = 100 | الأكوام 3 -> 2 | مافيش أي فاقد
+
+ملاحظات من نفس اللفة على باونسبتهم (index-CcWZfx3c.js، 769802 بايت):
+  - العميل عندهم بيستخدم نفس التسمية: discriminator:`combine` / `split` / `stack_merge`
+  - split عندهم: {discriminator:"split", instanceId, targetWrapperId, amount: Math.floor(amount/2)}
+  - combine عندهم: {discriminator:"combine", instanceId, targetInstanceId, amount}
+  - في مسار تاني: /inventory/admin/account/<r>/batch-mutate  (يعني سيرفرهم عنده impersonation)
+  - مافيش في البانسبت ولا ذكر لـ es-pio.net ولا pioneer.embark.net — كل الكتابة بتعدي على سيرفرهم.

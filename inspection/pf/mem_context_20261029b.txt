@@ -1,0 +1,146 @@
+pid 11520: 8.4 GB
+
+### stack_merge — 0 سياق فريد
+
+### targetWrapperId — 0 سياق فريد
+
+### targetInstanceId — 0 سياق فريد
+
+### /v1/pioneer — 1 سياق فريد
+   0x30ff5e12  https://api-gateway.europe.es-pio.net/v1/pioneer
+
+### inventory/v1 — 0 سياق فريد
+
+### mutate — 13 سياق فريد
+   0x30f52a50  mutatedItems
+   0x31103296  validate_inventory_on_mutate
+   0x92154144  fake_invalid_inventory_on_mutate
+   0x92170b68  show_error_for_invalid_inventory_on_mutate
+   0x9b86b268  show_error_for_invalid_inventory_on_mutate_in_test
+   0x9b86c378  entory_on_mutate_in_test
+   0xc051ee1ba  ory_on_mutate
+   0xc051ee259  _mutate
+   0xc05287c24  ry_on_mutates
+   0xc0726360c  Looks like I got plenty to experiment with: these plants have somehow mutated together with fungi to form a symbiotic life form capable of spreading at reco
+   0x7fffc0ddc0a6  ML-KEM keys cannot be mutated
+   0x7fffc0ddcabf  keys cannot be mutated
+   0x7fffd7647386  Don't mutate strict-float node to a legalize node
+
+### es-pio.net — 44 سياق فريد
+   0x1db0fc0  *.europe.es-pio.net0
+   0x1db144c  $client2pubsub-ipv4.europe.es-pio.net
+   0x55f39f2  crashdump.europe.es-pio.net
+   0x30ff5d20  https://api-gateway.europe.es-pio.net/v1/server/pioneer
+   0x30ff5d20  https://api-gateway.europe.es-pio.net/v1/admin/pioneer
+   0x30ff5d90  ps://api-gateway.europe.es-pio.net/v1/server/pioneer
+   0x30ff5dfe  tps://api-gateway.europe.es-pio.net/v1/admin/pioneer
+   0x459c79ea  client2pubsub.europe.es-pio.net
+   0x45b6c376  api-gateway.europe.es-pio.net
+   0x4fbe4fb6  https://api-gateway.europe.es-pio.net/v1/admin/discovery
+   0x4ff2fd96  https://api-gateway.europe.es-pio.net/v1/admin/shared
+   0x4ff2fd96  https://api-gateway.europe.es-pio.net/v1/server/shared
+   0x4ff2fe06  ps://api-gateway.europe.es-pio.net/v1/admin/shared
+   0x4ff2fe76  ps://api-gateway.europe.es-pio.net/v1/server/shared
+   ... و30 تانيين
+
+### api-gateway — 15 سياق فريد
+   0x30e7ff38  https://api-gateway.europe.es-dis.net/v1/server/discovery
+   0x30e7ff38  https://api-gateway.europe.es-dis.net/v1/
+   0x30e7ffac  https://api-gateway.europe.es-dis.net/v1/admin/dis
+   0x30e7ffac  https://api-gateway.europe.es-dis.net/v1/admin/discovery
+   0x30e7ffac  https://api-gateway.europe.es-dis.net/v1/d
+   0x30e8001e  https://api-gateway.europe.es-dis.net/v1/discovery
+   0x30ff5cfa  https://api-gateway.europe.es-pio.net/v1/ad
+   0x30ff5d6a  https://api-gateway.europe.es-pio.net/v1/pio
+   0x311be384  https://api-gateway.europe.es-dis.net/v1/server/shared
+   0x311be384  https://api-gateway.europe.es-dis.net/v1/adm
+   0x311be3f2  https://api-gateway.europe.es-dis.net/v1/admin/shared
+   0x311be3f2  https://api-gateway.europe.es-dis.net/v1/shar
+   0x311be45e  https://api-gateway.europe.es-dis.net/v1/shared
+   0x4ff2fd70  https://api-gateway.europe.es-pio.net/v1/se
+   ... و1 تانيين
+
+### pioneer — 138 سياق فريد
+   0x4a7393c  pioneergame.exe
+   0x1e90dba8  pioneer_2.03.x-CL-1438640
+   0x30d884b3  embark-pioneer
+   0x30dca42f  pioneer-live
+   0x30ea3992  pioneer_2.03.x
+   0x30ee3a2c  pioneer.ropewrap.slideMinTangent
+   0x30eefb36  pioneer.ropewrap.pruneStraight
+   0x30f15e86  pioneer.ropewrap.skipVerifiedSegments
+   0x30f226ec  pioneer.ropewrap.stopOnNoProgress
+   0x30f22906  pioneer.ropewrap.minEdgeProgress
+   0x30f3c2ec  pioneer.ropewrap.slideAllCorners
+   0x30f4381e  pioneerScenarios
+   0x30f5da4c  pioneer.ropewrap.minSweepSpeedForAxis
+   0x30f6920e  pioneerSettings
+   ... و124 تانيين
+
+### discriminator — 28 سياق فريد
+   0x30fbe252  discriminator
+   0x6768cc7e  7e","party_members":[{"profile":{"accountId":166200091153119717,"displayName":{"discriminator":"7334","name":"G22"},"email":"","emailIsVerified":false,"tenancyUserId":212835
+   0x7912763f  deInUi":false,"maxAmount":0,"slots":[]}]}},{"childProductIds":[],"cost":{"costItems":[{"amount":500,"durability":1,"gameAssetId":941631263}]},"discriminator":"embarkProduct","gameAssetId":0,"productId":159057885,"reward":{"randomR
+   0x7912788a  ":-1196642210,"hideInUi":false,"maxAmount":0,"slots":[]}]}},{"childProductIds":[],"cost":{"costItems":[{"amount":600,"durability":1,"gameAssetId":941631263}]},"discriminator":"embarkProduct","gameAssetId":0,"productId":160919393,"
+   0x79127a16  d":2069746413,"hideInUi":false,"maxAmount":0,"slots":[]}]}},{"childProductIds":[],"cost":{"costItems":[{"amount":300,"durability":1,"gameAssetId":941631263}]},"discriminator":"embarkProduct","gameAssetId":0,"productId":162029556,"
+   0x79127bcb  t":0,"slots":[]}]}},{"childProductIds":[366506394,545180628,895352723,927647153],"cost":{"costItems":[{"amount":1500,"durability":1,"gameAssetId":941631263}]},"discriminator":"embarkProduct","gameAssetId":-1041150251,"productId":1
+   0xa350e6c3  no-discriminators
+   0xb06f2b86  mirfs-discriminators
+   0x7fff4eff91b8  missing required field 'discriminator'
+   0x7fff4f001a00  discriminator can only appear on variant part
+   0x7fff4f0175e3  Disable generation of discriminator information.
+   0x7fffd7631d19  constant ptrauth integer discriminator must be i64 constant
+   0x7fffd7631d19  constant ptrauth address discriminator must be a pointer
+   0x7fffd7638a6a  DW_AT_GNU_discriminator
+   ... و14 تانيين
+
+### batch — 159 سياق فريد
+   0x30d30f63  PxBatchQuery::setUserMemory: This batch is still executing, skipping setUserMemory
+   0x30d5c651  ls::batch_user_event
+   0x30dbd269  PxBatchQuery::execute: Another thread is still adding queries to this batch
+   0x30dc2544  PxBatchQuery::execute: This batch is already executing
+   0x30dcf315  BpBroadphaseSap.batchUpdate
+   0x30dd3f3f  PxBatchQuery::release: This batch is still executing, skipping release
+   0x30e08a73  EPropertyAccessCopyBatch::ExternalUnbatched
+   0x30e08a73  EPropertyAccessCopyBatch::InternalUnbatched
+   0x30e08a73  EAnimPropertyAccessCallSite::WorkerThread_Unbatched
+   0x30e34b0c  PxBatchQuery::raycast: This batch is still executing, skipping query.
+   0x30e34b0c  PxBatchQuery::sweep: This batch is still executing, skipping query.
+   0x30e34b0c  PxBatchQuery::overlap: This batch is still executing, s
+   0x30e34b50  PxBatchQuery::overlap: This batch is still executing, skipping query.
+   0x30e34b96  hQuery::raycast: This batch is still executing, skipping query.
+   ... و145 تانيين
+
+### combine — 317 سياق فريد
+   0x12e4b3b  RecombineMainCS
+   0x145c153  >RecombineMainCS
+   0x20ebaa8  e with points. Points will be generated in the two dimensional footprint of the combined bounds of the Surface and the Bounding Shape (if any) and then projected onto 
+   0x30d70fa1  Invalid reference. Property accessors cannot be used in combined read/write operations
+   0x30e76876  r.DOF.Recombine.Quality
+   0x30f0d2b8  r.DOF.Recombine.MinFullresBlurRadius
+   0x30f0e706  MaxRecombineAbsCocRadius
+   0x30f0e7ee  EncodedCocRadiusToRecombineCocRadius
+   0x30f27088  face profile id query/pixel (low quality), 4 id query/pixel (high quality) at recombine pass
+   0x30f6babc  r.DOF.Recombine.EnableBokehSettings
+   0x30f7e2ae  Subsurface.Recombines
+   0x31010c72  Only merge if the (combined box surface area) / (summed instance box surface area) < MaxSurfaceAreaRatio
+   0x310d5814  /Engine/Private/DiaphragmDOF/DOFRecombine.usf
+   0x31132df8  r.NFOR.CPU.Regression.Recombine.Type
+   ... و303 تانيين
+
+### split — 307 سياق فريد
+   0x30e0c435  rcSplitVerticallyStackedRegions: reverted split after validation failure. affectedRegions=%d splitSpans=%d attemptedNewRegions=%d unresolvedConflicts=%d unclaimedSpans=%d
+   0x30e0c5a0  rcSplitVerticallyStackedRegions: affectedRegions=%d splitSpans=%d newRegions=%d maxRegionId=%d
+   0x30e0c5a0  CollectLayerRegionsMonotone: Layer split is too complex, skipping tile! x:%d y:%d spansTotal:
+   0x30e0c60b  CollectLayerRegionsMonotone: Layer split is too complex, skipping tile! x:%d y:%d spansTotal:%d spansCurrent:%d spansMax:%d
+   0x30e350df  rcSplitVerticallyStackedRegions: maxRegionId overflow (>= 0xFFFE) while splitting regionId=%d. Aborting split.
+   0x30e350df  Object state is too large to be split.
+   0x30eead92  WholeScene split
+   0x30f17e88  Scale applied to the penumbra size of Cascaded Shadow Map splits, useful for minimizing the transition between splits
+   0x30f17ef2  ize of Cascaded Shadow Map splits, useful for minimizing the transition between splits
+   0x30f2c938  Maximum splitscreen players
+   0x30f5d590  p.aabbtree.splitonvarianceaxis
+   0x30f72f34  Boolean to check if we are merging (bottom-up) or splitting (top-bottom) the convexes
+   0x30fd1666  p.aabbtree.splitataveragecenter
+   0x310270da  Tribox volume / convex hull threshold to trigger a volume splitting during tree construction
+   ... و293 تانيين

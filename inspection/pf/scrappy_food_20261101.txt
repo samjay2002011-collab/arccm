@@ -1,0 +1,12 @@
+G22 | عرض 577343568 (ScrappyLemon) |تكلفة Lemon x1 (عندك 60) -> مكافأة Chemicals x5 (عندك 4310)
+
+الجسم: {"offerId": 577343568, "itemsToConsume": [], "amount": 1}
+
+200 كامل:
+{"changeset": {"items": {"created": [], "deleted": null, "updated": [{"amount": 9, "durability": 1, "etag": "1rf3e7pgxonxf", "gameAssetId": 599997416, "instanceId": "8fef9f5a-8069-47d6-ba57-14c71061107a", "maxDurability": 1, "slots": null, "updatedAt": 1793497477585729000}]}, "notifications": [], "offers": {"transactionsCreated": [{"amount": 0, "id": "0ee97adf-f7b8-4268-b084-306d68c51ad6", "offerId": 577343568, "startTime": 1793497477}], "transactionsDeleted": [], "transactionsUpdated": []}, "projects": {"createdGoals": null, "createdProjects": null, "updatedGoals": null, "updatedProjects": null}, "quests": {"created": null, "createdObjectives": [], "updated": null, "updatedObjectives": []}, "stats": {"scopedPlayerStats": null}}}
+
+فرق فوري (0s): {"Lemon": -1}
+... في انتظار 375 ثانية (مدة العرض 360 + هامش)
+
+الفرق بعد المدة: {"Lemon": -1}
+المتوقع من الكتالوج: {"Lemon": -1, "Chemicals": 5}

@@ -1,0 +1,49 @@
+
+======================================================================
+== RAIDER38830
+   instances=2011 floating=324
+   عقد Unlock Craft مرئية بالاسم = 27
+   أصل العقدة = أصل عنصر معروف في items_db: 0/27
+   نموذج 3 عقد خام (كل الحقول):
+      {"amount": 1, "durability": 1, "etag": "mcrcl9sac9w2", "gameAssetId": -964057226, "instanceId": "0d224f51-4393-4449-9384-f152e9fed3a2", "maxDurability": 1, "slots": null, "updatedAt": 1766437841413363000} | باسم: Heavy Gun Parts | عناصر بنفس الأصل: None
+      {"amount": 1, "durability": 1, "etag": "2lo0te0njpv7m", "gameAssetId": -870082893, "instanceId": "0d51330f-3953-44b9-b352-5e552e699435", "maxDurability": 1, "slots": null, "updatedAt": 1766438093435298000} | باسم: Stable Stock II | عناصر بنفس الأصل: None
+      {"amount": 1, "durability": 1, "etag": "t1w45b8fskeu", "gameAssetId": 1881542680, "instanceId": "10f7c247-c18e-47f1-99d9-e5135eac4594", "maxDurability": 1, "slots": null, "updatedAt": 1766437831292620000} | باسم: Jupiter | عناصر بنفس الأصل: None
+   عقد بأسماء بيطابقوا وصفات تصنيع (21): [["Heavy Gun Parts", "heavy_gun_parts"], ["Stable Stock II", "stable_stock_ii"], ["Jupiter", "jupiter"], ["Pulse Mine", "pulse_mine"], ["Equalizer", "equalizer"], ["Seeker Grenade", "seeker_grenade"], ["Extended Shotgun Mag III", "extended_shotgun_mag_iii"], ["Deadline", "deadline"], ["Trailblazer", "trailblazer"], ["Lightweight Stock", "lightweight_stock"], ["Extended Light Mag II", "extended_light_mag_ii"], ["Wolfpack", "wolfpack"], ["Explosive Mine", "explosive_mine"], ["Defibrillator", "defibrillator"], ["Vertical Grip III", "vertical_grip_iii"], ["Energy Clip", "energy_clip"], ["Stable Stock III", "stable_stock_iii"], ["Vertical Grip II", "vertical_grip_ii"], ["Extended Medium Mag II", "extended_medium_mag_ii"], ["Aphelion", "aphelion"], ["Energy Clip", "energy_clip"]]
+   عائم بلا اسم في الفهرس بس أصله معروف (0): []
+   المحفوظ من آخر مزامنة: rows=26 measured=True
+
+======================================================================
+== G22
+   instances=5688 floating=3558
+   عقد Unlock Craft مرئية بالاسم = 34
+   أصل العقدة = أصل عنصر معروف في items_db: 0/34
+   نموذج 3 عقد خام (كل الحقول):
+      {"amount": 1, "durability": 1, "etag": "r4f2o0qrs05d", "gameAssetId": 970997170, "instanceId": "008d7833-8978-4b21-b827-6914c5945bd1", "maxDurability": 1, "slots": null, "updatedAt": 1790547118007558000} | باسم: Anvil | عناصر بنفس الأصل: None
+      {"amount": 1, "durability": 1, "etag": "2cbbu3gojyn9o", "gameAssetId": -2117381160, "instanceId": "02be813b-691b-443e-aca1-510ae14406e6", "maxDurability": 1, "slots": null, "updatedAt": 1789088986991506000} | باسم: Vita Spray | عناصر بنفس الأصل: None
+      {"amount": 1, "durability": 1, "etag": "32tm1ez4ve3c0", "gameAssetId": -1713082013, "instanceId": "0f797c34-3d35-4e35-a917-4cdd14fd0e71", "maxDurability": 1, "slots": null, "updatedAt": 1787951614005095000} | باسم: Trailblazer | عناصر بنفس الأصل: None
+   عقد بأسماء بيطابقوا وصفات تصنيع (31): [["Vita Spray", "vita_spray"], ["Trailblazer", "trailblazer"], ["Compensator III", "compensator_iii"], ["Showstopper", "showstopper"], ["Deadline", "deadline"], ["Shotgun Choke II", "shotgun_choke_ii"], ["Vertical Grip III", "vertical_grip_iii"], ["Muzzle Brake III", "muzzle_brake_iii"], ["Pulse Mine", "pulse_mine"], ["Snap Hook", "snap_hook"], ["Jolt Mine", "jolt_mine"], ["Angled Grip II", "angled_grip_ii"], ["Looting Mk. 3 (Survivor)", "looting_mk3_survivor"], ["Extended Shotgun Mag II", "extended_shotgun_mag_ii"], ["Tactical Mk. 3 (Defensive)", "tactical_mk3_defensive"], ["Extended Light Mag II", "extended_light_mag_ii"], ["Silencer II", "silencer_ii"], ["Jupiter", "jupiter"], ["Medium Gun Parts", "medium_gun_parts"], ["Defibrillator", "defibrillator"], ["Seeker Grenade", "seeker_grenade"], ["Heavy Gun Parts", "heavy_gun_parts"], ["Equalizer", "equalizer"], ["Extended Medium Mag II", "extended_medium_mag_ii"], ["Barricade Kit", "barricade_kit"], ["Light Gun Parts", "light_gun_parts"], ["Explosive Mine", "explosive_mine"], ["Silencer I", "silencer_i"], ["Vertical Grip II", "vertical_grip_ii"], ["Aphelion", "aphelion"], ["Stable Stock III", "stable_stock_iii"]]
+   عائم بلا اسم في الفهرس بس أصله معروف (0): []
+   المحفوظ من آخر مزامنة: rows=34 measured=True
+
+======================================================================
+== RAIDER74888
+   instances=3320 floating=1426
+   عقد Unlock Craft مرئية بالاسم = 4
+   أصل العقدة = أصل عنصر معروف في items_db: 0/4
+   نموذج 3 عقد خام (كل الحقول):
+      {"amount": 1, "durability": 1, "etag": "3h31dbqg18f3m", "gameAssetId": 466149401, "instanceId": "86dade0d-2c91-4cff-bccf-f7852c538810", "maxDurability": 1, "slots": null, "updatedAt": 1791724535676117000} | باسم: Showstopper | عناصر بنفس الأصل: None
+      {"amount": 1, "durability": 1, "etag": "oi528q2jdphb", "gameAssetId": 59893416, "instanceId": "8a4cd318-c2d7-4745-bd66-806de64b4b34", "maxDurability": 1, "slots": null, "updatedAt": 1790198700137592000} | باسم: Hullcracker | عناصر بنفس الأصل: None
+      {"amount": 1, "durability": 1, "etag": "1yblcfeq9tne0", "gameAssetId": -1295524363, "instanceId": "a41df045-9d10-4075-95df-ef2d920120cc", "maxDurability": 1, "slots": null, "updatedAt": 1789928885687071000} | باسم: Explosive Mine | عناصر بنفس الأصل: None
+   عقد بأسماء بيطابقوا وصفات تصنيع (3): [["Showstopper", "showstopper"], ["Explosive Mine", "explosive_mine"], ["Deadline", "deadline"]]
+   عائم بلا اسم في الفهرس بس أصله معروف (0): []
+   المحفوظ من آخر مزامنة: rows=4 measured=True
+
+======================================================================
+== G18
+   instances=2214 floating=329
+   عقد Unlock Craft مرئية بالاسم = 0
+   أصل العقدة = أصل عنصر معروف في items_db: 0/0
+   نموذج 3 عقد خام (كل الحقول):
+   عقد بأسماء بيطابقوا وصفات تصنيع (0): []
+   عائم بلا اسم في الفهرس بس أصله معروف (0): []
+   المحفوظ من آخر مزامنة: rows=0 measured=True

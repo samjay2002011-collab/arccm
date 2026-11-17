@@ -1,0 +1,19 @@
+===== توزيع مستويات الوصفات على المحطات =====
+   workbench        (WORKBENCH         ) الوصفات=23   المستويات المطلوبة={1: 23}  بتقرا من السيرفر=False
+   equipment_bench  (EQUIPMENT BENCH   ) الوصفات=18   المستويات المطلوبة={1: 5, 2: 4, 3: 9}  بتقرا من السيرفر=True
+   weapon_bench     (WEAPON BENCH      ) الوصفات=61   المستويات المطلوبة={1: 20, 2: 16, 3: 25}  بتقرا من السيرفر=True
+   med_station      (MEDICAL STATION   ) الوصفات=10   المستويات المطلوبة={1: 5, 2: 3, 3: 2}  بتقرا من السيرفر=True
+   utility_bench    (UTILITY BENCH     ) الوصفات=22   المستويات المطلوبة={1: 11, 2: 7, 3: 4}  بتقرا من السيرفر=True
+   explosives_bench (EXPLOSIVES BENCH  ) الوصفات=19   المستويات المطلوبة={1: 5, 2: 6, 3: 8}  بتقرا من السيرفر=True
+   refiner          (REFINER           ) الوصفات=17   المستويات المطلوبة={1: 4, 2: 10, 3: 3}  بتقرا من السيرفر=True
+   in_raid          (FIELD BENCH       ) الوصفات=27   المستويات المطلوبة={0: 5, 1: 16, 2: 5, 3: 1}  بتقرا من السيرفر=False
+
+===== بيانات hideout لكل محطة (أقصى مستوى + الجاي) =====
+   workbench        label=Workbench            max_level=0 next=None
+   equipment_bench  label=Gear Bench           max_level=3 next=2
+   weapon_bench     label=Gunsmith             max_level=4 next=2
+   med_station      label=Medical Lab          max_level=3 next=2
+   utility_bench    label=Utility Station      max_level=3 next=2
+   explosives_bench label=Explosives Station   max_level=3 next=2
+   refiner          label=Refiner              max_level=3 next=2
+   in_raid          label=FIELD BENCH          max_level=None next=None

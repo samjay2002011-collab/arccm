@@ -1,0 +1,106 @@
+عدد الوصفات الأساسية في القائمة الصلبة: 56
+هل anvil_i أساسية؟ False
+anvil_i من arctracker: blueprint_locked=True related_blueprint_id=anvil_blueprint station=['weapon_bench'] lvl=1 name='Anvil I'
+أصول في الفهرس فيها 'anvil': ['Anvil Blueprint', 'Anvil I', 'Anvil II', 'Anvil III', 'Anvil IV', 'Anvil Splitter', 'Unlock Craft Anvil']
+   حل اسم 'Anvil Blueprint' -> {'slug': '', 'gates': [], 'assets': ['-348089449']}
+   حل اسم 'Anvil I' -> {'slug': 'anvil_i', 'gates': ['anvil_i'], 'assets': ['1951118983']}
+   حل اسم 'Anvil II' -> {'slug': 'anvil_i', 'gates': ['anvil_i'], 'assets': ['-1974459892']}
+   حل اسم 'Anvil III' -> {'slug': 'anvil_i', 'gates': ['anvil_i'], 'assets': ['-39940538']}
+   حل اسم 'Anvil IV' -> {'slug': 'anvil_i', 'gates': ['anvil_i'], 'assets': ['-163859490']}
+   حل اسم 'Anvil Splitter' -> {'slug': '', 'gates': [], 'assets': []}
+   حل اسم 'Unlock Craft Anvil' -> {'slug': '', 'gates': [], 'assets': []}
+
+== RAIDER38830 (رايدر: HEZRON#1942) — 26 عقدة
+    1. Aphelion                                   -> slug=aphelion                     gates=['aphelion']
+    2. Bettina                                    -> slug=bettina_i                    gates=['bettina_i']
+    3. Blue Glowstick                             -> slug=blue_light_stick             gates=['blue_light_stick']
+    4. Bobcat                                     -> slug=bobcat_i                     gates=['bobcat_i']
+    5. Combat Augment T3 Flanking                 -> slug=combat_mk3_flanking          gates=['combat_mk3_flanking']
+    6. Deadline                                   -> slug=deadline                     gates=['deadline']
+    7. Defibrillator                              -> slug=defibrillator                gates=['defibrillator']
+    8. Energy Clip                                -> slug=energy_clip                  gates=['energy_clip']
+    9. Equalizer                                  -> slug=equalizer                    gates=['equalizer']
+   10. Explosive Mine                             -> slug=explosive_mine               gates=['explosive_mine']
+   11. Extended Light Mag II                      -> slug=extended_light_mag_ii        gates=['extended_light_mag_ii']
+   12. Extended Medium Mag II                     -> slug=extended_medium_mag_ii       gates=['extended_medium_mag_ii']
+   13. Extended Shotgun Mag III                   -> slug=extended_shotgun_mag_iii     gates=['extended_shotgun_mag_iii']
+   14. Heavy Gun Parts                            -> slug=heavy_gun_parts              gates=['heavy_gun_parts']
+   15. Jupiter                                    -> slug=jupiter                      gates=['jupiter']
+   16. Lightweight Stock                          -> slug=lightweight_stock            gates=['lightweight_stock']
+   17. Pulse Mine                                 -> slug=pulse_mine                   gates=['pulse_mine']
+   18. Seeker Grenade                             -> slug=seeker_grenade               gates=['seeker_grenade']
+   19. Stable Stock II                            -> slug=stable_stock_ii              gates=['stable_stock_ii']
+   20. Stable Stock III                           -> slug=stable_stock_iii             gates=['stable_stock_iii']
+   21. Trailblazer                                -> slug=trailblazer                  gates=['trailblazer']
+   22. Trigger Nade                               -> slug=trigger_nade                 gates=['trigger_nade']
+   23. Vertical Grip II                           -> slug=vertical_grip_ii             gates=['vertical_grip_ii']
+   24. Vertical Grip III                          -> slug=vertical_grip_iii            gates=['vertical_grip_iii']
+   25. Wolfpack                                   -> slug=wolfpack                     gates=['wolfpack']
+   26. Yellow Glowstick                           -> slug=yellow_light_stick           gates=['yellow_light_stick']
+   ظاهرة=82 (من الأساسية 56 + من العقد 26)
+   من العقد: aphelion, bettina_i, blue_light_stick, bobcat_i, combat_mk3_flanking, deadline, defibrillator, energy_clip, equalizer, explosive_mine, extended_light_mag_ii, extended_medium_mag_ii, extended_shotgun_mag_iii, heavy_gun_parts, jupiter, lightweight_stock, pulse_mine, seeker_grenade, stable_stock_ii, stable_stock_iii, trailblazer, trigger_nade, vertical_grip_ii, vertical_grip_iii, wolfpack, yellow_light_stick
+   حالة anvil_i: allowed=False | في defaults=False | في proven slugs=False
+   تطابق بالاسم؟ False | بالنواة؟ False
+
+== G14 (رايدر: G14#0847) — 0 عقدة
+   ظاهرة=56 (من الأساسية 56 + من العقد 0)
+   من العقد: -
+   حالة anvil_i: allowed=False | في defaults=False | في proven slugs=False
+   تطابق بالاسم؟ False | بالنواة؟ False
+
+== G18 (رايدر: G18#8940) — 0 عقدة
+   ظاهرة=56 (من الأساسية 56 + من العقد 0)
+   من العقد: -
+   حالة anvil_i: allowed=False | في defaults=False | في proven slugs=False
+   تطابق بالاسم؟ False | بالنواة؟ False
+
+== G22 (رايدر: G22#7334) — 35 عقدة
+    1. Angled Grip II                             -> slug=angled_grip_ii               gates=['angled_grip_ii']
+    2. Anvil                                      -> slug=anvil_i                      gates=['anvil_i']
+    3. Aphelion                                   -> slug=aphelion                     gates=['aphelion']
+    4. Barricade Kit                              -> slug=barricade_kit                gates=['barricade_kit']
+    5. Compensator III                            -> slug=compensator_iii              gates=['compensator_iii']
+    6. Deadline                                   -> slug=deadline                     gates=['deadline']
+    7. Defibrillator                              -> slug=defibrillator                gates=['defibrillator']
+    8. Equalizer                                  -> slug=equalizer                    gates=['equalizer']
+    9. Explosive Mine                             -> slug=explosive_mine               gates=['explosive_mine']
+   10. Extended Light Mag II                      -> slug=extended_light_mag_ii        gates=['extended_light_mag_ii']
+   11. Extended Medium Mag II                     -> slug=extended_medium_mag_ii       gates=['extended_medium_mag_ii']
+   12. Extended Shotgun Mag II                    -> slug=extended_shotgun_mag_ii      gates=['extended_shotgun_mag_ii']
+   13. Heavy Gun Parts                            -> slug=heavy_gun_parts              gates=['heavy_gun_parts']
+   14. Jolt Mine                                  -> slug=jolt_mine                    gates=['jolt_mine']
+   15. Jupiter                                    -> slug=jupiter                      gates=['jupiter']
+   16. Light Gun Parts                            -> slug=light_gun_parts              gates=['light_gun_parts']
+   17. Looting Mk. 3 (Survivor)                   -> slug=looting_mk3_survivor         gates=['looting_mk3_survivor']
+   18. Medium Gun Parts                           -> slug=medium_gun_parts             gates=['medium_gun_parts']
+   19. Muzzle Brake III                           -> slug=muzzle_brake_iii             gates=['muzzle_brake_iii']
+   20. Pulse Mine                                 -> slug=pulse_mine                   gates=['pulse_mine']
+   21. Seeker Grenade                             -> slug=seeker_grenade               gates=['seeker_grenade']
+   22. Shotgun Choke II                           -> slug=shotgun_choke_ii             gates=['shotgun_choke_ii']
+   23. Showstopper                                -> slug=showstopper                  gates=['showstopper']
+   24. Silencer I                                 -> slug=silencer_i                   gates=['silencer_i']
+   25. Silencer II                                -> slug=silencer_ii                  gates=['silencer_ii']
+   26. Snap Hook                                  -> slug=snap_hook                    gates=['snap_hook']
+   27. Stable Stock III                           -> slug=stable_stock_iii             gates=['stable_stock_iii']
+   28. Surge Coil                                 -> slug=surge_coil                   gates=['surge_coil']
+   29. Tactical Mk. 3 (Defensive)                 -> slug=tactical_mk3_defensive       gates=['tactical_mk3_defensive']
+   30. Torrente                                   -> slug=torrente_i                   gates=['torrente_i']
+   31. Trailblazer                                -> slug=trailblazer                  gates=['trailblazer']
+   32. Trigger Nade                               -> slug=trigger_nade                 gates=['trigger_nade']
+   33. Vertical Grip II                           -> slug=vertical_grip_ii             gates=['vertical_grip_ii']
+   34. Vertical Grip III                          -> slug=vertical_grip_iii            gates=['vertical_grip_iii']
+   35. Vita Spray                                 -> slug=vita_spray                   gates=['vita_spray']
+   ظاهرة=91 (من الأساسية 56 + من العقد 35)
+   من العقد: angled_grip_ii, anvil_i, aphelion, barricade_kit, compensator_iii, deadline, defibrillator, equalizer, explosive_mine, extended_light_mag_ii, extended_medium_mag_ii, extended_shotgun_mag_ii, heavy_gun_parts, jolt_mine, jupiter, light_gun_parts, looting_mk3_survivor, medium_gun_parts, muzzle_brake_iii, pulse_mine, seeker_grenade, shotgun_choke_ii, showstopper, silencer_i, silencer_ii, snap_hook, stable_stock_iii, surge_coil, tactical_mk3_defensive, torrente_i, trailblazer, trigger_nade, vertical_grip_ii, vertical_grip_iii, vita_spray
+   حالة anvil_i: allowed=True | في defaults=False | في proven slugs=True
+   تطابق بالاسم؟ True | بالنواة؟ True
+
+== RAIDER74888 (رايدر: G21#8726) — 4 عقدة
+    1. Deadline                                   -> slug=deadline                     gates=['deadline']
+    2. Explosive Mine                             -> slug=explosive_mine               gates=['explosive_mine']
+    3. Hullcracker                                -> slug=hullcracker_i                gates=['hullcracker_i']
+    4. Showstopper                                -> slug=showstopper                  gates=['showstopper']
+   ظاهرة=60 (من الأساسية 56 + من العقد 4)
+   من العقد: deadline, explosive_mine, hullcracker_i, showstopper
+   حالة anvil_i: allowed=False | في defaults=False | في proven slugs=False
+   تطابق بالاسم؟ False | بالنواة؟ False

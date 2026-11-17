@@ -1,0 +1,22 @@
+وصفة anvil_i (Anvil I) — الخامات زي ما هي في items_db:
+   Advanced Mechanical Components     qty=2 slug=advanced_mechanical_components asset_ids=['-926389249']
+   Hand Drill                         qty=3 slug=hand_drill                 asset_ids=[]
+   Heavy Gun Parts                    qty=3 slug=heavy_gun_parts            asset_ids=['-1903407680']
+نفس الخامات بعد `_material_rows` (اللي بيشوفها المصنع):
+   Advanced Mechanical Components     asset_id(المستخدم)=-926389249   كل البدائل=['-926389249'] qty=2
+   Hand Drill                         asset_id(المستخدم)=-            كل البدائل=[] qty=3
+   Heavy Gun Parts                    asset_id(المستخدم)=-1903407680  كل البدائل=['-1903407680'] qty=3
+
+Hand Drill في items_db: slug=hand_drill asset_ids=[]
+أي عناصر تانية في القاعدة اسمها فيه 'drill':
+   hand_drill                     name=Hand Drill               asset_ids=[]
+
+قطع 'Hand Drill' في جدول instances لكل حساب:
+   G22            asset_id=-605737193   name=Hand Drill             qty=9    خانات=5
+   RAIDER74888    asset_id=-605737193   name=Hand Drill             qty=1    خانات=1
+
+== G22 ==
+   إجمالي الشجرة لكل asset_id خاص بـ Hand Drill: {}
+   Advanced Mechanical Components     need=2 have=142 owned=142 asset_id=-926389249
+   Hand Drill                         need=3 have=9 owned=9 asset_id=-605737193
+   Heavy Gun Parts                    need=3 have=105 owned=105 asset_id=-1903407680

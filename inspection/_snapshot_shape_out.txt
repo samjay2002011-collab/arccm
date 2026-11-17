@@ -1,0 +1,14 @@
+== G14 G14_20261031-135029.json.gz
+   top keys: allowed_slots, augment, backpack, bench_levels, containers, item_mappings, locations, overflow, owned_asset_ids, source, stash, stats
+== G18 G18_20261031-190110.json.gz
+   top keys: allowed_slots, augment, backpack, bench_levels, containers, item_mappings, locations, overflow, owned_asset_ids, source, stash, stats, unlocked_blueprints
+   unlocked_blueprints n=0 first=[]
+== G22 G22_20261031-190110.json.gz
+   top keys: allowed_slots, augment, backpack, bench_levels, containers, item_mappings, locations, overflow, owned_asset_ids, source, stash, stats, unlocked_blueprints
+   unlocked_blueprints n=34 first=[{"name": "Angled Grip II", "slug": "angled_grip_ii", "gates": ["angled_grip_ii"], "assets": ["-1681246336"]}, {"name": "Anvil", "slug": "anvil_i", "gates": ["anvil_i"], "assets": ["1951118983"]}]
+== RAIDER38830 RAIDER38830_20261031-190447.json.gz
+   top keys: allowed_slots, augment, backpack, bench_levels, containers, item_mappings, locations, overflow, owned_asset_ids, source, stash, stats, unlocked_blueprints
+   unlocked_blueprints n=26 first=[{"name": "Aphelion", "slug": "aphelion", "gates": ["aphelion"], "assets": ["-1483497543"]}, {"name": "Bettina", "slug": "bettina_i", "gates": ["bettina_i"], "assets": ["-1236612582"]}]
+== RAIDER74888 RAIDER74888_20261031-190111.json.gz
+   top keys: allowed_slots, augment, backpack, bench_levels, containers, item_mappings, locations, overflow, owned_asset_ids, source, stash, stats, unlocked_blueprints
+   unlocked_blueprints n=4 first=[{"name": "Deadline", "slug": "deadline", "gates": ["deadline"], "assets": ["409593267"]}, {"name": "Explosive Mine", "slug": "explosive_mine", "gates": ["explosive_mine"], "assets": ["1228913912"]}]

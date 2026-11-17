@@ -1,0 +1,475 @@
+/* المرحلة 6: (STASH كبير يضم OVERFLOW) + BACKPACK + LOADOUT */
+
+.inv-page { padding: 12px 16px 14px; overflow: hidden; position: relative; }
+
+/* ↑ UPDATE بيقفل اللوحة: حُصر فوق المخزن والتجهيز والأوفر فلو — الحركة والإضافة
+   بتتوقف بـ pointer-events على الأجسام نفسها (الهي더 وبيوت البحث بيفضلوا
+   شغالين للقراءة)، والهيدر فوق بيفضل مضيّج عشان زرار CANCEL يبان. */
+body.locked .inv-page::after {
+  content: ""; position: absolute; inset: 0; z-index: 30; pointer-events: none;
+  background: rgba(3, 5, 10, .62);
+  backdrop-filter: saturate(.55) brightness(.8);
+}
+body.locked .inv-body, body.locked .slot-cell,
+body.locked .lo-section, body.locked .big-slot { pointer-events: none; }
+body.locked .inv-col { outline: 1px solid rgba(239, 68, 68, .35); }
+
+
+.inv-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2.55fr) minmax(0, .95fr) minmax(0, 1.05fr);
+  gap: clamp(8px, .7vw, 12px);
+  align-items: stretch;
+}
+
+.inv-col {
+  min-width: 0;
+  height: calc(100vh - 118px);
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.inv-head {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 10px 12px; border-bottom: 1px solid var(--line);
+}
+.inv-head h2 { margin: 0; font-size: 11px; letter-spacing: 3px; font-weight: 800; }
+.inv-head .spacer { flex: 1; }
+
+/* أزرار الكتابة (UNDO / LOAD / CLEAR) — بتبان ميتة والكتابة متجمّدة */
+[data-undo-btn]:disabled, .inv-head button:disabled { opacity: .35; cursor: not-allowed; }
+
+/* قائمة التجهيزات المحفوظة: القوالب مشتركة بين الحسابات، فكل سطر بيوريص صاحبها
+   ومعاه قلم للتسمية وإكس للحذف. */
+.lo-dd { position: relative; flex: 1 1 70px; min-width: 0; }
+.lo-select {
+  display: flex; align-items: center; justify-content: space-between; gap: 6px;
+  width: 100%; background: #0a0a10; color: var(--muted);
+  border: 1px solid var(--line); border-radius: 7px;
+  font: inherit; font-size: 9px; font-weight: 800; letter-spacing: 1.4px;
+  padding: 6px 8px; outline: none; cursor: pointer;
+}
+.lo-select:hover { border-color: rgba(168, 85, 247, .45); color: var(--text); }
+.lo-select:focus { border-color: rgba(168, 85, 247, .5); color: var(--text); }
+.lo-select .lo-cur { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lo-select .chev { font-size: 8px; opacity: .85; transition: transform .15s ease; }
+.lo-dd.open .lo-select { border-color: rgba(168, 85, 247, .6); color: var(--text); }
+.lo-dd.open .lo-select .chev { transform: rotate(180deg); }
+.lo-pop {
+  position: absolute; top: calc(100% + 7px); right: 0; z-index: 60;
+  width: 236px; max-height: 268px; overflow-y: auto; padding: 6px;
+  background: #17121f; border: 1px solid rgba(168, 85, 247, .35);
+  border-radius: 14px; box-shadow: 0 18px 44px rgba(0, 0, 0, .7);
+  display: grid; gap: 2px;
+}
+.lo-pop .note { margin: 4px 6px; }
+.lo-row {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 8px; border: 1px solid transparent; border-radius: 9px;
+  color: var(--muted); cursor: pointer;
+  font-size: 9.5px; font-weight: 800; letter-spacing: 1.2px;
+}
+.lo-row:hover { background: rgba(255, 255, 255, .05); color: var(--text); }
+.lo-row.on {
+  background: rgba(168, 85, 247, .24); color: #e9d5ff;
+  box-shadow: inset 0 0 0 1px rgba(168, 85, 247, .55);
+}
+.lo-rname { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lo-own {
+  flex: 0 0 auto; max-width: 74px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-size: 8px; letter-spacing: 1px; color: #9d7bd0;
+  background: rgba(168, 85, 247, .14); border: 1px solid rgba(168, 85, 247, .25);
+  border-radius: 999px; padding: 2px 6px;
+}
+.lo-rename, .lo-del {
+  flex: 0 0 auto; width: 20px; height: 20px; padding: 0;
+  border: 1px solid var(--line); border-radius: 6px;
+  background: #0a0a10; color: var(--muted); cursor: pointer;
+  font: inherit; font-size: 10px; line-height: 1; opacity: .55;
+}
+.lo-rename:hover { opacity: 1; color: #cbd5e1; border-color: rgba(203, 213, 225, .45); }
+.lo-del:hover { opacity: 1; color: var(--red); border-color: rgba(239, 68, 68, .55); }
+
+/* قائمة الترتيب المنسدلة بنفس شكل الموقع الأصلي */
+.cat-dd { position: relative; }
+.cat-btn {
+  display: flex; align-items: center; gap: 10px;
+  background: #160f22; color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, .75); border-radius: 999px;
+  padding: 7px 16px; cursor: pointer;
+  font: inherit; font-size: 9px; font-weight: 900; letter-spacing: 1.8px;
+}
+.cat-btn:hover { border-color: rgba(192, 132, 252, .95); color: #e9d5ff; }
+.cat-btn .chev { font-size: 9px; opacity: .9; transition: transform .15s ease; }
+.cat-dd.open .cat-btn .chev { transform: rotate(180deg); }
+.cat-pop {
+  position: absolute; top: calc(100% + 7px); left: 0; z-index: 45;
+  min-width: 158px; padding: 6px;
+  background: #17121f; border: 1px solid rgba(168, 85, 247, .35);
+  border-radius: 14px; box-shadow: 0 18px 44px rgba(0, 0, 0, .7);
+  display: grid; gap: 2px;
+}
+.cat-pop button {
+  text-align: left; padding: 9px 12px; border: 0; border-radius: 9px;
+  background: transparent; color: var(--muted); cursor: pointer;
+  font: inherit; font-size: 9px; font-weight: 900; letter-spacing: 1.8px;
+}
+.cat-pop button:hover { background: rgba(255, 255, 255, .05); color: var(--text); }
+.cat-pop button.active {
+  background: rgba(168, 85, 247, .28); color: #e9d5ff;
+  box-shadow: inset 0 0 0 1px rgba(168, 85, 247, .55);
+}
+
+.inline-search {
+  flex: 1 1 110px; min-width: 90px;
+  background: #0a0a10; color: var(--text);
+  border: 1px solid var(--line); border-radius: 7px;
+  font: inherit; font-size: 9.5px; letter-spacing: 1.2px;
+  padding: 7px 9px; outline: none;
+}
+.inline-search:focus { border-color: rgba(168, 85, 247, .5); }
+.inline-search::placeholder { color: rgba(139, 139, 154, .75); letter-spacing: 1.2px; }
+.inv-head .inv-search { flex: 1 1 220px; min-width: 150px; width: auto; }
+
+.cap-box {
+  font-size: 10px; font-weight: 800; color: #cbd5e1; letter-spacing: .5px;
+  background: #0a0a10; border: 1px solid var(--line); border-radius: 7px; padding: 5px 8px;
+}
+.cap-hot { color: var(--amber); }
+
+.inv-body {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+  gap: clamp(6px, .6vw, 10px);
+  padding: clamp(8px, .8vw, 14px);
+  flex: 1 1 auto; min-height: 0;
+  overflow-y: auto; align-content: start;
+}
+.col-stash .inv-body {
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  grid-auto-rows: min-content;
+  gap: clamp(6px, .6vw, 10px);
+  padding: clamp(8px, .8vw, 14px);
+}
+.inv-body.drop { outline: 2px dashed rgba(168, 85, 247, .7); outline-offset: -6px; background: rgba(139, 92, 246, .07); }
+.note.empty-col { grid-column: 1 / -1; }
+
+/* لوحة التجهيز مش شبكة بلاطات — أقسام فوق بعض */
+.col-loadout .inv-body {
+  display: flex; flex-direction: column; gap: 5px;
+  padding: clamp(8px, .8vw, 14px); overflow-y: auto;
+}
+.col-backpack .inv-body { display: block; flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+
+/* ============================ البلاطات ============================ */
+/* الشارات والأرقام وحدود الندرة تُعرَّف في styles.css — هنا لا نكرّرها لتجنب تجاوز التصميم */
+.tile { position: relative; }
+
+/* ============================ الشنطة ============================ */
+/* الشنطة: 4 أعمدة ثابتة — 22 خانة (6 صفوف) ظاهرة كلها بدون سكرول */
+.col-backpack .inv-body { padding: clamp(10px, .9vw, 16px); }
+.slot-grid {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(12px, .9vw, 14px);
+}
+
+.slot-cell {
+  position: relative; aspect-ratio: 1 / 1; border-radius: 16px;
+  background: #0a0a11; border: 1px dashed rgba(255, 255, 255, .1);
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color .12s ease, box-shadow .12s ease;
+}
+.slot-cell.filled { border-style: solid; border-color: transparent; background: transparent; }
+.slot-cell.drop { border-color: rgba(168, 85, 247, .9); box-shadow: 0 0 18px rgba(168, 85, 247, .35); }
+
+/* ===== التحقق الصارم للسحب والإفلات =====
+   أخضر ثابت بس: النبض كان بيعيد رسم كل الخانات في كل فريم — على جهاز المستخدم
+   كان بيفلّج الصفحة كلها. */
+.slot-cell.dnd-ok {
+  border-style: solid;
+  border-color: rgba(34, 197, 94, .85);
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, .35);
+  cursor: copy;
+}
+.slot-cell.dnd-ok.drop {
+  border-color: rgba(74, 222, 128, 1);
+  background: rgba(34, 197, 94, .08);
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, .8), 0 0 34px rgba(34, 197, 94, .55);
+}
+.inv-body.dnd-ok { outline: 2px dashed rgba(34, 197, 94, .55); outline-offset: -6px; }
+.inv-body.dnd-ok.drop {
+  outline: 2px dashed rgba(74, 222, 128, .95);
+  background: rgba(34, 197, 94, .06);
+}
+
+.slot-cell .tile { width: 100%; height: 100%; border-radius: 16px; }
+
+/* ===== الدمج والتبديل فوق البلاطة (زي رامبارت) =====
+   وقت السحب البلاطة بتتقسم نصين: الشمال دمج لنوع واحد لسه فيه مكان تحت السقف،
+   واليمين تبديل الأماكن. النصف اللي الماوس واقف عليه وقت الإفلات هو اللي بيتنفذ.
+   ألوان ثابتة من غير أي نبض — النبض كان بيعيد رسم الخانات في كل فريم. */
+.tile.dnd-combo::before, .tile.dnd-combo::after,
+.tile.dnd-combine::before, .tile.dnd-swap::after {
+  content: ""; position: absolute; top: 0; bottom: 0; z-index: 7;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: #fff; pointer-events: none; white-space: pre; line-height: 1.2;
+  font-weight: 900; font-size: clamp(7.5px, .6vw, 10px); letter-spacing: .4px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .8);
+}
+.tile.dnd-combo::before, .tile.dnd-combine::before { background: rgba(21, 128, 61, .93); content: "COMBINE"; }
+.tile.dnd-combo::after, .tile.dnd-swap::after { background: rgba(30, 64, 175, .93); content: "SWAP"; }
+.tile.dnd-combo::before { left: 0; width: 50%; border-right: 1px solid #08090e; }
+.tile.dnd-combo::after { right: 0; width: 50%; }
+.tile.dnd-combine::before, .tile.dnd-swap::after { left: 0; right: 0; }
+.tile.dnd-combo.half-left::before { background: rgba(34, 197, 94, .97); box-shadow: inset 0 0 0 2px #86efac; }
+.tile.dnd-combo:not(.half-left)::after { background: rgba(59, 130, 246, .97); box-shadow: inset 0 0 0 2px #bfdbfe; }
+.tile.dnd-combo, .tile.dnd-combine, .tile.dnd-swap { outline: 2px solid rgba(255, 255, 255, .78); outline-offset: -2px; }
+.tile.dnd-combo .qty, .tile.dnd-combine .qty, .tile.dnd-swap .qty { opacity: .4; }
+.slot-cross {
+  width: 14px; height: 14px; opacity: .16; position: relative;
+}
+.slot-cross::before, .slot-cross::after {
+  content: ""; position: absolute; background: #fff; border-radius: 1px;
+}
+.slot-cross::before { left: 6px; top: 0; width: 2px; height: 14px; }
+.slot-cross::after { left: 0; top: 6px; width: 14px; height: 2px; }
+
+/* ===== الخانة القالب (بلا wrapper) =====
+   مواصفات الأوجمنت بتقول أكتر من عدد الخانات اللي اللعبة بنتها في حاوية الحساب.
+   الخانة دي مش باظت — لسه متفعّلتش، وبتتبني لوحدها أول ماتش. بنبيّنها مقفولة
+   بالظبط (من غير نبض: الجهاز بيتقل من الأنيميشن المتكرر). */
+.slot-cell.no-wrapper {
+  border-style: dashed;
+  border-color: rgba(255, 255, 255, .16);
+  background: repeating-linear-gradient(135deg, #0a0a11 0 6px, #0e0e17 6px 12px);
+  opacity: .62;
+  cursor: not-allowed;
+}
+.slot-cell.no-wrapper .slot-cross { opacity: .08; }
+.slot-lock {
+  position: absolute; right: 4px; bottom: 3px;
+  font-size: 9px; line-height: 1; opacity: .75; pointer-events: none;
+}
+.cap-box .cap-locked { font-weight: 700; opacity: .75; margin-left: 3px; }
+
+/* ============================ LOADOUT ============================ */
+/* الكروت الأربعة العلوية (أوجمنت/شيلد/سلاحين): 74% من عرض العمود — كبيرة كفاية
+   إنها تتقري، ولسه بتسيب مكان لأقسام QUICK USE / AUGMENTED / SAFE POCKET من غير سكرول. */
+.big-grid {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(5px, .5vw, 9px) clamp(5px, .5vw, 9px);
+  width: 74%; margin: 0 auto; padding-bottom: 2px;
+}
+.big-slot { min-width: 0; }
+.slot-cell.big { aspect-ratio: 1 / .98; border-radius: 16px; }
+.slot-label {
+  margin-top: 3px; text-align: center;
+  font-size: 7px; font-weight: 800; letter-spacing: 2.2px; color: var(--muted);
+}
+.slot-cell.big .dura { font-size: 9px; }
+.big-slot .tile { padding: clamp(4px, .4vw, 8px); }
+.big-slot .tile img { max-width: 68%; max-height: 68%; }
+.big-slot .tile .qty { font-size: 9.5px; }
+.big-slot .tile .lvl { font-size: 8px; }
+.big-slot .tile .dura { font-size: 8.5px; }
+
+.lo-section { margin-top: 0; }
+.lo-sec-head { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.sec-dot { width: 3px; height: 12px; border-radius: 2px; background: var(--amber); }
+.sec-label { font-size: 8px; font-weight: 800; letter-spacing: 2.4px; color: #cfd2dc; }
+.lo-sec-head .spacer { flex: 1; }
+.sec-count { font-size: 9.5px; font-weight: 800; color: var(--muted); }
+/* كل قسم بيطلع في سطر واحد مهما كانت سعة الأوجمنت: الخانات بتتقاسم عرض العمود
+   بدل ما الصف التاني ينزل تحت ويخفي SAFE POCKET ورا الـ سكرول. */
+.slot-row {
+  display: flex; flex-wrap: nowrap; gap: clamp(4px, .5vw, 8px);
+}
+/* الخانات بتتقاسم العرض ومتكبرش عن 88px: سعة 5 لسه في سطر واحد، والشاشات الأعرض
+   تاخد حجمها الكامل. */
+.slot-row .slot-cell { flex: 1 1 0; min-width: 0; max-width: 88px; }
+
+.btn-load {
+  background: rgba(139, 92, 246, .3); color: #fff;
+  border: 1px solid rgba(168, 85, 247, .65); border-radius: 8px;
+  padding: 6px 10px; font: inherit; font-size: 9px; font-weight: 800; letter-spacing: 1.4px;
+  cursor: pointer;
+}
+.btn-load:hover { background: rgba(139, 92, 246, .45); }
+
+/* ============================ الدرج الجانبي ============================ */
+.sys-backdrop {
+  position: fixed; inset: 0; z-index: 65;
+  background: rgba(0, 0, 0, .55); backdrop-filter: blur(2px);
+}
+.sys-drawer {
+  position: fixed; top: 0; right: 0; bottom: 0; width: 360px; max-width: 94vw; z-index: 70;
+  display: flex; flex-direction: column;
+  background: rgba(10, 10, 16, .98); border-left: 1px solid var(--line);
+  box-shadow: -24px 0 60px rgba(0, 0, 0, .6);
+}
+.sys-head {
+  display: flex; align-items: center; gap: 9px;
+  padding: 14px 16px; border-bottom: 1px solid var(--line);
+}
+.sys-head h3 { margin: 0; font-size: 11px; letter-spacing: 2.4px; font-weight: 800; }
+.sys-head .spacer { flex: 1; }
+.sys-body { flex: 1; overflow-y: auto; padding: 14px; display: grid; gap: 12px; align-content: start; }
+.sys-body .panel { padding: 12px; }
+
+.tool-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.tool-row .ghost { flex: 1 1 44%; }
+
+/* ============================ شريحة التحديد العائمة ============================ */
+.sel-float {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 45;
+  display: flex; align-items: center; gap: 12px;
+  background: rgba(16, 16, 23, .97); border: 1px solid rgba(168, 85, 247, .5);
+  border-radius: 12px; padding: 9px 14px;
+  font-size: 11px; font-weight: 800; letter-spacing: 1.2px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .65);
+}
+
+/* ============================ responsive ============================ */
+@media (max-width: 1460px) {
+  .inv-grid { grid-template-columns: minmax(420px, 2.3fr) minmax(240px, .95fr) minmax(290px, 1fr); }
+}
+@media (max-width: 1220px) {
+  .inv-page { overflow: visible; height: auto; }
+  .inv-grid { grid-template-columns: 1fr 1fr; }
+  .col-stash { grid-column: 1 / -1; }
+  .inv-col { height: auto; min-height: 0; }
+  .inv-body { overflow: visible; flex: none; max-height: 68vh; }
+  .col-stash .inv-body { max-height: 68vh; overflow-y: auto; }
+  .col-backpack .inv-body { max-height: 68vh; overflow-y: auto; }
+  /* في الوضع المتراكم (شاشة ضيقة) التجهيز ياخد أطوال أعلى: كل الخانات قدامك
+     بدون سكرول جوه العمود، والصفحة كلها هي اللي بتتكرول. */
+  .col-loadout .inv-body { max-height: 84vh; overflow-y: auto; }
+}
+@media (max-width: 760px) {
+  .inv-grid { grid-template-columns: 1fr; }
+  .sys-drawer { width: 100%; }
+}
+
+/* --------------------------------------------------------------- QTY strip
+   خانة الرقم جمب البحث + شريط الكروت اللي يجمّع الستاكات الكاملة للمجموع المطلوب. */
+.inv-head .inv-qty { flex: 0 0 78px; width: 78px; min-width: 64px; text-align: center; }
+.inv-qty::-webkit-outer-spin-button, .inv-qty::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.inv-qty { -moz-appearance: textfield; appearance: textfield; }
+.qty-strip { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 8px; padding: 10px;
+  border-radius: 14px; border: 1px solid rgba(168,85,247,.24);
+  background: linear-gradient(180deg, rgba(168,85,247,.10), rgba(168,85,247,.03)); }
+.qty-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px;
+  font-size: 10px; letter-spacing: 1.6px; color: var(--muted); }
+.qty-head span { font-weight: 900; color: var(--purple); font-size: 12px; letter-spacing: 2px; }
+.qty-head b { color: var(--text); font-weight: 800; }
+.qty-cards { display: flex; flex-wrap: wrap; gap: 10px; }
+.qty-card { display: flex; flex-direction: column; align-items: center; gap: 5px; width: 76px; }
+.qty-card .tile { width: 76px; }
+.qty-card.exact .tile { box-shadow: 0 0 0 2px rgba(34,197,94,.5), 0 6px 16px rgba(0,0,0,.4); }
+.qty-card.approx .tile { box-shadow: 0 0 0 2px rgba(245,158,11,.45); }
+.qty-pieces { font-size: 10px; font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums; }
+.qty-note { font-size: 9px; color: var(--amber); min-height: 11px; text-align: center; }
+.tile.qty-hit { outline: 2px solid rgba(168,85,247,.55); outline-offset: 1px; }
+
+/* ============================ PROFILE PREVIEW ============================
+   شبكة المعاينة: بلاطات البروفيل جوه خانات اللوداوت والشنطة + الشريط تحت.
+   البلاطة للعرض بس (.tile.cat) فمفيش سحب؛ الديباج بتاع المعاينة بيترفض في
+   dropCheck برسالة واحدة. */
+.tile.cat.pv { cursor: pointer; outline: none; }
+.tile.cat.pv:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 0, 0, .45); }
+.slot-cell.pv-empty { opacity: .5; }
+.slot-cell.pv-cell.filled { border-color: transparent; }
+.pv-missing, .pv-blocked { opacity: .8; }
+.pv-missing img, .pv-blocked img { filter: saturate(.35) brightness(.72); }
+.pv-substituted { box-shadow: 0 0 0 1px rgba(56, 189, 248, .5); }
+/* الخانة صاحبة بس عدد أنقص من المحفوظ: حدود كهرمانية، الصورة ما بتطمّش لأن القطعة موجودة فعلاً. */
+.pv-short { box-shadow: 0 0 0 1px rgba(251, 191, 36, .55); }
+.pv-tag {
+  position: absolute; left: 2px; top: 2px; padding: 1px 4px; border-radius: 5px;
+  font-size: 7px; font-weight: 800; letter-spacing: .4px; line-height: 1.35;
+  background: rgba(6, 7, 12, .82); border: 1px solid rgba(255, 255, 255, .1);
+}
+.pv-tag-ready { color: #4ade80; }
+.pv-tag-in { color: #052e16; background: rgba(74, 222, 128, .85); border-color: transparent; }
+.pv-tag-substituted { color: #38bdf8; }
+.pv-tag-blocked { color: #fbbf24; }
+.pv-tag-missing { color: #f87171; }
+.pv-tag-short { color: #fbbf24; }
+.pv-via {
+  position: absolute; right: 3px; bottom: 3px; padding: 1px 4px; border-radius: 5px;
+  font-size: 9px; line-height: 1.3; background: rgba(6, 7, 12, .82);
+  border: 1px solid rgba(255, 255, 255, .12); color: #e5e7eb;
+}
+.pv-via.cross { border-color: rgba(251, 191, 36, .6); color: #fbbf24; }
+
+.pv-bar {
+  display: flex; align-items: center; gap: 10px; flex-wrap: nowrap;
+  padding: 3px 12px; border-top: 1px solid var(--line); background: rgba(0, 0, 0, .22);
+  font-size: 9.5px; font-weight: 700; letter-spacing: .4px; color: #cbd5e1;
+}
+.pv-bar .spacer { flex: 1 1 auto; min-width: 4px; }
+.pv-bar.gaps { border-top-color: rgba(248, 113, 113, .32); background: rgba(248, 113, 113, .06); }
+.pv-bar.clean { border-top-color: rgba(74, 222, 128, .28); background: rgba(74, 222, 128, .05); }
+.pv-state { font-size: 9.5px; font-weight: 800; letter-spacing: 1.4px; white-space: nowrap; }
+.pv-bar.gaps .pv-state { color: #f87171; }
+.pv-bar.clean .pv-state { color: #4ade80; }
+.pv-bits { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pv-bits b { color: #fff; }
+.pv-bits i { font-style: normal; color: #fbbf24; }
+.pv-bits .pv-bad { color: #f87171; }
+.pv-mode { display: flex; flex: 0 0 auto; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.pv-m {
+  background: transparent; border: 0; color: var(--muted); cursor: pointer;
+  font: inherit; font-size: 8.5px; font-weight: 800; letter-spacing: 1.1px; padding: 2px 8px;
+}
+.pv-m.on { background: rgba(139, 92, 246, .3); color: #fff; }
+.pv-who {
+  font-size: 8px; font-weight: 800; letter-spacing: 1.4px; color: #c4b5fd;
+  border: 1px solid rgba(168, 85, 247, .35); border-radius: 6px; padding: 3px 6px;
+}
+.sec-count.pv-warn { color: #f87171; }
+.col-loadout .big-grid.pv-grid-shrink { width: 68%; }
+
+/* لوحة تأكيد التعبئة + كارت خانة المعاينة */
+.pv-warn-box { margin: 0 0 9px; padding: 9px 11px; border-radius: 10px; font-size: 11.5px; line-height: 1.5;
+  border: 1px solid rgba(251, 191, 36, .42); background: rgba(251, 191, 36, .07); color: #fcd34d; }
+.pv-warn-box.bad { border-color: rgba(248, 113, 113, .42); background: rgba(248, 113, 113, .07); color: #fca5a5; }
+.pv-fill-list { display: flex; flex-direction: column; gap: 7px; margin: 10px 0 4px; }
+.pv-fill { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 7px 9px;
+  border: 1px solid var(--line); border-radius: 10px; background: rgba(255, 255, 255, .03); font-size: 11.5px; }
+.pv-fill.forced { border-color: rgba(251, 191, 36, .45); background: rgba(251, 191, 36, .06); }
+.pv-fill-ico { flex: 0 0 auto; width: 34px; height: 34px; border-radius: 8px; display: flex;
+  align-items: center; justify-content: center; color: var(--arc-r, #94a3b8);
+  border: 1px solid var(--arc-b, var(--line)); background: var(--arc-card, rgba(255, 255, 255, .05)); }
+.pv-fill-ico img { width: 78%; height: 78%; object-fit: contain; }
+.pv-fill-name { flex: 1 1 auto; min-width: 0; font-weight: 700; color: #e5e7eb; }
+.pv-fill-name em { display: block; font-style: normal; font-size: 8.5px; letter-spacing: 1.2px; color: var(--muted); }
+.pv-fill-way { flex: 0 0 auto; font-size: 9px; font-weight: 800; letter-spacing: 1px; color: #c4b5fd; }
+.pv-f-right { flex: 0 0 auto; font-size: 11px; color: #cbd5e1; text-align: right; }
+.pv-f-right b { color: #fff; }
+.pv-total { margin: 10px 0 0; font-size: 12px; font-weight: 800; color: #e5e7eb; }
+.pv-opt { margin: 12px 0 0; padding: 11px 12px; border-radius: 12px;
+  border: 1px solid var(--line); background: rgba(255, 255, 255, .03); }
+.pv-opt.sel { border-color: rgba(168, 85, 247, .5); background: rgba(139, 92, 246, .07); }
+.pv-opt.no { opacity: .62; }
+.pv-opt-head { display: flex; align-items: center; gap: 10px; font-size: 9.5px; font-weight: 800;
+  letter-spacing: 1.6px; color: #cbd5e1; margin-bottom: 6px; }
+.pv-opt-on { margin-left: auto; font-size: 8.5px; letter-spacing: 1px; color: #c4b5fd; }
+.pv-opt-line { margin: 0; font-size: 12px; color: #e5e7eb; }
+.pv-opt-sub { margin: 5px 0 9px; font-size: 11px; color: #94a3b8; }
+
+/* ==================== DUP id متصنّف بالحساب ====================
+   كل مجموعة بلاطات فوقها اسم حساب واحد — الحساب اللي نفس الـ id موجود فيه فعلاً. */
+.dup-acc {
+  grid-column: 1 / -1; display: flex; align-items: baseline; gap: 7px;
+  margin: 8px 0 0; font-size: 10.5px; font-weight: 900; letter-spacing: .5px; color: #e9d5ff;
+}
+.dup-acc .dup-count { font-size: 9px; font-weight: 700; letter-spacing: .3px; color: var(--muted); }
+.dup-row {
+  grid-column: 1 / -1; display: grid; gap: clamp(6px, .6vw, 10px);
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+}

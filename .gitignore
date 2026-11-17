@@ -1,0 +1,31 @@
+# secrets & runtime state
+.env
+data/*.db
+data/*.log
+data/access.json
+data/agent_secret.txt
+data/hosting.json
+data/pioneer_manifest.json
+data/pioneer_telemetry.json
+data/main_accounts.json
+data/snapshots/
+data/launch/
+state.json
+*.log
+
+# binaries & archives
+*.exe
+*.zip
+*.7z
+agent/build/
+agent/dist/
+_promote_backup_*/
+__pycache__/
+*.pyc
+node_modules/
+
+# scratch
+p74888.json
+preview_g22.json
+move_watch.out
+move_watch_run1.log

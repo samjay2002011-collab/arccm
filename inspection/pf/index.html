@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/">
+    
+    <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="app.css" />
+    <link rel="stylesheet" href="PioneerPortal.styles.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <link rel="icon" type="image/png" href="favicon.png">
+    </head>
+
+<body><!--Blazor:{"type":"server","prerenderId":"09ff59956bfc4d3cb70ec7f4cf63c620","key":{"locationHash":"F3392071DDFF7DB9D30FB7FB8FCE47778D618BBDFE84E04FB73FB3CC7EF5FDA8:26","formattedComponentKey":""},"sequence":0,"descriptor":"CfDJ8Dk3qV1\u002BDpFHoYoPfHQZ1D2xPmmKynXeDv2eU916jTOiV6OQtyO0NDSN2TF5U1MUDvnNObPjcJjU3iefRjQf4ETpsHqMOJhWWEnHUw\u002BWN1eAJoW0DRvY3VXWNixY9gcpepx\u002B8G4k/7PLqh1Kr\u002BghM\u002BGWFn78fYHfIN/FFVYIKWfBC2h7lVx082Tln4fhkjyzK4f8Q4IoiCJMSvNFLgHeneJKwCRWBouB1Ks7/zc/lPUbMnVM9/9Z1MPeKYfbdmxl2zDlJ9ah1bfs215A51e\u002Bt5bVb4xuxfjQKTsNojpcyBttyJhkBqXHNgaSJ\u002Bs18VW\u002BJpATDjboeQdBXCOSWbKajbJ9OgCnN6Yb1npIFDjYqtk57rQoaUVvlM\u002Bp6az4CiQGyuQ4/Kyi2b1hM/lufyulDVnPxjbTkdM6KWOPABa9HrP\u002BzkXYOHuqNQBq8g8QDHrLk/L0f80WxUp0S3/Vmu9bhpiaXnfWIAYp4/l65Scu\u002BpnX3Je6SqX2ldy8N2Dx\u002BFfTgH4MjAzco6vysSDKAL3q4\u002BY="}--><div class="page auth-layout" b-dsdqo6tyj6>
+
+    <main b-dsdqo6tyj6><article class="content px-4" b-dsdqo6tyj6><div class="container mt-5"><div class="action-card p-5 mx-auto shadow-lg" style="max-width: 400px; background: #1a1a1a; border-radius: 12px; border: 1px solid #333;"><div class="text-center mb-4"><i class="bi bi-shield-lock-fill text-warning" style="font-size: 3rem;"></i>
+            <h3 class="text-white mt-2">ARC ACCESS</h3>
+            <p class="text-muted small">IDENTITY VERIFICATION REQUIRED</p></div>
+
+
+        <a href="/login-discord?returnUrl=%2F" class="btn btn-discord w-100 fw-bold py-2 d-flex align-items-center justify-content-center shadow-sm mb-3"><i class="bi bi-discord me-2" style="font-size: 1.4rem;"></i>
+            SIGN IN WITH DISCORD
+        </a>
+
+        <a href="/login-microsoft?returnUrl=%2F" class="btn btn-microsoft w-100 fw-bold py-2 d-flex align-items-center justify-content-center shadow-sm mb-3"><i class="bi bi-microsoft me-2" style="font-size: 1.2rem;"></i>
+            SIGN IN WITH XBOX
+        </a>
+
+        <a href="/login-steam?returnUrl=%2F" class="btn btn-steam w-100 fw-bold py-2 shadow-sm d-flex align-items-center justify-content-center gap-2 mb-3"><i class="bi bi-steam"></i>
+            SIGN IN WITH STEAM
+        </a></div></div>
+
+
+<style>
+    .btn-discord {
+        background: #5865F2;
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+        .btn-discord:hover {
+            background: #4752C4;
+            color: white;
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(88, 101, 242, 0.4);
+        }
+
+    /* Simple pulse for the warning button to match the "ARC" vibe */
+    .btn-warning:hover {
+        box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+        transform: translateY(-1px);
+    }
+    .btn-microsoft {
+        background: #2f2f2f; /* Dark theme style */
+        color: white;
+        border: 1px solid #444;
+        transition: all 0.3s ease;
+    }
+
+    .btn-microsoft:hover {
+        background: #00a4ef; /* Microsoft Blue on hover */
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 164, 239, 0.3);
+    }
+
+    .btn-steam {
+        background: #171a21; /* Steam Dark Blue/Grey */
+        color: white;
+        border: 1px solid #2a475e;
+        transition: all 0.3s ease;
+    }
+
+        .btn-steam:hover {
+            background: #2a475e;
+            color: #66c0f4; /* Steam Light Blue */
+            filter: brightness(1.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 192, 244, 0.2);
+        }
+</style></article></main></div>
+
+<div id="blazor-error-ui" data-nosnippet b-dsdqo6tyj6>
+    An unhandled error has occurred.
+    <a href="." class="reload" b-dsdqo6tyj6>Reload</a>
+    <span class="dismiss" b-dsdqo6tyj6>🗙</span></div>
+        <!--Blazor:{"prerenderId":"09ff59956bfc4d3cb70ec7f4cf63c620"}-->
+
+    <script type="module" src="Components/Layout/ReconnectModal.razor.js" b-q5tzrzeuma></script>
+<dialog id="components-reconnect-modal" data-nosnippet b-q5tzrzeuma><div class="components-reconnect-container" b-q5tzrzeuma><div class="radar-box" b-q5tzrzeuma><div class="components-rejoining-animation" aria-hidden="true" b-q5tzrzeuma><div b-q5tzrzeuma></div>
+                <div b-q5tzrzeuma></div></div>
+            <img src="/icons/familiar-duck.webp" class="hud-bouncing-duck" onerror="this.src='/icons/favicon.ico'" b-q5tzrzeuma></div>
+
+        <p class="components-reconnect-first-attempt-visible" b-q5tzrzeuma>
+            Rejoining the server...
+        </p>
+        <p class="components-reconnect-repeated-attempt-visible" b-q5tzrzeuma>
+            Rejoin failed... trying again in <span id="components-seconds-to-next-attempt" b-q5tzrzeuma></span> seconds.
+        </p>
+        <p class="components-reconnect-failed-visible" b-q5tzrzeuma>
+            Failed to rejoin.<br b-q5tzrzeuma>Please retry or reload the page.
+        </p>
+        <button id="components-reconnect-button" class="components-reconnect-failed-visible" b-q5tzrzeuma>
+            Retry
+        </button>
+        <p class="components-pause-visible" b-q5tzrzeuma>
+            The session has been paused by the server.
+        </p>
+        <p class="components-resume-failed-visible" b-q5tzrzeuma>
+            Failed to resume the session.<br b-q5tzrzeuma>Please retry or reload the page.
+        </p>
+        <button id="components-resume-button" class="components-pause-visible components-resume-failed-visible" b-q5tzrzeuma>
+            Resume
+        </button></div></dialog>
+
+    <script>
+        // --- Added Cookie Management for Saved Tokens ---
+        window.cookieManager = {
+            setCookie: function (name, value, days) {
+                let expires = "";
+                if (days) {
+                    let date = new Date();
+                    // If 'days' is actually a date string/object from C#, use it, else calculate days
+                    if (typeof days === 'string') {
+                        expires = "; expires=" + new Date(days).toUTCString();
+                    } else {
+                        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                        expires = "; expires=" + date.toUTCString();
+                    }
+                }
+                document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax";
+            },
+            getCookie: function (name) {
+                let nameEQ = name + "=";
+                let ca = document.cookie.split(';');
+                for (let i = 0; i < ca.length; i++) {
+                    let c = ca[i];
+                    while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+                }
+                return null;
+            }
+        };
+
+        window.DownloadFile = (fileName, contentType, content) => {
+            const file = new File([content], fileName, { type: contentType });
+            const exportUrl = URL.createObjectURL(file);
+            const a = document.createElement("a");
+            a.href = exportUrl;
+            a.download = fileName;
+            a.click();
+            URL.revokeObjectURL(exportUrl);
+        };
+    </script>
+    <script src="_framework/blazor.web.js"></script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a51d2a9b9a2be193',t:'MTc5MzIyNDMzNA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body></html><!--Blazor-Server-Component-State:CfDJ8Dk3qV1+DpFHoYoPfHQZ1D2TiWUz9cYrq5XG5carXea5xn1qfsFu+5AOa/eyss1Q/Tc+BL/F/0+CjjDcltKjzdQ4AfZPekVxyuvJm87vo+hsjEXAM/XniLqZTYJ8aJouIlffHOQ3VYbxAUjnl9KF+EgaYBIbYfGh2a0TQ3r8abt4XcGZwIX0qruqaT3wcwil8VGjYREVjmAVFShLIYwaJ1y3SJyU/BG/eu6FQfK5JIZ+4qn1XnTySHe82p1f+HfQRr6/rpRKk+d+PvnIrlLbIgH+OlQNhoLPWyRu5Qf8D4eV/dUKZ557IuGq8rQicjWoMNb0ezBIYW5pP/dn9cdS7LTF9AySeBKlArQN9BQd3q8f7SdsrLx0OSbEnAIRJLuBQ29u6W/uiKBoF2GyRxuf2Rl/e3ZxXIFAqtLVSc1ziqels9dUYaR/FRoqj1Xk7HQNWTvxBOsiWgwpdS+BdeffD0xNonGBsOHxNfThULyTXABtL0YLv8uUH/+nLJXAiidRVaa0tNff4jgJWClQOksLbb+3qduVqCxoLIGjekPLjF8h+Z4oF4pJ2HOrqSbEoRjRZvyArbKAIq1ML9xHZA+rZmML9WUsUBr0bSiVSDsYGgz2kQ9Ep4gXHFoDE7CnNKaLzHKyu1TYxn8Ple9CXK6TzNfSMXVtqCVFak3U0ZG+PnyXxF28yq/5oaBQRs61+EahlEx+NAzHAuucd2ncUzEbbZa2uPnnkqqp4Af0s85SXoA8ZUfQyCgecQshcTOnShWVHC/ZHuIu3pCCCdCDK6Ot2uIZ1Lq58h7CT+5sLU9gDr7s1KzcMkwuntoxyclnB0TuMWxXutONgxbXvR8GuzfmeWsqoPYkicCrvNWsySo9a2d30KOT40YSaUaCVI1aTviRUyJeKLim8cFlwtdqAZPyI3cD97BTROFEMxll9KujGDYom/YamZmdvtETgX0ItwNgyHUcW2/8YLDxG44keBGRXkXxrK/wtli+2vVz6+gXsLsNGwU/53n0xrHtn/P1gY8w1WKn2v26eRckneqoaMgTKq/8JCzh/5KuquBVqPaM87db6FEdRO0FnGSLSKQt1gKIF14WfsmP3BNw5HbtpVbb7c6We4QHXtCe+3p5swrSfWe1MgphK7FNHtKPby0QVQBaag==-->

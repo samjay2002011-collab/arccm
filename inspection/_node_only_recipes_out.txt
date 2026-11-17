@@ -1,0 +1,132 @@
+ملهاش قفل في arctracker + ليها عقدة تفعيل في الفهرس: 17
+  advanced_electrical_components   مخطوطة=False  محطة=refiner          مستوى=2 بحث=False في الـ 91=False
+  advanced_mechanical_components   مخطوطة=False  محطة=refiner          مستوى=2 بحث=False في الـ 91=False
+  arc_circuitry                    مخطوطة=False  محطة=refiner          مستوى=2 بحث=False في الـ 91=False
+  arc_motion_core                  مخطوطة=False  محطة=refiner          مستوى=2 بحث=False في الـ 91=False
+  arpeggio_i                       مخطوطة=False  محطة=weapon_bench     مستوى=2 بحث=False في الـ 91=False
+  door_blocker                     مخطوطة=False  محطة=utility_bench    مستوى=1 بحث=False في الـ 91=False
+  energy_clip                      مخطوطة=False  محطة=workbench        مستوى=1 بحث=False في الـ 91=False
+  gas_grenade                      مخطوطة=False  محطة=explosives_bench مستوى=1 بحث=False في الـ 91=False
+  heavy_fuze_grenade               مخطوطة=False  محطة=explosives_bench مستوى=3 بحث=False في الـ 91=False
+  mod_components                   مخطوطة=False  محطة=refiner          مستوى=2 بحث=False في الـ 91=False
+  photoelectric_cloak              مخطوطة=False  محطة=utility_bench    مستوى=3 بحث=False في الـ 91=False
+  power_rod                        مخطوطة=False  محطة=refiner          مستوى=3 بحث=False في الـ 91=False
+  rattler_i                        مخطوطة=False  محطة=weapon_bench     مستوى=1 بحث=False في الـ 91=False
+  renegade_i                       مخطوطة=False  محطة=weapon_bench     مستوى=3 بحث=False في الـ 91=False
+  shield_recharger                 مخطوطة=False  محطة=in_raid,med_station,workbench مستوى=1 بحث=False في الـ 91=False
+  sterilized_bandage               مخطوطة=False  محطة=med_station      مستوى=2 بحث=False في الـ 91=False
+  zipline                          مخطوطة=False  محطة=in_raid,utility_bench مستوى=2 بحث=False في الـ 91=False
+
+عقدة تفعيل بس من غير مخطوطة في الـ 91 (محتاج مخرج يدوي): 17
+  advanced_electrical_components   Advanced Electrical Components | locked=False | bench=refiner
+  advanced_mechanical_components   Advanced Mechanical Components | locked=False | bench=refiner
+  arc_circuitry                    ARC Circuitry | locked=False | bench=refiner
+  arc_motion_core                  ARC Motion Core | locked=False | bench=refiner
+  arpeggio_i                       Arpeggio I | locked=False | bench=weapon_bench
+  door_blocker                     Door Blocker | locked=False | bench=utility_bench
+  energy_clip                      Energy Clip | locked=False | bench=workbench
+  gas_grenade                      Gas Grenade | locked=False | bench=explosives_bench
+  heavy_fuze_grenade               Heavy Fuze Grenade | locked=False | bench=explosives_bench
+  mod_components                   Mod Components | locked=False | bench=refiner
+  photoelectric_cloak              Photoelectric Cloak | locked=False | bench=utility_bench
+  power_rod                        Power Rod | locked=False | bench=refiner
+  rattler_i                        Rattler I | locked=False | bench=weapon_bench
+  renegade_i                       Renegade I | locked=False | bench=weapon_bench
+  shield_recharger                 Shield Recharger | locked=False | bench=in_raid,med_station,workbench
+  sterilized_bandage               Sterilized Bandage | locked=False | bench=med_station
+  zipline                          Zipline | locked=False | bench=in_raid,utility_bench
+
+عقد غامضة (بتغطي أكتر من عنصر أو ملهاش slug): 
+  ARC Circuitry                      gates=["arc_circuitry"]
+  ARC Motion Core                    gates=["arc_motion_core"]
+  Advanced Electrical Components     gates=["advanced_electrical_components"]
+  Advanced Mechanical Components     gates=["advanced_mechanical_components"]
+  Angled Grip II                     gates=["angled_grip_ii"]
+  Angled Grip III                    gates=["angled_grip_iii"]
+  Anvil                              gates=["anvil_i"]
+  Aphelion                           gates=["aphelion"]
+  Arpeggio                           gates=["arpeggio_i"]
+  Barricade Kit                      gates=["barricade_kit"]
+  Bettina                            gates=["bettina_i"]
+  Blaze Grenade                      gates=["blaze_grenade"]
+  Blue Glowstick                     gates=["blue_light_stick"]
+  Bobcat                             gates=["bobcat_i"]
+  Burletta                           gates=["burletta_i"]
+  Canto                              gates=["canto_i"]
+  Combat Augment T3 Aggressive       gates=["combat_mk3_aggressive"]
+  Combat Augment T3 Flanking         gates=["combat_mk3_flanking"]
+  Compensator II                     gates=["compensator_ii"]
+  Compensator III                    gates=["compensator_iii"]
+  Complex Gun Parts                  gates=["complex_gun_parts"]
+  Deadline                           gates=["deadline"]
+  Defibrillator                      gates=["defibrillator"]
+  Dolabra                            gates=["dolabra"]
+  Door Blocker                       gates=["door_blocker"]
+  Energy Clip                        gates=["energy_clip"]
+  Equalizer                          gates=["equalizer"]
+  Explosive Mine                     gates=["explosive_mine"]
+  Extended Light Mag II              gates=["extended_light_mag_ii"]
+  Extended Light Mag III             gates=["extended_light_mag_iii"]
+  Extended Medium Mag II             gates=["extended_medium_mag_ii"]
+  Extended Medium Mag III            gates=["extended_medium_mag_iii"]
+  Extended Shotgun Mag II            gates=["extended_shotgun_mag_ii"]
+  Extended Shotgun Mag III           gates=["extended_shotgun_mag_iii"]
+  Fireworks Box                      gates=["fireworks_box"]
+  Gas Grenade                        gates=["gas_grenade"]
+  Gas Mine                           gates=["gas_mine"]
+  Green Glowstick                    gates=["green_light_stick"]
+  Heavy Fuze Grenade                 gates=["heavy_fuze_grenade"]
+  Heavy Gun Parts                    gates=["heavy_gun_parts"]
+  Hullcracker                        gates=["hullcracker_i"]
+  Il Toro                            gates=["il_toro_i"]
+  Jolt Mine                          gates=["jolt_mine"]
+  Jupiter                            gates=["jupiter"]
+  Light Gun Parts                    gates=["light_gun_parts"]
+  Lightweight Stock                  gates=["lightweight_stock"]
+  Looting Mk. 3 (Safekeeper)         gates=["looting_mk3_safekeeper"]
+  Looting Mk. 3 (Survivor)           gates=["looting_mk3_survivor"]
+  Lure Grenade                       gates=["lure_grenade"]
+  Medium Gun Parts                   gates=["medium_gun_parts"]
+  Mod Components                     gates=["mod_components"]
+  Muzzle Brake II                    gates=["muzzle_brake_ii"]
+  Muzzle Brake III                   gates=["muzzle_brake_iii"]
+  Osprey                             gates=["osprey_i"]
+  Padded Stock                       gates=["padded_stock"]
+  Photoelectric Cloak                gates=["photoelectric_cloak"]
+  Power Rod                          gates=["power_rod"]
+  Pulse Mine                         gates=["pulse_mine"]
+  Rattler                            gates=["rattler_i"]
+  Red Glowstick                      gates=["red_light_stick"]
+  Remote Raider Flare                gates=["remote_raider_flare"]
+  Renegade                           gates=["renegade_i"]
+  Seeker Grenade                     gates=["seeker_grenade"]
+  Shield Recharger                   gates=["shield_recharger"]
+  Shotgun Choke II                   gates=["shotgun_choke_ii"]
+  Shotgun Choke III                  gates=["shotgun_choke_iii"]
+  Shotgun Silencer                   gates=["shotgun_silencer"]
+  Showstopper                        gates=["showstopper"]
+  Silencer I                         gates=["silencer_i"]
+  Silencer II                        gates=["silencer_ii"]
+  Smoke Grenade                      gates=["smoke_grenade"]
+  Snap Hook                          gates=["snap_hook"]
+  Stable Stock II                    gates=["stable_stock_ii"]
+  Stable Stock III                   gates=["stable_stock_iii"]
+  Sterilized Bandage                 gates=["sterilized_bandage"]
+  Surge Coil                         gates=["surge_coil"]
+  Tactical Mk. 3 (Defensive)         gates=["tactical_mk3_defensive"]
+  Tactical Mk. 3 (Healing)           gates=["tactical_mk3_healing"]
+  Tactical Mk. 3 (Revival)           gates=["tactical_mk3_revival"]
+  Tagging Grenade                    gates=["tagging_grenade"]
+  Tempest                            gates=["tempest_i"]
+  Torrente                           gates=["torrente_i"]
+  Trailblazer                        gates=["trailblazer"]
+  Trigger Nade                       gates=["trigger_nade"]
+  Venator                            gates=["venator_i"]
+  Vertical Grip II                   gates=["vertical_grip_ii"]
+  Vertical Grip III                  gates=["vertical_grip_iii"]
+  Vita Shot                          gates=["vita_shot"]
+  Vita Spray                         gates=["vita_spray"]
+  Vulcano                            gates=["vulcano_i"]
+  Wolfpack                           gates=["wolfpack"]
+  Yellow Glowstick                   gates=["yellow_light_stick"]
+  Zipline                            gates=["zipline"]

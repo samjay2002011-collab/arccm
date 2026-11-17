@@ -1,0 +1,56 @@
+{
+ "-926389249": {
+  "name": "Advanced Mechanical Components",
+  "asset_id": "-926389249",
+  "image_filename": "29327e2c-34d4-5689-ae23-9c3e85ae5b12.webp",
+  "rarity": "rare"
+ },
+ "-1903407680": {
+  "name": "Heavy Gun Parts",
+  "asset_id": "-1903407680",
+  "image_filename": "c69c8a3a-18d3-52ec-9faa-b1ec4cee3432.webp",
+  "rarity": "rare"
+ },
+ "-1385889770": {
+  "name": "Light Gun Parts",
+  "asset_id": "-1385889770",
+  "image_filename": "1e1e0f28-c704-5e8e-b2ec-24bc3dd6bd10.webp",
+  "rarity": "uncommon"
+ },
+ "-637598838": {
+  "name": "Medium Gun Parts",
+  "asset_id": "-637598838",
+  "image_filename": "662f6480-3cbd-5db2-b1e8-622eaab5ae4d.webp",
+  "rarity": "rare"
+ },
+ "-574262619": {
+  "name": "Simple Gun Parts",
+  "asset_id": "-574262619",
+  "image_filename": "8ad473b0-2428-590b-93a6-300d2e23d822.webp",
+  "rarity": "common"
+ },
+ "1959573223": {
+  "name": "Mechanical Components",
+  "asset_id": "1959573223",
+  "image_filename": "3fffb789-c044-51b6-a2fc-c97061a42084.webp",
+  "rarity": "uncommon"
+ },
+ "-1437131902": {
+  "name": "Metal Parts",
+  "asset_id": "-1437131902",
+  "image_filename": "311fbbc1-d2e3-5fbc-b666-7357502cffa9.webp",
+  "rarity": "common"
+ },
+ "-2048050889": {
+  "name": "Rubber Parts",
+  "asset_id": "-2048050889",
+  "image_filename": "cdacba79-9e09-5b41-ac61-f82a1a312d7a.webp",
+  "rarity": "common"
+ },
+ "828947161": {
+  "name": "Plastic Parts",
+  "asset_id": "828947161",
+  "image_filename": "614161bb-b9e3-54d2-ade0-ad322b7c52f8.webp",
+  "rarity": "common"
+ }
+}

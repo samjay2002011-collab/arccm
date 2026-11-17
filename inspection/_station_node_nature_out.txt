@@ -1,0 +1,99 @@
+===== (1) طبيعة كل أصل محطة في items_db =====
+
+-- workbench --
+   Workbench            في القاعدة=False وصفة=0 بلوبرنت مقفول=None محطات=None لفل=None
+
+-- equipment_bench --
+   Gear Bench I         في القاعدة=False وصفة=0 بلوبرنت مقفول=None محطات=None لفل=None
+   Gear Bench II        في القاعدة=False وصفة=0 بلوبرنت مقفول=None محطات=None لفل=None
+   Gear Bench III       في القاعدة=False وصفة=0 بلوبرنت مقفول=None محطات=None لفل=None
+
+-- weapon_bench --
+   Gunsmith I           في القاعدة=False وصفة=0 بلوبرنت مقفول=None محطات=None لفل=None
+   Gunsmith II          في القاعدة=False وصفة=0 بلوبرنت مقفول=None محطات=None لفل=None
+   Gunsmith III         في القاعدة=False وصفة=0 بلوبرنت مقفول=None محطات=None لفل=None
+
+-- med_station --
+   Medical Lab I        في القاعدة=False وصفة=0 بلوبرنت مقفول=None محطات=None لفل=None
+   Medical Lab II       في القاعدة=False وصفة=0 بلوبرنت مقفول=None محطات=None لفل=None
+   Medical Lab III      في القاعدة=False وصفة=0 بلوبرنت مقفول=None محطات=None لفل=None
+
+-- utility_bench --
+   Utility Station I    في القاعدة=False وصفة=0 بلوبرنت مقفول=None محطات=None لفل=None
+   Utility Station II   في القاعدة=False وصفة=0 بلوبرنت مقفول=None محطات=None لفل=None
+   Utility Station III  في القاعدة=False وصفة=0 بلوبرنت مقفول=None محطات=None لفل=None
+
+-- explosives_bench --
+   Explosives Station I في القاعدة=False وصفة=0 بلوبرنت مقفول=None محطات=None لفل=None
+   Explosives Station II في القاعدة=False وصفة=0 بلوبرنت مقفول=None محطات=None لفل=None
+   Explosives Station III في القاعدة=False وصفة=0 بلوبرنت مقفول=None محطات=None لفل=None
+
+-- refiner --
+   Refiner I            في القاعدة=False وصفة=0 بلوبرنت مقفول=None محطات=None لفل=None
+   Refiner II           في القاعدة=False وصفة=0 بلوبرنت مقفول=None محطات=None لفل=None
+   Refiner III          في القاعدة=False وصفة=0 بلوبرنت مقفول=None محطات=None لفل=None
+
+-- anvil --
+   Anvil I              في القاعدة=True وصفة=3 بلوبرنت مقفول=True محطات=['weapon_bench'] لفل=1
+      الوصفة: [{"slug": "advanced_mechanical_components", "name": "Advanced Mechanical Components", "qty": 2, "asset_ids": ["-926389249"]}, {"slug": "hand_drill", "name": "Hand Drill", "qty": 3, "asset_ids": []}, {"slug": "heavy_gun_p
+   Anvil II             في القاعدة=True وصفة=0 بلوبرنت مقفول=False محطات=['weapon_bench'] لفل=None
+   Anvil III            في القاعدة=True وصفة=0 بلوبرنت مقفول=False محطات=['weapon_bench'] لفل=None
+   Anvil IV             في القاعدة=True وصفة=0 بلوبرنت مقفول=False محطات=['weapon_bench'] لفل=None
+   Anvil Splitter       في القاعدة=False وصفة=0 بلوبرنت مقفول=None محطات=None لفل=None
+
+===== (2)+(3) مكان العقدة في شجرة كل حساب وعدد النسخ =====
+
+== G18
+   workbench            Workbench            عدد=1 أب=(بلا أب — طافية) أبناه=0 updatedAt=1779422737848384000
+   weapon_bench         Gunsmith I           عدد=1 أب=(بلا أب — طافية) أبناه=0 updatedAt=1786825093079767000
+   anvil                Anvil Splitter       عدد=2 أب=(بلا أب — طافية) أبناه=0 updatedAt=1779580504244093000
+   anvil                Anvil Splitter       عدد=2 أب=(بلا أب — طافية) أبناه=0 updatedAt=1779579729933648000
+
+== G22
+   workbench            Workbench            عدد=1 أب=(بلا أب — طافية) أبناه=0 updatedAt=1779929546661809000
+   equipment_bench      Gear Bench III       عدد=1 أب=(بلا أب — طافية) أبناه=0 updatedAt=1787929884276497000
+   weapon_bench         Gunsmith III         عدد=1 أب=(بلا أب — طافية) أبناه=0 updatedAt=1787916825394265000
+   med_station          Medical Lab III      عدد=1 أب=(بلا أب — طافية) أبناه=0 updatedAt=1790118416895243000
+   utility_bench        Utility Station III  عدد=1 أب=(بلا أب — طافية) أبناه=0 updatedAt=1787948063974585000
+   explosives_bench     Explosives Station III عدد=1 أب=(بلا أب — طافية) أبناه=0 updatedAt=1787691422579228000
+   refiner              Refiner III          عدد=1 أب=(بلا أب — طافية) أبناه=0 updatedAt=1787847075954836000
+   anvil                Anvil I              عدد=6 أب=(بلا أب — طافية) أبناه=2 updatedAt=1792844392879737000
+   anvil                Anvil I              عدد=6 أب=(بلا أب — طافية) أبناه=2 updatedAt=1791471645648752000
+   anvil                Anvil I              عدد=6 أب=(بلا أب — طافية) أبناه=2 updatedAt=1793433206885192000
+   anvil                Anvil I              عدد=6 أب=(بلا أب — طافية) أبناه=2 updatedAt=1792940430993267000
+   anvil                Anvil I              عدد=6 أب=(بلا أب — طافية) أبناه=2 updatedAt=1792709960023724000
+   anvil                Anvil I              عدد=6 أب=(بلا أب — طافية) أبناه=2 updatedAt=1792845313264001000
+   anvil                Anvil Splitter       عدد=10 أب=(بلا أب — طافية) أبناه=0 updatedAt=1790902512641233000
+   anvil                Anvil Splitter       عدد=10 أب=(بلا أب — طافية) أبناه=0 updatedAt=1790902512641233000
+   anvil                Anvil Splitter       عدد=10 أب=(بلا أب — طافية) أبناه=0 updatedAt=1790902512641233000
+   anvil                Anvil Splitter       عدد=10 أب=(بلا أب — طافية) أبناه=0 updatedAt=1790902512641233000
+   anvil                Anvil Splitter       عدد=10 أب=(بلا أب — طافية) أبناه=0 updatedAt=1790902512641233000
+   anvil                Anvil Splitter       عدد=10 أب=(بلا أب — طافية) أبناه=0 updatedAt=1790902512641233000
+   anvil                Anvil Splitter       عدد=10 أب=(بلا أب — طافية) أبناه=0 updatedAt=1790902512641233000
+   anvil                Anvil Splitter       عدد=10 أب=(بلا أب — طافية) أبناه=0 updatedAt=1790902512641233000
+   anvil                Anvil Splitter       عدد=10 أب=(بلا أب — طافية) أبناه=0 updatedAt=1790902512641233000
+   anvil                Anvil Splitter       عدد=10 أب=(بلا أب — طافية) أبناه=0 updatedAt=1790902512641233000
+
+== RAIDER38830
+   workbench            Workbench            عدد=1 أب=(بلا أب — طافية) أبناه=0 updatedAt=1766401797564662000
+   equipment_bench      Gear Bench I         عدد=1 أب=(بلا أب — طافية) أبناه=0 updatedAt=1766438117283847000
+   weapon_bench         Gunsmith I           عدد=1 أب=(بلا أب — طافية) أبناه=0 updatedAt=1766438108696901000
+   med_station          Medical Lab I        عدد=1 أب=(بلا أب — طافية) أبناه=0 updatedAt=1767130377037980000
+   utility_bench        Utility Station I    عدد=1 أب=(بلا أب — طافية) أبناه=0 updatedAt=1767130382453703000
+   explosives_bench     Explosives Station I عدد=1 أب=(بلا أب — طافية) أبناه=0 updatedAt=1793465762323788000
+   refiner              Refiner I            عدد=1 أب=(بلا أب — طافية) أبناه=0 updatedAt=1793465755533845000
+   anvil                Anvil I              عدد=2 أب=(بلا أب — طافية) أبناه=2 updatedAt=1793444562390717000
+   anvil                Anvil I              عدد=2 أب=(بلا أب — طافية) أبناه=2 updatedAt=1793444562390717000
+
+== RAIDER74888
+   workbench            Workbench            عدد=1 أب=(بلا أب — طافية) أبناه=0 updatedAt=1779805182286562000
+   equipment_bench      Gear Bench II        عدد=1 أب=(بلا أب — طافية) أبناه=0 updatedAt=1787960216832421000
+   weapon_bench         Gunsmith I           عدد=1 أب=(بلا أب — طافية) أبناه=0 updatedAt=1783803432341831000
+   med_station          Medical Lab I        عدد=1 أب=(بلا أب — طافية) أبناه=0 updatedAt=1784236210867657000
+   utility_bench        Utility Station II   عدد=1 أب=(بلا أب — طافية) أبناه=0 updatedAt=1787958547241350000
+   explosives_bench     Explosives Station III عدد=1 أب=(بلا أب — طافية) أبناه=0 updatedAt=1787964524052287000
+   refiner              Refiner I            عدد=1 أب=(بلا أب — طافية) أبناه=0 updatedAt=1787866437417948000
+   anvil                Anvil I              عدد=1 أب=(بلا أب — طافية) أبناه=2 updatedAt=1792845108850154000
+   anvil                Anvil IV             عدد=2 أب=(بلا أب — طافية) أبناه=2 updatedAt=1792846825457999000
+   anvil                Anvil IV             عدد=2 أب=(بلا أب — طافية) أبناه=2 updatedAt=1792954378992295000
+   anvil                Anvil Splitter       عدد=1 أب=(بلا أب — طافية) أبناه=0 updatedAt=1788068104109568000

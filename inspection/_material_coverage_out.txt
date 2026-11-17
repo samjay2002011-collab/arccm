@@ -1,0 +1,18 @@
+فهرس الأصول المحلي: 2848 أصل
+هل -605737193 موجود في الفهرس؟ None
+
+إجمالي الوصفات: 166 | خامات مميزة: 75
+خامات ملهاش أي asset_id في items_db: 9
+   ✔ ARC Conductive Coupler             slug=arc_conductive_coupler         من الفهرس=- من الشجرة=['-224268867']
+   ✔ ARC Insulated Coupler              slug=arc_insulated_coupler          من الفهرس=- من الشجرة=['-921338830']
+   ✔ ARC Plated Coupler                 slug=arc_plated_coupler             من الفهرس=- من الشجرة=['708062176']
+   ✔ Cable Stripper                     slug=cable_stripper                 من الفهرس=- من الشجرة=['1018894577']
+   ✔ Calculator                         slug=calculator                     من الفهرس=- من الشجرة=['-315100731']
+   ✔ Dockmaster's Detector              slug=dockmasters_detector           من الفهرس=- من الشجرة=['-28450091']
+   ✔ Hand Drill                         slug=hand_drill                     من الفهرس=- من الشجرة=['-605737193']
+   ✔ Steel Cable                        slug=steel_cable                    من الفهرس=- من الشجرة=['-1872918924']
+   ✗ Turbine Compressor                 slug=turbine_compressor             (مفيش أي أصل بهذا الاسم)
+
+اللي اتحل بالفهرس/الشجرة: 8 | اللي لسه غامض: 1
+
+خامات ليها id في items_db لكن قطع الشجرة الحقيقية مسجلة بـ id تاني: 0

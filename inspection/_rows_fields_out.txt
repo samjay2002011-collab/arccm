@@ -1,0 +1,560 @@
+### blaze_grenade_trap
+    name = "Blaze Grenade Trap"
+    type = "Quick Use"
+    group = "Quick Use"
+    rarity = "Rare"
+    craft_bench = ["in_raid", "workbench"]
+    station_level = 1
+    blueprint_locked = true
+    related_blueprint_id = null
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "A laser trip wire that detonates a Blaze Grenade."
+    craft_quantity = null
+    asset_ids = ["-1996442482"]
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### smoke_grenade_trap
+    name = "Smoke Grenade Trap"
+    type = "Quick Use"
+    group = "Quick Use"
+    rarity = "Rare"
+    craft_bench = ["in_raid", "workbench"]
+    station_level = 1
+    blueprint_locked = true
+    related_blueprint_id = null
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "A laser trip wire that detonates a Smoke Grenade."
+    craft_quantity = null
+    asset_ids = ["1117674957"]
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### mountaineers_detector
+    name = "Mountaineer’s Detector"
+    type = "Quick Use"
+    group = "Quick Use"
+    rarity = "Rare"
+    craft_bench = ["workbench"]
+    station_level = 1
+    blueprint_locked = true
+    related_blueprint_id = null
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "Useful for finding foreign objects hidden in the snow. As an added bonus, it works just as well on sand."
+    craft_quantity = null
+    asset_ids = []
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### tether_launcher
+    name = "Tether Launcher"
+    type = "Quick Use"
+    group = "Quick Use"
+    rarity = "Rare"
+    craft_bench = ["utility_bench"]
+    station_level = 2
+    blueprint_locked = true
+    related_blueprint_id = "tether_launcher_blueprint"
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "A two-shot tether launcher that anchors a line to whatever it hits, linking both points together."
+    craft_quantity = null
+    asset_ids = []
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### light_ammo
+    name = "Light Ammo"
+    type = "Ammunition"
+    group = "Ammunition"
+    rarity = "Common"
+    craft_bench = ["in_raid", "workbench"]
+    station_level = 1
+    blueprint_locked = false
+    related_blueprint_id = null
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = ""
+    craft_quantity = 25
+    asset_ids = ["-1875547390"]
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### basic_camera
+    name = "Basic Camera"
+    type = "Quick Use"
+    group = "Quick Use"
+    rarity = "Uncommon"
+    craft_bench = ["workbench"]
+    station_level = 1
+    blueprint_locked = false
+    related_blueprint_id = null
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "A simple little camera that gets the job done."
+    craft_quantity = null
+    asset_ids = []
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### looting_mk1
+    name = "Looting Mk. 1"
+    type = "Augment"
+    group = "Augments"
+    rarity = "Uncommon"
+    craft_bench = ["equipment_bench", "workbench"]
+    station_level = 1
+    blueprint_locked = false
+    related_blueprint_id = null
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "Basic looting augment. More backpack slots and weight capacity, but low defensive and tactical capability."
+    craft_quantity = null
+    asset_ids = ["-448345380", "1680690244"]
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### looting_mk3_cautious
+    name = "Looting Mk. 3 (Cautious)"
+    type = "Augment"
+    group = "Augments"
+    rarity = "Epic"
+    craft_bench = ["equipment_bench"]
+    station_level = 3
+    blueprint_locked = false
+    related_blueprint_id = null
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "A looting augment that swaps some carry capacity to increase survivability."
+    craft_quantity = null
+    asset_ids = ["-1302027751", "433079423"]
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### combat_mk2
+    name = "Combat Mk. 2"
+    type = "Augment"
+    group = "Augments"
+    rarity = "Rare"
+    craft_bench = ["equipment_bench"]
+    station_level = 2
+    blueprint_locked = false
+    related_blueprint_id = null
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "A combat augment more focused on maneuverability than absorbing damage."
+    craft_quantity = null
+    asset_ids = ["-509905146", "-1489261627"]
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### snap_hook
+    name = "Snap Hook"
+    type = "Quick Use"
+    group = "Quick Use"
+    rarity = "Legendary"
+    craft_bench = ["utility_bench"]
+    station_level = 3
+    blueprint_locked = true
+    related_blueprint_id = "snap_hook_blueprint"
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "A gadget that allows the user to scale structures and cover large distances."
+    craft_quantity = null
+    asset_ids = ["-1963108876"]
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### zipline
+    name = "Zipline"
+    type = "Quick Use"
+    group = "Quick Use"
+    rarity = "Rare"
+    craft_bench = ["in_raid", "utility_bench"]
+    station_level = 2
+    blueprint_locked = false
+    related_blueprint_id = null
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "A deployable zipline that allows you to quickly move between two locations."
+    craft_quantity = null
+    asset_ids = ["793992947"]
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### energy_clip
+    name = "Energy Clip"
+    type = "Ammunition"
+    group = "Ammunition"
+    rarity = "Rare"
+    craft_bench = ["workbench"]
+    station_level = 1
+    blueprint_locked = false
+    related_blueprint_id = null
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "Ammo used for energy weapons. One clip will fully charge a single weapon."
+    craft_quantity = 5
+    asset_ids = ["1619184001"]
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### advanced_camera
+    name = "Advanced Camera"
+    type = "Quick Use"
+    group = "Quick Use"
+    rarity = "Rare"
+    craft_bench = ["utility_bench"]
+    station_level = 1
+    blueprint_locked = true
+    related_blueprint_id = "advanced_camera_blueprint"
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "A more advanced camera with a few extra bells and whistles."
+    craft_quantity = null
+    asset_ids = []
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### white_flag
+    name = "White Flag"
+    type = "Quick Use"
+    group = "Quick Use"
+    rarity = "Common"
+    craft_bench = ["in_raid", "med_station"]
+    station_level = 1
+    blueprint_locked = true
+    related_blueprint_id = "white_flag_blueprint"
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "A deployable white flag."
+    craft_quantity = null
+    asset_ids = []
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### banjo
+    name = "Banjo"
+    type = "Quick Use"
+    group = "Quick Use"
+    rarity = "Rare"
+    craft_bench = ["workbench"]
+    station_level = 1
+    blueprint_locked = true
+    related_blueprint_id = "banjo_blueprint"
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "A playable banjo used to attract ARC's attention, and impress other Raiders."
+    craft_quantity = null
+    asset_ids = []
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### dolabra
+    name = "Dolabra"
+    type = "Shotgun"
+    group = "Weapons"
+    rarity = "Legendary"
+    craft_bench = ["weapon_bench"]
+    station_level = 3
+    blueprint_locked = true
+    related_blueprint_id = "dolabra_blueprint"
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "An experimental weapon that can either fire a wide short range blast, or be focused to fire a tight medium range beam of heat."
+    craft_quantity = null
+    asset_ids = ["1249031667"]
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### emperor_gateway_conduit
+    name = "Emperor Gateway Conduit"
+    type = "Key"
+    group = "Keys"
+    rarity = "Legendary"
+    craft_bench = ["workbench"]
+    station_level = 1
+    blueprint_locked = true
+    related_blueprint_id = "emperor_gateway_conduit_blueprint"
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "Combining three distinct couplers, this conduit seems to fit into the Fallen Emperor at Pendola Pass."
+    craft_quantity = null
+    asset_ids = []
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### grappling_hook
+    name = "Grappling Hook"
+    type = "Quick Use"
+    group = "Quick Use"
+    rarity = "Uncommon"
+    craft_bench = ["in_raid", "utility_bench"]
+    station_level = 1
+    blueprint_locked = true
+    related_blueprint_id = "grappling_hook_blueprint"
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "A simple gadget that anchors to most surfaces, allowing users to navigate hard-to-reach places."
+    craft_quantity = null
+    asset_ids = []
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### surge_coil
+    name = "Surge Coil"
+    type = "Quick Use"
+    group = "Quick Use"
+    rarity = "Rare"
+    craft_bench = ["explosives_bench"]
+    station_level = 3
+    blueprint_locked = true
+    related_blueprint_id = "surge_coil_blueprint"
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "A deployable device that periodically electrifies the area around itself and briefly stuns anything caught within it."
+    craft_quantity = null
+    asset_ids = ["-828273506"]
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### yank_grenade
+    name = "Yank Grenade"
+    type = "Quick Use"
+    group = "Quick Use"
+    rarity = "Uncommon"
+    craft_bench = ["explosives_bench"]
+    station_level = 2
+    blueprint_locked = true
+    related_blueprint_id = "yank_grenade_blueprint"
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "A grenade that anchors a line to whatever it hits, pulling the target toward the point of impact."
+    craft_quantity = null
+    asset_ids = []
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### rascal_i
+    name = "Rascal I"
+    type = "Special"
+    group = "Weapons"
+    rarity = "Rare"
+    craft_bench = ["weapon_bench"]
+    station_level = 2
+    blueprint_locked = true
+    related_blueprint_id = "rascal_blueprint"
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "An improvised grenade launcher whose projectiles only detonate when hitting ARC."
+    craft_quantity = null
+    asset_ids = []
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### stiletto_i
+    name = "Stiletto I"
+    type = "Battle Rifle"
+    group = "Weapons"
+    rarity = "Uncommon"
+    craft_bench = ["weapon_bench"]
+    station_level = 1
+    blueprint_locked = true
+    related_blueprint_id = "stiletto_blueprint"
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "Semi-automatic rifle with high accuracy, good handling and low initial recoil, but becomes harder to handle with sustained fire."
+    craft_quantity = null
+    asset_ids = []
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### bantam_i
+    name = "Bantam I"
+    type = "Hand Cannon"
+    group = "Weapons"
+    rarity = "Uncommon"
+    craft_bench = ["weapon_bench"]
+    station_level = 1
+    blueprint_locked = true
+    related_blueprint_id = "bantam_blueprint"
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "Short-barrel revolver with varied fire rate, good handling and damage, but with low accuracy, control and range."
+    craft_quantity = null
+    asset_ids = []
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### canto_i
+    name = "Canto I"
+    type = "SMG"
+    group = "Weapons"
+    rarity = "Rare"
+    craft_bench = ["weapon_bench"]
+    station_level = 3
+    blueprint_locked = true
+    related_blueprint_id = "canto_blueprint"
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "Fully automatic submachine gun with a larger caliber."
+    craft_quantity = null
+    asset_ids = ["-764908128"]
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### crash_mat
+    name = "Crash Mat"
+    type = "Quick Use"
+    group = "Quick Use"
+    rarity = "Uncommon"
+    craft_bench = ["in_raid", "utility_bench"]
+    station_level = 2
+    blueprint_locked = true
+    related_blueprint_id = "crash_mat_blueprint"
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "A throwable emergency landing device, to soften some heavy landings."
+    craft_quantity = null
+    asset_ids = []
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### powered_descender
+    name = "Powered Descender"
+    type = "Quick Use"
+    group = "Quick Use"
+    rarity = "Epic"
+    craft_bench = ["utility_bench"]
+    station_level = 3
+    blueprint_locked = true
+    related_blueprint_id = "powered_descender_blueprint"
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "Reduces fall speed when used in the air, but has a wind-up time before reaching full force. Shuts down once out of power."
+    craft_quantity = null
+    asset_ids = []
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### tactical_mk3_smoke
+    name = "Tactical Mk. 3 (Smoke)"
+    type = "Augment"
+    group = "Augments"
+    rarity = "Epic"
+    craft_bench = ["equipment_bench"]
+    station_level = 3
+    blueprint_locked = true
+    related_blueprint_id = "tactical_mk3_smoke_blueprint"
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "An upgraded version of the Tactical MK. 2 augment, adding expanded capacity across the board."
+    craft_quantity = null
+    asset_ids = []
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### ferro_i
+    name = "Ferro I"
+    type = "Battle Rifle"
+    group = "Weapons"
+    rarity = "Common"
+    craft_bench = ["weapon_bench", "workbench"]
+    station_level = 1
+    blueprint_locked = false
+    related_blueprint_id = null
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "Heavy break-action rifle. Packs a punch, but must be reloaded between every shot."
+    craft_quantity = null
+    asset_ids = ["-1300343709"]
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### arpeggio_i
+    name = "Arpeggio I"
+    type = "Assault Rifle"
+    group = "Weapons"
+    rarity = "Uncommon"
+    craft_bench = ["weapon_bench"]
+    station_level = 2
+    blueprint_locked = false
+    related_blueprint_id = null
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "A 3-round burst assault rifle with decent damage output and accuracy."
+    craft_quantity = null
+    asset_ids = ["-1174500500"]
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### raider_hatch_key
+    name = "Raider Hatch Key"
+    type = "Key"
+    group = "Keys"
+    rarity = "Rare"
+    craft_bench = ["in_raid", "utility_bench"]
+    station_level = 2
+    blueprint_locked = false
+    related_blueprint_id = null
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "Unlocks a Raider Hatch."
+    craft_quantity = null
+    asset_ids = ["-902952774"]
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+### agave_juice
+    name = "Agave Juice"
+    type = "Quick Use"
+    group = "Quick Use"
+    rarity = "Common"
+    craft_bench = ["in_raid"]
+    station_level = null
+    blueprint_locked = false
+    related_blueprint_id = null
+    target_item_id = null
+    is_blueprint = false
+    quest_item = false
+    phased_out = false
+    found_in = []
+    description = "A concoction that temporarily increases stamina regeneration, at a small initial cost to health."
+    craft_quantity = null
+    asset_ids = ["1648154470"]
+    other keys: ['slug', 'name_lower', 'value', 'stack_size', 'weight_kg', 'effects', 'is_weapon', 'research_perk', 'craft_skills', 'upgrades_to', 'upgrade_stations', 'image_source', 'image_local', 'recycles_into', 'salvages_into', 'recipe', 'upgrade_cost', 'icon_ok']
+
+== وصفات غير مقفولة بس ليها مخطوطة تستهدفها ==

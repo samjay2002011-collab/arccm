@@ -1,0 +1,101 @@
+حسابات الموقع: ['RAIDER38830', 'G14', 'G18', 'G22', 'RAIDER74888']
+
+== RAIDER38830
+   totals: {"recipes": 82, "allowed": 82, "ready": 40, "live": 77, "hidden_not_unlocked": 84, "locked_level": 0}
+   knowledge: {"learned": 26, "in_stash": 0, "not_learned": 82, "total": 108, "measured": true, "default_recipes": 56}
+   أول 6 وصفات بالاسم: ['Adrenaline Shot', 'Agave Juice', 'Angled Grip I', 'Antiseptic', 'Aphelion', 'Arpeggio I']
+      مخفية:  tether_launcher
+      مخفية:  snap_hook
+      مخفية:  zipline
+      مخفية:  grappling_hook
+      مخفية:  advanced_camera
+      مخفية:  showstopper
+      ظاهرة:  explosive_mine         مخطوطة=learned      قفل=-
+      ظاهرة:  light_ammo             مخطوطة=-            قفل=-
+      ظاهرة:  bandage                مخطوطة=-            قفل=-
+      ظاهرة:  energy_clip            مخطوطة=-            قفل=-
+   وصفات لسه بتستخدم القفل القديم 'blueprint' (0): []
+   مخطوطات: cards=108 totals={"learned": 26, "in_stash": 0, "not_learned": 82, "total": 108, "measured": true, "default_recipes": 56}
+   توزيع الحالات: {"not_learned": 82, "learned": 26}
+   كروت craftable=true: 29
+   ✔ في المخزن: count=26 assets=25
+
+== G14
+   totals: {"recipes": 56, "allowed": 56, "ready": 25, "live": 51, "hidden_not_unlocked": 110, "locked_level": 0}
+   knowledge: {"learned": 0, "in_stash": 1, "not_learned": 107, "total": 108, "measured": false, "default_recipes": 56}
+   أول 6 وصفات بالاسم: ['Adrenaline Shot', 'Agave Juice', 'Angled Grip I', 'Antiseptic', 'Arpeggio I', 'Bandage']
+      مخفية:  tether_launcher
+      مخفية:  snap_hook
+      مخفية:  zipline
+      مخفية:  grappling_hook
+      مخفية:  advanced_camera
+      مخفية:  showstopper
+      مخفية:  explosive_mine
+      ظاهرة:  light_ammo             مخطوطة=-            قفل=-
+      ظاهرة:  bandage                مخطوطة=-            قفل=-
+      مخفية:  energy_clip
+   وصفات لسه بتستخدم القفل القديم 'blueprint' (0): []
+   مخطوطات: cards=108 totals={"learned": 0, "in_stash": 1, "not_learned": 107, "total": 108, "measured": false, "default_recipes": 56}
+   توزيع الحالات: {"not_learned": 107, "in_stash": 1}
+   كروت craftable=true: 3
+   ✔ في المخزن: count=0 assets=0
+
+== G18
+   totals: {"recipes": 56, "allowed": 56, "ready": 23, "live": 51, "hidden_not_unlocked": 110, "locked_level": 0}
+   knowledge: {"learned": 0, "in_stash": 3, "not_learned": 105, "total": 108, "measured": true, "default_recipes": 56}
+   أول 6 وصفات بالاسم: ['Adrenaline Shot', 'Agave Juice', 'Angled Grip I', 'Antiseptic', 'Arpeggio I', 'Bandage']
+      مخفية:  tether_launcher
+      مخفية:  snap_hook
+      مخفية:  zipline
+      مخفية:  grappling_hook
+      مخفية:  advanced_camera
+      مخفية:  showstopper
+      مخفية:  explosive_mine
+      ظاهرة:  light_ammo             مخطوطة=-            قفل=-
+      ظاهرة:  bandage                مخطوطة=-            قفل=-
+      مخفية:  energy_clip
+   وصفات لسه بتستخدم القفل القديم 'blueprint' (0): []
+   مخطوطات: cards=108 totals={"learned": 0, "in_stash": 3, "not_learned": 105, "total": 108, "measured": true, "default_recipes": 56}
+   توزيع الحالات: {"not_learned": 105, "in_stash": 3}
+   كروت craftable=true: 3
+   ✔ في المخزن: count=0 assets=0
+
+== G22
+   totals: {"recipes": 90, "allowed": 90, "ready": 83, "live": 83, "hidden_not_unlocked": 76, "locked_level": 0}
+   knowledge: {"learned": 34, "in_stash": 31, "not_learned": 43, "total": 108, "measured": true, "default_recipes": 56}
+   أول 6 وصفات بالاسم: ['Adrenaline Shot', 'Agave Juice', 'Angled Grip I', 'Angled Grip II', 'Antiseptic', 'Anvil I']
+      مخفية:  tether_launcher
+      ظاهرة:  snap_hook              مخطوطة=learned      قفل=-
+      مخفية:  zipline
+      مخفية:  grappling_hook
+      مخفية:  advanced_camera
+      ظاهرة:  showstopper            مخطوطة=learned      قفل=-
+      ظاهرة:  explosive_mine         مخطوطة=learned      قفل=-
+      ظاهرة:  light_ammo             مخطوطة=-            قفل=-
+      ظاهرة:  bandage                مخطوطة=-            قفل=-
+      مخفية:  energy_clip
+   وصفات لسه بتستخدم القفل القديم 'blueprint' (0): []
+   مخطوطات: cards=108 totals={"learned": 34, "in_stash": 31, "not_learned": 43, "total": 108, "measured": true, "default_recipes": 56}
+   توزيع الحالات: {"not_learned": 43, "learned": 34, "in_stash": 31}
+   كروت craftable=true: 37
+   ✔ في المخزن: count=34 assets=35
+
+== RAIDER74888
+   totals: {"recipes": 60, "allowed": 60, "ready": 55, "live": 55, "hidden_not_unlocked": 106, "locked_level": 0}
+   knowledge: {"learned": 4, "in_stash": 35, "not_learned": 69, "total": 108, "measured": true, "default_recipes": 56}
+   أول 6 وصفات بالاسم: ['Adrenaline Shot', 'Agave Juice', 'Angled Grip I', 'Antiseptic', 'Arpeggio I', 'Bandage']
+      مخفية:  tether_launcher
+      مخفية:  snap_hook
+      مخفية:  zipline
+      مخفية:  grappling_hook
+      مخفية:  advanced_camera
+      ظاهرة:  showstopper            مخطوطة=learned      قفل=-
+      ظاهرة:  explosive_mine         مخطوطة=learned      قفل=-
+      ظاهرة:  light_ammo             مخطوطة=-            قفل=-
+      ظاهرة:  bandage                مخطوطة=-            قفل=-
+      مخفية:  energy_clip
+   وصفات لسه بتستخدم القفل القديم 'blueprint' (0): []
+   مخطوطات: cards=108 totals={"learned": 4, "in_stash": 35, "not_learned": 69, "total": 108, "measured": true, "default_recipes": 56}
+   توزيع الحالات: {"not_learned": 69, "in_stash": 35, "learned": 4}
+   كروت craftable=true: 7
+   ✔ في المخزن: count=4 assets=4

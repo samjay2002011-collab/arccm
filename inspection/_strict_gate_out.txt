@@ -1,0 +1,111 @@
+وصفات في القاعدة: 166 | blueprint_locked=96 | ملهاش قفل=70
+DEFAULT_UNLOCKED_RECIPES: 56
+ملهاش قفل في arctracker ومع ذلك مش في القائمة الأساسية (14): ['advanced_electrical_components', 'advanced_mechanical_components', 'arc_circuitry', 'arc_motion_core', 'door_blocker', 'energy_clip', 'gas_grenade', 'heavy_fuze_grenade', 'mod_components', 'photoelectric_cloak', 'power_rod', 'shield_recharger', 'sterilized_bandage', 'zipline']
+في القائمة الأساسية وblueprint_locked=true مع بعض (0): []
+عقد التفعيل في الفهرس: 98 | slugs ليها احتمال دليل: 93
+مقفولة ومالهاش عقدة تفعيل في الفهرس = هتفضل مخفية (20): ['advanced_camera', 'banjo', 'bantam_i', 'blaze_grenade_trap', 'crash_mat', 'emperor_gateway_conduit', 'extended_barrel_ii', 'extended_barrel_iii', 'gas_grenade_trap', 'grappling_hook', 'lure_grenade_trap', 'mountaineers_detector', 'powered_descender', 'rascal_i', 'smoke_grenade_trap', 'stiletto_i', 'tactical_mk3_smoke', 'tether_launcher', 'white_flag', 'yank_grenade']
+
+== G14
+   عقد تفعيل مقروءة=0 measured=False | حالات المخطوطات learned=0 in_stash=1 not_learned=107
+   مسموح=56 (أساسية 56 + بدليل 0) | مخفي=110 | شغالة في الوصفة=56
+   اللي اتفتحت بالدليل بس: []
+   وصفة ظاهرة رغم إنها مش مسموحة (0): []
+   مفيش حالة unknown خالص: نعم
+      tether_launcher    مسموحة=False حالة المخطوطة=not_learned
+      snap_hook          مسموحة=False حالة المخطوطة=not_learned
+      advanced_camera    مسموحة=False حالة المخطوطة=not_learned
+      grappling_hook     مسموحة=False حالة المخطوطة=not_learned
+      banjo              مسموحة=False حالة المخطوطة=not_learned
+      white_flag         مسموحة=False حالة المخطوطة=not_learned
+      stiletto_i         مسموحة=False حالة المخطوطة=not_learned
+      light_ammo         مسموحة=True  حالة المخطوطة=-
+      bandage            مسموحة=True  حالة المخطوطة=-
+      basic_camera       مسموحة=True  حالة المخطوطة=-
+      showstopper        مسموحة=False حالة المخطوطة=not_learned
+      explosive_mine     مسموحة=False حالة المخطوطة=not_learned
+      trailblazer        مسموحة=False حالة المخطوطة=not_learned
+      aphelion           مسموحة=False حالة المخطوطة=not_learned
+
+== G18
+   عقد تفعيل مقروءة=0 measured=True | حالات المخطوطات learned=0 in_stash=3 not_learned=105
+   مسموح=56 (أساسية 56 + بدليل 0) | مخفي=110 | شغالة في الوصفة=56
+   اللي اتفتحت بالدليل بس: []
+   وصفة ظاهرة رغم إنها مش مسموحة (0): []
+   مفيش حالة unknown خالص: نعم
+      tether_launcher    مسموحة=False حالة المخطوطة=not_learned
+      snap_hook          مسموحة=False حالة المخطوطة=not_learned
+      advanced_camera    مسموحة=False حالة المخطوطة=not_learned
+      grappling_hook     مسموحة=False حالة المخطوطة=not_learned
+      banjo              مسموحة=False حالة المخطوطة=not_learned
+      white_flag         مسموحة=False حالة المخطوطة=not_learned
+      stiletto_i         مسموحة=False حالة المخطوطة=not_learned
+      light_ammo         مسموحة=True  حالة المخطوطة=-
+      bandage            مسموحة=True  حالة المخطوطة=-
+      basic_camera       مسموحة=True  حالة المخطوطة=-
+      showstopper        مسموحة=False حالة المخطوطة=not_learned
+      explosive_mine     مسموحة=False حالة المخطوطة=not_learned
+      trailblazer        مسموحة=False حالة المخطوطة=not_learned
+      aphelion           مسموحة=False حالة المخطوطة=in_stash
+
+== G22
+   عقد تفعيل مقروءة=34 measured=True | حالات المخطوطات learned=34 in_stash=31 not_learned=43
+   مسموح=90 (أساسية 56 + بدليل 34) | مخفي=76 | شغالة في الوصفة=90
+   اللي اتفتحت بالدليل بس: ['angled_grip_ii', 'anvil_i', 'aphelion', 'barricade_kit', 'compensator_iii', 'deadline', 'defibrillator', 'equalizer', 'explosive_mine', 'extended_light_mag_ii', 'extended_medium_mag_ii', 'extended_shotgun_mag_ii', 'heavy_gun_parts', 'jolt_mine', 'jupiter', 'light_gun_parts', 'looting_mk3_survivor', 'medium_gun_parts', 'muzzle_brake_iii', 'pulse_mine', 'seeker_grenade', 'shotgun_choke_ii', 'showstopper', 'silencer_i', 'silencer_ii', 'snap_hook', 'stable_stock_iii', 'tactical_mk3_defensive', 'torrente_i', 'trailblazer', 'trigger_nade', 'vertical_grip_ii', 'vertical_grip_iii', 'vita_spray']
+   وصفة ظاهرة رغم إنها مش مسموحة (0): []
+   مفيش حالة unknown خالص: نعم
+      tether_launcher    مسموحة=False حالة المخطوطة=not_learned
+      snap_hook          مسموحة=True  حالة المخطوطة=learned
+      advanced_camera    مسموحة=False حالة المخطوطة=not_learned
+      grappling_hook     مسموحة=False حالة المخطوطة=in_stash
+      banjo              مسموحة=False حالة المخطوطة=not_learned
+      white_flag         مسموحة=False حالة المخطوطة=in_stash
+      stiletto_i         مسموحة=False حالة المخطوطة=not_learned
+      light_ammo         مسموحة=True  حالة المخطوطة=-
+      bandage            مسموحة=True  حالة المخطوطة=-
+      basic_camera       مسموحة=True  حالة المخطوطة=-
+      showstopper        مسموحة=True  حالة المخطوطة=learned
+      explosive_mine     مسموحة=True  حالة المخطوطة=learned
+      trailblazer        مسموحة=True  حالة المخطوطة=learned
+      aphelion           مسموحة=True  حالة المخطوطة=learned
+
+== RAIDER38830
+   عقد تفعيل مقروءة=26 measured=True | حالات المخطوطات learned=26 in_stash=0 not_learned=82
+   مسموح=82 (أساسية 56 + بدليل 26) | مخفي=84 | شغالة في الوصفة=82
+   اللي اتفتحت بالدليل بس: ['aphelion', 'bettina_i', 'blue_light_stick', 'bobcat_i', 'combat_mk3_flanking', 'deadline', 'defibrillator', 'energy_clip', 'equalizer', 'explosive_mine', 'extended_light_mag_ii', 'extended_medium_mag_ii', 'extended_shotgun_mag_iii', 'heavy_gun_parts', 'jupiter', 'lightweight_stock', 'pulse_mine', 'seeker_grenade', 'stable_stock_ii', 'stable_stock_iii', 'trailblazer', 'trigger_nade', 'vertical_grip_ii', 'vertical_grip_iii', 'wolfpack', 'yellow_light_stick']
+   وصفة ظاهرة رغم إنها مش مسموحة (0): []
+   مفيش حالة unknown خالص: نعم
+      tether_launcher    مسموحة=False حالة المخطوطة=not_learned
+      snap_hook          مسموحة=False حالة المخطوطة=not_learned
+      advanced_camera    مسموحة=False حالة المخطوطة=not_learned
+      grappling_hook     مسموحة=False حالة المخطوطة=not_learned
+      banjo              مسموحة=False حالة المخطوطة=not_learned
+      white_flag         مسموحة=False حالة المخطوطة=not_learned
+      stiletto_i         مسموحة=False حالة المخطوطة=not_learned
+      light_ammo         مسموحة=True  حالة المخطوطة=-
+      bandage            مسموحة=True  حالة المخطوطة=-
+      basic_camera       مسموحة=True  حالة المخطوطة=-
+      showstopper        مسموحة=False حالة المخطوطة=not_learned
+      explosive_mine     مسموحة=True  حالة المخطوطة=learned
+      trailblazer        مسموحة=True  حالة المخطوطة=learned
+      aphelion           مسموحة=True  حالة المخطوطة=learned
+
+== RAIDER74888
+   عقد تفعيل مقروءة=4 measured=True | حالات المخطوطات learned=4 in_stash=35 not_learned=69
+   مسموح=60 (أساسية 56 + بدليل 4) | مخفي=106 | شغالة في الوصفة=60
+   اللي اتفتحت بالدليل بس: ['deadline', 'explosive_mine', 'hullcracker_i', 'showstopper']
+   وصفة ظاهرة رغم إنها مش مسموحة (0): []
+   مفيش حالة unknown خالص: نعم
+      tether_launcher    مسموحة=False حالة المخطوطة=not_learned
+      snap_hook          مسموحة=False حالة المخطوطة=not_learned
+      advanced_camera    مسموحة=False حالة المخطوطة=not_learned
+      grappling_hook     مسموحة=False حالة المخطوطة=in_stash
+      banjo              مسموحة=False حالة المخطوطة=not_learned
+      white_flag         مسموحة=False حالة المخطوطة=in_stash
+      stiletto_i         مسموحة=False حالة المخطوطة=not_learned
+      light_ammo         مسموحة=True  حالة المخطوطة=-
+      bandage            مسموحة=True  حالة المخطوطة=-
+      basic_camera       مسموحة=True  حالة المخطوطة=-
+      showstopper        مسموحة=True  حالة المخطوطة=learned
+      explosive_mine     مسموحة=True  حالة المخطوطة=learned
+      trailblazer        مسموحة=False حالة المخطوطة=in_stash
+      aphelion           مسموحة=False حالة المخطوطة=in_stash

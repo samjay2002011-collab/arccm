@@ -1,0 +1,197 @@
+/* الهيدر الجديد + صفحة الحسابات (مرجع rampart 1:1) */
+
+.topbar { gap: 10px; padding: 0 18px; min-height: 64px; }
+@media (max-width: 1000px) {
+  /* الشريط الضيّق: SYNCHRONIZE ينزل سطر لوحده (قاعدة styles.css) — الهيدر بيطول
+     نفسه عشان الزرار مايطلعش برا الـ 64px. */
+  .topbar { height: auto; padding: 8px 18px; row-gap: 6px; }
+}
+.brand { font-size: 21px; letter-spacing: -.6px; display: flex; align-items: center; }
+.nav { margin-left: 26px; }
+.nav-item { padding: 6px 10px; }
+
+/* الفل في مجموعة اليسار: بياخدspace لو وسيع وبيتلزق في الشمال لو ضيّق —
+   ومابيدفعش زرار SCRAPPY على زرار SYNCHRONIZE في النص. */
+.topbar .wallet { flex: 0 1 auto; justify-content: flex-start; gap: 22px; margin: 0; min-width: 0; }
+.stat {
+  display: flex; align-items: center; gap: 8px;
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-weight: 800; font-size: 12.5px; letter-spacing: .3px; color: #fff;
+  cursor: help;
+}
+.stat img { width: 17px; height: 17px; object-fit: contain; }
+.stat .fallback { width: 12px; height: 12px; border-radius: 50%; background: currentColor; opacity: .8; }
+.stat.coins { color: #fff; }
+.stat.cred { color: #60a5fa; }
+.stat.tokens { color: #eab14c; }
+.stat b { color: inherit; font-weight: 800; }
+
+.level-ring { position: relative; width: 48px; height: 48px; display: grid; place-items: center; cursor: help; margin-left: 2px; }
+.level-ring svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+.level-ring .track { stroke: rgba(255,255,255,.07); }
+.level-ring .fill { stroke: #eab308; stroke-linecap: round; filter: drop-shadow(0 0 8px rgba(234,179,8,.5)); transition: stroke-dashoffset .9s ease; }
+.level-ring span { position: relative; font-size: 15px; font-weight: 900; color: #eab308; }
+
+.acc-switch { position: relative; }
+
+/* الحسابات في الهيدر: أزرار جنب بعض — ضغطة تنقّل، والنقطة حالة التوكن */
+.acc-tabs { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.acc-tab {
+  display: flex; align-items: center; gap: 7px; height: 34px; padding: 0 11px;
+  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.09);
+  border-radius: 10px; color: var(--muted); cursor: pointer; font: inherit;
+  font-size: 11px; font-weight: 800; letter-spacing: .6px;
+}
+.acc-tab:hover { color: var(--text); background: rgba(255,255,255,.06); border-color: rgba(168,85,247,.4); }
+.acc-tab b { font-size: 12px; font-weight: 800; max-width: 130px; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap; color: var(--text); }
+.acc-tab small { font-size: 7px; letter-spacing: 1.6px; color: rgba(255,255,255,.25);
+  font-weight: 800; text-transform: uppercase; }
+.acc-tab.on { background: rgba(139,92,246,.22); border-color: rgba(168,85,247,.55); color: #fff; }
+.acc-tab.on b { color: #fff; }
+.acc-tab .need-name { color: #ffcf6b; font-size: 10px; letter-spacing: 0; text-transform: none; cursor: pointer; }
+.acc-tab .need-name:hover { color: #ffe1a8; }
+.acc-tab.acc-manage { height: 38px; padding: 0 9px; }
+.tok-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.tok-dot.ok   { background: #22c55e;  box-shadow: 0 0 7px rgba(34,197,94,.75); }
+.tok-dot.warn { background: #f59e0b;  box-shadow: 0 0 7px rgba(245,158,11,.8); }
+.tok-dot.bad  { background: #ef4444;  box-shadow: 0 0 7px rgba(239,68,68,.85); }
+
+.icon-btn {
+  width: 36px; height: 36px; display: grid; place-items: center;
+  background: transparent; border: 1px solid transparent; border-radius: 11px;
+  color: var(--muted); font-size: 15px; cursor: pointer;
+}
+.icon-btn:hover { color: #fff; background: rgba(255,255,255,.06); }
+.icon-btn.armed { color: #f87171; border-color: rgba(239,68,68,.5); background: rgba(239,68,68,.12); }
+
+/* ------------------------------- صفحة الحسابات ------------------------------- */
+.accounts-page { max-width: 1400px; margin: 0 auto; padding: 18px 20px 60px; display: flex; flex-direction: column; gap: 16px; }
+.acct-card {
+  background: linear-gradient(180deg, rgba(18,18,25,.96), rgba(10,10,14,.96));
+  border: 1px solid rgba(255,255,255,.07); border-radius: 20px; padding: 24px 28px 26px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.35);
+}
+.acct-card h1 { margin: 0; font-size: 27px; font-weight: 900; letter-spacing: -.8px; color: #fff; }
+.acct-card > h1 { margin-bottom: 34px; }
+.acct-form { display: grid; grid-template-columns: 1.5fr 1fr auto; gap: 18px; align-items: end; }
+.field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.field label { font-size: 11px; font-weight: 800; letter-spacing: 1.6px; text-transform: uppercase; color: rgba(255,255,255,.45); display: flex; align-items: center; gap: 8px; }
+.field .req { font-size: 8px; padding: 2px 6px; border: 1px solid rgba(255,255,255,.16); border-radius: 5px; letter-spacing: 1.2px; color: rgba(255,255,255,.55); }
+.field input {
+  height: 46px; width: 100%; padding: 0 14px; color: var(--text);
+  background: rgba(8,8,12,.9); border: 1px solid rgba(255,255,255,.09); border-radius: 12px;
+  font: inherit; font-size: 13px; outline: none;
+}
+.field input:focus { border-color: rgba(168,85,247,.55); box-shadow: 0 0 0 3px rgba(139,92,246,.12); }
+.input-wrap { position: relative; }
+.input-wrap input { padding-left: 40px; font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; }
+.input-wrap .key-ico { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: rgba(255,255,255,.35); }
+.input-wrap .key-ico svg { width: 16px; height: 16px; }
+.btn-primary {
+  height: 46px; padding: 0 30px; display: inline-flex; align-items: center; gap: 8px;
+  border: 0; border-radius: 12px; cursor: pointer; font: inherit; font-size: 14px; font-weight: 800;
+  color: #fff; background: linear-gradient(180deg, #8b5cf6, #7c3aed);
+  box-shadow: 0 12px 30px rgba(124,58,237,.35); transition: transform .12s ease, filter .12s ease;
+}
+.btn-primary:hover { transform: translateY(-1px); filter: brightness(1.07); }
+.btn-primary[disabled] { opacity: .55; cursor: progress; transform: none; }
+.btn-primary .plus { font-size: 17px; line-height: 1; }
+.btn-outline {
+  height: 38px; padding: 0 16px; display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(139,92,246,.06); border: 1px solid rgba(168,85,247,.35); border-radius: 11px;
+  color: #c4b5fd; font: inherit; font-size: 10.5px; font-weight: 800; letter-spacing: 1.4px; cursor: pointer;
+}
+.btn-outline:hover { background: rgba(139,92,246,.14); color: #fff; }
+.sync-promo {
+  margin-top: 20px; display: flex; align-items: center; gap: 16px;
+  padding: 14px 18px; border-radius: 14px;
+  background: rgba(255,255,255,.022); border: 1px solid rgba(255,255,255,.07);
+}
+.sync-promo .promo-ico { width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center; color: #c084fc; background: rgba(168,85,247,.1); border: 1px solid rgba(168,85,247,.28); }
+.sync-promo .promo-ico svg { width: 22px; height: 22px; }
+.sync-promo .promo-text { flex: 1; min-width: 0; }
+.sync-promo h3 { margin: 0 0 3px; font-size: 13.5px; font-weight: 900; color: #fff; letter-spacing: .2px; }
+.sync-promo p { margin: 0; font-size: 11.5px; color: var(--muted); }
+
+/* سطر تحميل CMSync — بيظهر في كارت الوكيل وفي لوحة CONNECTION بنفس التنسيق */
+.promo-dl { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 8px !important; }
+.promo-dl.in-panel { padding-top: 9px; border-top: 1px solid rgba(255,255,255,.06); }
+.dl-link {
+  font-size: 11.5px; font-weight: 800; color: #c084fc; text-decoration: none;
+  padding: 4px 10px; border-radius: 9px;
+  background: rgba(168,85,247,.09); border: 1px solid rgba(168,85,247,.3);
+}
+.dl-link:hover { background: rgba(168,85,247,.18); color: #fff; }
+.dl-meta { font-size: 10.5px; color: rgba(255,255,255,.42); font-family: ui-monospace, Consolas, monospace; }
+.dl-copy { font-size: 10.5px; }
+
+.acct-list-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 6px; }
+.capacity { text-align: right; display: flex; flex-direction: column; gap: 3px; }
+.cap-label { font-size: 8.5px; letter-spacing: 1.8px; font-weight: 800; color: rgba(255,255,255,.35); }
+.cap-value { font-family: ui-monospace, Consolas, monospace; font-size: 17px; font-weight: 900; color: #a78bfa; }
+.cap-value.full { color: #f87171; }
+
+.acct-rows { margin-top: 10px; display: flex; flex-direction: column; }
+.acct-row {
+  display: flex; align-items: center; gap: 16px; padding: 16px 4px;
+  border-top: 1px solid rgba(255,255,255,.055);
+}
+.acct-row:first-child { border-top: 0; }
+.acct-row.expired .acct-name { color: #f87171; }
+.acct-row .plat-icon {
+  width: 52px; height: 52px; border-radius: 15px; display: grid; place-items: center;
+  background: #111622; border: 1px solid rgba(102,192,244,.3); color: #66c0f4; flex: none;
+  box-shadow: 0 0 16px rgba(102,192,244,.12);
+}
+.acct-row .plat-icon svg { width: 26px; height: 26px; }
+.acct-row .plat-icon.epic { background: #1a150b; border-color: rgba(245,158,11,.3); color: #f59e0b; box-shadow: 0 0 16px rgba(245,158,11,.1); }
+.acct-row .plat-icon.xbox { background: #08160e; border-color: rgba(34,197,94,.3); color: #22c55e; box-shadow: 0 0 16px rgba(34,197,94,.1); }
+.acct-row .plat-icon.manual { background: #150f21; border-color: rgba(168,85,247,.3); color: #c084fc; box-shadow: 0 0 16px rgba(168,85,247,.12); }
+.acct-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 7px; }
+.acct-title { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.acct-name { font-size: 19px; font-weight: 900; letter-spacing: -.4px; color: #fff; }
+.badge { font-size: 8.5px; font-weight: 800; letter-spacing: 1.2px; padding: 3px 8px; border-radius: 999px; border: 1px solid transparent; text-transform: uppercase; }
+.badge.steam { color: #7dd3fc; background: rgba(56,189,248,.08); border-color: rgba(56,189,248,.3); }
+.badge.epic { color: #fbbf24; background: rgba(245,158,11,.08); border-color: rgba(245,158,11,.3); }
+.badge.xbox { color: #4ade80; background: rgba(34,197,94,.08); border-color: rgba(34,197,94,.3); }
+.badge.manual { color: #d8b4fe; background: rgba(168,85,247,.08); border-color: rgba(168,85,247,.3); }
+.badge.active { color: #34d399; background: rgba(16,185,129,.1); border-color: rgba(16,185,129,.35); display: inline-flex; align-items: center; gap: 5px; }
+.badge.active::before { content: "●"; font-size: 7px; }
+.badge.restricted { color: #fecaca; background: rgba(239,68,68,.12); border-color: rgba(239,68,68,.4); }
+.acct-meta { display: flex; align-items: center; gap: 26px; font-size: 10.5px; color: rgba(255,255,255,.4); font-family: ui-monospace, Consolas, monospace; flex-wrap: wrap; }
+.acct-meta span { display: inline-flex; align-items: center; gap: 6px; }
+.acct-meta .ico { opacity: .65; }
+.acct-meta .exp { color: #f87171; font-weight: 700; }
+.acct-actions { display: flex; align-items: center; gap: 4px; flex: none; }
+.acct-actions .select-btn {
+  display: inline-flex; align-items: center; gap: 7px; height: 38px; padding: 0 16px; margin-right: 6px;
+  background: rgba(139,92,246,.04); border: 1px solid rgba(168,85,247,.3); border-radius: 11px;
+  color: #c4b5fd; font: inherit; font-size: 11px; font-weight: 900; letter-spacing: 1.4px; cursor: pointer;
+}
+.acct-actions .select-btn:hover { background: rgba(139,92,246,.16); color: #fff; }
+.acct-actions .icon-btn { width: 38px; height: 38px; }
+.acct-actions .icon-btn.danger:hover { color: #fca5a5; background: rgba(239,68,68,.12); }
+.acct-actions .icon-btn.copied { color: #34d399; background: rgba(16,185,129,.12); }
+.acct-actions .icon-btn.spinning svg { animation: acct-spin .9s linear infinite; }
+@keyframes acct-spin { to { transform: rotate(360deg); } }
+.acct-empty { padding: 40px 10px; text-align: center; color: var(--muted); font-size: 12px; }
+.form-note { margin-top: 10px; font-size: 11px; color: var(--muted); min-height: 14px; }
+.form-note.bad { color: #fca5a5; }
+.form-note.ok { color: #86efac; }
+.check-row {
+  display: flex; align-items: center; gap: 9px; margin-top: 12px;
+  font-size: 11.5px; color: var(--muted); cursor: pointer; user-select: none;
+}
+.check-row input { width: 15px; height: 15px; accent-color: #8b5cf6; cursor: pointer; }
+.copy-input {
+  width: 100%; margin-top: 10px; padding: 10px 12px; color: #cbd5e1;
+  background: #0a0a10; border: 1px solid rgba(168,85,247,.35); border-radius: 10px;
+  font-family: ui-monospace, Consolas, monospace; font-size: 10px; outline: none;
+}
+
+@media (max-width: 1180px) {
+  .topbar .wallet { display: none; }
+  .acct-form { grid-template-columns: 1fr; }
+  .acct-actions { flex-wrap: wrap; justify-content: flex-end; }
+}

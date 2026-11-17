@@ -1,0 +1,3806 @@
+{
+ "version": 1,
+ "built_at": 1793395275,
+ "source": "api.rampart.su/crafts/offers (type: crafting) — مسحب من المتصفح، والتنفيذ على بوابة Embark الرسمية",
+ "accept_path": "/v1/pioneer/offers/accept",
+ "stats": {
+  "offers_total": 317,
+  "recipes_total": 166,
+  "mapped": 158,
+  "unmapped": 8,
+  "cost_mismatch": 10
+ },
+ "benches": [
+  {
+   "bench_key": "workbench",
+   "display_name": "Workbench",
+   "max_level": 1,
+   "image_filename": "b1636847-1f53-4451-bc04-c3cdd225fb7e.webp",
+   "count": 23
+  },
+  {
+   "bench_key": "weapon_bench",
+   "display_name": "Gunsmith",
+   "max_level": 3,
+   "image_filename": "80d7d510-f11b-4ea9-8d09-94528bb0688a.webp",
+   "count": 61
+  },
+  {
+   "bench_key": "equipment_bench",
+   "display_name": "Gear Bench",
+   "max_level": 3,
+   "image_filename": "74155a03-4977-4a6b-9ec6-426c6eccae2b.webp",
+   "count": 18
+  },
+  {
+   "bench_key": "med_station",
+   "display_name": "Medical Lab",
+   "max_level": 3,
+   "image_filename": "0202165d-2fb6-4831-8067-0d0a3a5e836c.webp",
+   "count": 10
+  },
+  {
+   "bench_key": "explosives_bench",
+   "display_name": "Explosives Station",
+   "max_level": 3,
+   "image_filename": "19286bca-cf17-4fd2-98a3-f9e14e0e4d23.webp",
+   "count": 19
+  },
+  {
+   "bench_key": "utility_bench",
+   "display_name": "Utility Lab",
+   "max_level": 3,
+   "image_filename": "58481c5b-53c2-4eb4-8887-8411b033b5d6.webp",
+   "count": 22
+  },
+  {
+   "bench_key": "refiner",
+   "display_name": "Refiner",
+   "max_level": 3,
+   "image_filename": "6eb243ef-41f0-41fc-b4c0-60d7b1ef5837.webp",
+   "count": 17
+  },
+  {
+   "bench_key": "research_station",
+   "display_name": "Research Station",
+   "max_level": 3,
+   "image_filename": "efb9c32b-f48c-5f44-bf4a-ad6e84235906.webp",
+   "count": 83
+  },
+  {
+   "bench_key": "design_station",
+   "display_name": "Design Station",
+   "max_level": 1,
+   "image_filename": "24bb59a5-22f8-5656-96d9-e7d4a02a5124.webp",
+   "count": 50
+  },
+  {
+   "bench_key": "cosmetics_station",
+   "display_name": "Cosmetics Station",
+   "max_level": 1,
+   "image_filename": "ee7afb3a-0d25-5f59-873c-95b5c4c2acc3.webp",
+   "count": 14
+  }
+ ],
+ "unmapped_recipes": [
+  "Agave Juice",
+  "Bantam I",
+  "Flame Spray",
+  "Fruit Mix",
+  "Noisemaker",
+  "Rascal I",
+  "Shaker",
+  "Stiletto I"
+ ],
+ "recipes": {
+  "adrenaline_shot": {
+   "offer_id": 357023568,
+   "bench_key": "med_station",
+   "bench_name": "Med Station",
+   "station_level": 1,
+   "reward_asset_id": "923438116",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "amount": 3
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "advanced_camera": {
+   "offer_id": 749327810,
+   "bench_key": "utility_bench",
+   "bench_name": "Utility Bench",
+   "station_level": 1,
+   "reward_asset_id": "-1153261528",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "285336333",
+     "name": "Camera Lens",
+     "amount": 1
+    },
+    {
+     "asset_id": "-315100731",
+     "name": "Calculator",
+     "amount": 1
+    },
+    {
+     "asset_id": "-923201933",
+     "name": "Electrical Components",
+     "amount": 1
+    }
+   ],
+   "cost_match": false,
+   "matched_by": "name"
+  },
+  "advanced_electrical_components": {
+   "offer_id": 125489012,
+   "bench_key": "refiner",
+   "bench_name": "Refiner",
+   "station_level": 2,
+   "reward_asset_id": "-770265029",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "amount": 3
+    },
+    {
+     "asset_id": "-923201933",
+     "name": "Electrical Components",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "advanced_mechanical_components": {
+   "offer_id": 827345628,
+   "bench_key": "refiner",
+   "bench_name": "Refiner",
+   "station_level": 2,
+   "reward_asset_id": "-926389249",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1517601046",
+     "name": "Steel Spring",
+     "amount": 2
+    },
+    {
+     "asset_id": "1959573223",
+     "name": "Mechanical Components",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "angled_grip_i": {
+   "offer_id": 251371933,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 1,
+   "reward_asset_id": "346923872",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "amount": 6
+    },
+    {
+     "asset_id": "1224404530",
+     "name": "Duct Tape",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "angled_grip_ii": {
+   "offer_id": 252598785,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 2,
+   "reward_asset_id": "-1681246336",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1959573223",
+     "name": "Mechanical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "1224404530",
+     "name": "Duct Tape",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "angled_grip_iii": {
+   "offer_id": 859441825,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "-1131982378",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "464233263",
+     "name": "Mod Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "1224404530",
+     "name": "Duct Tape",
+     "amount": 5
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "antiseptic": {
+   "offer_id": 419487283,
+   "bench_key": "refiner",
+   "bench_name": "Refiner",
+   "station_level": 2,
+   "reward_asset_id": "1332241414",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "amount": 10
+    },
+    {
+     "asset_id": "-631032368",
+     "name": "Great Mullein",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "anvil_i": {
+   "offer_id": 439923301,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 1,
+   "reward_asset_id": "1951118983",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-926389249",
+     "name": "Advanced Mechanical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-1903407680",
+     "name": "Heavy Gun Parts",
+     "amount": 3
+    },
+    {
+     "asset_id": "-605737193",
+     "name": "Hand Drill",
+     "amount": 3
+    }
+   ],
+   "cost_match": false,
+   "matched_by": "asset_id"
+  },
+  "aphelion": {
+   "offer_id": 508644954,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "-1483497543",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "717605649",
+     "name": "Magnetic Accelerator",
+     "amount": 3
+    },
+    {
+     "asset_id": "1608603820",
+     "name": "Complex Gun Parts",
+     "amount": 3
+    },
+    {
+     "asset_id": "-752661468",
+     "name": "Matriarch Reactor",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "arc_circuitry": {
+   "offer_id": 404040469,
+   "bench_key": "refiner",
+   "bench_name": "Refiner",
+   "station_level": 2,
+   "reward_asset_id": "1107192907",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1370841463",
+     "name": "ARC Alloy",
+     "amount": 8
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "arc_motion_core": {
+   "offer_id": 752648748,
+   "bench_key": "refiner",
+   "bench_name": "Refiner",
+   "station_level": 2,
+   "reward_asset_id": "-900569094",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1370841463",
+     "name": "ARC Alloy",
+     "amount": 8
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "arpeggio_i": {
+   "offer_id": 760238027,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 2,
+   "reward_asset_id": "-1174500500",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1959573223",
+     "name": "Mechanical Components",
+     "amount": 6
+    },
+    {
+     "asset_id": "-574262619",
+     "name": "Simple Gun Parts",
+     "amount": 6
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "bandage": {
+   "offer_id": 553406758,
+   "bench_key": "med_station",
+   "bench_name": "Med Station",
+   "station_level": 1,
+   "reward_asset_id": "583877119",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "amount": 5
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "banjo": {
+   "offer_id": 278209199,
+   "bench_key": "workbench",
+   "bench_name": "Workbench",
+   "station_level": 1,
+   "reward_asset_id": "-1222702989",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "amount": 6
+    },
+    {
+     "asset_id": "-1872918924",
+     "name": "Steel Cable",
+     "amount": 1
+    }
+   ],
+   "cost_match": false,
+   "matched_by": "name"
+  },
+  "barricade_kit": {
+   "offer_id": 900921939,
+   "bench_key": "utility_bench",
+   "bench_name": "Utility Bench",
+   "station_level": 2,
+   "reward_asset_id": "1671732587",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1959573223",
+     "name": "Mechanical Components",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "basic_camera": {
+   "offer_id": 330763310,
+   "bench_key": "workbench",
+   "bench_name": "Workbench",
+   "station_level": 1,
+   "reward_asset_id": "1278703202",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "amount": 8
+    },
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "name"
+  },
+  "bettina_i": {
+   "offer_id": 285324908,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "-1236612582",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-926389249",
+     "name": "Advanced Mechanical Components",
+     "amount": 3
+    },
+    {
+     "asset_id": "-1903407680",
+     "name": "Heavy Gun Parts",
+     "amount": 3
+    },
+    {
+     "asset_id": "-668588724",
+     "name": "Canister",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "binoculars": {
+   "offer_id": 423598779,
+   "bench_key": "utility_bench",
+   "bench_name": "Utility Bench",
+   "station_level": 1,
+   "reward_asset_id": "762762439",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "amount": 8
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "amount": 4
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "blaze_grenade": {
+   "offer_id": 676003367,
+   "bench_key": "explosives_bench",
+   "bench_name": "Explosives Bench",
+   "station_level": 3,
+   "reward_asset_id": "697558734",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1004246812",
+     "name": "Explosive Compound",
+     "amount": 1
+    },
+    {
+     "asset_id": "1741060583",
+     "name": "Oil",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "blaze_grenade_trap": {
+   "offer_id": 696008338,
+   "bench_key": "workbench",
+   "bench_name": "Workbench",
+   "station_level": 1,
+   "reward_asset_id": "-1996442482",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "amount": 1
+    },
+    {
+     "asset_id": "697558734",
+     "name": "Blaze Grenade",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "blue_light_stick": {
+   "offer_id": 366195391,
+   "bench_key": "utility_bench",
+   "bench_name": "Utility Bench",
+   "station_level": 1,
+   "reward_asset_id": "-1411069838",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "bobcat_i": {
+   "offer_id": 288551727,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "637354931",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "717605649",
+     "name": "Magnetic Accelerator",
+     "amount": 1
+    },
+    {
+     "asset_id": "-1385889770",
+     "name": "Light Gun Parts",
+     "amount": 3
+    },
+    {
+     "asset_id": "-1177716644",
+     "name": "Exodus Modules",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "burletta_i": {
+   "offer_id": 487742061,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 1,
+   "reward_asset_id": "-1921925959",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1959573223",
+     "name": "Mechanical Components",
+     "amount": 3
+    },
+    {
+     "asset_id": "-574262619",
+     "name": "Simple Gun Parts",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "canto_i": {
+   "offer_id": 214524450,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "-764908128",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-926389249",
+     "name": "Advanced Mechanical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-637598838",
+     "name": "Medium Gun Parts",
+     "amount": 3
+    },
+    {
+     "asset_id": "-863904193",
+     "name": "Magnet",
+     "amount": 5
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "combat_mk1": {
+   "offer_id": 572691777,
+   "bench_key": "equipment_bench",
+   "bench_name": "Equipment Bench",
+   "station_level": 1,
+   "reward_asset_id": "50992628",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "amount": 6
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "amount": 6
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "combat_mk2": {
+   "offer_id": 826551705,
+   "bench_key": "equipment_bench",
+   "bench_name": "Equipment Bench",
+   "station_level": 2,
+   "reward_asset_id": "-1489261627",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-923201933",
+     "name": "Electrical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-863904193",
+     "name": "Magnet",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "combat_mk3_aggressive": {
+   "offer_id": 499477019,
+   "bench_key": "equipment_bench",
+   "bench_name": "Equipment Bench",
+   "station_level": 3,
+   "reward_asset_id": "-468025815",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-770265029",
+     "name": "Advanced Electrical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "303320919",
+     "name": "Processor",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "combat_mk3_flanking": {
+   "offer_id": 918174031,
+   "bench_key": "equipment_bench",
+   "bench_name": "Equipment Bench",
+   "station_level": 3,
+   "reward_asset_id": "-1068447725",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-770265029",
+     "name": "Advanced Electrical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "303320919",
+     "name": "Processor",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "name"
+  },
+  "compensator_i": {
+   "offer_id": 383712058,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 1,
+   "reward_asset_id": "-1888542545",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "amount": 6
+    },
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "compensator_ii": {
+   "offer_id": 109322846,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 2,
+   "reward_asset_id": "-1072384644",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1959573223",
+     "name": "Mechanical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "amount": 4
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "compensator_iii": {
+   "offer_id": 872454825,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "-518509289",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "464233263",
+     "name": "Mod Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "amount": 8
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "complex_gun_parts": {
+   "offer_id": 895861595,
+   "bench_key": "refiner",
+   "bench_name": "Refiner",
+   "station_level": 3,
+   "reward_asset_id": "1608603820",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1385889770",
+     "name": "Light Gun Parts",
+     "amount": 2
+    },
+    {
+     "asset_id": "-637598838",
+     "name": "Medium Gun Parts",
+     "amount": 2
+    },
+    {
+     "asset_id": "-1903407680",
+     "name": "Heavy Gun Parts",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "crash_mat": {
+   "offer_id": 867229163,
+   "bench_key": "utility_bench",
+   "bench_name": "Utility Bench",
+   "station_level": 2,
+   "reward_asset_id": "-2085450547",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-799395426",
+     "name": "Durable Cloth",
+     "amount": 1
+    },
+    {
+     "asset_id": "-923201933",
+     "name": "Electrical Components",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "name"
+  },
+  "crude_explosives": {
+   "offer_id": 205512341,
+   "bench_key": "refiner",
+   "bench_name": "Refiner",
+   "station_level": 1,
+   "reward_asset_id": "1625205858",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "amount": 6
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "deadline": {
+   "offer_id": 386255408,
+   "bench_key": "explosives_bench",
+   "bench_name": "Explosives Bench",
+   "station_level": 3,
+   "reward_asset_id": "409593267",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1004246812",
+     "name": "Explosive Compound",
+     "amount": 3
+    },
+    {
+     "asset_id": "1107192907",
+     "name": "ARC Circuitry",
+     "amount": 2
+    },
+    {
+     "asset_id": "-353362533",
+     "name": "Comet Igniter",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "defibrillator": {
+   "offer_id": 179205170,
+   "bench_key": "med_station",
+   "bench_name": "Med Station",
+   "station_level": 2,
+   "reward_asset_id": "-1688501435",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "amount": 9
+    },
+    {
+     "asset_id": "1146379657",
+     "name": "Moss",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "dolabra": {
+   "offer_id": 446717883,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "1249031667",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "717605649",
+     "name": "Magnetic Accelerator",
+     "amount": 3
+    },
+    {
+     "asset_id": "-1407135982",
+     "name": "Shredder Gyro",
+     "amount": 3
+    },
+    {
+     "asset_id": "1348244387",
+     "name": "Vaporizer Regulator",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "door_blocker": {
+   "offer_id": 528254777,
+   "bench_key": "utility_bench",
+   "bench_name": "Utility Bench",
+   "station_level": 1,
+   "reward_asset_id": "-699310837",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "amount": 3
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "durable_cloth": {
+   "offer_id": 212857912,
+   "bench_key": "refiner",
+   "bench_name": "Refiner",
+   "station_level": 1,
+   "reward_asset_id": "-799395426",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "amount": 14
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "electrical_components": {
+   "offer_id": 801447081,
+   "bench_key": "refiner",
+   "bench_name": "Refiner",
+   "station_level": 1,
+   "reward_asset_id": "-923201933",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "amount": 8
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "amount": 4
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "emperor_gateway_conduit": {
+   "offer_id": 950447511,
+   "bench_key": "workbench",
+   "bench_name": "Workbench",
+   "station_level": 1,
+   "reward_asset_id": "1055806817",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "708062176",
+     "name": "ARC Plated Coupler",
+     "amount": 1
+    },
+    {
+     "asset_id": "-224268867",
+     "name": "ARC Conductive Coupler",
+     "amount": 1
+    },
+    {
+     "asset_id": "-921338830",
+     "name": "ARC Insulated Coupler",
+     "amount": 1
+    }
+   ],
+   "cost_match": false,
+   "matched_by": "name"
+  },
+  "energy_clip": {
+   "offer_id": 105499630,
+   "bench_key": "workbench",
+   "bench_name": "Workbench",
+   "station_level": 1,
+   "reward_asset_id": "1619184001",
+   "reward_amount": 5,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "246081482",
+     "name": "Advanced ARC Powercell",
+     "amount": 1
+    },
+    {
+     "asset_id": "1039185396",
+     "name": "Battery",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "equalizer": {
+   "offer_id": 755570923,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "-1441495265",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "717605649",
+     "name": "Magnetic Accelerator",
+     "amount": 3
+    },
+    {
+     "asset_id": "1608603820",
+     "name": "Complex Gun Parts",
+     "amount": 3
+    },
+    {
+     "asset_id": "-876378926",
+     "name": "Queen Reactor",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "explosive_compound": {
+   "offer_id": 430657842,
+   "bench_key": "refiner",
+   "bench_name": "Refiner",
+   "station_level": 2,
+   "reward_asset_id": "1004246812",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1625205858",
+     "name": "Crude Explosives",
+     "amount": 2
+    },
+    {
+     "asset_id": "1741060583",
+     "name": "Oil",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "explosive_mine": {
+   "offer_id": 705206384,
+   "bench_key": "explosives_bench",
+   "bench_name": "Explosives Bench",
+   "station_level": 3,
+   "reward_asset_id": "1228913912",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1004246812",
+     "name": "Explosive Compound",
+     "amount": 1
+    },
+    {
+     "asset_id": "-17247411",
+     "name": "Sensors",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "extended_barrel_i": {
+   "offer_id": 160663558,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 1,
+   "reward_asset_id": "-977121851",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "amount": 6
+    },
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "name"
+  },
+  "extended_barrel_ii": {
+   "offer_id": 793165870,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 2,
+   "reward_asset_id": "-53041115",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1959573223",
+     "name": "Mechanical Components",
+     "amount": 3
+    },
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "amount": 6
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "name"
+  },
+  "extended_barrel_iii": {
+   "offer_id": 618037783,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "1407760402",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "464233263",
+     "name": "Mod Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "amount": 8
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "name"
+  },
+  "extended_light_mag_i": {
+   "offer_id": 105918225,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 1,
+   "reward_asset_id": "-283948665",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "amount": 6
+    },
+    {
+     "asset_id": "-1517601046",
+     "name": "Steel Spring",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "extended_light_mag_ii": {
+   "offer_id": 408347205,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 2,
+   "reward_asset_id": "-1666910412",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1959573223",
+     "name": "Mechanical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-1517601046",
+     "name": "Steel Spring",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "extended_light_mag_iii": {
+   "offer_id": 649334668,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "-1915685401",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "464233263",
+     "name": "Mod Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-1517601046",
+     "name": "Steel Spring",
+     "amount": 5
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "extended_medium_mag_i": {
+   "offer_id": 197547739,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 1,
+   "reward_asset_id": "-566520716",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "amount": 6
+    },
+    {
+     "asset_id": "-1517601046",
+     "name": "Steel Spring",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "extended_medium_mag_ii": {
+   "offer_id": 827489045,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 2,
+   "reward_asset_id": "-728135783",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1959573223",
+     "name": "Mechanical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-1517601046",
+     "name": "Steel Spring",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "extended_medium_mag_iii": {
+   "offer_id": 510241667,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "1670090314",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "464233263",
+     "name": "Mod Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-1517601046",
+     "name": "Steel Spring",
+     "amount": 5
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "extended_shotgun_mag_i": {
+   "offer_id": 858657585,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 1,
+   "reward_asset_id": "-814658911",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "amount": 6
+    },
+    {
+     "asset_id": "-1517601046",
+     "name": "Steel Spring",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "extended_shotgun_mag_ii": {
+   "offer_id": 218950778,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 2,
+   "reward_asset_id": "592639485",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1959573223",
+     "name": "Mechanical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-1517601046",
+     "name": "Steel Spring",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "extended_shotgun_mag_iii": {
+   "offer_id": 928608493,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "922097959",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "464233263",
+     "name": "Mod Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-1517601046",
+     "name": "Steel Spring",
+     "amount": 5
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "ferro_i": {
+   "offer_id": 115921337,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 1,
+   "reward_asset_id": "-1300343709",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "amount": 5
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "firecracker": {
+   "offer_id": 324011803,
+   "bench_key": "utility_bench",
+   "bench_name": "Utility Bench",
+   "station_level": 1,
+   "reward_asset_id": "-823752633",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "amount": 4
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "fireworks_box": {
+   "offer_id": 186995443,
+   "bench_key": "explosives_bench",
+   "bench_name": "Explosives Bench",
+   "station_level": 2,
+   "reward_asset_id": "-1616698820",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1004246812",
+     "name": "Explosive Compound",
+     "amount": 1
+    },
+    {
+     "asset_id": "1041760181",
+     "name": "Pop Trigger",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "gas_grenade": {
+   "offer_id": 125407891,
+   "bench_key": "explosives_bench",
+   "bench_name": "Explosives Bench",
+   "station_level": 1,
+   "reward_asset_id": "866643291",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "amount": 4
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "gas_grenade_trap": {
+   "offer_id": 179661186,
+   "bench_key": "workbench",
+   "bench_name": "Workbench",
+   "station_level": 1,
+   "reward_asset_id": "-871523219",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "amount": 1
+    },
+    {
+     "asset_id": "866643291",
+     "name": "Gas Grenade",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "gas_mine": {
+   "offer_id": 691954491,
+   "bench_key": "explosives_bench",
+   "bench_name": "Explosives Bench",
+   "station_level": 1,
+   "reward_asset_id": "458133629",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "amount": 4
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "grappling_hook": {
+   "offer_id": 771513758,
+   "bench_key": "utility_bench",
+   "bench_name": "Utility Bench",
+   "station_level": 1,
+   "reward_asset_id": "-590183530",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1959573223",
+     "name": "Mechanical Components",
+     "amount": 1
+    },
+    {
+     "asset_id": "130254116",
+     "name": "Rope",
+     "amount": 2
+    },
+    {
+     "asset_id": "1018894577",
+     "name": "Cable Stripper",
+     "amount": 1
+    }
+   ],
+   "cost_match": false,
+   "matched_by": "name"
+  },
+  "green_light_stick": {
+   "offer_id": 241399871,
+   "bench_key": "utility_bench",
+   "bench_name": "Utility Bench",
+   "station_level": 1,
+   "reward_asset_id": "-1318412075",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "hairpin_i": {
+   "offer_id": 271605183,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 1,
+   "reward_asset_id": "-1119818372",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "amount": 2
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "amount": 5
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "heavy_ammo": {
+   "offer_id": 853649227,
+   "bench_key": "workbench",
+   "bench_name": "Workbench",
+   "station_level": 1,
+   "reward_asset_id": "-1402742438",
+   "reward_amount": 10,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "amount": 3
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "heavy_fuze_grenade": {
+   "offer_id": 220481300,
+   "bench_key": "explosives_bench",
+   "bench_name": "Explosives Bench",
+   "station_level": 3,
+   "reward_asset_id": "787027311",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1004246812",
+     "name": "Explosive Compound",
+     "amount": 1
+    },
+    {
+     "asset_id": "-668588724",
+     "name": "Canister",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "heavy_gun_parts": {
+   "offer_id": 974350431,
+   "bench_key": "refiner",
+   "bench_name": "Refiner",
+   "station_level": 2,
+   "reward_asset_id": "-1903407680",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-574262619",
+     "name": "Simple Gun Parts",
+     "amount": 4
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "heavy_shield": {
+   "offer_id": 111221896,
+   "bench_key": "equipment_bench",
+   "bench_name": "Equipment Bench",
+   "station_level": 2,
+   "reward_asset_id": "203993527",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "313149189",
+     "name": "Power Rod",
+     "amount": 1
+    },
+    {
+     "asset_id": "1552920566",
+     "name": "Voltage Converter",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "herbal_bandage": {
+   "offer_id": 487574270,
+   "bench_key": "med_station",
+   "bench_name": "Med Station",
+   "station_level": 1,
+   "reward_asset_id": "1827408349",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-799395426",
+     "name": "Durable Cloth",
+     "amount": 1
+    },
+    {
+     "asset_id": "-631032368",
+     "name": "Great Mullein",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "hullcracker_i": {
+   "offer_id": 385475921,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "-1868876009",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "717605649",
+     "name": "Magnetic Accelerator",
+     "amount": 1
+    },
+    {
+     "asset_id": "-1903407680",
+     "name": "Heavy Gun Parts",
+     "amount": 3
+    },
+    {
+     "asset_id": "-1177716644",
+     "name": "Exodus Modules",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "il_toro_i": {
+   "offer_id": 891007086,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 1,
+   "reward_asset_id": "-1123417641",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1959573223",
+     "name": "Mechanical Components",
+     "amount": 5
+    },
+    {
+     "asset_id": "-574262619",
+     "name": "Simple Gun Parts",
+     "amount": 6
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "jolt_mine": {
+   "offer_id": 479957801,
+   "bench_key": "explosives_bench",
+   "bench_name": "Explosives Bench",
+   "station_level": 2,
+   "reward_asset_id": "-643273323",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-923201933",
+     "name": "Electrical Components",
+     "amount": 1
+    },
+    {
+     "asset_id": "1039185396",
+     "name": "Battery",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "jupiter": {
+   "offer_id": 436467907,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "-537173438",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "717605649",
+     "name": "Magnetic Accelerator",
+     "amount": 3
+    },
+    {
+     "asset_id": "1608603820",
+     "name": "Complex Gun Parts",
+     "amount": 3
+    },
+    {
+     "asset_id": "-876378926",
+     "name": "Queen Reactor",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "kettle_i": {
+   "offer_id": 717132349,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 1,
+   "reward_asset_id": "209734646",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "amount": 6
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "amount": 8
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "launcher_ammo": {
+   "offer_id": 868411169,
+   "bench_key": "workbench",
+   "bench_name": "Workbench",
+   "station_level": 1,
+   "reward_asset_id": "562831704",
+   "reward_amount": 6,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-900569094",
+     "name": "ARC Motion Core",
+     "amount": 1
+    },
+    {
+     "asset_id": "1625205858",
+     "name": "Crude Explosives",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "light_ammo": {
+   "offer_id": 440090251,
+   "bench_key": "workbench",
+   "bench_name": "Workbench",
+   "station_level": 1,
+   "reward_asset_id": "-1875547390",
+   "reward_amount": 25,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "amount": 3
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "light_gun_parts": {
+   "offer_id": 190337942,
+   "bench_key": "refiner",
+   "bench_name": "Refiner",
+   "station_level": 2,
+   "reward_asset_id": "-1385889770",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-574262619",
+     "name": "Simple Gun Parts",
+     "amount": 4
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "light_impact_grenade": {
+   "offer_id": 924758065,
+   "bench_key": "explosives_bench",
+   "bench_name": "Explosives Bench",
+   "station_level": 1,
+   "reward_asset_id": "877778759",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "amount": 3
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "light_shield": {
+   "offer_id": 770147100,
+   "bench_key": "equipment_bench",
+   "bench_name": "Equipment Bench",
+   "station_level": 1,
+   "reward_asset_id": "1505999062",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1370841463",
+     "name": "ARC Alloy",
+     "amount": 2
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "amount": 4
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "lightweight_stock": {
+   "offer_id": 981677890,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "-2095596285",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "464233263",
+     "name": "Mod Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "1224404530",
+     "name": "Duct Tape",
+     "amount": 5
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "lil_smoke_grenade": {
+   "offer_id": 349445162,
+   "bench_key": "utility_bench",
+   "bench_name": "Utility Bench",
+   "station_level": 1,
+   "reward_asset_id": "-1268138127",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "amount": 5
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "looting_mk1": {
+   "offer_id": 997671682,
+   "bench_key": "equipment_bench",
+   "bench_name": "Equipment Bench",
+   "station_level": 1,
+   "reward_asset_id": "1680690244",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "amount": 6
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "amount": 6
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "looting_mk2": {
+   "offer_id": 103124662,
+   "bench_key": "equipment_bench",
+   "bench_name": "Equipment Bench",
+   "station_level": 2,
+   "reward_asset_id": "-1156830089",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-923201933",
+     "name": "Electrical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-863904193",
+     "name": "Magnet",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "looting_mk3_cautious": {
+   "offer_id": 330916126,
+   "bench_key": "equipment_bench",
+   "bench_name": "Equipment Bench",
+   "station_level": 3,
+   "reward_asset_id": "433079423",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-770265029",
+     "name": "Advanced Electrical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "303320919",
+     "name": "Processor",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "looting_mk3_safekeeper": {
+   "offer_id": 756054634,
+   "bench_key": "equipment_bench",
+   "bench_name": "Equipment Bench",
+   "station_level": 3,
+   "reward_asset_id": "947411243",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-770265029",
+     "name": "Advanced Electrical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "303320919",
+     "name": "Processor",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "looting_mk3_survivor": {
+   "offer_id": 154493295,
+   "bench_key": "equipment_bench",
+   "bench_name": "Equipment Bench",
+   "station_level": 3,
+   "reward_asset_id": "303567898",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-770265029",
+     "name": "Advanced Electrical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "303320919",
+     "name": "Processor",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "lure_grenade": {
+   "offer_id": 713356011,
+   "bench_key": "utility_bench",
+   "bench_name": "Utility Bench",
+   "station_level": 2,
+   "reward_asset_id": "-486727826",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1622446317",
+     "name": "Speaker Component",
+     "amount": 1
+    },
+    {
+     "asset_id": "-923201933",
+     "name": "Electrical Components",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "lure_grenade_trap": {
+   "offer_id": 322057488,
+   "bench_key": "workbench",
+   "bench_name": "Workbench",
+   "station_level": 1,
+   "reward_asset_id": "305351814",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "amount": 1
+    },
+    {
+     "asset_id": "-486727826",
+     "name": "Lure Grenade",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "magnetic_accelerator": {
+   "offer_id": 228229415,
+   "bench_key": "refiner",
+   "bench_name": "Refiner",
+   "station_level": 3,
+   "reward_asset_id": "717605649",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-926389249",
+     "name": "Advanced Mechanical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-900569094",
+     "name": "ARC Motion Core",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "mechanical_components": {
+   "offer_id": 941908767,
+   "bench_key": "refiner",
+   "bench_name": "Refiner",
+   "station_level": 1,
+   "reward_asset_id": "1959573223",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "amount": 7
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "medium_ammo": {
+   "offer_id": 786822554,
+   "bench_key": "workbench",
+   "bench_name": "Workbench",
+   "station_level": 1,
+   "reward_asset_id": "313013500",
+   "reward_amount": 20,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "amount": 3
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "medium_gun_parts": {
+   "offer_id": 675638393,
+   "bench_key": "refiner",
+   "bench_name": "Refiner",
+   "station_level": 2,
+   "reward_asset_id": "-637598838",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-574262619",
+     "name": "Simple Gun Parts",
+     "amount": 4
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "medium_shield": {
+   "offer_id": 980227220,
+   "bench_key": "equipment_bench",
+   "bench_name": "Equipment Bench",
+   "station_level": 1,
+   "reward_asset_id": "1237209984",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1107192907",
+     "name": "ARC Circuitry",
+     "amount": 1
+    },
+    {
+     "asset_id": "1039185396",
+     "name": "Battery",
+     "amount": 4
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "mod_components": {
+   "offer_id": 224700047,
+   "bench_key": "refiner",
+   "bench_name": "Refiner",
+   "station_level": 2,
+   "reward_asset_id": "464233263",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1517601046",
+     "name": "Steel Spring",
+     "amount": 2
+    },
+    {
+     "asset_id": "1959573223",
+     "name": "Mechanical Components",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "mountaineers_detector": {
+   "offer_id": 473837814,
+   "bench_key": "workbench",
+   "bench_name": "Workbench",
+   "station_level": 1,
+   "reward_asset_id": "-497440258",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-315100731",
+     "name": "Calculator",
+     "amount": 2
+    },
+    {
+     "asset_id": "-863904193",
+     "name": "Magnet",
+     "amount": 3
+    },
+    {
+     "asset_id": "-28450091",
+     "name": "Dockmaster's Detector",
+     "amount": 1
+    }
+   ],
+   "cost_match": false,
+   "matched_by": "name"
+  },
+  "muzzle_brake_i": {
+   "offer_id": 869730115,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 1,
+   "reward_asset_id": "-450689218",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "amount": 6
+    },
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "muzzle_brake_ii": {
+   "offer_id": 925366279,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 2,
+   "reward_asset_id": "1363078343",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1959573223",
+     "name": "Mechanical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "amount": 4
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "muzzle_brake_iii": {
+   "offer_id": 120637301,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "-1113070540",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "464233263",
+     "name": "Mod Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "amount": 8
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "osprey_i": {
+   "offer_id": 550230011,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 2,
+   "reward_asset_id": "-1435588212",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-926389249",
+     "name": "Advanced Mechanical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-637598838",
+     "name": "Medium Gun Parts",
+     "amount": 3
+    },
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "amount": 7
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "padded_stock": {
+   "offer_id": 918410844,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "1682428740",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "464233263",
+     "name": "Mod Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "1224404530",
+     "name": "Duct Tape",
+     "amount": 5
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "photoelectric_cloak": {
+   "offer_id": 626288279,
+   "bench_key": "utility_bench",
+   "bench_name": "Utility Bench",
+   "station_level": 3,
+   "reward_asset_id": "2058762606",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-770265029",
+     "name": "Advanced Electrical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-1622446317",
+     "name": "Speaker Component",
+     "amount": 4
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "power_rod": {
+   "offer_id": 846428755,
+   "bench_key": "refiner",
+   "bench_name": "Refiner",
+   "station_level": 3,
+   "reward_asset_id": "313149189",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-770265029",
+     "name": "Advanced Electrical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "1107192907",
+     "name": "ARC Circuitry",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "powered_descender": {
+   "offer_id": 733545324,
+   "bench_key": "utility_bench",
+   "bench_name": "Utility Bench",
+   "station_level": 3,
+   "reward_asset_id": "-287542830",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "313149189",
+     "name": "Power Rod",
+     "amount": 1
+    },
+    {
+     "asset_id": "1015139423",
+     "name": "Turbine Compressor",
+     "amount": 1
+    }
+   ],
+   "cost_match": false,
+   "matched_by": "name"
+  },
+  "pulse_mine": {
+   "offer_id": 175141867,
+   "bench_key": "explosives_bench",
+   "bench_name": "Explosives Bench",
+   "station_level": 1,
+   "reward_asset_id": "-100594742",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1625205858",
+     "name": "Crude Explosives",
+     "amount": 1
+    },
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "raider_hatch_key": {
+   "offer_id": 277134197,
+   "bench_key": "utility_bench",
+   "bench_name": "Utility Bench",
+   "station_level": 2,
+   "reward_asset_id": "-902952774",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-770265029",
+     "name": "Advanced Electrical Components",
+     "amount": 1
+    },
+    {
+     "asset_id": "-17247411",
+     "name": "Sensors",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "rattler_i": {
+   "offer_id": 574941463,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 1,
+   "reward_asset_id": "549375413",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "amount": 16
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "amount": 12
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "red_light_stick": {
+   "offer_id": 782431238,
+   "bench_key": "utility_bench",
+   "bench_name": "Utility Bench",
+   "station_level": 1,
+   "reward_asset_id": "1967335777",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "remote_raider_flare": {
+   "offer_id": 292476409,
+   "bench_key": "utility_bench",
+   "bench_name": "Utility Bench",
+   "station_level": 1,
+   "reward_asset_id": "1117029558",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "amount": 2
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "amount": 4
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "renegade_i": {
+   "offer_id": 947959988,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "1443595066",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-926389249",
+     "name": "Advanced Mechanical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-637598838",
+     "name": "Medium Gun Parts",
+     "amount": 3
+    },
+    {
+     "asset_id": "1741060583",
+     "name": "Oil",
+     "amount": 5
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "seeker_grenade": {
+   "offer_id": 563604490,
+   "bench_key": "explosives_bench",
+   "bench_name": "Explosives Bench",
+   "station_level": 1,
+   "reward_asset_id": "-922322200",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1625205858",
+     "name": "Crude Explosives",
+     "amount": 1
+    },
+    {
+     "asset_id": "1370841463",
+     "name": "ARC Alloy",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "shield_recharger": {
+   "offer_id": 438373696,
+   "bench_key": "med_station",
+   "bench_name": "Med Station",
+   "station_level": 1,
+   "reward_asset_id": "-34507507",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "amount": 5
+    },
+    {
+     "asset_id": "-1447314005",
+     "name": "ARC Powercell",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "shotgun_ammo": {
+   "offer_id": 510305320,
+   "bench_key": "workbench",
+   "bench_name": "Workbench",
+   "station_level": 1,
+   "reward_asset_id": "-1873522360",
+   "reward_amount": 5,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "amount": 3
+    },
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "shotgun_choke_i": {
+   "offer_id": 202745414,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 1,
+   "reward_asset_id": "-1570319542",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "amount": 6
+    },
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "shotgun_choke_ii": {
+   "offer_id": 593847053,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 2,
+   "reward_asset_id": "-1682300422",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1959573223",
+     "name": "Mechanical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "amount": 4
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "shotgun_choke_iii": {
+   "offer_id": 953096649,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "-1295139142",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "464233263",
+     "name": "Mod Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "amount": 8
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "shotgun_silencer": {
+   "offer_id": 263622906,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "-319966965",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "464233263",
+     "name": "Mod Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "amount": 8
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "showstopper": {
+   "offer_id": 845083013,
+   "bench_key": "explosives_bench",
+   "bench_name": "Explosives Bench",
+   "station_level": 3,
+   "reward_asset_id": "-2035840261",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-923201933",
+     "name": "Electrical Components",
+     "amount": 1
+    },
+    {
+     "asset_id": "1552920566",
+     "name": "Voltage Converter",
+     "amount": 1
+    },
+    {
+     "asset_id": "1004483718",
+     "name": "Hornet Driver",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "shrapnel_grenade": {
+   "offer_id": 449936622,
+   "bench_key": "explosives_bench",
+   "bench_name": "Explosives Bench",
+   "station_level": 2,
+   "reward_asset_id": "2121538320",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1625205858",
+     "name": "Crude Explosives",
+     "amount": 1
+    },
+    {
+     "asset_id": "-1517601046",
+     "name": "Steel Spring",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "silencer_i": {
+   "offer_id": 771416452,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 2,
+   "reward_asset_id": "-409081322",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1959573223",
+     "name": "Mechanical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "amount": 4
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "silencer_ii": {
+   "offer_id": 303797613,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "1921518029",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "464233263",
+     "name": "Mod Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "amount": 8
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "smoke_grenade": {
+   "offer_id": 906589245,
+   "bench_key": "utility_bench",
+   "bench_name": "Utility Bench",
+   "station_level": 2,
+   "reward_asset_id": "984123027",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "amount": 14
+    },
+    {
+     "asset_id": "-668588724",
+     "name": "Canister",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "smoke_grenade_trap": {
+   "offer_id": 438396618,
+   "bench_key": "workbench",
+   "bench_name": "Workbench",
+   "station_level": 1,
+   "reward_asset_id": "1117674957",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-633851525",
+     "name": "Wires",
+     "amount": 1
+    },
+    {
+     "asset_id": "984123027",
+     "name": "Smoke Grenade",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "snap_blast_grenade": {
+   "offer_id": 872232498,
+   "bench_key": "explosives_bench",
+   "bench_name": "Explosives Bench",
+   "station_level": 2,
+   "reward_asset_id": "753263571",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1625205858",
+     "name": "Crude Explosives",
+     "amount": 2
+    },
+    {
+     "asset_id": "-863904193",
+     "name": "Magnet",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "snap_hook": {
+   "offer_id": 547216747,
+   "bench_key": "utility_bench",
+   "bench_name": "Utility Bench",
+   "station_level": 3,
+   "reward_asset_id": "-1963108876",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "313149189",
+     "name": "Power Rod",
+     "amount": 2
+    },
+    {
+     "asset_id": "-1872918924",
+     "name": "Steel Cable",
+     "amount": 2
+    },
+    {
+     "asset_id": "-1177716644",
+     "name": "Exodus Modules",
+     "amount": 1
+    }
+   ],
+   "cost_match": false,
+   "matched_by": "asset_id"
+  },
+  "stable_stock_i": {
+   "offer_id": 660104359,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 1,
+   "reward_asset_id": "775298648",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "amount": 7
+    },
+    {
+     "asset_id": "1224404530",
+     "name": "Duct Tape",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "stable_stock_ii": {
+   "offer_id": 198092754,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 2,
+   "reward_asset_id": "1287783108",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1959573223",
+     "name": "Mechanical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "1224404530",
+     "name": "Duct Tape",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "stable_stock_iii": {
+   "offer_id": 104336076,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "-123856886",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "464233263",
+     "name": "Mod Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "1224404530",
+     "name": "Duct Tape",
+     "amount": 5
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "sterilized_bandage": {
+   "offer_id": 148283433,
+   "bench_key": "med_station",
+   "bench_name": "Med Station",
+   "station_level": 2,
+   "reward_asset_id": "951468812",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1332241414",
+     "name": "Antiseptic",
+     "amount": 1
+    },
+    {
+     "asset_id": "-799395426",
+     "name": "Durable Cloth",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "stitcher_i": {
+   "offer_id": 480750278,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 1,
+   "reward_asset_id": "-302696283",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1437131902",
+     "name": "Metal Parts",
+     "amount": 8
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "amount": 4
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "surge_coil": {
+   "offer_id": 768547508,
+   "bench_key": "explosives_bench",
+   "bench_name": "Explosives Bench",
+   "station_level": 3,
+   "reward_asset_id": "-828273506",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-923201933",
+     "name": "Electrical Components",
+     "amount": 1
+    },
+    {
+     "asset_id": "-17247411",
+     "name": "Sensors",
+     "amount": 1
+    },
+    {
+     "asset_id": "1004483718",
+     "name": "Hornet Driver",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "surge_shield_recharger": {
+   "offer_id": 975083008,
+   "bench_key": "med_station",
+   "bench_name": "Med Station",
+   "station_level": 2,
+   "reward_asset_id": "-380745354",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-923201933",
+     "name": "Electrical Components",
+     "amount": 1
+    },
+    {
+     "asset_id": "246081482",
+     "name": "Advanced ARC Powercell",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "tactical_mk1": {
+   "offer_id": 981672847,
+   "bench_key": "equipment_bench",
+   "bench_name": "Equipment Bench",
+   "station_level": 1,
+   "reward_asset_id": "966773769",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "amount": 6
+    },
+    {
+     "asset_id": "-2048050889",
+     "name": "Rubber Parts",
+     "amount": 6
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "tactical_mk2": {
+   "offer_id": 920881849,
+   "bench_key": "equipment_bench",
+   "bench_name": "Equipment Bench",
+   "station_level": 2,
+   "reward_asset_id": "-1240487285",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-923201933",
+     "name": "Electrical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-863904193",
+     "name": "Magnet",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "tactical_mk3_defensive": {
+   "offer_id": 951542257,
+   "bench_key": "equipment_bench",
+   "bench_name": "Equipment Bench",
+   "station_level": 3,
+   "reward_asset_id": "1101815928",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-770265029",
+     "name": "Advanced Electrical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "303320919",
+     "name": "Processor",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "tactical_mk3_healing": {
+   "offer_id": 204581187,
+   "bench_key": "equipment_bench",
+   "bench_name": "Equipment Bench",
+   "station_level": 3,
+   "reward_asset_id": "-1561038837",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-770265029",
+     "name": "Advanced Electrical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "303320919",
+     "name": "Processor",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "tactical_mk3_revival": {
+   "offer_id": 832283070,
+   "bench_key": "equipment_bench",
+   "bench_name": "Equipment Bench",
+   "station_level": 3,
+   "reward_asset_id": "-1328695953",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-770265029",
+     "name": "Advanced Electrical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "303320919",
+     "name": "Processor",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "tactical_mk3_smoke": {
+   "offer_id": 136696823,
+   "bench_key": "equipment_bench",
+   "bench_name": "Equipment Bench",
+   "station_level": 3,
+   "reward_asset_id": "-735920468",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-770265029",
+     "name": "Advanced Electrical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "303320919",
+     "name": "Processor",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "name"
+  },
+  "tagging_grenade": {
+   "offer_id": 669585177,
+   "bench_key": "utility_bench",
+   "bench_name": "Utility Bench",
+   "station_level": 3,
+   "reward_asset_id": "537092188",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-923201933",
+     "name": "Electrical Components",
+     "amount": 1
+    },
+    {
+     "asset_id": "-17247411",
+     "name": "Sensors",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "tempest_i": {
+   "offer_id": 937391950,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "1433303640",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "717605649",
+     "name": "Magnetic Accelerator",
+     "amount": 1
+    },
+    {
+     "asset_id": "-637598838",
+     "name": "Medium Gun Parts",
+     "amount": 3
+    },
+    {
+     "asset_id": "-1177716644",
+     "name": "Exodus Modules",
+     "amount": 2
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "tether_launcher": {
+   "offer_id": 219690274,
+   "bench_key": "utility_bench",
+   "bench_name": "Utility Bench",
+   "station_level": 2,
+   "reward_asset_id": "-1776135328",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1872918924",
+     "name": "Steel Cable",
+     "amount": 2
+    },
+    {
+     "asset_id": "-770265029",
+     "name": "Advanced Electrical Components",
+     "amount": 1
+    },
+    {
+     "asset_id": "-315100731",
+     "name": "Calculator",
+     "amount": 1
+    }
+   ],
+   "cost_match": false,
+   "matched_by": "name"
+  },
+  "torrente_i": {
+   "offer_id": 937349635,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 2,
+   "reward_asset_id": "1316261334",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-926389249",
+     "name": "Advanced Mechanical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-637598838",
+     "name": "Medium Gun Parts",
+     "amount": 3
+    },
+    {
+     "asset_id": "-1517601046",
+     "name": "Steel Spring",
+     "amount": 6
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "trailblazer": {
+   "offer_id": 960123679,
+   "bench_key": "explosives_bench",
+   "bench_name": "Explosives Bench",
+   "station_level": 3,
+   "reward_asset_id": "-153748567",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1625205858",
+     "name": "Crude Explosives",
+     "amount": 2
+    },
+    {
+     "asset_id": "-503792599",
+     "name": "Synthesized Fuel",
+     "amount": 1
+    },
+    {
+     "asset_id": "1989094565",
+     "name": "Firefly Burner",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "trigger_nade": {
+   "offer_id": 275467624,
+   "bench_key": "explosives_bench",
+   "bench_name": "Explosives Bench",
+   "station_level": 2,
+   "reward_asset_id": "-853193179",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1625205858",
+     "name": "Crude Explosives",
+     "amount": 2
+    },
+    {
+     "asset_id": "303320919",
+     "name": "Processor",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "name"
+  },
+  "venator_i": {
+   "offer_id": 695086976,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 2,
+   "reward_asset_id": "1858816158",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-926389249",
+     "name": "Advanced Mechanical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "-637598838",
+     "name": "Medium Gun Parts",
+     "amount": 3
+    },
+    {
+     "asset_id": "-863904193",
+     "name": "Magnet",
+     "amount": 5
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "vertical_grip_i": {
+   "offer_id": 394713956,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 1,
+   "reward_asset_id": "-1404148784",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "amount": 6
+    },
+    {
+     "asset_id": "1224404530",
+     "name": "Duct Tape",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "vertical_grip_ii": {
+   "offer_id": 775447868,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 2,
+   "reward_asset_id": "-295158634",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1959573223",
+     "name": "Mechanical Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "1224404530",
+     "name": "Duct Tape",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "vertical_grip_iii": {
+   "offer_id": 161057150,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "-1074924798",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "464233263",
+     "name": "Mod Components",
+     "amount": 2
+    },
+    {
+     "asset_id": "1224404530",
+     "name": "Duct Tape",
+     "amount": 5
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "vita_shot": {
+   "offer_id": 403817367,
+   "bench_key": "med_station",
+   "bench_name": "Med Station",
+   "station_level": 3,
+   "reward_asset_id": "2041238290",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1332241414",
+     "name": "Antiseptic",
+     "amount": 2
+    },
+    {
+     "asset_id": "-647887968",
+     "name": "Syringe",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "vita_spray": {
+   "offer_id": 843819083,
+   "bench_key": "med_station",
+   "bench_name": "Med Station",
+   "station_level": 3,
+   "reward_asset_id": "1795670982",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1332241414",
+     "name": "Antiseptic",
+     "amount": 3
+    },
+    {
+     "asset_id": "-668588724",
+     "name": "Canister",
+     "amount": 1
+    },
+    {
+     "asset_id": "-505000565",
+     "name": "Tick Pod",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "vulcano_i": {
+   "offer_id": 676961816,
+   "bench_key": "weapon_bench",
+   "bench_name": "Weapon Bench",
+   "station_level": 3,
+   "reward_asset_id": "1123609629",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "717605649",
+     "name": "Magnetic Accelerator",
+     "amount": 1
+    },
+    {
+     "asset_id": "-1903407680",
+     "name": "Heavy Gun Parts",
+     "amount": 3
+    },
+    {
+     "asset_id": "-1177716644",
+     "name": "Exodus Modules",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "white_flag": {
+   "offer_id": 296028914,
+   "bench_key": "med_station",
+   "bench_name": "Med Station",
+   "station_level": 1,
+   "reward_asset_id": "-1708115302",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1580114534",
+     "name": "Fabric",
+     "amount": 10
+    },
+    {
+     "asset_id": "828947161",
+     "name": "Plastic Parts",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "name"
+  },
+  "wolfpack": {
+   "offer_id": 819617725,
+   "bench_key": "explosives_bench",
+   "bench_name": "Explosives Bench",
+   "station_level": 3,
+   "reward_asset_id": "-1074160440",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "1004246812",
+     "name": "Explosive Compound",
+     "amount": 1
+    },
+    {
+     "asset_id": "-900569094",
+     "name": "ARC Motion Core",
+     "amount": 2
+    },
+    {
+     "asset_id": "1352103757",
+     "name": "Rocketeer Driver",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "yank_grenade": {
+   "offer_id": 382647406,
+   "bench_key": "explosives_bench",
+   "bench_name": "Explosives Bench",
+   "station_level": 2,
+   "reward_asset_id": "739516999",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "130254116",
+     "name": "Rope",
+     "amount": 1
+    },
+    {
+     "asset_id": "1625205858",
+     "name": "Crude Explosives",
+     "amount": 1
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "name"
+  },
+  "yellow_light_stick": {
+   "offer_id": 220548231,
+   "bench_key": "utility_bench",
+   "bench_name": "Utility Bench",
+   "station_level": 1,
+   "reward_asset_id": "-237588358",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1565478080",
+     "name": "Chemicals",
+     "amount": 3
+    }
+   ],
+   "cost_match": true,
+   "matched_by": "asset_id"
+  },
+  "zipline": {
+   "offer_id": 587742282,
+   "bench_key": "utility_bench",
+   "bench_name": "Utility Bench",
+   "station_level": 2,
+   "reward_asset_id": "793992947",
+   "reward_amount": 1,
+   "limit": 0,
+   "cost": [
+    {
+     "asset_id": "-1872918924",
+     "name": "Steel Cable",
+     "amount": 1
+    },
+    {
+     "asset_id": "1959573223",
+     "name": "Mechanical Components",
+     "amount": 1
+    }
+   ],
+   "cost_match": false,
+   "matched_by": "asset_id"
+  }
+ }
+}

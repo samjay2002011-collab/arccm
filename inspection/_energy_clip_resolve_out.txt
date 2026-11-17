@@ -1,0 +1,11 @@
+norm='energy clip' core=['clip', 'energy'] family=['clip', 'energy']
+items_db.find(name)=energy_clip
+bp targets فيها؟ exact=True core=None family=None
+recipes exact=['energy_clip']
+recipes core=['energy_clip']
+recipes family=['energy_clip']
+_single(core)=['energy_clip'] _single(family)=['energy_clip']
+_resolve_target={'slug': 'energy_clip', 'gates': ['energy_clip'], 'assets': ['1619184001']}
+exact map keys فيها clip: ['energy clip']
+craftable rows فيها clip: [('energy_clip', 'Energy Clip')]
+blueprint_rows targets فيها clip: []

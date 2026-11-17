@@ -1,0 +1,538 @@
+pid: [12392, 8412] | فلتر: (الكل)
+  pid 12392: اتقرا 201 MB
+  pid 8412: اتقرا 421 MB
+
+== هوستات ==
+    *.auth.embark.net
+    *.europe.es-pio.net
+    *.europe.es-pio.net0
+    C:\Windows\SYSTEauth.embark.net
+    Host: client2pubsub.europe.es-pio.net
+    Phttps://api-gateway.europe.es-pio.net
+    Phttps://pioneer.embark.net
+    \https://d7u.es-cf.net/rules/d9d97179580f5f348ba378e0800fecd70e9c9b8e82533a269659954fb17fbd84
+    api-gateway.europe.es-pio.net
+    api-gateway.europe.es-pio.net/
+    api-gateway.europe.es-pio.net/v1/shared/anticheat/config
+    auth.embark.net
+    auth.embark.net/oauth2/token?skip_link=false
+    client2pubsub.europe.es-pio.net
+    client2pubsub.europe.es-pio.net/client2pubsub.Client2PubSub/TransferBatched
+    crashdump.europe.es-pio.net
+    d7u.es-cf.net/rules/d9d97179580f5f348ba378e0800fecd70e9c9b8e82533a269659954fb17fbd84
+    https://api-gateway.europe.es-pio.net/v1/shared/anticheat/config
+    https://auth.embark.net/oauth2/token?skip_link=false
+    https://auth.embark.net/prelude
+    https://auth.embark.net:443/oauth2/token?skip_link=false
+    https://client2pubsub.europe.es-pio.net
+    https://client2pubsub.europe.es-pio.net/client2pubsub.Client2PubSub/TransferBatched
+    https://d7u.es-cf.net/rules/d9d97179580f5f348ba378e0800fecd70e9c9b8e82533a269659954fb17fbd84
+    ient2pubsub.europe.es-pio.net/
+    l.client2pubsub.europe.es-pio.net
+    pioneer.embark.net
+    r.embark.net&
+    ubsu*.europe.es-pio.net
+
+== مسارات/أسطر فيها /v1/ أو api (287) ==
+     1x "setupapi.offline.log
+     1x %SystemRoot%\System32\Speech\SpeechUX\sapi.cpl
+     2x %SystemRoot%\system32\NLAapi.dll
+     1x %SystemRoot%\system32\rundll32.exe shell32.dll,Control_RunDLL %SystemRoot%\system32\Speech\SpeechUX\sapi.cpl
+     1x %ls\twinapi.appcore.dll
+     1x %s/IAuthenticationService/RevokeToken/v1/
+     1x -XT;aPI.
+     1x .?AVCAPIJobGetAppDependenciesBatched@@
+     1x .?AVCAPIJobUpdateInventoryItems@@
+     1x .text$lp00dnsapi.dll!20_pri7
+     1x .text$lp00iphlpapi.dll!20_pri7
+     1x .text$lp00profapi.dll!20_pri7
+     1x .text$lp00setupapi.dll!20_pri7
+     1x .text$lp00shlwapi.dll!20_pri7
+     1x .text$lp00wevtapi.dll!20_pri7
+     1x .text$lp01dnsapi.dll!20_pri7
+     1x .text$lp01dpapi.dll!20_pri7
+     1x .text$lp01gpapi.dll!20_pri7
+     1x .text$lp01iphlpapi.dll!20_pri7
+     1x .text$lp01profapi.dll!20_pri7
+     1x .text$lp01psapi.dll!20_pri7
+     1x .text$lp01setupapi.dll!20_pri7
+     1x .text$lp01shlwapi.dll!20_pri7
+     1x .text$lp01wevtapi.dll!20_pri7
+     1x .text$lp03iphlpapi.dll!30_clientonly
+     1x .text$lp03psapi.dll!30_clientonly
+     1x .text$lp03setupapi.dll!30_clientonly
+     1x .text$lp03shlwapi.dll!30_clientonly
+     1x .text$lp03wevtapi.dll!30_clientonly
+     1x .text$lp04setupapi.dll!30_clientonly
+     1x .text$lp04shlwapi.dll!30_clientonly
+     1x .text$lp04wevtapi.dll!30_clientonly
+     1x .text$lp05dpapi.dll!50_coldboot
+     1x .text$lp05psapi.dll!50_coldboot
+     1x .text$lp06dnsapi.dll!35_hybridboot
+     1x .text$lp06gpapi.dll!35_hybridboot
+     1x .text$lp06iphlpapi.dll!35_hybridboot
+     1x .text$lp06profapi.dll!35_hybridboot
+     1x .text$lp06psapi.dll!50_coldboot
+     1x .text$lp06setupapi.dll!35_hybridboot
+     1x .text$lp06shlwapi.dll!35_hybridboot
+     1x .text$lp06wevtapi.dll!35_hybridboot
+     1x .text$lp07dnsapi.dll!35_hybridboot
+     1x .text$lp07iphlpapi.dll!35_hybridboot
+     1x .text$lp08profapi.dll!50_coldboot
+     1x .text$lp09dnsapi.dll!50_coldboot
+     1x .text$lp09iphlpapi.dll!50_coldboot
+     1x .text$lp09profapi.dll!50_coldboot
+     1x .text$lp09shlwapi.dll!40_serveronly
+     1x .text$lp10gpapi.dll!40_serveronly
+     1x .text$lp11setupapi.dll!50_coldboot
+     1x .text$lp12setupapi.dll!50_coldboot
+     1x /.CInventory_GetEligiblePromoItemDefIDs_Response"
+     1x /CEcon_GetInventoryItemsWithDescriptions_Request
+     1x /Game/Pioneer/CharacterS
+     1x /Game/Pioneer/CharacterSkills/October/DA
+     1x /Game/Pioneer/CharacterSkills/TT2/DA_CharacterSkill_CriticalHealthStaminaRegeneereerm_CactusPot_/Game/Pioneer/CharacterSkills/TT2/DA_CharacterSkill_Cr
+     1x /Game/Pioneer/It
+     1x /Game/Pioneer/ItV
+     1x /Game/Pioneer/ItW
+     1x /Game/Pioneer/ItX
+     1x /Game/Pioneer/Items/CharP
+     1x /Game/Pioneer/Items/Characters/S
+     1x /Game/Pioneer/Items/Characters/Skins/Fac
+     1x /Game/Pioneer/Items/Characters/Skins/FacialHair/Stubble/DA_OI_FacialHair_StubbleK
+     1x /Game/Pioneer/Items/Characters/Skins/FacialHair/Stubble/DA_OI_FacialHair_Stubble_Color_Blonde
+     1x /Game/Pioneer/Items/Characters/Skins/Hai
+     1x /Game/Pioneer/Items/Characters/Skins/Hai 
+     1x /Game/Pioneer/Items/Characters/Skins/Hair/AfroFade/DA_OI_Hair_AfroFade_Color_Greyk_Color_Blonde
+     1x /Game/Pioneer/Items/Characters/Skins/Hair/AfroLong/DA_OI_Hair_AfroLong_Color_Brown_Color_Brown
+     1x /Game/Pioneer/Items/Characters/Skins/Hair/LobBan
+     1x /Game/Pioneer/Items/Characters/Skins/Hair/MiddleFade/DA_OI_Hair_MiddleFade_ColorR
+     1x /Game/Pioneer/Items/Characters/Skins/Out
+     1x /Game/Pioneer/Items/Characters/Skins/Outfit/Moonball/DA_OI_Outfit_MoonballJE
+     1x /Game/Pioneer/Items/Characters/Skins/Outfit/Moonball/DA_OI_Outfit_Moonball_Headgear
+     1x /Game/Pioneer/Items/Characters/Skins/Outfit/Nurse/DA_OI_Outfit_Nurse_ColorO$
+     1x /Game/Pioneer/Items/Characters/Skins/Outfit/Orvax/DA_OI_Outfit_Orvax
+     1x /Game/Pioneer/Items/Characters/Skins/Outfit/Orvax/DA_OI_Outfit_Orvax_Armorl
+     1x /Game/Pioneer/Items/Characters/Skins/Outfit/Outlander/DA_OI_Outfit_Outlander_ColD
+     1x /Game/Pioneer/Items/Characters/Skins/Outfit/Outlander/DA_OI_Outfit_Outlander_Headgear_Off
+     1x /Game/Pioneer/Items/Characters/Skins/Outfit/Outlander/DA_OI_Outfit_Outlander_Headgear_OnlyTop
+     1x /Game/Pioneer/Items/Characters/Skins/Outfit/Patcher/DA_OI_Outfit_Patcher_Color_Basicsfck
+     1x /Game/Pioneer/Items/Characters/Skins/Outfit/Patcher/DA_OI_Outfit_Patcher_Colorive_OneigeRednge
+     1x /Game/Pioneer/Items/Characters/Skins/Outfit/Patcher/DA_OI_Outfit_Patcher_Headgear_Off
+     1x /Game/Pioneer/Items/Characters/Skins/Outfit/Patcher/DA_OI_Outfit_Patcher_Pants_Tucked
+     1x /Game/Pioneer/Items/Characters/Skins/Outfit/Popstar/DA_OI_Outfit_Popstar_Color_Redff
+     1x /Game/Pioneer/Items/Characters/Skins/Outfit/Popstar/DA_OI_Outfit_Popstar_Epaulette_Off
+     1x /Game/Pioneer/Items/Characters/Skins/Outfit/Popstar/DA_OI_Outfit_Popstar_Scarf
+     1x /Game/Pioneer/Items/Characters/Skins/Outfit/Popstar/DA_OI_Outfit_Popstar_Scarf_Oned
+     1x /Game/Pioneer/Items/Characters/Skins/Outfit/Recon/DA_OI_Outfit_Recon_Hat_On
+     1x /Game/Pioneer/Items/Characters/Skins/Outfit/Recon/DA_OI_Outfit_Recon_Hoodie_HoodOff
+     1x /Game/Pioneer/Items/Characters/Skins/Outfit/Recon/DA_OI_Outfit_Recon_Hoodieest_Off
+     1x /Game/Pioneer/Items/Characters/Skins/Outfit/Recon/DA_OI_Outfit_Recon_Vest_Offr
+     1x /Game/Pioneer/Items/Characters/Skins/Outfit/Recruit/DA_OI_Outfit_Recruit_Color_Green
+     1x /Game/Pioneer/Items/Characters/Skins/Outfit/Recruit/DA_OI_Outfit_Recruit_Color_White
+     2x /Game/Pioneer/Items/Salvage/Mat_Damaged_Wasp_Part/DA_Item_Salvage_Mat_Damaged_Wasp_Part
+     1x /Game/Pioneer/Items/Salvage/Mat_Damaged_Wasp_Part/DA_Item_Salvage_Mat_Damaged_Wasp_ParttW]0
+     1x /Game/Pioneer/Items/Salvage/Mat_Junk_2/DA_Item_Salvage_Mat_Junk
+     4x /client2pubsub.Client2PubSub/TransferBatched
+     1x /v1/crashdump/dumps
+     1x /v1/shared/anticheat/config
+     1x 5http://www.trustcenter.de/crl/v2/tc_class_3_ca_II.crl
+     2x C:\Windows\SYSTEM32\DNSAPI.dll
+     1x C:\Windows\SYSTEM32\DPAPI.DLL
+     2x C:\Windows\SYSTEM32\IPHLPAPI.DLL
+     1x C:\Windows\SYSTEM32\dwmapi.dll
+     1x C:\Windows\SYSTEM32\gpapi.dll
+     1x C:\Windows\SYSTEM32\profapi.dll
+     1x C:\Windows\SYSTEM32\wevtapi.dll
+     2x C:\Windows\System32\PSAPI.DLL
+     2x C:\Windows\System32\SETUPAPI.dll
+     1x C:\Windows\System32\SHLWAPI.dll
+     1x C:\Windows\System32\shlwapi.dll
+     1x CAPIJobGetAppDependenciesBatched
+     1x CAPIJobUpdateInventoryItems
+     1x CSCAPI.dll
+     1x Calling SRSetRestorePoint API. dwRestorePtType: %d, dwEventType: %d, llSequenceNumber: %s, szDescription: "%s".
+     2x DNSAPI.DLL
+     5x DNSAPI.dll
+     1x DPAPI.CryptProtectMemory
+     1x DPAPI.CryptUnprotectMemory
+     1x DPAPI.CryptUpdateProtectedState
+     2x DPAPI.dll
+     1x Error: cannot open Wlanapi.dll
+     1x Failed to load wlanAPI.DLL
+     1x Fonecore\com\combase\dcomrem\coapi.cxx
+     1x GPAPI.dll
+     9x IPHLPAPI.DLL
+     1x Insufficient NVRAM resources exist to complete the API.  A reboot might be required.
+     1x Insufficient system resources exist to complete the API.
+     1x Iphlpapi.dll
+     2x PROFAPI.DLL
+     5x PSAPI.DLL
+     1x Phttps://api-gateway.europe.es-pio.net
+     2x SETUPAPI.DLL
+     3x SETUPAPI.dll
+     1x SHLWAPI.#269
+     1x SHLWAPI.#270
+     1x SHLWAPI.DLL
+     7x SHLWAPI.dll
+     1x The %hs service is not written correctly. The stack pointer has been left in an inconsistent state. The callback entrypoint should be declared as WINA
+     1x The dynamic link library %hs is not written correctly. The stack pointer has been left in an inconsistent state. The entrypoint should be declared as 
+     1x Wlanapi.dll
+     1x [AppID %u] CAPIJobRequestUserStats::YieldingMergeStats - beginning merge. . .
+     1x [AppID %u] CAPIJobRequestUserStats::YieldingMergeStats - server vs. local 'score' is %d, local changes = %s
+     1x [AppID %u] CAPIJobRequestUserStats::YieldingMergeStats - using %s stats data
+    15x api-gateway.europe.es-pio.net
+     1x api-gateway.europe.es-pio.net/
+     1x api-gateway.europe.es-pio.net/v1/shared/anticheat/config
+     1x api-ms-win-core-memory-l1-1-2.OfferVirtualMemory
+     1x api-ms-win-core-processthreads-l1-1-0.GetCurrentThreadStackLimits
+     1x apprepapi.dll
+     1x bindfltapi.dll
+     1x cabapi.dll
+     1x cemapi.dll
+     2x cflapi.dllext-ms-win-security-chambers-l1-1-1
+     2x cldapi.dll
+     3x clusapi.dll
+     1x com\complus\src\comcat\regdb\regdbapi\regdbapi.cpp
+     1x com\ole32\com\class\coapi.cxx
+     1x com\ole32\ole232\clipbrd\clipapi.cpp
+     2x crypto\conf\conf_api.c
+     1x cscapi.dll
+     2x cscapi.dllext-ms-win-fs-vssapi-l1-1-0
+     1x dabapi.dll
+     2x ddcantitheftapi.dll
+     2x ddcclaimsapi.dllext-ms-onecore-shellchromeapi-l1-1-2
+     1x dfsrapi.dll
+     2x dnsapi.dll
+     1x dnsapi.pdb
+     3x dpapi.dll
+     1x dpapi.pdb
+     1x dusmapi.dll
+     5x dwmapi.dll
+     1x edpauditapi.dll
+     2x embeddedmodesvcapi.dllext-ms-win-shell-exports-internal-l1-1-0
+     1x engines\e_capi.c
+     3x firewallapi.dll
+     1x fveapi.dll
+     2x fveapi.dllext-ms-win-gaming-gamechatoverlay-l1-1-0
+     1x fxsapi.dll
+     5x gpapi.dll
+     1x gpapi.pdb
+     1x hbaapi.dll
+     2x hbaapi.dllext-ms-win-storage-iscsidsc-l1-1-0
+     1x httpapi.dll
+     1x https://api-china.beta.valve.org
+     1x https://api-gateway.europe.es-pio.net/v1/shared/anticheat/config
+     3x iphlpapi.dll
+     1x iphlpapi.pdb
+     2x licensemanagerapi.dll
+     1x luiapi.dll
+     1x m_VecUserGameRecordFromNewAuthAPI.Find( userGameRecord ) == m_VecUserGameRecordFromNewAuthAPI.InvalidIndex()
+     1x m_VecUserGameRecordFromNewAuthAPI.Find( userUnauthenticatedGameRecord ) == m_VecUserGameRecordFromNewAuthAPI.InvalidIndex()
+     1x mincore\com\oleaut32\typelib\tlibapi.cpp
+     1x minkernel\ntdll\ldrapi.c
+     2x mmdevapi.dll
+     1x mprapi.dll
+     1x ncaapi.dll
+     1x ndfapi.dll
+
+== سلاسل تانية فيها كلمات مفتاحية (981) ==
+     1x  (Note: one or more stacks were not captured)
+     1x  *** A stack buffer overrun occurred in %ws:%s
+     1x  *** then kb to get the faulting stack
+     1x  .CInventory_ExchangeItem_Request
+     1x  .CInventory_GetInventory_Request
+     1x  .CInventory_PurchaseInit_Request
+     1x  CInventory_PurchaseInit_Response
+     2x  Inventory & Loadout Manager - Brave
+     1x  Leaked Block 0x%p size 0x%p (stack %p depth %u)
+     1x  alairas elfogadasanak feltetele az eloirt ellenorzesi eljaras megtetele. Az eljaras leirasa megtalalhato a NetLock Kft. Internet honlapjan a https://
+     1x  https://repository.tsp.zetes.com0
+     1x  https://www.catcert.net/verarrel05
+     1x !"unexpected split SRC packet"
+     1x !.CInventory_PurchaseInit_Response"
+     1x !CInventory_DevSetNextDrop_Request
+     1x !CInventory_GetItemDefMeta_Request
+     1x !CInventory_SplitItemStack_Request
+     1x !GetInventoryItemsWithDescriptions
+     1x !https://ocsp.quovadisoffshore.com0
+     1x !https://www.anf.es/AC/ACTAS/789230
+     1x ".CInventory_DevSetNextDrop_Request
+     1x ".CInventory_GetItemDefMeta_Request
+     1x ".CInventory_SplitItemStack_Request
+     1x "CCloud_BeginAppUploadBatch_Request
+     1x "CInventory_ConsumePlaytime_Request
+     1x "CInventory_GetItemDefMeta_Response
+     1x "k_EMsgBSUpdateInventoryFromProPack
+     1x #.CCloud_BeginAppUploadBatch_Request
+     1x #.CInventory_ConsumePlaytime_Request
+     1x #.CInventory_GetItemDefMeta_Response"
+     1x #CCloud_BeginAppUploadBatch_Response
+     1x #CInventory_PurchaseFinalize_Request
+     1x #https://wwww.certigna.fr/autorites/0m
+     1x $.CCloud_BeginAppUploadBatch_Response
+     1x $.CInventory_PurchaseFinalize_Request
+     1x $CInventory_CombineItemStacks_Request
+     1x $k_EMsgUFSUpdateRecordBatchedResponse
+     1x $k_ESplitScalingFilter_NIS_Deprecated
+     1x %.CInventory_CombineItemStacks_Request
+     1x %CCloud_CompleteAppUploadBatch_Request
+     1x %https://crl.anf.es/AC/ANFServerCA.crl0
+     1x %https://www.anf.es/AC/ANFServerCA.crl0+
+     1x %k_EMsgEconFlushInventoryCacheResponse
+     2x %s Stacks%s
+     1x %s/IGameInventory/GetItemDefArchive/v0001
+     1x %s/IGameInventory/GetItemDefPrices/v0001
+     1x &.CCloud_CompleteAppUploadBatch_Request
+     1x &CCloud_CompleteAppUploadBatch_Response"
+     1x &CEcon_GetTradeOfferAccessToken_Request
+     1x &CInventoryClient_NewItems_Notification
+     1x &CInventory_GetUserPurchaseInfo_Request"<
+     1x &display_brightness_overdrive_hdr_split
+     1x '.CCloud_CompleteAppUploadBatch_Response
+     1x '.CEcon_GetTradeOfferAccessToken_Request
+     1x '.CInventoryClient_NewItems_Notification
+     1x '.CInventory_GetUserPurchaseInfo_Request
+     1x 'CEcon_GetTradeOfferAccessToken_Response
+     1x 'CInventory_GetUserPurchaseInfo_Response
+     1x 'Vegeu https://www.catcert.net/verarrel 0
+     1x 'https://web.certicamara.com/marco-legal0Z
+     1x ( m_iHead & nNewCapacityMask ) == nNewCapacity - nPreSplit
+     1x (.CEcon_GetTradeOfferAccessToken_Response"
+     1x (.CInventory_GetUserPurchaseInfo_Response"
+     1x (iub & (m_nSizeWithStack-1)) == 0
+     1x (merge 
+     6x *.embark.net0
+     1x *.es-cf.net0
+     1x *CCloud_CompleteAppUploadBatch_Notification
+     1x *k_EMsgBSUpdateInventoryFromProPackResponse
+     1x +.CCloud_CompleteAppUploadBatch_Notification
+     1x ,GetPurchasedAndUpgradedProfileCustomizations
+     2x ,Vegeu https://www.catcert.net/verarrel (c)031503
+     1x ,k_EMsgDRMWorkerProcessSplitAndInstallRequest
+     1x -CInventory_GetEligiblePromoItemDefIDs_Request
+     1x -k_EMsgDRMWorkerProcessSplitAndInstallResponse
+     1x -stack=
+     1x ..CInventory_GetEligiblePromoItemDefIDs_Request
+     1x .?AUAddPromoItemsJob@?1??AddPromoItems@CClientInventory@@UEAA_NPEAHPEBHI@Z@
+     1x .?AUClientInventoryResultSet_t@@
+     1x .?AUConsumeItemJob@?1??ConsumeItem@CClientInventory@@UEAA_NPEAH_KI@Z@
+     1x .?AUDeserializeJob@?1??DeserializeResult@CClientInventory@@UEAA_NPEAHPEBXI_N@Z@
+     1x .?AUExchangeItemsJob@?1??ExchangeItems@CClientInventory@@UEAA_NPEAHPEBHIPEBIIPEB_KI2I@Z@
+     1x .?AUGenerateItemsJob@?1??GenerateItems@CClientInventory@@UEAA_NPEAHPEBHIPEBII@Z@
+     1x .?AUGetAllItemsJob@?1??GetAllItems@CClientInventory@@UEAA_NPEAH@Z@
+     1x .?AUGetItemsByIDJob@?1??GetItemsByID@CClientInventory@@UEAA_NPEAHPEB_KI@Z@
+     1x .?AUInspectItemsJob@?1??InspectItem@CClientInventory@@UEAA_NPEAHPEBD@Z@
+     1x .?AULoadItemDefinitionsJob@?1??LoadItemDefinitions@CClientInventory@@UEAA_NXZ@
+     1x .?AUPurchaseFinalizeJob@?P@??OnMicroTransactionAuthResponse@CClientInventory@@QEAAXI_K0_N@Z@
+     1x .?AUTransferItemQuantityJob@?1??TransferItemQuantity@CClientInventory@@UEAA_NPEAH_KI1@Z@
+     1x .?AUTriggerItemDropJob@?1??TriggerItemDrop@CClientInventory@@UEAA_NPEAHH@Z@
+     1x .?AV?$CAutoPtr@VCClientInventory@@@@
+     1x .?AV?$CFutureSharedState@VCPublishedFile_GetAppRelationshipsBatched_Response_PublishedFileAppRelationship@@@@
+     1x .?AV?$CJobFuture@VCPublishedFile_GetAppRelationshipsBatched_Response_PublishedFileAppRelationship@@@@
+     1x .?AV?$CJobPromise@VCPublishedFile_GetAppRelationshipsBatched_Response_PublishedFileAppRelationship@@@@
+     1x .?AV?$CProtoBufMsg@VCCloud_BeginAppUploadBatch_Request@@@@
+     1x .?AV?$CProtoBufMsg@VCCloud_BeginAppUploadBatch_Response@@@@
+     1x .?AV?$CProtoBufMsg@VCCloud_CompleteAppUploadBatch_Request@@@@
+     1x .?AV?$CProtoBufMsg@VCCloud_CompleteAppUploadBatch_Response@@@@
+     1x .?AV?$CProtoBufMsg@VCInventoryClient_NewItems_Notification@@@@
+     1x .?AV?$CProtoBufMsg@VCMsgClientAuthListAck@@@@
+     1x .?AV?$CUtlLinkedList@UClientInventoryResultSet_t@@H@@
+     1x .?AV?$CUtlMap@IW4EAppFileWriteBatchState@@HVCDefLess@@@@
+     1x .?AV?$CUtlMap@_KPEAV?$CJobPromise@VCPublishedFile_GetAppRelationshipsBatched_Response_PublishedFileAppRelationship@@@@HVCDefLess@@@@
+     1x .?AV?$CUtlMemory@UListElem_t@?$CUtlLinkedList@UClientInventoryResultSet_t@@H@@@@
+     1x .?AV?$CUtlMemory@UNode_t@?$CUtlRBTree@UNode_t@?$CUtlMap@IW4EAppFileWriteBatchState@@HVCDefLess@@@@HVCKeyLess@2@V?$CDefRBTreeBalanceListener@H@@I@@@@
+     1x .?AV?$CUtlMemory@UNode_t@?$CUtlRBTree@UNode_t@?$CUtlMap@_KPEAV?$CJobPromise@VCPublishedFile_GetAppRelationshipsBatched_Response_PublishedFileAppRelati
+     1x .?AV?$CUtlRBTree@UNode_t@?$CUtlMap@IW4EAppFileWriteBatchState@@HVCDefLess@@@@HVCKeyLess@2@V?$CDefRBTreeBalanceListener@H@@I@@
+     1x .?AV?$CUtlRBTree@UNode_t@?$CUtlMap@_KPEAV?$CJobPromise@VCPublishedFile_GetAppRelationshipsBatched_Response_PublishedFileAppRelationship@@@@HVCDefLess@
+     1x .?AV?$InterfaceMapBase@VIClientInventory@@@@
+     1x .?AVCClientInventory@@
+     1x .?AVCClientInventoryAsyncJob@@
+     1x .?AVCClientInventoryPurchaseInit@@
+     1x .?AVCClientInventoryRequestPrices@@
+     1x .?AVCCloud_BeginAppUploadBatch_Request@@
+     1x .?AVCCloud_BeginAppUploadBatch_Response@@
+     1x .?AVCCloud_CompleteAppUploadBatch_Notification@@
+     1x .?AVCCloud_CompleteAppUploadBatch_Request@@
+     1x .?AVCCloud_CompleteAppUploadBatch_Response@@
+     1x .?AVCEcon_GetInventoryItemsWithDescriptions_Request@@
+     1x .?AVCEcon_GetInventoryItemsWithDescriptions_Request_FilterOptions@@
+     1x .?AVCEcon_GetInventoryItemsWithDescriptions_Response@@
+     1x .?AVCEcon_GetTradeOfferAccessToken_Request@@
+     1x .?AVCEcon_GetTradeOfferAccessToken_Response@@
+     1x .?AVCInventoryClientJob_NotifyNewItems@@
+     1x .?AVCInventoryClient_NewItems_Notification@@
+     1x .?AVCInventory_AddItem_Request@@
+     1x .?AVCInventory_CombineItemStacks_Request@@
+     1x .?AVCInventory_ConsumeItem_Request@@
+     1x .?AVCInventory_ConsumePlaytime_Request@@
+     1x .?AVCInventory_DevSetNextDrop_Request@@
+     1x .?AVCInventory_ExchangeItem_Request@@
+     1x .?AVCInventory_GetEligiblePromoItemDefIDs_Request@@
+     1x .?AVCInventory_GetEligiblePromoItemDefIDs_Response@@
+     1x .?AVCInventory_GetInventory_Request@@
+     1x .?AVCInventory_GetItemDefMeta_Request@@
+     1x .?AVCInventory_GetItemDefMeta_Response@@
+     1x .?AVCInventory_GetUserPurchaseInfo_Request@@
+     1x .?AVCInventory_GetUserPurchaseInfo_Response@@
+     1x .?AVCInventory_InspectItem_Request@@
+     1x .?AVCInventory_ModifyItems_Request@@
+     1x .?AVCInventory_ModifyItems_Request_ItemPropertyUpdate@@
+     1x .?AVCInventory_PurchaseFinalize_Request@@
+     1x .?AVCInventory_PurchaseInit_Request@@
+     1x .?AVCInventory_PurchaseInit_Request_LineItem@@
+     1x .?AVCInventory_PurchaseInit_Response@@
+     1x .?AVCInventory_Response@@
+     1x .?AVCInventory_SplitItemStack_Request@@
+     1x .?AVCMsgBadgeCraftedNotification@@
+     1x .?AVCMsgClientAuthListAck@@
+     1x .?AVCMsgSetWindowStackingOrder@@
+     1x .?AVCPlayer_GetPurchasedAndUpgradedProfileCustomizations_Request@@
+     1x .?AVCPlayer_GetPurchasedAndUpgradedProfileCustomizations_Response@@
+     1x .?AVCPlayer_GetPurchasedAndUpgradedProfileCustomizations_Response_PurchasedCustomization@@
+     1x .?AVCPlayer_GetPurchasedAndUpgradedProfileCustomizations_Response_UpgradedCustomization@@
+     1x .?AVCPublishedFile_GetAppRelationshipsBatched_Request@@
+     1x .?AVCPublishedFile_GetAppRelationshipsBatched_Response@@
+     1x .?AVCPublishedFile_GetAppRelationshipsBatched_Response_AppRelationship@@
+     1x .?AVCPublishedFile_GetAppRelationshipsBatched_Response_PublishedFileAppRelationship@@
+     1x .?AVCVideo_GameRecordingGetNextBatchOfSegmentsToUpload_Request@@
+     1x .?AVCVideo_GameRecordingGetNextBatchOfSegmentsToUpload_Response@@
+     1x .?AVIClientInventory@@
+     1x .?AVIClientInventoryMap@@
+     2x .CInventory_AddItem_Request
+     1x .CInventory_ConsumeItem_Request
+     1x .CInventory_GetEligiblePromoItemDefIDs_Response
+     1x .CInventory_InspectItem_Request
+     1x .CInventory_ModifyItems_Request
+    12x .CInventory_Response"
+     1x .CInventory_Response2
+     2x .ESplitScalingFilter
+     1x .ESplitScalingScaler
+     1x .ESplitScalingScaler"w
+     1x 0.CEcon_GetInventoryItemsWithDescriptions_Request
+     1x 0CEcon_GetInventoryItemsWithDescriptions_Response
+     1x 1.CEcon_GetInventoryItemsWithDescriptions_Response"
+     1x 1CPublishedFile_GetAppRelationshipsBatched_Request
+     1x 2).CInventory_PurchaseInit_Request.LineItem
+     1x 2.0 major upgrade
+     1x 2.0 minor upgrade
+     1x 2.CPublishedFile_GetAppRelationshipsBatched_Request
+     1x 2/DA_CharacterSkill_ArmorBreakFreeDodgeRoller/CharacterSkills/TT/Game/Pioneer/CharacterSkills/October/DA_CharacterSkill_WallLeapDistance_OctTreearacte
+     1x 2/DA_CharacterSkill_FieldCraftFindsityultibilityreeeTreem_Comput/Game/Pioneer/CharacterSkills/TT2/DA_CharacterSkill_HealingStaminaRegenltibilityreeeTr
+     1x 22.CInventory_ModifyItems_Request.ItemPropertyUpdate
+     1x 2>.CEcon_GetInventoryItemsWithDescriptions_Request.FilterOptions
+     1x 2C.CPublishedFile_GetAppRelationshipsBatched_Response.AppRelationship"W
+     1x 2CPublishedFile_GetAppRelationshipsBatched_Response
+     1x 2P.CPublishedFile_GetAppRelationshipsBatched_Response.PublishedFileAppRelationship
+     1x 2T.CPlayer_GetPurchasedAndUpgradedProfileCustomizations_Response.UpgradedCustomization
+     1x 2U.CPlayer_GetPurchasedAndUpgradedProfileCustomizations_Response.PurchasedCustomization
+     2x 3) Do a 'kb' to display the stack
+     1x 3.CPublishedFile_GetAppRelationshipsBatched_Response"
+     1x 9https://www.cybertrust.ne.jp/itrust/repository/index.html0
+     1x : Tried to merge from a message with a different type.  to: 
+     1x :CVideo_GameRecordingGetNextBatchOfSegmentsToUpload_Request
+     1x ;.CVideo_GameRecordingGetNextBatchOfSegmentsToUpload_Request
+     1x ;CVideo_GameRecordingGetNextBatchOfSegmentsToUpload_Response
+     1x <.CVideo_GameRecordingGetNextBatchOfSegmentsToUpload_Response"
+     1x <CPlayer_GetPurchasedAndUpgradedProfileCustomizations_Request
+     1x =.CPlayer_GetPurchasedAndUpgradedProfileCustomizations_Request
+     1x =CPlayer_GetPurchasedAndUpgradedProfileCustomizations_Response
+     1x >.CPlayer_GetPurchasedAndUpgradedProfileCustomizations_Response"
+     3x >Barcelona (see current address at https://www.anf.es/address/)1(0&
+     1x ??0CStack@@QEAA@XZ
+     1x ??1CStack@@QEAA@XZ
+     1x ??4CStack@@QEAAAEAV0@AEBV0@@Z
+     1x ?Add@CStack@@QEAAX_K@Z
+     1x ?CalcStackDepth@CThread@@QEAA_KPEAX@Z
+     1x ?CalculateCRC@CStack@@QEAAXXZ
+     2x ?CaptureCallstack@platform@details@Concurrency@@YA_KPEAPEAX_K1@Z
+     1x ?GetNumFrames@CStack@@QEBAHXZ
+     1x ?NGetPC@CStack@@QEBA_KH@Z
+     1x ?Print@CStack@@QEBAXP6AXHPEBUPrintFrame@1@PEAX@Z1@Z
+     1x ?Reset@CStack@@QEAAXXZ
+     1x ?V_SplitString3@@YAXPEBDPEBQEBDHAEAV?$CUtlVector@VCUtlString@@V?$CUtlMemory@VCUtlString@@@@@@2@Z
+     2x ?V_SplitStringInternal@@YAXPEBDPEBQEBDQEAPEBDHAEAV?$CUtlVector@VCUtlString@@V?$CUtlMemory@VCUtlString@@@@@@_N@Z
+     1x @bDisableDualStackDownloads
+     1x @nClientCloudMaxNumUploadsPerBatch
+     1x @nClientFrameRateReportBatchSize
+     1x A lock is being held across a COM call (examine current stack)
+     1x A new guard page for the stack cannot be created.
+     1x A page of memory that marks the end of a data structure, such as a stack or an array, has been accessed.
+     1x A return address hijack is being attempted. This is supported by the operating system when user-mode shadow stacks are enabled.
+     1x AJOSplitButton
+     2x AddToBatch
+     1x AddUpgradePackageToPreinstalledVolume
+     1x AddUpgradePackageToRegistryStore
+     1x AllocateAndGetInterfaceInfoFromStack
+     2x AllocateAndGetIpAddrTableFromStack
+     1x AllocateAndGetTcpExTableFromStack
+     1x AllocateAndGetUdpExTableFromStack
+     1x An invalid address was found on the control flow stack.
+     1x An invalid initial stack was specified in a call to NtCreateThread.
+     1x An invalid or unaligned stack was encountered during an unwind operation.
+     1x AppDefaults-Logon-UpgradeDefault: current=%s, new=%s
+     1x ApplyMergeGuid failed apply the new resource: GLE: %X
+     1x ApplyMergeGuid failed to Find the Resource: GLE: %X
+     1x ApplyMergeGuid failed to Load the PE Image: GLE: %X
+     1x ApplyOnUpgrade
+     1x AreStackTrackingFiltersEnabledAtStart
+     1x AslPathCombine
+     1x AslPathCombine failed [%x]
+     1x AslpPathWildcardInitStack
+     1x AslpPathWildcardInitStack failed [%x]
+     1x Assertion Failed: stack%2d: %s (%d): %s
+     1x BIOS Upgrade recommended
+     2x BN_STACK_push
+     1x BackstackSize
+     1x BatchAgnosticDispatchGroup
+     1x BatchEnabledDispatchGroup
+     1x BeginAppUploadBatch
+     2x BeginFileWriteBatch
+     1x BfGenerateBatchedConfig
+     1x BfSetupFilterBatched
+     1x BitLocker cannot be upgraded during disk encryption or decryption.
+     1x BluetoothFindFirstProtocolDescriptorStack
+     1x BluetoothFindNextProtocolDescriptorStack
+     1x BluetoothFindProtocolDescriptorStackClose
+     1x Build need at least one file to be merged
+     1x CAutoCloudManager::YldUpgradeLegacySessionFile
+     1x CClientInventory::GetItemPrice() failed - pCurrentPrice is null!
+     1x CClientInventory::GetPrices() failed - invalid item defs array passed in!
+     1x CClientInventory::GetPrices() failed - invalid prices array passed in!
+     1x CClientInventory::GetPrices() failed - no items passed in!
+     1x CClientInventory::RemoveProperty() failed - invalid update handle %llu!
+     1x CClientInventory::StartPurchase() failed - invalid item definitions passed in!
+     1x CClientInventory::StartPurchase() failed - no items passed in!
+     1x CClientInventoryPurchaseInit
+     1x CClientInventoryRequestPrices
+     1x CClientInventory_AddPromoItemsJob
+     1x CClientInventory_ConsumeItemJob
+     1x CClientInventory_DeserializeJob
+     1x CClientInventory_ExchangeItemsJob
+     1x CClientInventory_GenerateItemsJob
+     1x CClientInventory_GetAllItemsJob
+     1x CClientInventory_GetItemsByIDJob
+     1x CClientInventory_InspectItemsJob
+     1x CClientInventory_LoadItemDefinitionsJob
+     1x CClientInventory_PurchaseFinalizeJob
+     1x CClientInventory_TradeItemsJob
+     1x CClientInventory_TransferItemQuantityJob
+     1x CClientInventory_TriggerItemDropJob
+     1x CCloud_BeginAppUploadBatch_Request
+     1x CCloud_BeginAppUploadBatch_Response
+     1x CCloud_CompleteAppUploadBatch_Notification
+     1x CCloud_CompleteAppUploadBatch_Request
+     1x CCloud_CompleteAppUploadBatch_Response
+     2x CEcon_GetInventoryItemsWithDescriptions_Request
+     1x CEcon_GetInventoryItemsWithDescriptions_Response
+     1x CEcon_GetTradeOfferAccessToken_Request
+     1x CEcon_GetTradeOfferAccessToken_Response
+     1x CHECK failed: this == other_mutator: 
+     1x CInventoryClient_NewItems_Notification
+     2x CInventory_AddItem_Request
+     1x CInventory_CombineItemStacks_Request
+     2x CInventory_ConsumeItem_Request
+     1x CInventory_ConsumePlaytime_Request
+     1x CInventory_DevSetNextDrop_Request
+     2x CInventory_ExchangeItem_Request
+     1x CInventory_GetEligiblePromoItemDefIDs_Request
+     1x CInventory_GetEligiblePromoItemDefIDs_Response

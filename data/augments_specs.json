@@ -1,0 +1,375 @@
+{
+ "generated_at": "2026-10-25",
+ "sources": [
+  "https://arcraiders.wiki/wiki/Augments — Cargo table (items + augments)",
+  "live GET /inventory/parsed item_mappings (for asset_ids)"
+ ],
+ "note": "Quick Use / Backpack / Safe Pocket are the wiki values. Augmented is the sum of the wiki's typed slots (healing + grenade + trinket + utility), which the game groups under AUGMENTED SLOTS.",
+ "base": {
+  "name": "Base Pack Bag",
+  "slug": "base-pack-bag",
+  "asset_ids": [
+   "-2109745799"
+  ],
+  "backpack": 10,
+  "quick_use": 4,
+  "safe_pocket": 1,
+  "augmented": 0,
+  "rarity": "Common",
+  "image": ""
+ },
+ "augments": [
+  {
+   "name": "Combat Mk. 1",
+   "slug": "combat-mk-1",
+   "asset_ids": [
+    "50992628",
+    "485800788"
+   ],
+   "backpack": 16,
+   "quick_use": 4,
+   "safe_pocket": 1,
+   "augmented": 0,
+   "rarity": "Common",
+   "image": "metaforge/combat-mk-1.png",
+   "healing": 0,
+   "grenade": 0,
+   "trinket": 0,
+   "utility": 0,
+   "weapon_slots": 2,
+   "weight_limit": 45.0,
+   "shield_compatibility": 2,
+   "wiki_image": "File:Combat Mk. 1.png"
+  },
+  {
+   "name": "Combat Mk. 2",
+   "slug": "combat-mk-2",
+   "asset_ids": [
+    "-1489261627",
+    "-509905146"
+   ],
+   "backpack": 18,
+   "quick_use": 4,
+   "safe_pocket": 1,
+   "augmented": 1,
+   "rarity": "Rare",
+   "image": "metaforge/combat-mk-2.png",
+   "healing": 0,
+   "grenade": 1,
+   "trinket": 0,
+   "utility": 0,
+   "weapon_slots": 2,
+   "weight_limit": 55.0,
+   "shield_compatibility": 3,
+   "wiki_image": "File:Combat Mk. 2.png"
+  },
+  {
+   "name": "Combat Mk. 3 (Aggressive)",
+   "slug": "combat-mk-3-aggressive",
+   "asset_ids": [
+    "-468025815",
+    "-89981619"
+   ],
+   "backpack": 18,
+   "quick_use": 4,
+   "safe_pocket": 1,
+   "augmented": 2,
+   "rarity": "Epic",
+   "image": "metaforge/combat-mk-3-aggressive.png",
+   "healing": 0,
+   "grenade": 2,
+   "trinket": 0,
+   "utility": 0,
+   "weapon_slots": 2,
+   "weight_limit": 65.0,
+   "shield_compatibility": 3,
+   "wiki_image": "File:Combat Mk. 3 (Aggressive).png"
+  },
+  {
+   "name": "Combat Mk. 3 (Flanking)",
+   "slug": "combat-mk-3-flanking",
+   "asset_ids": [
+    "-1068447725",
+    "12511734"
+   ],
+   "backpack": 20,
+   "quick_use": 5,
+   "safe_pocket": 2,
+   "augmented": 3,
+   "rarity": "Epic",
+   "image": "metaforge/combat-mk3-flanking.png",
+   "healing": 0,
+   "grenade": 0,
+   "trinket": 0,
+   "utility": 3,
+   "weapon_slots": 2,
+   "weight_limit": 60.0,
+   "shield_compatibility": 2,
+   "wiki_image": "File:Combat Mk. 3 (Flanking).png"
+  },
+  {
+   "name": "Free Loadout Augment",
+   "slug": "free-loadout-augment",
+   "asset_ids": [
+    "1369416424",
+    "-344103425"
+   ],
+   "backpack": 14,
+   "quick_use": 4,
+   "safe_pocket": 0,
+   "augmented": 0,
+   "rarity": "Common",
+   "image": "metaforge/free-loadout-augment.png",
+   "healing": 0,
+   "grenade": 0,
+   "trinket": 0,
+   "utility": 0,
+   "weapon_slots": 2,
+   "weight_limit": 35.0,
+   "shield_compatibility": 1,
+   "wiki_image": "File:Free Loadout Augment.png"
+  },
+  {
+   "name": "Looting Mk. 1",
+   "slug": "looting-mk-1",
+   "asset_ids": [
+    "1680690244",
+    "-448345380"
+   ],
+   "backpack": 18,
+   "quick_use": 4,
+   "safe_pocket": 1,
+   "augmented": 0,
+   "rarity": "Uncommon",
+   "image": "metaforge/looting-mk-1.png",
+   "healing": 0,
+   "grenade": 0,
+   "trinket": 0,
+   "utility": 0,
+   "weapon_slots": 2,
+   "weight_limit": 50.0,
+   "shield_compatibility": 1,
+   "wiki_image": "File:Looting Mk. 1.png"
+  },
+  {
+   "name": "Looting Mk. 2",
+   "slug": "looting-mk-2",
+   "asset_ids": [
+    "-1156830089",
+    "876095175"
+   ],
+   "backpack": 22,
+   "quick_use": 4,
+   "safe_pocket": 2,
+   "augmented": 3,
+   "rarity": "Rare",
+   "image": "metaforge/looting-mk-2.png",
+   "healing": 0,
+   "grenade": 0,
+   "trinket": 3,
+   "utility": 0,
+   "weapon_slots": 2,
+   "weight_limit": 60.0,
+   "shield_compatibility": 1,
+   "wiki_image": "File:Looting Mk. 2.png"
+  },
+  {
+   "name": "Looting Mk. 3 (Cautious)",
+   "slug": "looting-mk-3-cautious",
+   "asset_ids": [
+    "433079423",
+    "-1302027751"
+   ],
+   "backpack": 24,
+   "quick_use": 5,
+   "safe_pocket": 2,
+   "augmented": 0,
+   "rarity": "Epic",
+   "image": "metaforge/looting-mk-3-cautious.png",
+   "healing": 0,
+   "grenade": 0,
+   "trinket": 0,
+   "utility": 0,
+   "weapon_slots": 2,
+   "weight_limit": 70.0,
+   "shield_compatibility": 1,
+   "wiki_image": "File:Looting Mk. 3 (Cautious).png"
+  },
+  {
+   "name": "Looting Mk. 3 (Safekeeper)",
+   "slug": "looting-mk-3-safekeeper",
+   "asset_ids": [
+    "947411243",
+    "1295057931"
+   ],
+   "backpack": 18,
+   "quick_use": 4,
+   "safe_pocket": 1,
+   "augmented": 2,
+   "rarity": "Epic",
+   "image": "metaforge/looting-mk-3-safekeeper.png",
+   "healing": 0,
+   "grenade": 0,
+   "trinket": 2,
+   "utility": 0,
+   "weapon_slots": 2,
+   "weight_limit": 65.0,
+   "shield_compatibility": 3,
+   "wiki_image": "File:Looting Mk. 3 (Safekeeper).png"
+  },
+  {
+   "name": "Looting Mk. 3 (Survivor)",
+   "slug": "looting-mk-3-survivor",
+   "asset_ids": [
+    "303567898",
+    "-1799813225"
+   ],
+   "backpack": 20,
+   "quick_use": 5,
+   "safe_pocket": 3,
+   "augmented": 1,
+   "rarity": "Epic",
+   "image": "metaforge/looting-mk-3-survivor.png",
+   "healing": 0,
+   "grenade": 0,
+   "trinket": 0,
+   "utility": 1,
+   "weapon_slots": 2,
+   "weight_limit": 80.0,
+   "shield_compatibility": 2,
+   "wiki_image": "File:Looting Mk. 3 (Survivor).png"
+  },
+  {
+   "name": "Tactical Mk. 1",
+   "slug": "tactical-mk-1",
+   "asset_ids": [
+    "966773769",
+    "-636707363"
+   ],
+   "backpack": 15,
+   "quick_use": 5,
+   "safe_pocket": 1,
+   "augmented": 0,
+   "rarity": "Common",
+   "image": "metaforge/tactical-mk-1.png",
+   "healing": 0,
+   "grenade": 0,
+   "trinket": 0,
+   "utility": 0,
+   "weapon_slots": 2,
+   "weight_limit": 40.0,
+   "shield_compatibility": 2,
+   "wiki_image": "File:Tactical Mk. 1.png"
+  },
+  {
+   "name": "Tactical Mk. 2",
+   "slug": "tactical-mk-2",
+   "asset_ids": [
+    "-1240487285",
+    "1029107900"
+   ],
+   "backpack": 17,
+   "quick_use": 5,
+   "safe_pocket": 1,
+   "augmented": 1,
+   "rarity": "Rare",
+   "image": "metaforge/tactical-mk-2.png",
+   "healing": 0,
+   "grenade": 0,
+   "trinket": 0,
+   "utility": 1,
+   "weapon_slots": 2,
+   "weight_limit": 45.0,
+   "shield_compatibility": 2,
+   "wiki_image": "File:Tactical Mk. 2.png"
+  },
+  {
+   "name": "Tactical Mk. 3 (Defensive)",
+   "slug": "tactical-mk-3-defensive",
+   "asset_ids": [
+    "1101815928",
+    "-1640916197"
+   ],
+   "backpack": 20,
+   "quick_use": 5,
+   "safe_pocket": 1,
+   "augmented": 0,
+   "rarity": "Epic",
+   "image": "metaforge/tactical-mk3-defensive.png",
+   "healing": 0,
+   "grenade": 0,
+   "trinket": 0,
+   "utility": 0,
+   "weapon_slots": 2,
+   "weight_limit": 60.0,
+   "shield_compatibility": 3,
+   "wiki_image": "File:Tactical Mk. 3 (Defensive).png"
+  },
+  {
+   "name": "Tactical Mk. 3 (Healing)",
+   "slug": "tactical-mk-3-healing",
+   "asset_ids": [
+    "-1561038837",
+    "-349134473"
+   ],
+   "backpack": 16,
+   "quick_use": 4,
+   "safe_pocket": 3,
+   "augmented": 3,
+   "rarity": "Epic",
+   "image": "metaforge/tactical-mk-3-healing.png",
+   "healing": 3,
+   "grenade": 0,
+   "trinket": 0,
+   "utility": 0,
+   "weapon_slots": 2,
+   "weight_limit": 55.0,
+   "shield_compatibility": 2,
+   "wiki_image": "File:Tactical Mk. 3 (Healing).png"
+  },
+  {
+   "name": "Tactical Mk. 3 (Revival)",
+   "slug": "tactical-mk-3-revival",
+   "asset_ids": [
+    "-1328695953",
+    "-1328608435"
+   ],
+   "backpack": 16,
+   "quick_use": 5,
+   "safe_pocket": 2,
+   "augmented": 0,
+   "rarity": "Epic",
+   "image": "metaforge/tactical-mk-3-revival.png",
+   "healing": 0,
+   "grenade": 0,
+   "trinket": 0,
+   "utility": 0,
+   "weapon_slots": 2,
+   "weight_limit": 65.0,
+   "shield_compatibility": 1,
+   "wiki_image": "File:Tactical Mk. 3 (Revival).png"
+  },
+  {
+   "name": "Tactical Mk. 3 (Smoke)",
+   "slug": "tactical-mk-3-smoke",
+   "asset_ids": [
+    "-735920468",
+    "-89748338"
+   ],
+   "backpack": 19,
+   "quick_use": 5,
+   "safe_pocket": 2,
+   "augmented": 2,
+   "rarity": "Epic",
+   "image": "metaforge/tactical-mk-3-smoke.png",
+   "healing": 0,
+   "grenade": 0,
+   "trinket": 0,
+   "utility": 2,
+   "weapon_slots": 2,
+   "weight_limit": 50.0,
+   "shield_compatibility": 2,
+   "wiki_image": "File:Tactical Mk. 3 (Smoke).png"
+  }
+ ]
+}

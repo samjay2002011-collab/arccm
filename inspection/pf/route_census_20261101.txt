@@ -1,0 +1,40 @@
+  ** /v1/pioneer/crates                             500 internal error 
+  ** /v1/pioneer/crates/claim                       405 
+  ** /v1/pioneer/crates/open                        405 
+  ** /v1/pioneer/bonuses                            500 internal error 
+  ** /v1/pioneer/inventory                          500 internal error 
+  ** /v1/pioneer/inventory/list                     405 
+  ** /v1/pioneer/offers/accept                      405 
+  ** /v1/pioneer/quests                             500 internal error 
+  ** /v1/pioneer/quests/complete                    405 
+  ** /v1/pioneer/quests/accept                      405 
+  ** /v1/pioneer/projects/list                      405 
+  ** /v1/pioneer/compensations                      500 internal error 
+  ** /v1/pioneer/compensations/claim                405 
+  ** /v1/pioneer/levels/list                        500 internal error 
+  ** /v1/pioneer/expeditions                        500 internal error 
+  ** /v1/pioneer/seasonal-rewards                   500 internal error 
+  ** /v1/pioneer/seasonal-rewards/claim             405 
+  ** /v1/pioneer/raiders                            200 {"raiders":[{"createdAt":1779929546,"raiderId":"d8bp3iku4q1c7399ug60","state":"ACTIVE"}]} 
+  ** /v1/pioneer/game-data                          500 internal error 
+
+=== اللي موجود (19): 
+  500 /v1/pioneer/crates                             internal error 
+  405 /v1/pioneer/crates/claim                       
+  405 /v1/pioneer/crates/open                        
+  500 /v1/pioneer/bonuses                            internal error 
+  500 /v1/pioneer/inventory                          internal error 
+  405 /v1/pioneer/inventory/list                     
+  405 /v1/pioneer/offers/accept                      
+  500 /v1/pioneer/quests                             internal error 
+  405 /v1/pioneer/quests/complete                    
+  405 /v1/pioneer/quests/accept                      
+  405 /v1/pioneer/projects/list                      
+  500 /v1/pioneer/compensations                      internal error 
+  405 /v1/pioneer/compensations/claim                
+  500 /v1/pioneer/levels/list                        internal error 
+  500 /v1/pioneer/expeditions                        internal error 
+  500 /v1/pioneer/seasonal-rewards                   internal error 
+  405 /v1/pioneer/seasonal-rewards/claim             
+  200 /v1/pioneer/raiders                            {"raiders":[{"createdAt":1779929546,"raiderId":"d8bp3iku4q1c7399ug60","state":"ACTIVE"}]} 
+  500 /v1/pioneer/game-data                          internal error 
