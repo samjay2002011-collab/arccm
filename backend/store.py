@@ -184,12 +184,20 @@ def record_failure(conn, account, error):
 
 
 def latest_snapshot_path(conn, account):
+    # نفضل الملف الأحدث على القرص مباشرة داخل SNAPSHOT_DIR لضمان التوافق التام بين Windows و Linux
+    fallback = sorted(glob.glob(os.path.join(config.SNAPSHOT_DIR, "%s_*.json.gz" % account)))
+    if fallback:
+        return fallback[-1]
     row = conn.execute("SELECT path FROM snapshots WHERE account=? AND ok=1 ORDER BY fetched_at DESC LIMIT 1",
                        (account,)).fetchone()
-    if row and os.path.exists(row["path"]):
-        return row["path"]
-    fallback = sorted(glob.glob(os.path.join(config.SNAPSHOT_DIR, "%s_*.json.gz" % account)))
-    return fallback[-1] if fallback else None
+    if row and row["path"]:
+        if os.path.exists(row["path"]):
+            return row["path"]
+        fname = row["path"].replace("\\", "/").split("/")[-1]
+        cand = os.path.join(config.SNAPSHOT_DIR, fname)
+        if os.path.exists(cand):
+            return cand
+    return None
 
 
 _SNAPSHOT_CACHE = {}  # account -> (path, mtime, data)
