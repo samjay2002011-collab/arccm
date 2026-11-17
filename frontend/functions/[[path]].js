@@ -3,8 +3,10 @@ export async function onRequest(context) {
   const backend = (context.env && context.env.BACKEND_URL) || "https://hours-lay-referrals-sense.trycloudflare.com";
 
   // 1. Files that definitely belong to frontend static build:
-  // .css, .js, favicon.png, /icons/*, and /assets/hideout/*
+  // /, /index.html, .css, .js, favicon.png, /icons/*, and /assets/hideout/*
   if (
+    url.pathname === "/" ||
+    url.pathname === "/index.html" ||
     url.pathname.endsWith(".css") ||
     url.pathname.endsWith(".js") ||
     url.pathname === "/favicon.png" ||
