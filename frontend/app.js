@@ -428,6 +428,7 @@ async function selectAccountById(id) {
   const picked = (state.accounts.find((a) => a.id === id) || {}).name || state.account;
   // الاختيار ده بتاع التاب ده بس — sessionStorage ما بيتشاركش مع التابات التانية.
   state.account = picked;
+  if (state.recentMoves) state.recentMoves.clear();
   rememberTabAccount(picked);
   // اللوحة المقفولة بتاعة حساب واحد — التبديل لحساب تاني يفكّها عنده
   setFrozen(false, true);
@@ -574,12 +575,96 @@ async function addAccount() {
   btn.disabled = false;
 }
 
+/* ------------------------------------------------------------------ حفظ الحركات الأخيرة لمنع ارتداد العناصر
+   عند النقل (المخزن ⇄ الشنطة ⇄ اللود آوت)، الباكند ينفّذ النقلة على بوابة اللعبة
+   فوراً لكن إعادة سحب السنابشوت من Embark تأخذ 3-4 ثوان في خيط خلفي.
+   لو طلبت الواجهة loadSections قبل اكتمال السحب، السيرفر يعيد السنابشوت القديم
+   فترتد القطعة لمكانها السابق مؤقتاً لحوالي 5 ثوان!
+   هذه الدالة تحتفظ بمكان القطعة الجديد حتى يؤكد السيرفر في السنابشوت وصولها لمكانها. */
+function reconcileSectionsWithRecentMoves(data) {
+  if (!state.recentMoves || !state.recentMoves.size) return;
+  const now = Date.now();
+  // إهمال الحركات التي مر عليها أكثر من 12 ثانية كحد أقصى للأمان
+  for (const [id, m] of state.recentMoves.entries()) {
+    if (now - m.at > 12000) {
+      state.recentMoves.delete(id);
+    }
+  }
+  if (!state.recentMoves.size) return;
+
+  const sections = data.sections || {};
+  const loadout = data.loadout || {};
+
+  for (const [id, m] of state.recentMoves.entries()) {
+    let serverContainer = null;
+    let foundRow = null;
+
+    // البحث عن موقع القطعة في رد السيرفر
+    for (const [cName, bucket] of Object.entries(sections)) {
+      const idx = (bucket.slots || []).findIndex((s) => s && s.instance_id === id);
+      if (idx !== -1) {
+        serverContainer = cName;
+        foundRow = bucket.slots[idx];
+        break;
+      }
+    }
+    if (!serverContainer && loadout.slots) {
+      for (const [slotKey, list] of Object.entries(loadout.slots)) {
+        const slotObj = (list || []).find((s) => s && s.item && s.item.instance_id === id);
+        if (slotObj) {
+          serverContainer = slotKey;
+          foundRow = slotObj.item;
+          break;
+        }
+      }
+    }
+
+    // إذا كان السيرفر وضع القطعة بالفعل في الحاوية المستهدفة الصحيحة:
+    if (serverContainer === m.container) {
+      state.recentMoves.delete(id);
+      continue;
+    }
+
+    // إذا كان السيرفر أعاد القطعة في مكانها القديم (السيرفر لسه ما حدّثش):
+    // نحذفها من الحاوية القديمة اللي السيرفر باعتها
+    if (serverContainer) {
+      if (sections[serverContainer] && sections[serverContainer].slots) {
+        sections[serverContainer].slots = sections[serverContainer].slots.filter((s) => s && s.instance_id !== id);
+      }
+      if (loadout.slots && loadout.slots[serverContainer]) {
+        for (const slot of loadout.slots[serverContainer]) {
+          if (slot.item && slot.item.instance_id === id) slot.item = null;
+        }
+      }
+    }
+
+    // ونثبت القطعة في مكانها الجديد اللي المستخدم نقلها إليه
+    const targetRow = foundRow || m.row;
+    targetRow.container = m.container;
+    targetRow.wrapper_id = m.wrapper || "";
+
+    if (loadout.slots && loadout.slots[m.container]) {
+      const emptySlot = loadout.slots[m.container].find((s) => !s.item);
+      if (emptySlot) emptySlot.item = targetRow;
+    } else {
+      if (!sections[m.container]) {
+        sections[m.container] = { container: m.container, capacity: null, slots: [] };
+      }
+      sections[m.container].slots = sections[m.container].slots || [];
+      if (!sections[m.container].slots.some((s) => s && s.instance_id === id)) {
+        sections[m.container].slots.push(targetRow);
+      }
+    }
+  }
+}
+
 async function loadSections(forceUnknown = false) {
   const reqs = [json(`/api/sections?account=${encodeURIComponent(state.account)}`)];
   if (forceUnknown || !state.newItems || !Object.keys(state.newItems).length) {
     reqs.push(loadUnknown());
   }
   const [data] = await Promise.all(reqs);
+  reconcileSectionsWithRecentMoves(data);
   state.sections = data.sections || {};
   state.transferGroups = null;
   setUnlocked(data.unlocked);
@@ -2298,10 +2383,18 @@ function applyOneMoveLocally(move) {
   for (const list of Object.values(state.loadout?.slots || {})) {
     for (const slot of list || []) if (slot.item && ids.has(slot.item.instance_id)) slot.item = null;
   }
+  state.recentMoves = state.recentMoves || new Map();
   for (const row of move.rows) {
     row.container = dbContainer;
     row.wrapper_id = move.wrapper || "";
     row.slot_index = move.entry ? move.entry.slot_index : null;
+    state.recentMoves.set(row.instance_id, {
+      container: dbContainer,
+      wrapper: move.wrapper || "",
+      slot_index: row.slot_index,
+      row: { ...row },
+      at: Date.now()
+    });
   }
   if (move.entry) move.entry.item = move.rows[0];
   let bucket = state.sections[dbContainer];
@@ -2524,6 +2617,9 @@ async function sendMove(group) {
 }
 
 async function settleMoveFailure(job, message, partial, restored = false, reason = "") {
+  if (state.recentMoves && job && job.plan && job.plan.rows) {
+    job.plan.rows.forEach((r) => state.recentMoves.delete(r.instance_id));
+  }
   const dropped = state.moveQueue.splice(0);
   if (reason === "gateway_route_down") {
     // الباب مقفول من عند Embark: الخطة ما اتنفذتش ومفيش حاجة اتغيّرت،
@@ -2550,6 +2646,11 @@ async function settleMoveFailure(job, message, partial, restored = false, reason
 }
 
 async function settleMoveGroupFailure(group, message, partial = false, restored = false, reason = "") {
+  if (state.recentMoves && group) {
+    group.forEach((job) => {
+      (job.plan?.rows || []).forEach((r) => state.recentMoves.delete(r.instance_id));
+    });
+  }
   if (group.length === 1) return settleMoveFailure(group[0], message, partial, restored, reason);
   // الخطة المجمّعة atomic: لو التخطيط فشل مفيش أي نقل اتنفذ، فنرجّع اللوحة من السيرفر
   // بدل ما نرجّع snapshot حركة واحدة (الباقي اتحرك optimistic على اللوحة).
@@ -2569,7 +2670,7 @@ async function settleMoveGroupFailure(group, message, partial = false, restored 
 }
 
 let _loadSectionsTimer = null;
-function scheduleLoadSections(delay = 1200) {
+function scheduleLoadSections(delay = 3500) {
   if (_loadSectionsTimer) clearTimeout(_loadSectionsTimer);
   _loadSectionsTimer = setTimeout(() => {
     _loadSectionsTimer = null;
@@ -2606,7 +2707,7 @@ async function pumpMoveQueue() {
         // بعد ما الطابور يخلص بنرجع نقرأ من السيرفر — السعة وخانات الشنطة
         // بتتغير مع الأوجمنت ولازم الواجهة تاخد الأرقام الرسمية فورًا.
         if (!state.moveQueue.length && state.account === job.account)
-          scheduleLoadSections(1200);
+          scheduleLoadSections(3500);
         loadLog().catch(() => {});
         continue;
       }
@@ -3349,17 +3450,45 @@ async function clearBackpack(scope) {
   const all = scope === "all";
   const ids = [...document.querySelectorAll(all ? ".col-backpack .tile[data-ids], [data-slot-cell] .tile[data-ids]"
     : ".col-backpack .tile[data-ids]")].flatMap((t) => (t.dataset.ids || "").split(",").filter(Boolean));
+  if (!ids.length) return;
+
+  state.recentMoves = state.recentMoves || new Map();
+  const bpRows = (state.sections.backpack?.slots || []).filter((r) => ids.includes(r.instance_id));
+  bpRows.forEach((r) => {
+    state.recentMoves.set(r.instance_id, {
+      container: "stash",
+      wrapper: "",
+      slot_index: null,
+      row: { ...r, container: "stash" },
+      at: Date.now()
+    });
+  });
+  if (state.sections.backpack) {
+    state.sections.backpack.slots = (state.sections.backpack.slots || []).filter((r) => !ids.includes(r.instance_id));
+  }
+  if (!state.sections.stash) state.sections.stash = { container: "stash", slots: [] };
+  state.sections.stash.slots.push(...bpRows);
+  renderInventory();
+
   let out;
   try {
     out = await withSync([...new Set(ids)], true,
       () => post("/api/actions/clear-backpack", { account: state.account, scope }));
-  } catch (err) { toast("⛔ Connection failed: " + err.message, "bad"); return; }
+  } catch (err) {
+    bpRows.forEach((r) => state.recentMoves.delete(r.instance_id));
+    await loadSections().catch(() => {});
+    toast("⛔ Connection failed: " + err.message, "bad");
+    return;
+  }
   if (out.executed) {
     pushHistory(out, all ? "CLEAR ALL" : "CLEAR");
-    await Promise.all([loadSections(), loadLog()]);
+    scheduleLoadSections(3500);
+    loadLog().catch(() => {});
     toast("✔ " + (out.note || "Backpack emptied into the stash."), "ok");
     return;
   }
+  bpRows.forEach((r) => state.recentMoves.delete(r.instance_id));
+  await loadSections().catch(() => {});
   toast("⛔ " + ((out.result || {}).detail || out.detail || "Refused"), "bad");
 }
 
