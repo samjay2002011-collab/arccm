@@ -1,6 +1,6 @@
 export async function onRequest(context) {
   const url = new URL(context.request.url);
-  const backend = (context.env && context.env.BACKEND_URL) || "https://hours-lay-referrals-sense.trycloudflare.com";
+  const backend = (context.env && context.env.BACKEND_URL) || "https://screens-informal-livestock-precision.trycloudflare.com";
 
   // 1. Files that definitely belong to frontend static build:
   // /, /index.html, .css, .js, favicon.png, /icons/*, and /assets/hideout/*
