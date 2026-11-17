@@ -209,8 +209,8 @@ def match_upstream(token, label="", upstream=None):
     return None
 
 
-def add(conn, raw_token, label="", link_upstream=False):
-    """يضيف حساب. بيرجع (record, note). بيرفع ValueError لو التوكن مش JWT مقبول."""
+def add(conn, raw_token, label="", link_upstream=False, owner=None):
+    """يضيف حساب أو يربطه ببروفيل المشترك/الأدمن. بيرجع (record, note). بيرفع ValueError لو التوكن مش JWT مقبول."""
     token = normalize_token(raw_token)
     claims = jwt_claims(token)
     if not claims:
@@ -219,8 +219,56 @@ def add(conn, raw_token, label="", link_upstream=False):
         ok, why = pioneer_client.validate_token_live(token)
         if not ok:
             raise ValueError("The gateway rejected the token: %s" % why)
-    if any((r.get("token") or "") == token for r in store.list_accounts(conn)):
-        raise ValueError("this token is already linked")
+
+    ident = token_identity(token)
+    exp = float(claims.get("exp") or 0) or None
+    clean_lbl = (label or "").strip()
+    clean_owner = (owner or "").strip() or None
+
+    # هل الحساب مربوط مسبقاً (بنفس التوكن أو هوية اللاعب)؟
+    existing = None
+    for r in store.list_accounts(conn):
+        if (r.get("token") or "") == token:
+            existing = r
+            break
+    if not existing:
+        existing = _identity_match(conn, ident)
+
+    if existing:
+        old_owner = (existing.get("owner_username") or "").strip() or None
+        patch = {
+            "id": existing["id"],
+            "token": token,
+            "token_exp": exp,
+            "is_expired": 0,
+            "updated_at": now_iso()
+        }
+        if ident.get("embark_id"):
+            patch["embark_id"] = ident["embark_id"]
+        if ident.get("tpuid"):
+            patch["third_party_user_id"] = ident["tpuid"]
+        
+        # ربط الحساب بالمشترك أو الأدمن
+        if clean_owner != old_owner:
+            patch["owner_username"] = clean_owner
+        
+        if clean_lbl:
+            patch["label"] = clean_lbl
+            patch["display_name"] = clean_lbl
+            remember_name(ident, clean_lbl)
+        
+        # لو المشترك معندوش حساب نشط حالياً، نفعّل هذا الحساب له
+        if clean_owner:
+            active_for_sub = store.active_account(conn, owner=clean_owner)
+            if not active_for_sub or active_for_sub.get("id") == existing["id"]:
+                patch["is_active"] = 1
+        elif not store.active_account(conn, owner=None):
+            patch["is_active"] = 1
+        
+        rec = store.upsert_account(conn, patch)
+        note = f"Linked to profile ({clean_owner})" if clean_owner else "Account updated successfully"
+        return rec, note
+
     limit = profile_limits(conn)
     if limit.get("limit") and limit.get("count", 0) >= limit["limit"]:
         raise ValueError("limit capacity reached (%s/%s)" % (limit.get("count"), limit.get("limit")))
@@ -229,25 +277,37 @@ def add(conn, raw_token, label="", link_upstream=False):
 
     match = match_upstream(token, label)
     if match:
-        rec = store.upsert_account(conn, _record_from_upstream(conn, match))
+        rec_data = _record_from_upstream(conn, match)
+        if clean_owner:
+            rec_data["owner_username"] = clean_owner
+        rec = store.upsert_account(conn, rec_data)
         return rec, "imported from rampart (read-only)"
     if link_upstream:
         created = rampart_client.embark_add(token, label)
         created.setdefault("id", str(uuid.uuid4()))
         if not created.get("token"):
             created["token"] = token
-        rec = store.upsert_account(conn, _record_from_upstream(conn, created))
+        rec_data = _record_from_upstream(conn, created)
+        if clean_owner:
+            rec_data["owner_username"] = clean_owner
+        rec = store.upsert_account(conn, rec_data)
         return rec, "linked on rampart"
+
     taken = {r["name"] for r in store.list_accounts(conn)}
-    display = label.strip() or ("ACCOUNT " + (str(claims.get("sub") or claims.get("player_id") or ""))[-6:] or "ACCOUNT")
+    display = clean_lbl or lookup_name(ident) or ("ACCOUNT " + (str(claims.get("sub") or claims.get("player_id") or ""))[-6:] or "ACCOUNT")
     rec = store.upsert_account(conn, {
-        "id": str(uuid.uuid4()), "name": short_name(display, label, taken), "label": label.strip() or None,
+        "id": str(uuid.uuid4()), "name": short_name(display, label, taken), "label": clean_lbl or None,
         "display_name": display, "platform": "manual", "token": token,
-        "token_exp": float(claims.get("exp") or 0) or None, "is_active": 0, "is_expired": 0,
-        "is_restricted": 0, "linked_upstream": 0, "added_at": now_iso(), "updated_at": now_iso(),
+        "token_exp": exp,
+        "embark_id": ident.get("embark_id") or None,
+        "third_party_user_id": ident.get("tpuid") or None,
+        "owner_username": clean_owner,
+        "is_active": 1 if (clean_owner and not store.active_account(conn, owner=clean_owner)) else (1 if (not clean_owner and not store.active_account(conn, owner=None)) else 0),
+        "is_expired": 0, "is_restricted": 0, "linked_upstream": 0,
+        "added_at": now_iso(), "updated_at": now_iso(),
     })
-    if label.strip():
-        remember_name(token_identity(token), label.strip())
+    if clean_lbl:
+        remember_name(ident, clean_lbl)
     return rec, "saved locally (not linked on rampart yet)"
 
 

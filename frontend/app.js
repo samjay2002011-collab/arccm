@@ -559,8 +559,9 @@ async function addAccount() {
   const btn = $("#acct-add");
   btn.disabled = true;
   acctNote("Verifying the token and pulling account data from Embark…", "");
+  const viewAs = new URLSearchParams(window.location.search).get("view_as") || document.getElementById("view-as-name")?.textContent?.trim() || "";
   try {
-    const out = await post("/api/accounts/add", { token, label });
+    const out = await post("/api/accounts/add", { token, label, owner: viewAs || undefined });
     const a = out.account || {};
     $("#acct-token").value = "";
     $("#acct-label").value = "";

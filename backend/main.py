@@ -733,11 +733,24 @@ def api_profile(request: Request, account: str = ""):
 
 
 @app.post("/api/accounts/add")
-def api_account_add(body: dict):
+def api_account_add(request: Request, body: dict = None):
     body = body or {}
+    conn = store.db()
+    try:
+        ident = _caller_identity(request, conn)
+    finally:
+        conn.close()
+
+    owner = (ident.get("filter_owner") or "").strip() or None
+    # If the caller is admin and provided owner in body or query, respect it
+    if ident.get("is_admin"):
+        override = (body.get("owner") or body.get("subscriber") or request.query_params.get("view_as") or request.query_params.get("subscriber") or "").strip()
+        if override:
+            owner = override
+
     try:
         rec, note = _with_conn(lambda conn: accounts_mod.add(
-            conn, body.get("token") or "", body.get("label") or "", bool(body.get("link_upstream"))))
+            conn, body.get("token") or "", body.get("label") or "", bool(body.get("link_upstream")), owner=owner))
     except ValueError as e:
         raise HTTPException(400, str(e))
     except rampart_client.UpstreamError as e:
