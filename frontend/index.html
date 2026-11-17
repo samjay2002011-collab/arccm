@@ -9,7 +9,7 @@
 <link rel="preload" href="/app.js?v=233" as="script">
 <link rel="icon" href="/favicon.png?v=1">
 <link rel="stylesheet" href="/styles.css?v=71">
-<link rel="stylesheet" href="/accounts.css?v=36">
+<link rel="stylesheet" href="/accounts.css?v=37">
 <link rel="stylesheet" href="/loadout.css?v=39">
 <link rel="stylesheet" href="/phase10.css?v=29">
 <link rel="stylesheet" href="/traders.css?v=34">
@@ -49,20 +49,58 @@
     <span class="sync-ico">⟳</span><span class="sync-label">SYNCHRONIZE</span>
   </button>
   <div class="bar-right">
-    <button class="pill" id="btn-admin-mode" style="display:none; background:rgba(168,85,247,.22); border-color:rgba(168,85,247,.65); color:#f3e8ff; font-weight:800; cursor:pointer; align-items:center; gap:6px;" title="ADMIN MODE">
-      <span style="font-size:13px;">⚙️</span><span>ADMIN MODE</span>
-    </button>
-    <div id="sub-switch-wrap" style="display:none; position:relative;">
-      <button class="pill" id="btn-sub-switch" style="background:rgba(59,130,246,.2); border-color:rgba(59,130,246,.6); color:#93c5fd; font-weight:800; cursor:pointer; align-items:center; gap:6px;" title="التبديل بين حساباتك الشخصية وحسابات المشتركين للمساعدة">
-        <span style="font-size:13px;">👥</span><span id="sub-switch-label">المشتركين</span><span style="font-size:10px;">▼</span>
-      </button>
-      <div id="sub-switch-dropdown" style="display:none; position:absolute; top:calc(100% + 6px); right:0; z-index:9999; background:#12141e; border:1px solid #334155; border-radius:12px; box-shadow:0 12px 30px rgba(0,0,0,.7); min-width:240px; padding:6px; font-size:12px;"></div>
-    </div>
     <div id="view-as-bar" style="display:none; align-items:center; gap:8px; background:linear-gradient(135deg, rgba(245,158,11,.18), rgba(168,85,247,.22)); border:1px solid #f59e0b; border-radius:20px; padding:4px 14px; font-size:11px; font-weight:800; color:#fbbf24; box-shadow:0 0 10px rgba(245,158,11,.2);">
       <span>👁️ وضع الدعم: تتصفح حساب المشترك <b id="view-as-name" style="color:#fff; text-decoration:underline;">—</b></span>
       <a href="/admin/exit-view-as?to=/" style="margin-left:8px; background:linear-gradient(135deg, var(--purple, #a855f7), var(--fuchsia, #d946ef)); color:#fff; padding:3px 10px; border-radius:8px; text-decoration:none; font-size:10px; font-weight:800;" title="العودة لحساباتي الشخصية">↩ العودة لحساباتي الشخصية</a>
     </div>
     <div class="acc-switch" id="acc-switch"></div>
+    <!-- ⚙️ GEAR / SETTINGS MENU -->
+    <div class="gear-menu-wrap" id="gear-menu-wrap">
+      <button class="acc-tab acc-manage" id="btn-gear-toggle" type="button" title="الإعدادات وإدارة الحسابات (Settings & Admin)">
+        <img class="nav-ico" src="/icons/gear.webp" alt="⚙">
+      </button>
+      <div id="gear-dropdown" class="gear-dropdown" style="display:none;">
+        <div class="gear-dropdown-header">
+          <div style="display:flex; align-items:center; gap:6px;">
+            <img src="/icons/gear.webp" style="width:14px; height:14px;" alt="">
+            <span>الإعدادات والتحكم</span>
+          </div>
+          <button id="btn-gear-close" type="button" title="إغلاق">✕</button>
+        </div>
+
+        <!-- 🔐 ADMIN MODE BUTTON -->
+        <button class="gear-btn-admin" id="btn-admin-mode" style="display:none;" type="button" title="ADMIN MODE">
+          <span style="font-size:14px;">⚙️</span>
+          <span>ADMIN MODE</span>
+        </button>
+
+        <!-- 👥 SUBSCRIBERS SWITCHER -->
+        <div id="sub-switch-wrap" style="display:none;">
+          <div class="gear-section-title">👥 الحسابات والمشتركين</div>
+          <button class="gear-btn-sub" id="btn-sub-switch" type="button" title="التبديل بين حساباتك الشخصية وحسابات المشتركين للمساعدة">
+            <span style="font-size:14px;">👥</span>
+            <span id="sub-switch-label">المشتركين</span>
+            <span style="font-size:10px; margin-left:auto;">▼</span>
+          </button>
+          <div id="sub-switch-dropdown" style="display:none;"></div>
+        </div>
+
+        <div class="gear-section-divider"></div>
+
+        <!-- 📋 MANAGE ACCOUNTS -->
+        <button class="gear-item-btn" id="btn-gear-accounts" type="button" title="إدارة الحسابات وإضافة التوكنات">
+          <span style="font-size:14px;">📋</span>
+          <span style="flex:1; text-align:left;">إدارة وتعديل الحسابات (Accounts)</span>
+          <span style="color:#64748b; font-size:11px;">›</span>
+        </button>
+
+        <!-- ⟳ SYNC ALL -->
+        <button class="gear-item-btn secondary" id="btn-gear-sync-all" type="button" title="مزامنة جميع الحسابات">
+          <span style="font-size:13px;">⟳</span>
+          <span style="flex:1; text-align:left;">مزامنة جميع الحسابات (Sync All)</span>
+        </button>
+      </div>
+    </div>
     <div class="queue-wrap">
       <button class="pill queue-pill" id="btn-queue" hidden title="QUEUED MOVES — moves waiting for Embark to reopen the write route; they run on their own the moment it is back">
         <span class="queue-ico">⏳</span><span id="queue-count">0</span>
@@ -112,6 +150,16 @@
 
 <main class="accounts-page" id="view-accounts" hidden>
   <section class="acct-card" id="acct-add-card">
+    <div id="acct-admin-quick-bar" style="display:none; margin-bottom:16px; padding:10px 14px; background:linear-gradient(135deg, rgba(168,85,247,.15), rgba(59,130,246,.15)); border:1px solid rgba(168,85,247,.35); border-radius:10px; align-items:center; justify-content:space-between; gap:10px;">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:16px;">🔐</span>
+        <div>
+          <b style="color:#f3e8ff; font-size:12px;">Admin Controls</b>
+          <div style="color:#94a3b8; font-size:11px;">لوحة الإدارة وقائمة المشتركين</div>
+        </div>
+      </div>
+      <button class="pill primary" id="btn-admin-mode-page" type="button" style="font-size:11px; padding:6px 14px; cursor:pointer;">OPEN ADMIN PANEL</button>
+    </div>
     <h1>Accounts</h1>
     <div class="acct-form">
       <div class="field">
@@ -228,7 +276,7 @@
   </div>
 </div>
 
-<script src="/app.js?v=233"></script>
-<script src="/admin_mode.js?v=4"></script>
+<script src="/app.js?v=234"></script>
+<script src="/admin_mode.js?v=5"></script>
 </body>
 </html>

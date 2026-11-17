@@ -265,9 +265,8 @@ function renderHeader() {
         ${isUnnamed(a) ? `<small class="need-name" data-rename="${esc(a.id)}">✎</small>` : ""}
       </button>`;
   }).join("");
-  const manage = `<button class="acc-tab acc-manage" data-manage="1" title="MANAGE — add / delete / re-authorize"><img class="nav-ico" src="/icons/gear.webp" alt=""></button>`;
   $("#acc-switch").innerHTML = state.accounts.length
-    ? `<div class="acc-tabs">${tabs}${manage}</div>`
+    ? `<div class="acc-tabs">${tabs}</div>`
     : `<div class="acc-tabs"><button class="acc-tab" data-manage="1"><b>NO ACCOUNT</b><small>ADD ONE</small></button></div>`;
 
   const rename = (node) => {
@@ -6342,6 +6341,7 @@ function showView(view) {
   if (view === "traders") loadTraders().catch((e) => toast("⛔ " + e.message, "bad"));
   if (view === "workshop") loadWorkshop().catch((e) => toast("⛔ " + e.message, "bad"));
 }
+window.showView = showView;
 
 $("#btn-scrappy").onclick = scrappyTopClick;
 $("#acct-add").onclick = addAccount;

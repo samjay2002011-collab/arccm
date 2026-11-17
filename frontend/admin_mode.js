@@ -1,4 +1,55 @@
 (async function initAdminMode() {
+  // ⚙️ تهيئة قائمة الترس والإعدادات المنسدلة (Gear Dropdown Menu)
+  const gearWrap = document.getElementById("gear-menu-wrap");
+  const btnGear = document.getElementById("btn-gear-toggle");
+  const gearDropdown = document.getElementById("gear-dropdown");
+  const btnGearClose = document.getElementById("btn-gear-close");
+  const btnGearAccounts = document.getElementById("btn-gear-accounts");
+  const btnGearSyncAll = document.getElementById("btn-gear-sync-all");
+
+  if (btnGear && gearDropdown) {
+    btnGear.onclick = (e) => {
+      e.stopPropagation();
+      const isVisible = gearDropdown.style.display === "flex";
+      gearDropdown.style.display = isVisible ? "none" : "flex";
+    };
+
+    if (btnGearClose) {
+      btnGearClose.onclick = (e) => {
+        e.stopPropagation();
+        gearDropdown.style.display = "none";
+      };
+    }
+
+    if (btnGearAccounts) {
+      btnGearAccounts.onclick = (e) => {
+        e.stopPropagation();
+        gearDropdown.style.display = "none";
+        if (typeof showView === "function") {
+          showView("accounts");
+        } else if (typeof window.showView === "function") {
+          window.showView("accounts");
+        }
+      };
+    }
+
+    if (btnGearSyncAll) {
+      btnGearSyncAll.onclick = (e) => {
+        e.stopPropagation();
+        gearDropdown.style.display = "none";
+        const mainSyncAll = document.getElementById("acct-sync-all");
+        if (mainSyncAll) mainSyncAll.click();
+      };
+    }
+
+    // إغلاق عند الضغط خارج قائمة الترس
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest("#gear-menu-wrap")) {
+        gearDropdown.style.display = "none";
+      }
+    });
+  }
+
   try {
     const res = await fetch("/api/auth/me");
     const data = await res.json();
@@ -17,6 +68,11 @@
 
     if (!data.is_admin) return;
 
+    // شريط أدوات الأدمن في صفحة الحسابات Accounts
+    const acctAdminBar = document.getElementById("acct-admin-quick-bar");
+    const btnAdminPage = document.getElementById("btn-admin-mode-page");
+    if (acctAdminBar) acctAdminBar.style.display = "flex";
+
     // زر ADMIN MODE
     const btn = document.getElementById("btn-admin-mode");
     const modal = document.getElementById("admin-auth-modal");
@@ -25,17 +81,31 @@
     const btnCancel = document.getElementById("admin-mode-cancel");
     const btnUnlock = document.getElementById("admin-mode-unlock");
 
+    const openAdminModal = () => {
+      if (gearDropdown) gearDropdown.style.display = "none";
+      errMsg.textContent = "";
+      pwInput.value = "";
+      modal.hidden = false;
+      setTimeout(() => pwInput.focus(), 60);
+    };
+
     if (btn) {
-      btn.style.display = "inline-flex";
+      btn.style.display = "flex";
       if (data.is_local) {
         btn.onclick = () => { window.location.href = "/admin"; };
       } else {
-        btn.onclick = () => {
-          errMsg.textContent = "";
-          pwInput.value = "";
-          modal.hidden = false;
-          setTimeout(() => pwInput.focus(), 60);
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          openAdminModal();
         };
+      }
+    }
+
+    if (btnAdminPage) {
+      if (data.is_local) {
+        btnAdminPage.onclick = () => { window.location.href = "/admin"; };
+      } else {
+        btnAdminPage.onclick = openAdminModal;
       }
     }
 
@@ -46,7 +116,7 @@
     const subLabel = document.getElementById("sub-switch-label");
 
     if (subSwitchWrap && btnSubSwitch && subDropdown) {
-      subSwitchWrap.style.display = "inline-flex";
+      subSwitchWrap.style.display = "flex";
       
       // جلب قائمة المشتركين
       try {
@@ -97,6 +167,10 @@
         btnSubSwitch.onclick = (e) => {
           e.stopPropagation();
           subDropdown.style.display = subDropdown.style.display === "none" ? "block" : "none";
+        };
+
+        subDropdown.onclick = (e) => {
+          e.stopPropagation();
         };
 
         document.addEventListener("click", () => {
