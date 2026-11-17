@@ -308,10 +308,13 @@ async def subscriber_login(request: Request):
 
 def _caller_identity(request: Request, conn):
     """استخراج هوية المتصل: أدمن، أو مشترك محدد، أو أدمن يتصفح مشتركاً."""
+    import urllib.parse
     is_local = is_local_direct_request(request)
     token = request.cookies.get("cm_subscriber_token") or request.headers.get("X-Subscriber-Token") or ""
     admin_sess = request.cookies.get("cm_admin_session", "")
     view_cookie = request.cookies.get("cm_viewing_subscriber", "")
+    if view_cookie:
+        view_cookie = urllib.parse.unquote(view_cookie)
 
     subs_mod._ensure_tables(conn)
     adm_pw = subs_mod.admin_password(conn)
@@ -324,6 +327,8 @@ def _caller_identity(request: Request, conn):
 
     is_admin = is_local or (token == adm_pw) or (admin_sess and admin_sess in _ADMIN_SESSIONS)
     url_view = (request.query_params.get("view_as") or request.query_params.get("subscriber") or request.query_params.get("owner") or "").strip()
+    if url_view:
+        url_view = urllib.parse.unquote(url_view)
     viewing_as = (url_view or view_cookie or "") if is_admin else ""
     # إذا كان أدمن ومش بيتصفح مشترك معين: filter_owner فاضي تماماً حتى لا تظهر أي حسابات
     filter_owner = viewing_as if is_admin else (sub_name if not is_admin else "")
@@ -539,8 +544,19 @@ def _admin_check(request: Request):
     if is_local_direct_request(request):
         return
     session = request.headers.get("X-Admin-Session", "") or request.cookies.get("cm_admin_session", "")
-    if session not in _ADMIN_SESSIONS:
-        raise HTTPException(403, "Admin session required")
+    if session and session in _ADMIN_SESSIONS:
+        return
+    conn = store.db()
+    try:
+        adm_pw = subs_mod.admin_password(conn)
+    finally:
+        conn.close()
+    token = request.cookies.get("cm_subscriber_token") or request.headers.get("X-Subscriber-Token") or ""
+    if token and token == adm_pw:
+        if session:
+            _ADMIN_SESSIONS.add(session)
+        return
+    raise HTTPException(403, "Admin session required")
 
 
 @app.get("/admin/api/subscribers")
@@ -631,7 +647,7 @@ def admin_view_as(sub_id: int, request: Request):
     name_enc = urllib.parse.quote(sub["name"])
     resp = RedirectResponse(url="/?view_as=" + name_enc, status_code=302)
     resp.set_cookie("cm_subscriber_token", sub["token"], max_age=400*86400, httponly=True, samesite="lax")
-    resp.set_cookie("cm_viewing_subscriber", sub["name"], max_age=400*86400, httponly=False, samesite="lax")
+    resp.set_cookie("cm_viewing_subscriber", name_enc, max_age=400*86400, httponly=False, samesite="lax")
     return resp
 
 
@@ -640,7 +656,11 @@ def admin_exit_view_as(request: Request):
     """الخروج من وضع تصفح المشترك والعودة للوحة الأدمن وقائمة المشتركين (للأدمن فقط)."""
     from fastapi.responses import RedirectResponse
     admin_sess = request.cookies.get("cm_admin_session", "")
-    is_admin = is_local_direct_request(request) or (admin_sess and admin_sess in _ADMIN_SESSIONS)
+    token = request.cookies.get("cm_subscriber_token") or ""
+    conn = store.db()
+    adm_pw = subs_mod.admin_password(conn)
+    conn.close()
+    is_admin = is_local_direct_request(request) or (admin_sess and admin_sess in _ADMIN_SESSIONS) or (token == adm_pw)
     if not is_admin:
         # حماية أمنية صارمة: أي محاولة دخول لغير الأدمن يتم رفضها فوراً وتوجيهه للرئيسية
         return RedirectResponse(url="/", status_code=302)
@@ -649,9 +669,6 @@ def admin_exit_view_as(request: Request):
     resp = RedirectResponse(url=target, status_code=302)
     resp.delete_cookie("cm_viewing_subscriber")
     if not is_local_direct_request(request):
-        conn = store.db()
-        adm_pw = subs_mod.admin_password(conn)
-        conn.close()
         resp.set_cookie("cm_subscriber_token", adm_pw, max_age=400*86400, httponly=True, samesite="lax")
     return resp
 
