@@ -1,6 +1,7 @@
 # secrets & runtime state
 .env
 data/*.db
+!data/rampart_local.db
 data/*.log
 data/access.json
 data/agent_secret.txt
