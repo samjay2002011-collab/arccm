@@ -174,7 +174,7 @@ async def cache_headers(request, call_next):
 
 # مسارات مفتوحة بدون توكن مشترك
 _PUBLIC_PATHS = {
-    "/login", "/auth/subscriber/login", "/admin", "/admin/exit-view-as", "/favicon.png",
+    "/login", "/auth/subscriber/login", "/admin", "/favicon.png",
     "/login.js", "/admin.js", "/admin_mode.js",
     "/api/status", "/api/subscriber/verify", "/download/CMSync.exe", "/CMSync.exe"
 }
@@ -637,8 +637,14 @@ def admin_view_as(sub_id: int, request: Request):
 
 @app.get("/admin/exit-view-as")
 def admin_exit_view_as(request: Request):
-    """الخروج من وضع تصفح المشترك والعودة للوحة الأدمن وقائمة المشتركين."""
+    """الخروج من وضع تصفح المشترك والعودة للوحة الأدمن وقائمة المشتركين (للأدمن فقط)."""
     from fastapi.responses import RedirectResponse
+    admin_sess = request.cookies.get("cm_admin_session", "")
+    is_admin = is_local_direct_request(request) or (admin_sess and admin_sess in _ADMIN_SESSIONS)
+    if not is_admin:
+        # حماية أمنية صارمة: أي محاولة دخول لغير الأدمن يتم رفضها فوراً وتوجيهه للرئيسية
+        return RedirectResponse(url="/", status_code=302)
+
     target = request.query_params.get("to") or "/admin"
     resp = RedirectResponse(url=target, status_code=302)
     resp.delete_cookie("cm_viewing_subscriber")
