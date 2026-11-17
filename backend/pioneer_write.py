@@ -1717,10 +1717,10 @@ def move_plan(conn, account, moves):
         if account in _INV_CACHE:
             _INV_CACHE[account]["ts"] = time.time()
 
-        # 3. مزامنة الـ snapshot الكامل في الخلفية حتى لا ينتظر المستخدم 3 ثواني
+        # 3. مزامنة الـ snapshot الكامل في الخلفية فوراً بعد الحركة
         def _bg_sync():
             try:
-                time.sleep(0.4)
+                time.sleep(0.3)
                 d_after = pc.fetch_inventory_for(account)
                 if d_after:
                     _INV_CACHE[account] = {
@@ -1730,9 +1730,11 @@ def move_plan(conn, account, moves):
                     }
                     c = store.db()
                     _refresh_data(c, account, d_after)
+                    c.execute("UPDATE accounts SET last_sync=? WHERE name=?", (time.time(), account))
+                    c.commit()
                     c.close()
             except Exception as e:
-                pass
+                print(f"[_bg_sync error for {account}]: {e}")
         threading.Thread(target=_bg_sync, daemon=True).start()
 
         _log(conn, account, {"target_container": "overflow" if to_overflow else moves[-1].get("target_container"),

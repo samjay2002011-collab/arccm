@@ -43,6 +43,6 @@ ACCOUNT_LIMIT = int(os.environ.get("RAMPART_LOCAL_ACCOUNT_LIMIT", "15"))
 # للرجوع لجهازك لوحدك: RAMPART_LOCAL_HOST=127.0.0.1
 HOST = os.environ.get("RAMPART_LOCAL_HOST", "0.0.0.0")
 PORT = int(os.environ.get("PORT") or os.environ.get("RAMPART_LOCAL_PORT") or "8001")
-REFRESH_SECONDS = int(os.environ.get("RAMPART_LOCAL_REFRESH", "300"))
+REFRESH_SECONDS = int(os.environ.get("RAMPART_LOCAL_REFRESH", "15"))
 HTTP_TIMEOUT = 30
 MAX_SNAPSHOT_KEEP = 20

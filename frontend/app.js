@@ -658,6 +658,11 @@ async function addAccount() {
    1. تثبيت القطعة في مكانها الجديد المستهدف.
    2. مسحها تماماً من أي مكان قديم أو مكرر.
    3. منع التكرار العام (Global Deduplication): لا يمكن لأي قطعة التواجد في مكانين في آن واحد. */
+/* ---------------- مزامنة الحركات المتفائلة واللود آوت ----------------
+   1. الحركات المتفائلة (recentMoves): لا تفقد القطعة المنقولة أثناء انتظار السيرفر.
+   2. الأولوية المطلقة للود آوت: إذا تم تجهيز قطعة في الـ loadout، تظل في الـ loadout
+      وتُزال من الـ stash/overflow إذا أرجع السيرفر سنابشوت قديم يحتويها.
+   3. منع التكرار العام (Deduplication): تصفية أي تكرارات شبحية. */
 function reconcileSectionsWithRecentMoves(data) {
   if (!data) return;
   const sections = data.sections || (data.sections = {});
@@ -665,16 +670,16 @@ function reconcileSectionsWithRecentMoves(data) {
   const lSlots = loadout.slots || (loadout.slots = {});
   const now = Date.now();
 
-  // 1. تنظيف الحركات القديمة بعد 15 ثانية كحد أقصى للأمان
+  // 1. تنظيف الحركات القديمة بعد 60 ثانية
   if (state.recentMoves && state.recentMoves.size) {
     for (const [id, m] of state.recentMoves.entries()) {
-      if (now - m.at > 15000) {
+      if (now - m.at > 60000) {
         state.recentMoves.delete(id);
       }
     }
   }
 
-  // 2. تطبيق جميع الحركات الأخيرة المسجلة محلياً وإزالة أي نسخ مكررة
+  // 2. تطبيق جميع الحركات الأخيرة المسجلة محلياً
   if (state.recentMoves && state.recentMoves.size) {
     for (const [id, m] of state.recentMoves.entries()) {
       const targetContainer = m.container;
@@ -683,12 +688,12 @@ function reconcileSectionsWithRecentMoves(data) {
       // البحث عن بيانات القطعة من أي قسم بالسيرفر
       for (const bucket of Object.values(sections)) {
         const found = (bucket.slots || []).find((s) => s && s.instance_id === id);
-        if (found) { targetRow = { ...found, ...targetRow }; break; }
+        if (found) { targetRow = { ...found, ...(targetRow || {}) }; break; }
       }
-      if (!targetRow) {
+      if (!targetRow || !targetRow.image) {
         for (const list of Object.values(lSlots)) {
           const found = (list || []).find((s) => s && s.item && s.item.instance_id === id);
-          if (found && found.item) { targetRow = { ...found.item, ...targetRow }; break; }
+          if (found && found.item) { targetRow = { ...found.item, ...(targetRow || {}) }; break; }
         }
       }
       if (!targetRow) continue;
@@ -736,31 +741,37 @@ function reconcileSectionsWithRecentMoves(data) {
     }
   }
 
-  // 3. قاعدة مانعة للتكرار الشبحي (Global Deduplication):
-  // أي قطعة (instance_id) موجودة بالفعل في المخزن/القسم، لا يمكن أن تظل في الشنطة/اللود آوت!
-  const seenIds = new Set();
-  for (const bucket of Object.values(sections)) {
-    if (!bucket.slots) continue;
-    const cleanSlots = [];
-    for (const item of bucket.slots) {
-      if (!item || !item.instance_id) continue;
-      if (seenIds.has(item.instance_id)) continue;
-      seenIds.add(item.instance_id);
-      cleanSlots.push(item);
-    }
-    bucket.slots = cleanSlots;
-  }
-
+  // 3. قاعدة مانعة للتكرار وحماية خانات اللود آوت والشنطة (Loadout Priority Deduplication):
+  // القطع المجهزة في الـ loadout أو الـ backpack لها الأولوية المطلقة!
+  // أي قطعة موجودة في الـ loadout لا يجوز أن تظهر في الـ stash أو الـ overflow كشبح من سنابشوت قديم.
+  const loadoutIds = new Set();
   for (const list of Object.values(lSlots)) {
     for (const slot of list || []) {
       if (slot && slot.item && slot.item.instance_id) {
-        if (seenIds.has(slot.item.instance_id)) {
-          slot.item = null; // شبح مكرر من سنابشوت قديم، نفرغه فوراً!
+        if (loadoutIds.has(slot.item.instance_id)) {
+          slot.item = null; // مكرر داخل خانات اللودآوت نفسها
         } else {
-          seenIds.add(slot.item.instance_id);
+          loadoutIds.add(slot.item.instance_id);
         }
       }
     }
+  }
+
+  // تنظيف الـ sections (المخزن والأوفرستاش) من أي قطعة مجهزة بالفعل
+  for (const bucket of Object.values(sections)) {
+    if (!bucket.slots) continue;
+    const cleanSlots = [];
+    const seenSectionIds = new Set();
+    for (const item of bucket.slots) {
+      if (!item || !item.instance_id) continue;
+      // إذا كانت القطعة مجهزة في اللودآوت، لا تظهر في الستاش كشبح
+      if (loadoutIds.has(item.instance_id)) continue;
+      // منع التكرار داخل نفس القسم
+      if (seenSectionIds.has(item.instance_id)) continue;
+      seenSectionIds.add(item.instance_id);
+      cleanSlots.push(item);
+    }
+    bucket.slots = cleanSlots;
   }
 }
 
@@ -2503,10 +2514,17 @@ function applyOneMoveLocally(move) {
     });
   }
   if (move.entry) move.entry.item = move.rows[0];
-  let bucket = state.sections[dbContainer];
-  if (!bucket) bucket = state.sections[dbContainer] = { container: dbContainer, capacity: null, slots: [] };
-  bucket.slots = bucket.slots || [];
-  bucket.slots.push(...move.rows);
+  if (dbContainer === "stash" || dbContainer === "overflow") {
+    let bucket = state.sections[dbContainer];
+    if (!bucket) bucket = state.sections[dbContainer] = { container: dbContainer, capacity: null, slots: [] };
+    bucket.slots = bucket.slots || [];
+    bucket.slots.push(...move.rows);
+  } else if (state.loadout?.slots?.[dbContainer]) {
+    if (!move.entry) {
+      const freeSlot = state.loadout.slots[dbContainer].find((s) => !s.item) || state.loadout.slots[dbContainer][0];
+      if (freeSlot) freeSlot.item = move.rows[0];
+    }
+  }
 }
 
 function applyMoveLocally(plan) {
@@ -2776,7 +2794,7 @@ async function settleMoveGroupFailure(group, message, partial = false, restored 
 }
 
 let _loadSectionsTimer = null;
-function scheduleLoadSections(delay = 3500) {
+function scheduleLoadSections(delay = 1800) {
   if (_loadSectionsTimer) clearTimeout(_loadSectionsTimer);
   _loadSectionsTimer = setTimeout(() => {
     _loadSectionsTimer = null;
@@ -2813,7 +2831,7 @@ async function pumpMoveQueue() {
         // بعد ما الطابور يخلص بنرجع نقرأ من السيرفر — السعة وخانات الشنطة
         // بتتغير مع الأوجمنت ولازم الواجهة تاخد الأرقام الرسمية فورًا.
         if (!state.moveQueue.length && state.account === job.account)
-          scheduleLoadSections(3500);
+          scheduleLoadSections(1800);
         loadLog().catch(() => {});
         continue;
       }
@@ -3379,7 +3397,7 @@ async function runCombine(srcId, rel) {
     }));
   } catch (err) { toast("⛔ Connection failed: " + err.message, "bad"); return; }
   if (out.executed) {
-    scheduleLoadSections(3500);
+    scheduleLoadSections(1800);
     loadLog().catch(() => {});
     toast(`✔ ${out.detail || "Merge " + rel.name + ": now " + num(out.after?.target) + "."}`, "ok");
     return;
@@ -3399,7 +3417,7 @@ async function runSwap(srcId, rel) {
   } catch (err) { toast("⛔ Connection failed: " + err.message, "bad"); return; }
   if (out.executed) {
     pushHistory(out, "Swap " + (rel.name || "two items"));
-    scheduleLoadSections(3500);
+    scheduleLoadSections(1800);
     loadLog().catch(() => {});
     toast("✔ " + (out.detail || "Swap done."), "ok");
     return;
@@ -3441,7 +3459,7 @@ async function runAction(spec) {
   if (out.executed) {
     state.selected.clear();
     pushHistory(out, spec.label || spec.kind);
-    scheduleLoadSections(3500);
+    scheduleLoadSections(1800);
     loadLog().catch(() => {});
     toast("✔ Executed on the game account: " + spec.label, "ok");
     return;
@@ -3593,7 +3611,7 @@ async function clearBackpack(scope) {
   }
   if (out.executed) {
     pushHistory(out, all ? "CLEAR ALL" : "CLEAR");
-    scheduleLoadSections(3500);
+    scheduleLoadSections(1800);
     loadLog().catch(() => {});
     toast("✔ " + (out.note || "Backpack emptied into the stash."), "ok");
     return;
