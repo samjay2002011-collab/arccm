@@ -1,6 +1,6 @@
 {
- "generated_at": 1794929658.2866397,
- "duration_sec": 11.9,
+ "generated_at": 1794935980.580978,
+ "duration_sec": 3.0,
  "mode": "degraded",
  "accounts_online": 2,
  "accounts_total": 4,
@@ -8,9 +8,9 @@
   {
    "account": "RAIDER40512",
    "ok": true,
-   "items": 78,
-   "instances": 464,
-   "snapshot": "RAIDER40512_20261117-173421.json.gz",
+   "items": 80,
+   "instances": 483,
+   "snapshot": "RAIDER40512_20261117-191941.json.gz",
    "assets": {},
    "traders": {
     "ok": false,
@@ -32,8 +32,8 @@
    "account": "G22",
    "ok": true,
    "items": 439,
-   "instances": 4361,
-   "snapshot": "G22_20261117-173430.json.gz",
+   "instances": 4356,
+   "snapshot": "G22_20261117-191943.json.gz",
    "assets": {},
    "traders": {
     "ok": false,

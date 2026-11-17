@@ -6748,29 +6748,27 @@ setInterval(() => {
   refreshAll().catch(() => {});
 }, 60000);
 
-/* ---------------- عيون على الأجن ----------------
-   الأجن (CMSync) بيبعت التوكن والباكند يسحب المخزن قراءةً — فاللوحة بتتحدّث
-   فعلاً في القاعدة، بس التاب المفتوح كان لسه عارض القديم لحد ما حد يدوس SYNCHRONIZE
-   أو ياستنى دورة الـ 60 ثانية. بنراقب مؤشر الإرسال بطلب خفيف ونسحب الأقسام أول ما
-   يجي جديد — من غير أي كتابة على حساب اللعبة، قراءة بس. */
+/* ---------------- المزامنة الذكية التلقائية ----------------
+   نراقب مؤشر التحديث في السيرفر كل ثانيتين ونصف، وبمجرد عودة المستخدم للمتصفح
+   أو حدوث أي سحب جديد في الخلفية تتحدث اللوحة تلقائياً دون الحاجة لأي ضغطة زر. */
 let syncMark = null;
 
 function syncVersion(st) {
-  const acc = Object.entries(st.accounts || {}).map(([a, v]) => `${a}:${v.items || 0}`);
+  const acc = Object.entries(st.accounts || {}).map(([a, v]) => `${a}:${v.items || 0}:${v.last_success || 0}`);
   acc.sort();
-  return `${(st.agent || {}).at || 0}|${acc.join(",")}`;
+  return `${(st.agent || {}).at || 0}|${st.last_attempt_age_minutes || 0}|${acc.join(",")}`;
 }
 
 async function watchAgentSync() {
-  if (document.hidden || state.frozen || state.moveBusy || state.moveQueue.length) return;
-  if (state.menuOpen || state.drag || state.loPopOpen) return; // ما نقضّش وهو بيتعامل مع البلاطات
-  if (!$("#modal") || !$("#modal").hidden) return; // مفيش نقض على نافذة مفتوحة
+  if (state.frozen || state.moveBusy || state.moveQueue.length) return;
+  if (state.menuOpen || state.drag || state.loPopOpen) return; // ما نقطعش أثناء التعامل مع البلاطات
+  if (!$("#modal") || !$("#modal").hidden) return; // مفيش تحديث أثناء وجود نافذة منبثقة
   const st = await json("/api/status");
   const mark = syncVersion(st);
   const previous = syncMark;
   syncMark = mark;
   state.status = st;
-  // الطابور بيتفرّغ في الخلفية من غير ما حد يدوس حاجة — الشيب لازم يلحقه.
+  // تفريغ الطابور في الخلفية
   const q = (st.queue || {}).count || 0;
   if (q !== state.queue.count) loadQueue().catch(() => {});
   if (previous === null || previous === mark) return;
@@ -6781,4 +6779,16 @@ async function watchAgentSync() {
     toast(`✔ The agent pulled the state of ${rec.display_name || a.account || "the account"} — the board updated on its own.`, "ok");
   }
 }
-setInterval(() => { watchAgentSync().catch(() => {}); }, 6000);
+
+// فحص دوري سريع كل 2.5 ثانية
+setInterval(() => { watchAgentSync().catch(() => {}); }, 2500);
+
+// تحديث فوري بمجرد رجوع المستخدم لتبويب المتصفح بعد اللعب
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) {
+    watchAgentSync().catch(() => {});
+  }
+});
+window.addEventListener("focus", () => {
+  watchAgentSync().catch(() => {});
+});
