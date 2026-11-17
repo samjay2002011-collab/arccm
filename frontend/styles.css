@@ -552,6 +552,7 @@ body.dragging .tile.drag-src,
 body.dragging .tile.dnd-combo,
 body.dragging .tile.dnd-combine,
 body.dragging .tile.dnd-swap { transition: none; }
+body.dragging .tile.drag-src { opacity: 0.25; }
 /* بلاطة الوجهة بترسم فوق GPU بدل إعادة تخطيط الشجرة مع كل حركة ماوس. */
 body.dragging .tile.dnd-combo,
 body.dragging .tile.dnd-combine,

@@ -575,84 +575,114 @@ async function addAccount() {
   btn.disabled = false;
 }
 
-/* ------------------------------------------------------------------ حفظ الحركات الأخيرة لمنع ارتداد العناصر
+/* ------------------------------------------------------------------ حفظ الحركات الأخيرة ومنع ارتداد العناصر
    عند النقل (المخزن ⇄ الشنطة ⇄ اللود آوت)، الباكند ينفّذ النقلة على بوابة اللعبة
-   فوراً لكن إعادة سحب السنابشوت من Embark تأخذ 3-4 ثوان في خيط خلفي.
-   لو طلبت الواجهة loadSections قبل اكتمال السحب، السيرفر يعيد السنابشوت القديم
-   فترتد القطعة لمكانها السابق مؤقتاً لحوالي 5 ثوان!
-   هذه الدالة تحتفظ بمكان القطعة الجديد حتى يؤكد السيرفر في السنابشوت وصولها لمكانها. */
+   فوراً لكن إعادة سحب السنابشوت من Embark تأخذ بضع ثوان في خيط خلفي.
+   هذه الدالة تضمن 100%:
+   1. تثبيت القطعة في مكانها الجديد المستهدف.
+   2. مسحها تماماً من أي مكان قديم أو مكرر.
+   3. منع التكرار العام (Global Deduplication): لا يمكن لأي قطعة التواجد في مكانين في آن واحد. */
 function reconcileSectionsWithRecentMoves(data) {
-  if (!state.recentMoves || !state.recentMoves.size) return;
+  if (!data) return;
+  const sections = data.sections || (data.sections = {});
+  const loadout = data.loadout || (data.loadout = {});
+  const lSlots = loadout.slots || (loadout.slots = {});
   const now = Date.now();
-  // إهمال الحركات التي مر عليها أكثر من 12 ثانية كحد أقصى للأمان
-  for (const [id, m] of state.recentMoves.entries()) {
-    if (now - m.at > 12000) {
-      state.recentMoves.delete(id);
+
+  // 1. تنظيف الحركات القديمة بعد 15 ثانية كحد أقصى للأمان
+  if (state.recentMoves && state.recentMoves.size) {
+    for (const [id, m] of state.recentMoves.entries()) {
+      if (now - m.at > 15000) {
+        state.recentMoves.delete(id);
+      }
     }
   }
-  if (!state.recentMoves.size) return;
 
-  const sections = data.sections || {};
-  const loadout = data.loadout || {};
+  // 2. تطبيق جميع الحركات الأخيرة المسجلة محلياً وإزالة أي نسخ مكررة
+  if (state.recentMoves && state.recentMoves.size) {
+    for (const [id, m] of state.recentMoves.entries()) {
+      const targetContainer = m.container;
+      let targetRow = m.row ? { ...m.row } : null;
 
-  for (const [id, m] of state.recentMoves.entries()) {
-    let serverContainer = null;
-    let foundRow = null;
-
-    // البحث عن موقع القطعة في رد السيرفر
-    for (const [cName, bucket] of Object.entries(sections)) {
-      const idx = (bucket.slots || []).findIndex((s) => s && s.instance_id === id);
-      if (idx !== -1) {
-        serverContainer = cName;
-        foundRow = bucket.slots[idx];
-        break;
+      // البحث عن بيانات القطعة من أي قسم بالسيرفر
+      for (const bucket of Object.values(sections)) {
+        const found = (bucket.slots || []).find((s) => s && s.instance_id === id);
+        if (found) { targetRow = { ...found, ...targetRow }; break; }
       }
-    }
-    if (!serverContainer && loadout.slots) {
-      for (const [slotKey, list] of Object.entries(loadout.slots)) {
-        const slotObj = (list || []).find((s) => s && s.item && s.item.instance_id === id);
-        if (slotObj) {
-          serverContainer = slotKey;
-          foundRow = slotObj.item;
-          break;
+      if (!targetRow) {
+        for (const list of Object.values(lSlots)) {
+          const found = (list || []).find((s) => s && s.item && s.item.instance_id === id);
+          if (found && found.item) { targetRow = { ...found.item, ...targetRow }; break; }
         }
       }
-    }
+      if (!targetRow) continue;
 
-    // إذا كان السيرفر وضع القطعة بالفعل في الحاوية المستهدفة الصحيحة:
-    if (serverContainer === m.container) {
-      state.recentMoves.delete(id);
-      continue;
-    }
-
-    // إذا كان السيرفر أعاد القطعة في مكانها القديم (السيرفر لسه ما حدّثش):
-    // نحذفها من الحاوية القديمة اللي السيرفر باعتها
-    if (serverContainer) {
-      if (sections[serverContainer] && sections[serverContainer].slots) {
-        sections[serverContainer].slots = sections[serverContainer].slots.filter((s) => s && s.instance_id !== id);
+      targetRow.container = targetContainer;
+      targetRow.wrapper_id = m.wrapper || "";
+      if (m.slot_index !== null && m.slot_index !== undefined) {
+        targetRow.slot_index = m.slot_index;
       }
-      if (loadout.slots && loadout.slots[serverContainer]) {
-        for (const slot of loadout.slots[serverContainer]) {
-          if (slot.item && slot.item.instance_id === id) slot.item = null;
+
+      // مسح القطعة فوراً من كافة أقسام الـ sections
+      for (const [cName, bucket] of Object.entries(sections)) {
+        if (bucket.slots) {
+          bucket.slots = bucket.slots.filter((s) => s && s.instance_id !== id);
         }
       }
-    }
-
-    // ونثبت القطعة في مكانها الجديد اللي المستخدم نقلها إليه
-    const targetRow = foundRow || m.row;
-    targetRow.container = m.container;
-    targetRow.wrapper_id = m.wrapper || "";
-
-    if (loadout.slots && loadout.slots[m.container]) {
-      const emptySlot = loadout.slots[m.container].find((s) => !s.item);
-      if (emptySlot) emptySlot.item = targetRow;
-    } else {
-      if (!sections[m.container]) {
-        sections[m.container] = { container: m.container, capacity: null, slots: [] };
+      // ومسحها فوراً من كافة خانات الـ loadout/backpack
+      for (const list of Object.values(lSlots)) {
+        for (const slot of list || []) {
+          if (slot.item && slot.item.instance_id === id) {
+            slot.item = null;
+          }
+        }
       }
-      sections[m.container].slots = sections[m.container].slots || [];
-      if (!sections[m.container].slots.some((s) => s && s.instance_id === id)) {
-        sections[m.container].slots.push(targetRow);
+
+      // وضع القطعة حصراً في مكانها الجديد المستهدف
+      if (lSlots[targetContainer]) {
+        let placed = false;
+        if (m.wrapper) {
+          const targetSlot = lSlots[targetContainer].find((s) => s && s.wrapper_id === m.wrapper);
+          if (targetSlot) { targetSlot.item = targetRow; placed = true; }
+        }
+        if (!placed) {
+          const emptySlot = lSlots[targetContainer].find((s) => s && !s.item);
+          if (emptySlot) { emptySlot.item = targetRow; placed = true; }
+          else if (lSlots[targetContainer].length) { lSlots[targetContainer][0].item = targetRow; placed = true; }
+        }
+      } else {
+        if (!sections[targetContainer]) {
+          sections[targetContainer] = { container: targetContainer, capacity: null, slots: [] };
+        }
+        sections[targetContainer].slots = sections[targetContainer].slots || [];
+        sections[targetContainer].slots.push(targetRow);
+      }
+    }
+  }
+
+  // 3. قاعدة مانعة للتكرار الشبحي (Global Deduplication):
+  // أي قطعة (instance_id) موجودة بالفعل في المخزن/القسم، لا يمكن أن تظل في الشنطة/اللود آوت!
+  const seenIds = new Set();
+  for (const bucket of Object.values(sections)) {
+    if (!bucket.slots) continue;
+    const cleanSlots = [];
+    for (const item of bucket.slots) {
+      if (!item || !item.instance_id) continue;
+      if (seenIds.has(item.instance_id)) continue;
+      seenIds.add(item.instance_id);
+      cleanSlots.push(item);
+    }
+    bucket.slots = cleanSlots;
+  }
+
+  for (const list of Object.values(lSlots)) {
+    for (const slot of list || []) {
+      if (slot && slot.item && slot.item.instance_id) {
+        if (seenIds.has(slot.item.instance_id)) {
+          slot.item = null; // شبح مكرر من سنابشوت قديم، نفرغه فوراً!
+        } else {
+          seenIds.add(slot.item.instance_id);
+        }
       }
     }
   }
@@ -2987,7 +3017,8 @@ function wireInventory() {
       if (settleTimer) { clearTimeout(settleTimer); settleTimer = 0; }
       settled = "";
       const el = hitOf(e);
-      if (!el) return;
+      if (!el) { endDragVisuals(); return; }
+      if (e.dataTransfer) e.dataTransfer.dropEffect = "move";
       if (el.classList.contains("tile")) {
         const rel = tileDropRelation(d, el);
         if (!rel) return;
@@ -3018,6 +3049,7 @@ function wireInventory() {
       const key = el.dataset.scroll;
       if (key !== "stash" && key !== "backpack") return;
       e.preventDefault();
+      e.stopPropagation();
       const check = bodyDropCheck(el, d);
       if (!check.ok) {
         if (check.reason) toast(check.reason, "bad");
@@ -3271,7 +3303,8 @@ async function runCombine(srcId, rel) {
     }));
   } catch (err) { toast("⛔ Connection failed: " + err.message, "bad"); return; }
   if (out.executed) {
-    await Promise.all([loadSections(), loadLog()]);
+    scheduleLoadSections(3500);
+    loadLog().catch(() => {});
     toast(`✔ ${out.detail || "Merge " + rel.name + ": now " + num(out.after?.target) + "."}`, "ok");
     return;
   }
@@ -3290,7 +3323,8 @@ async function runSwap(srcId, rel) {
   } catch (err) { toast("⛔ Connection failed: " + err.message, "bad"); return; }
   if (out.executed) {
     pushHistory(out, "Swap " + (rel.name || "two items"));
-    await Promise.all([loadSections(), loadLog()]);
+    scheduleLoadSections(3500);
+    loadLog().catch(() => {});
     toast("✔ " + (out.detail || "Swap done."), "ok");
     return;
   }
@@ -3304,7 +3338,7 @@ async function runAction(spec) {
   if (account === "ALL") { toast("Pick one account first before any action.", "bad"); return; }
   if (state.frozen) { frozenBlock("This move"); return; }
 
-  if (spec.kind === "move" && (state.writes?.armed || state.writes?.move_armed)) {
+  if (spec.kind === "move") {
     const plan = validateLocalMove(spec);
     if (!plan.ok) { toast("⛔ " + (plan.reason || "This move is not allowed."), "bad"); return; }
     if (plan.skippedCount) {
@@ -3331,7 +3365,8 @@ async function runAction(spec) {
   if (out.executed) {
     state.selected.clear();
     pushHistory(out, spec.label || spec.kind);
-    await Promise.all([loadSections(), loadLog()]);
+    scheduleLoadSections(3500);
+    loadLog().catch(() => {});
     toast("✔ Executed on the game account: " + spec.label, "ok");
     return;
   }
