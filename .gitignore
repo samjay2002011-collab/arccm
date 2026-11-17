@@ -6,10 +6,11 @@ data/*.log
 data/access.json
 data/agent_secret.txt
 data/hosting.json
-data/pioneer_manifest.json
-data/pioneer_telemetry.json
-data/main_accounts.json
-data/snapshots/
+!data/pioneer_manifest.json
+!data/pioneer_telemetry.json
+!data/main_accounts.json
+data/snapshots/*
+!data/snapshots/*.json.gz
 data/launch/
 state.json
 *.log
