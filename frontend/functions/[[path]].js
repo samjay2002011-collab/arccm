@@ -16,6 +16,27 @@ export async function onRequest(context) {
     return context.next();
   }
 
+  // 1.5. Direct Cloudflare CDN downloads for CMSync:
+  if (
+    url.pathname === "/download/CMSync.exe" ||
+    url.pathname.toLowerCase() === "/download/cmsync.exe"
+  ) {
+    const res = await context.next();
+    const headers = new Headers(res.headers);
+    headers.set("Content-Disposition", 'attachment; filename="CMSync.exe"');
+    headers.set("Content-Type", "application/octet-stream");
+    return new Response(res.body, { status: res.status, headers });
+  }
+
+  if (url.pathname === "/download/cmsync" || url.pathname.toLowerCase() === "/download/cmsync") {
+    const assetUrl = new URL("/download/CMSync.exe", url.origin);
+    const assetRes = context.env.ASSETS ? await context.env.ASSETS.fetch(assetUrl) : await context.next();
+    const headers = new Headers(assetRes.headers);
+    headers.set("Content-Disposition", 'attachment; filename="CMSync.exe"');
+    headers.set("Content-Type", "application/octet-stream");
+    return new Response(assetRes.body, { status: assetRes.status, headers });
+  }
+
   // 2. Explicit login HTML page
   if (url.pathname === "/login" || url.pathname === "/login.html") {
     const res = await context.next();
