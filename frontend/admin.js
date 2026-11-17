@@ -92,7 +92,7 @@ function renderList() {
       <div class="status ${st}">${stLabel}</div>
       <div class="days ${daysCls}">${days}</div>
       <div class="actions">
-        <button class="btn btn-green btn-sm" data-viewas="${s.id}" style="font-weight:900;" title="الدخول المباشر لحساب المشترك والتحكم في الآيتمز">🎒 USER PROFILE (ITEMS)</button>
+        <button class="btn btn-green btn-sm" data-viewas="${s.id}" style="font-weight:900; background:linear-gradient(135deg, #22c55e, #16a34a); color:#000; font-size:11px; padding:7px 14px;" title="ادخل حساب المشترك لتصفح ومتابعة وإدارة حسابات اللعبة">👤 ادخل حسابه</button>
         <button class="btn btn-primary btn-sm" data-profile="${s.id}">ℹ DETAILS</button>
         <button class="btn btn-ghost btn-sm" data-edit="${s.id}">✎ EDIT</button>
         <button class="btn btn-ghost btn-sm" data-copy="${s.id}">⧉ TOKEN</button>
@@ -113,11 +113,7 @@ function wireList() {
   document.querySelectorAll("[data-edit]").forEach(b => b.onclick = () => openEdit(+b.dataset.edit));
   document.querySelectorAll("[data-profile]").forEach(b => b.onclick = () => openProfile(+b.dataset.profile));
   document.querySelectorAll("[data-viewas]").forEach(b => b.onclick = () => {
-    const s = SUBS.find(x => x.id == b.dataset.viewas);
-    const subName = s ? s.name : "المشترك";
-    if (confirm("هل تريد الانتقال لصفحة الآيتمز والتصفح بحساب (" + subName + ") مع تحكم كامل؟\n\nيمكنك العودة للوحة الأدمن في أي وقت عبر زر [↩ العودة للأدمن] بالأعلى.")) {
-      window.location.href = "/admin/api/subscribers/" + b.dataset.viewas + "/view-as";
-    }
+    window.location.href = "/admin/api/subscribers/" + b.dataset.viewas + "/view-as";
   });
   document.querySelectorAll("[data-reset]").forEach(b => b.onclick = async () => {
     if (!confirm("Generate a new token? The old one will stop working.")) return;
@@ -172,9 +168,6 @@ function openProfile(id) {
 // Profile modal button handlers
 $("#prf-btn-close").onclick = () => { $("#profile-modal").hidden = true; };
 $("#prf-btn-viewas").onclick = () => {
-  const s = SUBS.find(x => x.id === PROFILE_ID);
-  if (!s) return;
-  if (!confirm("الانتقال لصفحة الآيتمز والتحكم في حساب (" + s.name + ")؟\n\nستتمكن من تصفح وتحريك كل الآيتمز والعتاد والرجوع للأدمن بأي وقت.")) return;
   window.location.href = "/admin/api/subscribers/" + PROFILE_ID + "/view-as";
 };
 $("#prf-btn-copy-token").onclick = () => {
@@ -264,62 +257,22 @@ const btnCancelEdit = $("#btn-cancel-edit");
 if (btnCancelEdit) btnCancelEdit.onclick = () => { $("#edit-modal").hidden = true; };
 
 // ─── Admin Credentials Reset ───
-const btnSaveAdminTok = $("#btn-save-admin-token");
-if (btnSaveAdminTok) {
-  btnSaveAdminTok.onclick = async () => {
-    const tok = ($("#cfg-admin-token").value || "").trim();
-    if (!tok) { toast("Admin token cannot be empty!", "bad"); return; }
-    btnSaveAdminTok.disabled = true;
-    try {
-      const d = await api("/admin/api/config/credentials", {admin_token: tok});
-      if (d.ok) {
-        toast("✔ External Admin Token updated!", "ok");
-      } else {
-        toast("Failed to update token", "bad");
-      }
-    } catch (e) {
-      toast("Error updating token", "bad");
-    }
-    btnSaveAdminTok.disabled = false;
-  };
-}
-
-const btnGenAdminTok = $("#btn-gen-admin-token");
-if (btnGenAdminTok) {
-  btnGenAdminTok.onclick = () => {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%*-_=+";
-    const pick = s => s[Math.floor(Math.random() * s.length)];
-    let parts = [
-      pick("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
-      pick("abcdefghijklmnopqrstuvwxyz"),
-      pick("0123456789"),
-      pick("!@#$%*-_=+")
-    ];
-    for (let i = 0; i < 46; i++) parts.push(pick(chars));
-    for (let i = parts.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [parts[i], parts[j]] = [parts[j], parts[i]];
-    }
-    $("#cfg-admin-token").value = parts.join("");
-    toast("🎲 50-char token generated (click SAVE to apply)", "ok");
-  };
-}
-
 const btnSaveAdminPw = $("#btn-save-admin-password");
 if (btnSaveAdminPw) {
   btnSaveAdminPw.onclick = async () => {
     const pw = ($("#cfg-admin-password").value || "").trim();
-    if (!pw) { toast("Admin password cannot be empty!", "bad"); return; }
+    if (!pw) { toast("كلمة المرور لا يمكن أن تكون فارغة!", "bad"); return; }
     btnSaveAdminPw.disabled = true;
     try {
       const d = await api("/admin/api/config/credentials", {admin_password: pw});
       if (d.ok) {
-        toast("✔ Admin Mode Password updated!", "ok");
+        toast("✔ تم حفظ وتحديث كلمة مرور الأدمن الموحدة بنجاح!", "ok");
+        if ($("#admin-pw-badge")) $("#admin-pw-badge").textContent = "Admin Mode";
       } else {
-        toast("Failed to update password", "bad");
+        toast("فشل تحديث كلمة المرور", "bad");
       }
     } catch (e) {
-      toast("Error updating password", "bad");
+      toast("خطأ في الاتصال", "bad");
     }
     btnSaveAdminPw.disabled = false;
   };

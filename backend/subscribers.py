@@ -63,55 +63,43 @@ def hash_token(raw):
     return hashlib.sha256(raw.encode()).hexdigest()
 
 
-# ──────────────────────────────────────────── بيانات دخول الأدمين
+# ──────────────────────────────────────────── بيانات دخول الأدمين (كلمة مرور موحدة)
 def admin_password(conn):
-    """بترجع كلمة مرور الأدمين — افتراضياً Lord@1234."""
+    """بترجع كلمة مرور الأدمين الموحدة — افتراضياً Lord@1234."""
     _ensure_tables(conn)
     row = conn.execute("SELECT value FROM admin_config WHERE key='admin_password'").fetchone()
     if row and row[0]:
         return row[0]
     pw = "Lord@1234"
     conn.execute("INSERT OR REPLACE INTO admin_config (key, value) VALUES ('admin_password', ?)", (pw,))
+    conn.execute("INSERT OR REPLACE INTO admin_config (key, value) VALUES ('admin_token', ?)", (pw,))
     conn.commit()
     return pw
 
 
 def set_admin_password(conn, new_pw):
-    """تحديث كلمة مرور الأدمين."""
+    """تحديث كلمة مرور الأدمين الموحدة."""
     _ensure_tables(conn)
     val = (new_pw or "").strip()
     if not val:
         raise ValueError("Password cannot be empty")
     conn.execute("INSERT OR REPLACE INTO admin_config (key, value) VALUES ('admin_password', ?)", (val,))
-    conn.commit()
-    return val
-
-
-def admin_token(conn):
-    """بترجع توكن دخول الأدمين من الخارج — افتراضياً Lord@12345."""
-    _ensure_tables(conn)
-    row = conn.execute("SELECT value FROM admin_config WHERE key='admin_token'").fetchone()
-    if row and row[0]:
-        return row[0]
-    tok = "Lord@12345"
-    conn.execute("INSERT OR REPLACE INTO admin_config (key, value) VALUES ('admin_token', ?)", (tok,))
-    conn.commit()
-    return tok
-
-
-def set_admin_token(conn, new_token):
-    """تحديث توكن دخول الأدمين من الخارج."""
-    _ensure_tables(conn)
-    val = (new_token or "").strip()
-    if not val:
-        raise ValueError("Token cannot be empty")
     conn.execute("INSERT OR REPLACE INTO admin_config (key, value) VALUES ('admin_token', ?)", (val,))
     conn.commit()
     return val
 
 
+def admin_token(conn):
+    """توكن الأدمين هو نفسه كلمة مرور الأدمين الموحدة — ملغى التفرقة بين الداخلي والخارجي."""
+    return admin_password(conn)
+
+
+def set_admin_token(conn, new_token):
+    return set_admin_password(conn, new_token)
+
+
 def verify_admin(conn, password):
-    return password == admin_password(conn)
+    return (password or "").strip() == admin_password(conn).strip()
 
 
 # ──────────────────────────────────────────── إدارة المشتركين

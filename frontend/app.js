@@ -191,6 +191,23 @@ async function loadStatus() {
 /* ------------------------------------------------------------------ الحسابات + الهيدر */
 async function loadAccounts() {
   const data = await json("/api/accounts");
+  if (data.is_admin && !data.viewing_as) {
+    window.location.replace("/admin");
+    return data;
+  }
+  state.isAdmin = !!data.is_admin;
+  state.viewingAs = data.viewing_as || new URLSearchParams(window.location.search).get("view_as") || "";
+  state.allSystemAccounts = data.all_system_accounts || [];
+
+  const bar = document.getElementById("view-as-bar");
+  const nameEl = document.getElementById("view-as-name");
+  if (state.viewingAs) {
+    if (bar) bar.style.display = "flex";
+    if (nameEl) nameEl.textContent = state.viewingAs;
+  } else {
+    if (bar) bar.style.display = "none";
+  }
+
   state.accounts = data.accounts || [];
   state.profile = data.profile || state.profile;
   state.capacity = data.capacity || { used: state.accounts.length, limit: null };
@@ -394,12 +411,50 @@ function renderAccountsPage() {
   host.innerHTML = state.accounts.length
     ? state.accounts.map(acctRowHTML).join("")
     : `<div class="acct-empty" style="text-align: center; padding: 25px 15px; background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px;">
-        <p style="margin: 0 0 8px 0; color: #f3f4f6; font-size: 14px;">No linked accounts yet.</p>
-        <p style="margin: 0 0 15px 0; color: #9ca3af; font-size: 12px;">Run CMSync on your PC to automatically sync your game account, or download it below:</p>
-        <a href="/download/CMSync.exe" download style="display: inline-block; background: #9333ea; color: #ffffff; padding: 7px 18px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: bold;">📥 Download CMSync.exe</a>
+        <p style="margin: 0 0 8px 0; color: #f3f4f6; font-size: 14px;">لا توجد حسابات مرتبطة بهذا المشترك حالياً.</p>
+        <p style="margin: 0 0 15px 0; color: #9ca3af; font-size: 12px;">يمكنك ربط حساب مسجل مسبقاً من القائمة أعلاه أو إدخال توكن حساب جديد.</p>
       </div>`;
   wireAccountRows();
   agentLine();
+
+  // إدارة صندوق ربط حساب موجود للأدمن
+  const assignBox = $("#acct-assign-existing-box");
+  const assignSelect = $("#acct-existing-select");
+  const btnAssign = $("#btn-assign-existing");
+  const assignNote = $("#acct-assign-note");
+  if (assignBox) {
+    if (state.viewingAs && state.isAdmin && (state.allSystemAccounts || []).length) {
+      assignBox.style.display = "block";
+      const currentIds = new Set((state.accounts || []).map((x) => x.id));
+      const unassigned = (state.allSystemAccounts || []).filter((x) => !currentIds.has(x.id));
+      if (assignSelect) {
+        assignSelect.innerHTML = `<option value="">-- اختر حساب لعبة من السيرفر (${unassigned.length} متاح) --</option>` +
+          unassigned.map((a) => `<option value="${esc(a.id)}">${esc(a.display_name || a.name)} ${a.owners ? `(مشترك في: ${esc(a.owners)})` : ""}</option>`).join("");
+      }
+      if (btnAssign) {
+        btnAssign.onclick = async () => {
+          const accId = assignSelect.value;
+          if (!accId) { if (assignNote) { assignNote.textContent = "يرجى اختيار حساب أولاً"; assignNote.style.color = "#ef4444"; } return; }
+          btnAssign.disabled = true;
+          if (assignNote) { assignNote.textContent = "جاري ربط الحساب بالمشترك…"; assignNote.style.color = "#a855f7"; }
+          try {
+            const res = await post(`/api/accounts/${encodeURIComponent(accId)}/assign-owner`, { owner: state.viewingAs });
+            if (res.ok) {
+              if (assignNote) { assignNote.textContent = "✔ تم ربط الحساب بنجاح!"; assignNote.style.color = "#22c55e"; }
+              toast("✔ تم ربط الحساب بالمشترك بنجاح", "ok");
+              await Promise.all([loadAccounts(), loadHeader(), loadStatus()]);
+              await Promise.all([loadSections(), loadLegend()]);
+            }
+          } catch (e) {
+            if (assignNote) { assignNote.textContent = "⛔ " + e.message; assignNote.style.color = "#ef4444"; }
+          }
+          btnAssign.disabled = false;
+        };
+      }
+    } else {
+      assignBox.style.display = "none";
+    }
+  }
 }
 
 function wireAccountRows() {
@@ -534,9 +589,24 @@ function editAccount(id) {
 function removeAccount(id) {
   const a = state.accounts.find((x) => x.id === id);
   if (!a) return;
-  // الحذف بيّمسح التوكن والمحزون كله من القاعدة، وبعدها اللوحة بترفض تسجّله
-  // تاني من الذاكرة (مدرج في قائمة المحذوفين) — فدخلة واحدة على زرابيت الغلط
-  // كانت كفيلة إنها تضيّع حساب كامل. الحذف بقى بخطوة تأكيد صريحة.
+  const viewAs = state.viewingAs || new URLSearchParams(window.location.search).get("view_as") || "";
+  if (viewAs) {
+    openModal(`إزالة الحساب من بروفايل المشترك`, `
+      <p class="note" style="font-size:13px; line-height:1.6;">
+        هل أنت متأكد من إزالة حساب اللعبة <b>${esc(a.display_name || a.name)}</b> من بروفايل المشترك <b>${esc(viewAs)}</b>؟
+      </p>
+      <p class="note" style="margin-top:10px; color:#22c55e;">
+        ✔ لن يتم حذف بيانات الحساب أو قطعه من السيرفر — سيبقى الحساب متاحاً في النظام وفي أي بروفايلات مشتركين آخرين مرتبط بها.
+      </p>`,
+      async () => {
+        const wasActive = a.name === state.account;
+        const out = await json(`/api/accounts/${encodeURIComponent(id)}?unlink=0`, { method: "DELETE" });
+        await Promise.all([loadAccounts(), loadHeader(), loadStatus()]);
+        if (wasActive) await Promise.all([loadSections(), loadLegend()]);
+        toast(out.note || "✔ تمت إزالة الحساب من بروفايل المشترك", "ok");
+      }, "إزالة من المشترك", { confirmKind: "danger" });
+    return;
+  }
   openModal(`DELETE ACCOUNT — ${esc(a.display_name || a.name)}`, `
     <p class="note">Removed from this board: the stored token, all inventory rows, saved loadouts
     and pull snapshots of <b>${esc(a.name)}</b>. The in-game inventory itself is

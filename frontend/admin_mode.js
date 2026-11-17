@@ -69,22 +69,11 @@
 
     if (btn) {
       btn.style.display = "flex";
-      if (data.is_local) {
-        btn.onclick = () => { window.location.href = "/admin"; };
-      } else {
-        btn.onclick = (e) => {
-          e.stopPropagation();
-          openAdminModal();
-        };
-      }
+      btn.onclick = () => { window.location.href = "/admin"; };
     }
 
     if (btnAdminPage) {
-      if (data.is_local) {
-        btnAdminPage.onclick = () => { window.location.href = "/admin"; };
-      } else {
-        btnAdminPage.onclick = openAdminModal;
-      }
+      btnAdminPage.onclick = () => { window.location.href = "/admin"; };
     }
 
     const doUnlock = async () => {

@@ -282,12 +282,16 @@ async def subscriber_login(request: Request):
     raw_token = (body.get("token") or "").strip()
 
     conn = store.db()
-    adm_token = subs_mod.admin_token(conn)
-    # 1. توكن الأدمين — يدخل للداشبورد ويظهر له زر الأدمين مود
-    if raw_token == adm_token:
+    adm_pw = subs_mod.admin_password(conn)
+    # 1. باسورد الأدمين الموحد — دخول مباشر كأدمن إلى لوحة الأدمن وقائمة المشتركين
+    if raw_token == adm_pw:
         conn.close()
-        resp = JSONResponse({"ok": True, "name": "Admin", "is_admin": True, "redirect": "/"})
-        resp.set_cookie("cm_subscriber_token", adm_token, max_age=400*86400, httponly=True, samesite="lax")
+        session = secrets.token_hex(16)
+        _ADMIN_SESSIONS.add(session)
+        resp = JSONResponse({"ok": True, "name": "Admin", "is_admin": True, "redirect": "/admin"})
+        resp.set_cookie("cm_admin_session", session, max_age=86400, httponly=True, samesite="lax")
+        resp.set_cookie("cm_subscriber_token", adm_pw, max_age=400*86400, httponly=True, samesite="lax")
+        resp.delete_cookie("cm_viewing_subscriber")
         return resp
 
     # 2. فحص الدخول كمشترك عادي من قاعدة البيانات
@@ -298,28 +302,30 @@ async def subscriber_login(request: Request):
     resp = JSONResponse({"ok": True, "is_admin": False, "name": sub["name"], "expires_at": sub.get("expires_at"), "redirect": "/"})
     # الكوكي بتعيش 400 يوم — التحقق الحقيقي بيتم من الداتابيز كل طلب
     resp.set_cookie("cm_subscriber_token", raw_token, max_age=400*86400, httponly=True, samesite="lax")
+    resp.delete_cookie("cm_viewing_subscriber")
     return resp
 
 
 def _caller_identity(request: Request, conn):
-    """استخراج هوية المتصل: أدمن مباشر، أدمن خارجي، أو مشترك محدد."""
+    """استخراج هوية المتصل: أدمن، أو مشترك محدد، أو أدمن يتصفح مشتركاً."""
     is_local = is_local_direct_request(request)
     token = request.cookies.get("cm_subscriber_token") or request.headers.get("X-Subscriber-Token") or ""
     admin_sess = request.cookies.get("cm_admin_session", "")
     view_cookie = request.cookies.get("cm_viewing_subscriber", "")
 
     subs_mod._ensure_tables(conn)
-    adm_token = subs_mod.admin_token(conn)
+    adm_pw = subs_mod.admin_password(conn)
 
     sub_name = ""
-    if token and token != adm_token:
+    if token and token != adm_pw:
         row = conn.execute("SELECT name FROM subscribers WHERE token=?", (token,)).fetchone()
         if row:
             sub_name = row[0]
 
-    is_admin = is_local or (token == adm_token) or (admin_sess and admin_sess in _ADMIN_SESSIONS)
+    is_admin = is_local or (token == adm_pw) or (admin_sess and admin_sess in _ADMIN_SESSIONS)
     url_view = (request.query_params.get("view_as") or request.query_params.get("subscriber") or request.query_params.get("owner") or "").strip()
-    viewing_as = url_view or view_cookie or (sub_name if is_admin else "")
+    viewing_as = url_view or view_cookie or ""
+    # إذا كان أدمن ومش بيتصفح مشترك معين: filter_owner فاضي تماماً حتى لا تظهر أي حسابات
     filter_owner = viewing_as if is_admin else (sub_name if not is_admin else "")
 
     return {
@@ -333,20 +339,19 @@ def _caller_identity(request: Request, conn):
 
 def is_account_accessible(rec, filter_owner: str = "", is_admin: bool = False) -> bool:
     """صلاحية الوصول للحساب:
-    - الأدمن متاح له دائماً جميع الحسابات بلا أي حجب.
-    - الحسابات العامة (المشتركة أو بدون قيد أو all/shared/public) متاحة لجميع المشتركين.
-    - الحسابات المخصصة لمشترك أو أكثر (مفصولين بفواصل مثل: AF, Youseif): متاحة لكل من في القائمة.
+    - الأدمن إذا لم يكن يتصفح مشتركاً محدداً: لا يرى أي حساب نهائياً (مخصص لعرض لوحة التحكم وقائمة المشتركين فقط).
+    - إذا كان هناك filter_owner (مشترك محدد أو أدمن يتصفح حساب مشترك): يتم عرض حساباته المخصصة أو الحسابات العامة.
     """
     if is_admin and not filter_owner:
-        return True
+        return False
     clean_filter = (filter_owner or "").strip().lower()
     if not clean_filter:
-        return True
+        return False
     owner_str = (rec.get("owner_username") or "").strip().lower()
     if not owner_str or owner_str in ("all", "shared", "*", "public"):
         return True
     owners = [o.strip() for o in owner_str.split(",") if o.strip()]
-    return clean_filter in owners or "all" in owners or "shared" in owners or (is_admin and "admin" in owners)
+    return clean_filter in owners or "all" in owners or "shared" in owners
 
 
 def _one_account(account):
@@ -361,13 +366,13 @@ def _accessible_account(account, request: Request, conn):
     filter_owner = ident["filter_owner"]
     is_admin = ident["is_admin"]
     if is_admin and not filter_owner:
-        return _one_account(account)
+        return ""
     rows = [r["name"] for r in store.list_accounts(conn)
             if is_account_accessible(r, filter_owner, is_admin)]
     name = str(account or "").strip()
     if name and name in rows:
         return name
-    return rows[0] if rows else (_one_account(account) if is_admin else "")
+    return rows[0] if rows else ""
 
 
 @app.get("/api/auth/me")
@@ -444,11 +449,19 @@ def admin_page(request: Request):
             resp.set_cookie("cm_admin_session", sess, max_age=86400, httponly=True, samesite="lax")
         return resp
 
+    # التحقق من وجود جلسة أدمين أو توكن/باسورد الأدمين الموحد
     admin_sess = request.cookies.get("cm_admin_session", "")
-    if admin_sess not in _ADMIN_SESSIONS:
-        # لو مش مفعل جلسة أدمين بباسورد يرجع للداشبورد
-        return RedirectResponse("/", status_code=302)
-    return FileResponse(os.path.join(config.FRONTEND_DIR, "admin.html"))
+    token = request.cookies.get("cm_subscriber_token", "")
+    conn = store.db()
+    adm_pw = subs_mod.admin_password(conn)
+    conn.close()
+
+    resp = FileResponse(os.path.join(config.FRONTEND_DIR, "admin.html"))
+    if token and token == adm_pw and (not admin_sess or admin_sess not in _ADMIN_SESSIONS):
+        sess = secrets.token_hex(16)
+        _ADMIN_SESSIONS.add(sess)
+        resp.set_cookie("cm_admin_session", sess, max_age=86400, httponly=True, samesite="lax")
+    return resp
 
 
 @app.get("/admin/api/session-check")
@@ -463,8 +476,18 @@ def admin_session_check(request: Request):
         return resp
 
     session = request.headers.get("X-Admin-Session", "") or request.cookies.get("cm_admin_session", "")
-    if session in _ADMIN_SESSIONS:
-        return {"ok": True, "session": session, "is_local": False}
+    token = request.cookies.get("cm_subscriber_token", "")
+    conn = store.db()
+    adm_pw = subs_mod.admin_password(conn)
+    conn.close()
+
+    if (session and session in _ADMIN_SESSIONS) or (token and token == adm_pw):
+        if not session or session not in _ADMIN_SESSIONS:
+            session = secrets.token_hex(16)
+            _ADMIN_SESSIONS.add(session)
+        resp = JSONResponse({"ok": True, "session": session, "is_local": False})
+        resp.set_cookie("cm_admin_session", session, max_age=86400, httponly=True, samesite="lax")
+        return resp
     return {"ok": False, "is_local": False}
 
 
@@ -472,7 +495,8 @@ def admin_session_check(request: Request):
 async def admin_login(request: Request):
     body = await request.json()
     conn = store.db()
-    ok = subs_mod.verify_admin(conn, (body.get("password") or "").strip())
+    pw = (body.get("password") or "").strip()
+    ok = subs_mod.verify_admin(conn, pw)
     conn.close()
     if not ok:
         return JSONResponse({"ok": False})
@@ -480,6 +504,7 @@ async def admin_login(request: Request):
     _ADMIN_SESSIONS.add(session)
     resp = JSONResponse({"ok": True, "session": session})
     resp.set_cookie("cm_admin_session", session, max_age=86400, httponly=True, samesite="lax")
+    resp.set_cookie("cm_subscriber_token", pw, max_age=400*86400, httponly=True, samesite="lax")
     return resp
 
 
@@ -575,16 +600,16 @@ def admin_view_as(sub_id: int, request: Request):
 
 @app.get("/admin/exit-view-as")
 def admin_exit_view_as(request: Request):
-    """الخروج من وضع تصفح المشترك والعودة للصفحة الرئيسية أو لوحة الأدمن."""
+    """الخروج من وضع تصفح المشترك والعودة للوحة الأدمن وقائمة المشتركين."""
     from fastapi.responses import RedirectResponse
-    target = request.query_params.get("to") or "/"
+    target = request.query_params.get("to") or "/admin"
     resp = RedirectResponse(url=target, status_code=302)
     resp.delete_cookie("cm_viewing_subscriber")
     if not is_local_direct_request(request):
         conn = store.db()
-        adm_tok = subs_mod.admin_token(conn)
+        adm_pw = subs_mod.admin_password(conn)
         conn.close()
-        resp.set_cookie("cm_subscriber_token", adm_tok, max_age=400*86400, httponly=True, samesite="lax")
+        resp.set_cookie("cm_subscriber_token", adm_pw, max_age=400*86400, httponly=True, samesite="lax")
     return resp
 
 
@@ -592,10 +617,9 @@ def admin_exit_view_as(request: Request):
 def admin_get_credentials(request: Request):
     _admin_check(request)
     conn = store.db()
-    tok = subs_mod.admin_token(conn)
     pw = subs_mod.admin_password(conn)
     conn.close()
-    return {"ok": True, "admin_token": tok, "admin_password": pw}
+    return {"ok": True, "admin_password": pw}
 
 
 @app.post("/admin/api/config/credentials")
@@ -603,29 +627,23 @@ async def admin_set_credentials(request: Request):
     _admin_check(request)
     body = await request.json()
     conn = store.db()
-    new_tok = (body.get("admin_token") or "").strip()
     new_pw = (body.get("admin_password") or "").strip()
-    if new_tok:
-        subs_mod.set_admin_token(conn, new_tok)
     if new_pw:
         subs_mod.set_admin_password(conn, new_pw)
-    tok = subs_mod.admin_token(conn)
     pw = subs_mod.admin_password(conn)
     conn.close()
-    resp = JSONResponse({"ok": True, "admin_token": tok, "admin_password": pw})
-    if new_tok:
-        resp.set_cookie("cm_subscriber_token", new_tok, max_age=400*86400, httponly=True, samesite="lax")
+    resp = JSONResponse({"ok": True, "admin_password": pw})
+    if new_pw:
+        resp.set_cookie("cm_subscriber_token", new_pw, max_age=400*86400, httponly=True, samesite="lax")
     return resp
 
 
 # طباعة بيانات الأدمين في الكونسول عند التشغيل
 def _print_admin_pw():
     conn = store.db()
-    tok = subs_mod.admin_token(conn)
     pw = subs_mod.admin_password(conn)
     conn.close()
     print("=" * 60, flush=True)
-    print("  🔑 ADMIN TOKEN:    %s" % tok, flush=True)
     print("  🔐 ADMIN PASSWORD: %s" % pw, flush=True)
     print("  📍 Admin panel:    http://127.0.0.1:%d/admin" % config.PORT, flush=True)
     print("=" * 60, flush=True)
@@ -649,16 +667,28 @@ def api_accounts(request: Request):
         filter_owner = ident["filter_owner"]
         is_admin = ident["is_admin"]
         all_rows = store.list_accounts(conn)
+
+        # تحضير قائمة الحسابات الكلية للنظام (تستخدم للأدمن للربط السريع بالمشتركين)
+        all_system_accounts = []
+        if is_admin:
+            for r in all_rows:
+                all_system_accounts.append({
+                    "id": r["id"],
+                    "name": r["name"],
+                    "display_name": r.get("display_name") or r.get("label") or r["name"],
+                    "owners": r.get("owner_username") or ""
+                })
+
         if is_admin and not filter_owner:
-            # للأدمن: وصول كامل لجميع الحسابات دائماً
-            rows = all_rows
-            active_rec = store.active_account(conn, owner=None)
+            # للأدمن بدون تصفح مشترك: لا يتم عرض أي حسابات نهائياً (مخصص لعرض لوحة التحكم وقائمة المشتركين فقط)
+            rows = []
+            active_name = ""
         else:
-            # للمشترك: حساباته الخاصة بالإضافة لأي حسابات مشتركة
+            # للمشترك أو الأدمن أثناء تصفح مشترك محدد: حساباته الخاصة بالإضافة للحسابات المشتركة
             rows = [r for r in all_rows if is_account_accessible(r, filter_owner, is_admin)]
             active_rec = store.active_account(conn, owner=filter_owner)
+            active_name = active_rec["name"] if active_rec else (rows[0]["name"] if rows else "")
 
-        active_name = active_rec["name"] if active_rec else (rows[0]["name"] if rows else "")
         if active_name:
             ACTIVE["account"] = active_name
 
@@ -684,6 +714,9 @@ def api_accounts(request: Request):
         if filter_owner:
             profile_info["username"] = ident["subscriber_name"] or filter_owner
             profile_info["plan"] = "VIP SUBSCRIBER"
+        elif is_admin:
+            profile_info["username"] = "Admin"
+            profile_info["plan"] = "ADMINISTRATOR"
 
         subscribers_summary = []
         if ident["is_admin"]:
@@ -703,7 +736,8 @@ def api_accounts(request: Request):
                 "subscriber": filter_owner or None,
                 "viewing_as": filter_owner or "",
                 "is_admin": bool(ident["is_admin"]),
-                "subscribers": subscribers_summary}
+                "subscribers": subscribers_summary,
+                "all_system_accounts": all_system_accounts}
     return _with_conn(run)
 
 
@@ -737,13 +771,23 @@ def _profile_from(me, account=None, conn=None):
 def api_profile(request: Request, account: str = ""):
     """بيانات الهيدر: الهوية + العملات الثلاثة + المستوى، للحساب اللي في التاب ده."""
     def run(conn):
+        ident = _caller_identity(request, conn)
+        filter_owner = ident["filter_owner"]
+        is_admin = ident["is_admin"]
+        if is_admin and not filter_owner:
+            return {
+                "profile": {"username": "Admin", "plan": "ADMINISTRATOR", "avatar": None, "role": "admin", "has_access": True},
+                "account": "",
+                "capacity": {"used": 0, "limit": None},
+                "wallet": {}, "xp": 0, "level": 1,
+                "refresh_seconds": config.REFRESH_SECONDS
+            }
         name = _accessible_account(account, request, conn)
         limits = accounts_mod.profile_limits(conn)
         wallet = accounts_mod.wallet(conn, name) if name else {"stats": {}, "xp": 0, "level": 1}
-        ident = _caller_identity(request, conn)
         profile = _profile_from(limits["me"], name, conn)
-        if ident["filter_owner"]:
-            profile["username"] = ident["subscriber_name"] or ident["filter_owner"]
+        if filter_owner:
+            profile["username"] = ident["subscriber_name"] or filter_owner
             profile["plan"] = "VIP SUBSCRIBER"
         return {"profile": profile, "account": name,
                 "capacity": {"used": limits["count"], "limit": limits["limit"]},
@@ -961,26 +1005,75 @@ def api_account_edit(account_id, body: dict):
 
 
 @app.delete("/api/accounts/{account_id}")
-def api_account_delete(account_id, unlink: int = 0):
+def api_account_delete(account_id, request: Request, unlink: int = 0):
+    conn = store.db()
     try:
-        out = _with_conn(lambda conn: accounts_mod.remove(conn, account_id, unlink_upstream=bool(unlink)))
-    except KeyError:
-        raise HTTPException(404, "unknown account")
-    except rampart_client.UpstreamError as e:
-        raise HTTPException(502, str(e))
+        ident = _caller_identity(request, conn)
+        rec = store.get_account(conn, account_id)
+        if not rec:
+            raise HTTPException(404, "unknown account")
 
-    def reselect(conn):
-        """الحساب المحذوف ممكن يكون النشط — الخانة ما تمسكش في اسم اختفى من الجدول."""
-        rec = store.active_account(conn) or (store.list_accounts(conn) or [None])[0]
-        if rec:
-            store.set_active_account(conn, rec["id"])
-            ACTIVE["account"] = rec["name"]
-        else:
-            ACTIVE["account"] = ""
-        return ACTIVE["account"]
+        filter_owner = ident.get("filter_owner") or ""
+        # لو الحذف جاي من وضع تصفح مشترك أو من مشترك: بنشيل الحساب من بروفايله فقط، ويفضل شغال عند الباقيين!
+        if filter_owner:
+            existing_owners_raw = (rec.get("owner_username") or "").strip()
+            owners_list = [o.strip() for o in existing_owners_raw.split(",") if o.strip()]
+            new_owners = [o for o in owners_list if o.lower() != filter_owner.lower()]
+            if len(new_owners) != len(owners_list):
+                new_owner_str = ", ".join(new_owners)
+                store.upsert_account(conn, {"id": rec["id"], "owner_username": new_owner_str})
+                conn.commit()
+                return {
+                    "ok": True,
+                    "removed": rec["id"],
+                    "name": rec["name"],
+                    "note": f"تمت إزالة الحساب من بروفايل ({filter_owner}) — الحساب ما زال متاحاً في باقي البروفايلات",
+                    "active": ""
+                }
+            else:
+                return {
+                    "ok": True,
+                    "removed": rec["id"],
+                    "name": rec["name"],
+                    "note": f"تمت إزالة الحساب من قائمة ({filter_owner})",
+                    "active": ""
+                }
 
-    out["active"] = _with_conn(reselect)
-    return out
+        # لو أدمن عام خارج تصفح أي مشترك: حذف كلي من القاعدة
+        out = accounts_mod.remove(conn, account_id, unlink_upstream=bool(unlink))
+        conn.commit()
+        return out
+    finally:
+        conn.close()
+
+
+@app.post("/api/accounts/{account_id}/assign-owner")
+async def api_account_assign_owner(account_id: str, request: Request):
+    """ربط حساب لعبة مسجل مسبقاً في النظام ببروفايل مشترك محدد."""
+    conn = store.db()
+    try:
+        ident = _caller_identity(request, conn)
+        if not ident["is_admin"]:
+            raise HTTPException(403, "Admin access required")
+        body = await request.json()
+        target_owner = (body.get("owner") or ident.get("filter_owner") or "").strip()
+        if not target_owner:
+            raise HTTPException(400, "owner is required")
+
+        rec = store.get_account(conn, account_id)
+        if not rec:
+            raise HTTPException(404, "Account not found")
+
+        existing_owners_raw = (rec.get("owner_username") or "").strip()
+        owners_list = [o.strip() for o in existing_owners_raw.split(",") if o.strip()]
+        if not any(o.lower() == target_owner.lower() for o in owners_list):
+            owners_list.append(target_owner)
+            new_owner_str = ", ".join(owners_list)
+            store.upsert_account(conn, {"id": rec["id"], "owner_username": new_owner_str, "is_active": 1})
+            conn.commit()
+        return {"ok": True, "account_id": rec["id"], "name": rec["name"], "owners": rec.get("owner_username")}
+    finally:
+        conn.close()
 
 
 @app.post("/api/accounts/{account_id}/select")
@@ -2260,9 +2353,17 @@ def root_asset(filename):
 
 
 @app.get("/")
-def index():
-    # HTML بلا كاش: أي تعديل على الواجهة يمسك فورًا برفرش عادي (الملفات نفسها
-    # بتتحدد بـ ?v=، فده مش بيكلف طلب زيادة).
+def index(request: Request):
+    conn = store.db()
+    try:
+        ident = _caller_identity(request, conn)
+    finally:
+        conn.close()
+
+    # إذا كان أدمن ومش بيتصفح مشترك معين: توجيهه مباشرة للوحة الأدمن (قائمة التحكم والمشتركين)
+    if ident["is_admin"] and not ident["viewing_as"]:
+        return RedirectResponse("/admin", status_code=302)
+
     return FileResponse(os.path.join(config.FRONTEND_DIR, "index.html"),
                         headers={"Cache-Control": "no-cache"})
 
