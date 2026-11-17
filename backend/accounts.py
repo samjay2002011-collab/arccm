@@ -248,25 +248,26 @@ def add(conn, raw_token, label="", link_upstream=False, owner=None):
         if ident.get("tpuid"):
             patch["third_party_user_id"] = ident["tpuid"]
         
-        # ربط الحساب بالمشترك أو الأدمن
-        if clean_owner != old_owner:
-            patch["owner_username"] = clean_owner
+        # ربط الحساب بالمشترك أو الأدمن — دمج في قائمة مشتركة دون حجب عن البروفايلات الأخرى
+        existing_owners_raw = (existing.get("owner_username") or "").strip()
+        owners_list = [o.strip() for o in existing_owners_raw.split(",") if o.strip()]
+        
+        if clean_owner:
+            if not any(o.lower() == clean_owner.lower() for o in owners_list):
+                owners_list.append(clean_owner)
+            patch["owner_username"] = ", ".join(owners_list)
+        else:
+            if not owners_list:
+                patch["owner_username"] = "admin"
         
         if clean_lbl:
             patch["label"] = clean_lbl
             patch["display_name"] = clean_lbl
             remember_name(ident, clean_lbl)
         
-        # لو المشترك معندوش حساب نشط حالياً، نفعّل هذا الحساب له
-        if clean_owner:
-            active_for_sub = store.active_account(conn, owner=clean_owner)
-            if not active_for_sub or active_for_sub.get("id") == existing["id"]:
-                patch["is_active"] = 1
-        elif not store.active_account(conn, owner=None):
-            patch["is_active"] = 1
-        
+        patch["is_active"] = 1
         rec = store.upsert_account(conn, patch)
-        note = f"Linked to profile ({clean_owner})" if clean_owner else "Account updated successfully"
+        note = f"Linked to profile ({clean_owner or 'Admin'})"
         return rec, note
 
     limit = profile_limits(conn)

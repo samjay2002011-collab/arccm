@@ -568,8 +568,13 @@ async function addAccount() {
     const pulled = out.pulled?.ok ? ` — ${num(out.pulled.items)} items pulled` : "";
     acctNote(`✔ Added ${a.display_name || a.name}${pulled} · ${out.note || ""}`, "ok");
     toast(`✔ ${a.display_name || "the account"} added.`, "ok");
-    await Promise.all([loadAccounts(), loadHeader(), loadStatus()]);
-    if (out.pulled?.ok) await Promise.all([loadSections(), loadLegend()]);
+    if (a.id) {
+      await selectAccountById(a.id);
+      showView("inventory");
+    } else {
+      await Promise.all([loadAccounts(), loadHeader(), loadStatus()]);
+      await Promise.all([loadSections(), loadLegend()]);
+    }
   } catch (e) {
     acctNote("⛔ " + e.message, "bad");
   }

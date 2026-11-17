@@ -260,28 +260,27 @@ def delete_account(conn, account_id):
 
 
 def set_active_account(conn, account_id):
-    row = conn.execute("SELECT owner_username FROM accounts WHERE id=?", (account_id,)).fetchone()
-    if row:
-        owner = (row["owner_username"] if isinstance(row, dict) else row[0]) or ""
-        owner_clean = owner.strip().lower()
-        if owner_clean and owner_clean != "admin":
-            conn.execute("UPDATE accounts SET is_active=(id=?) WHERE LOWER(COALESCE(owner_username, '')) = ?", (account_id, owner_clean))
-        else:
-            conn.execute("UPDATE accounts SET is_active=(id=?) WHERE owner_username IS NULL OR owner_username = '' OR LOWER(owner_username) = 'admin'", (account_id,))
-        conn.commit()
+    conn.execute("UPDATE accounts SET is_active=(id=?)", (account_id,))
+    conn.commit()
 
 
 def active_account(conn, owner=None):
-    if owner and str(owner).strip().lower() != "admin":
-        owner_clean = str(owner).strip().lower()
-        row = conn.execute("SELECT * FROM accounts WHERE LOWER(COALESCE(owner_username, '')) = ? AND is_active=1 LIMIT 1", (owner_clean,)).fetchone()
-        if row is None:
-            row = conn.execute("SELECT * FROM accounts WHERE LOWER(COALESCE(owner_username, '')) = ? AND enabled=1 ORDER BY added_at LIMIT 1", (owner_clean,)).fetchone()
+    all_accs = list_accounts(conn)
+    if not all_accs:
+        return None
+    clean_owner = str(owner).strip().lower() if owner and str(owner).strip().lower() != "admin" else ""
+    if clean_owner:
+        matching = [
+            r for r in all_accs
+            if clean_owner in [o.strip().lower() for o in (r.get("owner_username") or "").split(",") if o.strip()]
+            or (r.get("owner_username") or "").strip().lower() in ("", "all", "shared", "*", "public")
+        ]
     else:
-        row = conn.execute("SELECT * FROM accounts WHERE (owner_username IS NULL OR owner_username = '' OR LOWER(owner_username) = 'admin') AND is_active=1 LIMIT 1").fetchone()
-        if row is None:
-            row = conn.execute("SELECT * FROM accounts WHERE (owner_username IS NULL OR owner_username = '' OR LOWER(owner_username) = 'admin') AND enabled=1 ORDER BY added_at LIMIT 1").fetchone()
-    return dict(row) if row else None
+        matching = all_accs
+    if not matching:
+        return all_accs[0]
+    active = next((r for r in matching if r.get("is_active")), None)
+    return active or matching[0]
 
 
 # ------------------------------------------------------------------ التجهيزات المحفوظة

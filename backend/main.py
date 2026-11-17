@@ -331,6 +331,24 @@ def _caller_identity(request: Request, conn):
     }
 
 
+def is_account_accessible(rec, filter_owner: str = "", is_admin: bool = False) -> bool:
+    """صلاحية الوصول للحساب:
+    - الأدمن متاح له دائماً جميع الحسابات بلا أي حجب.
+    - الحسابات العامة (المشتركة أو بدون قيد أو all/shared/public) متاحة لجميع المشتركين.
+    - الحسابات المخصصة لمشترك أو أكثر (مفصولين بفواصل مثل: AF, Youseif): متاحة لكل من في القائمة.
+    """
+    if is_admin and not filter_owner:
+        return True
+    clean_filter = (filter_owner or "").strip().lower()
+    if not clean_filter:
+        return True
+    owner_str = (rec.get("owner_username") or "").strip().lower()
+    if not owner_str or owner_str in ("all", "shared", "*", "public"):
+        return True
+    owners = [o.strip() for o in owner_str.split(",") if o.strip()]
+    return clean_filter in owners or "all" in owners or "shared" in owners or (is_admin and "admin" in owners)
+
+
 def _one_account(account):
     """اسم حساب محدّد دايمًا: أي 'ALL' أو فاضي بيرجعون للحساب النشط."""
     name = str(account or "").strip()
@@ -338,17 +356,18 @@ def _one_account(account):
 
 
 def _accessible_account(account, request: Request, conn):
-    """اسم حساب صالح للمتصل الحالي. لو مشترك، لازم يكون حسابه هو مش حساب حد تاني."""
+    """اسم حساب صالح للمتصل الحالي. يدعم المرونة والمشاركة عبر البروفايلات."""
     ident = _caller_identity(request, conn)
     filter_owner = ident["filter_owner"]
-    if not filter_owner:
+    is_admin = ident["is_admin"]
+    if is_admin and not filter_owner:
         return _one_account(account)
     rows = [r["name"] for r in store.list_accounts(conn)
-            if (r.get("owner_username") or "").strip().lower() == filter_owner.lower()]
+            if is_account_accessible(r, filter_owner, is_admin)]
     name = str(account or "").strip()
     if name and name in rows:
         return name
-    return rows[0] if rows else ""
+    return rows[0] if rows else (_one_account(account) if is_admin else "")
 
 
 @app.get("/api/auth/me")
@@ -628,15 +647,16 @@ def api_accounts(request: Request):
     def run(conn):
         ident = _caller_identity(request, conn)
         filter_owner = ident["filter_owner"]
+        is_admin = ident["is_admin"]
         all_rows = store.list_accounts(conn)
-        if filter_owner:
-            # لو مشترك محدد أو أدمن بيتصفح مشترك: حسابات هذا المشترك فقط
-            rows = [r for r in all_rows if (r.get("owner_username") or "").strip().lower() == filter_owner.lower()]
-            active_rec = store.active_account(conn, owner=filter_owner)
-        else:
-            # للأدمن في الوضع الشخصي: حساباته الشخصية فقط، وعزل تام عن حسابات المشتركين
-            rows = [r for r in all_rows if not (r.get("owner_username") or "").strip() or (r.get("owner_username") or "").strip().lower() in ("admin", "")]
+        if is_admin and not filter_owner:
+            # للأدمن: وصول كامل لجميع الحسابات دائماً
+            rows = all_rows
             active_rec = store.active_account(conn, owner=None)
+        else:
+            # للمشترك: حساباته الخاصة بالإضافة لأي حسابات مشتركة
+            rows = [r for r in all_rows if is_account_accessible(r, filter_owner, is_admin)]
+            active_rec = store.active_account(conn, owner=filter_owner)
 
         active_name = active_rec["name"] if active_rec else (rows[0]["name"] if rows else "")
         if active_name:
@@ -669,7 +689,7 @@ def api_accounts(request: Request):
         if ident["is_admin"]:
             subs = subs_mod.list_subscribers(conn)
             for s in subs:
-                s_accs = [r for r in all_rows if (r.get("owner_username") or "").strip().lower() == s["name"].lower()]
+                s_accs = [r for r in all_rows if is_account_accessible(r, s["name"], False)]
                 subscribers_summary.append({
                     "id": s["id"],
                     "name": s["name"],
