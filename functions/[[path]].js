@@ -28,11 +28,17 @@ export async function onRequest(context) {
     return new Response(res.body, { status: res.status, headers });
   }
 
-  if (url.pathname === "/download/cmsync" || url.pathname.toLowerCase() === "/download/cmsync") {
-    const assetUrl = new URL("/download/CMSync.exe", url.origin);
+  if (
+    url.pathname === "/download/cmsync" ||
+    url.pathname.toLowerCase() === "/download/cmsync" ||
+    url.pathname === "/download/CMSync_Setup.exe" ||
+    url.pathname.toLowerCase() === "/download/cmsync_setup.exe" ||
+    url.pathname.toLowerCase() === "/download/setup"
+  ) {
+    const assetUrl = new URL("/download/CMSync_Setup.exe", url.origin);
     const assetRes = context.env.ASSETS ? await context.env.ASSETS.fetch(assetUrl) : await context.next();
     const headers = new Headers(assetRes.headers);
-    headers.set("Content-Disposition", 'attachment; filename="CMSync.exe"');
+    headers.set("Content-Disposition", 'attachment; filename="CMSync_Setup.exe"');
     headers.set("Content-Type", "application/octet-stream");
     return new Response(assetRes.body, { status: assetRes.status, headers });
   }

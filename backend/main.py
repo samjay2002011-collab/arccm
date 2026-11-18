@@ -430,21 +430,26 @@ def api_subscriber_verify(request: Request, body: dict = None):
     return {"ok": True, "name": sub["name"], "is_admin": False, "expires_at": sub.get("expires_at")}
 
 
+@app.get("/download/CMSync_Setup.exe")
+@app.get("/download/setup")
 @app.get("/download/CMSync.exe")
 @app.get("/download/cmsync")
 @app.get("/CMSync.exe")
 def download_cmsync():
-    """تحميل برنامج CMSync للمشتركين."""
+    """تحميل برنامج تثبيت CMSync للمشتركين."""
     paths = [
+        os.path.join(config.FRONTEND_DIR, "download", "CMSync_Setup.exe"),
+        os.path.join(config.ROOT, "CMSync_Setup.exe"),
         os.path.join(config.FRONTEND_DIR, "download", "CMSync.exe"),
         os.path.join(config.ROOT, "CMSync.exe"),
+        os.path.join(config.ROOT, "agent", "dist_installer", "CMSync_Setup.exe"),
         os.path.join(config.ROOT, "agent", "dist", "CMSync.exe"),
-        os.path.join(config.ROOT, "agent", "CMSync.exe"),
     ]
     target = next((p for p in paths if os.path.isfile(p)), None)
     if not target:
-        raise HTTPException(404, "CMSync.exe not found on server")
-    return FileResponse(target, filename="CMSync.exe", media_type="application/octet-stream")
+        raise HTTPException(404, "CMSync installer not found on server")
+    fn = os.path.basename(target)
+    return FileResponse(target, filename=fn, media_type="application/octet-stream")
 
 
 @app.get("/auth/logout")
@@ -1039,14 +1044,7 @@ def api_agent_release_file(request: Request):
                         filename=info["filename"])
 
 
-@app.get("/download/cmsync")
-def download_cmsync():
-    """لينك التحميل اللي في الإعدادات — مقفول بكوكي الدخول، فبيتنقل للحسابات اللوجِن."""
-    info = agent_release.brief()
-    if not info["present"]:
-        raise HTTPException(404, "No CMSync.exe on this server.")
-    return FileResponse(info["path"], media_type="application/octet-stream",
-                        filename=info["filename"])
+# End of agent release endpoints
 
 
 @app.post("/api/accounts/{account_id}/link")
