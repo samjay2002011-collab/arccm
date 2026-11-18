@@ -860,7 +860,7 @@ def desktop_shortcut():
 
 
 def single_instance():
-    """مفيش نسخة تانية من البرنامج — وإذا كانت نسخة سابقة مفتوحة يتم إظهار نافذتها فوراً للمستخدم."""
+    """مفيش نسخة تانية من البرنامج — وإذا كانت نسخة سابقة مفتوحة يتم إظهار نافذتها أو إنهاؤها لتشغيل الإصدار الجديد."""
     kernel32 = ctypes.WinDLL("kernel32")
     handle = kernel32.CreateMutexW(None, False, "Local\\CMSync.Tray")
     if not handle:
@@ -878,6 +878,18 @@ def single_instance():
                 SW_RESTORE = 9
                 user32.ShowWindow(hwnd, SW_RESTORE)
                 user32.SetForegroundWindow(hwnd)
+                return None
+        except Exception:
+            pass
+
+        # لو مفيش نافذة ظاهرة للنسخة القديمة، نقوم بإنهاء العمليات السابقة لتشغيل النسخة الحالية مباشرة
+        try:
+            my_pid = os.getpid()
+            subprocess.run(f'taskkill /F /IM CMSync.exe /FI "PID ne {my_pid}"', shell=True, capture_output=True)
+            time.sleep(0.6)
+            handle = kernel32.CreateMutexW(None, False, "Local\\CMSync.Tray")
+            if kernel32.GetLastError() != 183:
+                return handle
         except Exception:
             pass
         return None
@@ -1073,11 +1085,40 @@ def prompt_subscriber_config(cfg, force=False):
                        fg="#e2e8f0", bg="#0d0f17")
     url_lbl.pack(side="left")
 
-    url_var = tk.StringVar(value=cfg.get("server_url") or DEFAULT_SERVER_URL)
-    url_entry = tk.Entry(form_frame, textvariable=url_var, font=("Consolas", 9), bg="#161824", fg="#f8fafc",
+    def reset_url_to_default():
+        url_var.set(DEFAULT_SERVER_URL)
+        status_lbl.config(text="✔ تم ضبط الرابط على السيرفر الرسمي الافتراضي", fg="#22c55e")
+
+    reset_btn = tk.Button(url_hdr_row, text="🔄 السيرفر الرسمي (Default)", font=("Segoe UI", 8),
+                          bg="#1e293b", fg="#c084fc", activebackground="#2e1065", activeforeground="#ffffff",
+                          relief="flat", cursor="hand2", padx=8, pady=0, command=reset_url_to_default)
+    reset_btn.pack(side="right")
+
+    url_row = tk.Frame(form_frame, bg="#0d0f17")
+    url_row.pack(fill="x", pady=(0, 2))
+
+    init_url = (cfg.get("server_url") or "").strip()
+    if not init_url or "trycloudflare" in init_url:
+        init_url = DEFAULT_SERVER_URL
+    url_var = tk.StringVar(value=init_url)
+    url_entry = tk.Entry(url_row, textvariable=url_var, font=("Consolas", 9), bg="#161824", fg="#f8fafc",
                          insertbackground="#ffffff", relief="flat", highlightthickness=1,
-                         highlightbackground="#2b3147", highlightcolor="#a855f7")
-    url_entry.pack(fill="x", ipady=6, pady=(0, 2))
+                         highlightbackground="#2b3147", highlightcolor="#a855f7",
+                         justify="left", state="normal", takefocus=True)
+    url_entry.pack(side="left", fill="x", expand=True, ipady=6)
+
+    def do_paste_url():
+        txt = get_clipboard_text().strip()
+        if txt:
+            url_var.set(txt)
+            status_lbl.config(text="✔ تم لصق رابط السيرفر بنجاح", fg="#22c55e")
+        else:
+            status_lbl.config(text="⚠️ الحافظة فارغة", fg="#f59e0b")
+
+    paste_url_btn = tk.Button(url_row, text="📋 لصق (Paste)", font=("Segoe UI", 8, "bold"),
+                              bg="#252a3d", fg="#f8fafc", activebackground="#a855f7", activeforeground="#ffffff",
+                              relief="flat", cursor="hand2", padx=12, command=do_paste_url)
+    paste_url_btn.pack(side="right", padx=(8, 0), ipady=4)
 
     # الرابط التفاعلي لفتح الموقع في المتصفح بنقرة واحدة
     def open_server_in_browser(e=None):
@@ -1106,7 +1147,8 @@ def prompt_subscriber_config(cfg, force=False):
     tok_var = tk.StringVar(value=cfg.get("subscriber_token") or "")
     tok_entry = tk.Entry(tok_row, textvariable=tok_var, font=("Consolas", 9), bg="#161824", fg="#f8fafc",
                          insertbackground="#ffffff", relief="flat", highlightthickness=1,
-                         highlightbackground="#2b3147", highlightcolor="#a855f7")
+                         highlightbackground="#2b3147", highlightcolor="#a855f7",
+                         justify="left", state="normal", takefocus=True)
     tok_entry.pack(side="left", fill="x", expand=True, ipady=6)
 
     def do_paste_token():
@@ -1164,9 +1206,9 @@ def prompt_subscriber_config(cfg, force=False):
     def on_connect():
         srv = url_var.get().strip().rstrip("/")
         tok = tok_var.get().strip()
-        if not srv:
-            status_lbl.config(text="يرجى إدخال رابط السيرفر", fg="#ef4444")
-            return
+        if not srv or "trycloudflare" in srv:
+            srv = DEFAULT_SERVER_URL
+            url_var.set(srv)
         if not tok:
             status_lbl.config(text="يرجى إدخال توكن المشترك", fg="#ef4444")
             return
@@ -1210,7 +1252,7 @@ def prompt_subscriber_config(cfg, force=False):
     return success[0]
 
 
-def run_tray(cfg, state, show_ui_on_start=False):
+def run_tray(cfg, state):
     import pystray
     stop = threading.Event()
 
@@ -1248,6 +1290,13 @@ def run_tray(cfg, state, show_ui_on_start=False):
                 return
         except Exception:
             pass
+        my_exe = exe_path()
+        if my_exe and getattr(sys, "frozen", False):
+            try:
+                subprocess.Popen([my_exe, "--config"])
+                return
+            except Exception:
+                pass
         threading.Thread(target=lambda: prompt_subscriber_config(cfg, force=True), daemon=True).start()
 
     def ipc_show_listener():
@@ -1325,8 +1374,6 @@ def run_tray(cfg, state, show_ui_on_start=False):
 
     threading.Thread(target=lambda: loop(cfg, state, stop, notify=on_notify), daemon=True).start()
     threading.Thread(target=reporter, daemon=True).start()
-    if show_ui_on_start:
-        threading.Thread(target=change_config, daemon=True).start()
     icon.run()
 
 
@@ -1417,8 +1464,34 @@ def main(argv=None):
     mutex = single_instance()
     if not mutex:
         return 0
-    show_ui = not args.console and not args.once and not args.install
-    run_tray(cfg, state, show_ui_on_start=show_ui)
+
+    # تنظيف أي روابط نفق قديمة
+    if "trycloudflare" in (cfg.get("server_url") or ""):
+        cfg["server_url"] = DEFAULT_SERVER_URL
+        save_config(cfg)
+
+    # التحقق من صلاحية التوكن المحفوظ
+    has_valid_token = False
+    if cfg.get("subscriber_token"):
+        url = (cfg.get("server_url") or DEFAULT_SERVER_URL).rstrip("/")
+        try:
+            status, body = http("POST", url + "/api/subscriber/verify",
+                                body={"token": cfg["subscriber_token"]}, timeout=4)
+            if status == 200 and body.get("ok"):
+                has_valid_token = True
+                cfg["subscriber_name"] = body.get("name") or cfg.get("subscriber_name") or ""
+                save_config(cfg)
+        except Exception:
+            if cfg.get("subscriber_token"):
+                has_valid_token = True
+
+    # إذا لم يكن هناك توكن شغال، نفتح نافذة الربط أولاً في الـ Main Thread لضمان سرعة واستقرار عناصر الإدخال
+    if not has_valid_token:
+        ok = prompt_subscriber_config(cfg, force=True)
+        if not ok and not cfg.get("subscriber_token"):
+            return 0
+
+    run_tray(cfg, state)
     return 0
 
 
