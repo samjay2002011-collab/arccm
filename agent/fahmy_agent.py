@@ -70,7 +70,7 @@ LAUNCHER_BUDGET_MB = 768   # سقف لمعة اللانشر (الprocess بضل�
 SCAN_BUDGET_SECONDS = 25   # والوقت الأقصى لللمعة الخفيفة دي
 LOG_KEEP = 400
 DEFAULT_TOKEN_FILE = r"C:\CMSyncToken.txt"
-DEFAULT_SERVER_URL = "https://described-bookmarks-productions-venue.trycloudflare.com"
+DEFAULT_SERVER_URL = "https://arccm.pages.dev"
 
 
 def log(message):
@@ -1210,7 +1210,7 @@ def prompt_subscriber_config(cfg, force=False):
     return success[0]
 
 
-def run_tray(cfg, state):
+def run_tray(cfg, state, show_ui_on_start=False):
     import pystray
     stop = threading.Event()
 
@@ -1325,6 +1325,8 @@ def run_tray(cfg, state):
 
     threading.Thread(target=lambda: loop(cfg, state, stop, notify=on_notify), daemon=True).start()
     threading.Thread(target=reporter, daemon=True).start()
+    if show_ui_on_start:
+        threading.Thread(target=change_config, daemon=True).start()
     icon.run()
 
 
@@ -1412,14 +1414,11 @@ def main(argv=None):
     if args.console:
         loop(cfg, state, threading.Event(), notify=lambda m, **k: log("NOTIFY " + m))
         return 0
-    local_up = site_status({"base_url": "http://127.0.0.1:%d" % int(cfg.get("port") or DEFAULT_PORT)})[0] == 200
-    if not cfg.get("subscriber_token") and not local_up:
-        prompt_subscriber_config(cfg, force=True)
     mutex = single_instance()
     if not mutex:
-        say("CMSync is already running — one icon only, so the memory scans do not repeat.")
         return 0
-    run_tray(cfg, state)
+    show_ui = not args.console and not args.once and not args.install
+    run_tray(cfg, state, show_ui_on_start=show_ui)
     return 0
 
 
