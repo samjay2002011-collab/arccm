@@ -151,8 +151,13 @@ def save_state(state):
 
 def http(method, url, body=None, headers=None, timeout=20):
     data = json.dumps(body).encode() if body is not None else None
-    req = urllib.request.Request(url, data=data, method=method,
-                                 headers={"Content-Type": "application/json", **(headers or {})})
+    base_headers = {
+        "Content-Type": "application/json",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) CMSync/2.0",
+    }
+    if headers:
+        base_headers.update(headers)
+    req = urllib.request.Request(url, data=data, method=method, headers=base_headers)
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             return resp.status, json.loads(resp.read().decode() or "{}")
@@ -614,6 +619,7 @@ def download_update(cfg, state, notify=None):
         os.makedirs(UPDATE_DIR, exist_ok=True)
         part = target + ".part"
         headers = {"X-Subscriber-Token": cfg["subscriber_token"]} if cfg.get("subscriber_token") else {"X-Fahmy-Agent": key}
+        headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) CMSync/2.0"
         req = urllib.request.Request(cfg["base_url"] + "/api/agent/release/file",
                                      headers=headers)
         with urllib.request.urlopen(req, timeout=900) as resp, open(part, "wb") as fh:
@@ -897,29 +903,38 @@ def single_instance():
 
 
 def get_clipboard_text():
-    """قراءة نص الحافظة مباشرة عبر ويندوز لضمان اللصق حتى مع الكيبورد العربي."""
+    """قراءة نص الحافظة بأمان تام لتجنب أي أخطاء أو انهيار."""
+    try:
+        import tkinter as tk
+        r = tk._default_root
+        if r:
+            txt = r.clipboard_get()
+            if txt:
+                return str(txt)
+    except Exception:
+        pass
     try:
         import ctypes
         u32 = ctypes.windll.user32
         k32 = ctypes.windll.kernel32
-        if not u32.OpenClipboard(0):
-            return ""
-        try:
-            CF_UNICODETEXT = 13
-            h = u32.GetClipboardData(CF_UNICODETEXT)
-            if not h:
-                return ""
-            ptr = k32.GlobalLock(h)
-            if not ptr:
-                return ""
+        if u32.OpenClipboard(0):
             try:
-                return ctypes.c_wchar_p(ptr).value or ""
+                CF_UNICODETEXT = 13
+                h = u32.GetClipboardData(CF_UNICODETEXT)
+                if h:
+                    ptr = k32.GlobalLock(h)
+                    if ptr:
+                        try:
+                            val = ctypes.wstring_at(ptr)
+                            if val:
+                                return str(val)
+                        finally:
+                            k32.GlobalUnlock(h)
             finally:
-                k32.GlobalUnlock(h)
-        finally:
-            u32.CloseClipboard()
+                u32.CloseClipboard()
     except Exception:
-        return ""
+        pass
+    return ""
 
 
 def find_app_icon():
@@ -1166,29 +1181,77 @@ def prompt_subscriber_config(cfg, force=False):
 
     def attach_context_menu(entry, str_var=None):
         m = tk.Menu(root, tearoff=0, bg="#161824", fg="#ffffff", activebackground="#a855f7")
-        def paste():
-            txt = get_clipboard_text().strip()
-            if txt:
-                if str_var is not None:
-                    str_var.set(txt)
+
+        def do_copy():
+            try:
+                txt = ""
+                try:
+                    txt = entry.selection_get()
+                except Exception:
+                    pass
+                if not txt:
+                    txt = entry.get()
+                if txt:
+                    root.clipboard_clear()
+                    root.clipboard_append(txt)
+                    status_lbl.config(text="✔ تم النسخ إلى الحافظة", fg="#22c55e")
+            except Exception:
+                pass
+
+        def do_paste():
+            try:
+                txt = get_clipboard_text().strip()
+                if txt:
+                    if str_var is not None:
+                        str_var.set(txt)
+                    else:
+                        entry.delete(0, tk.END)
+                        entry.insert(0, txt)
+                    status_lbl.config(text="✔ تم اللصق بنجاح", fg="#22c55e")
                 else:
-                    entry.delete(0, tk.END)
-                    entry.insert(0, txt)
-                status_lbl.config(text="✔ تم اللصق", fg="#22c55e")
-        m.add_command(label="📋 لصق (Paste)", command=paste)
-        m.add_command(label="📄 نسخ (Copy)", command=lambda: root.clipboard_append(entry.get()))
-        m.add_command(label="🔘 تحديد الكل (Select All)", command=lambda: entry.select_range(0, tk.END))
+                    status_lbl.config(text="⚠️ الحافظة فارغة", fg="#f59e0b")
+            except Exception:
+                pass
+
+        def do_select_all():
+            try:
+                entry.select_range(0, tk.END)
+                entry.icursor(tk.END)
+            except Exception:
+                pass
+
+        m.add_command(label="📋 لصق (Paste)", command=do_paste)
+        m.add_command(label="📄 نسخ (Copy)", command=do_copy)
+        m.add_command(label="🔘 تحديد الكل (Select All)", command=do_select_all)
+
         def show_popup(e):
-            entry.focus_set()
-            m.tk_popup(e.x_root, e.y_root)
+            try:
+                entry.focus_set()
+                m.tk_popup(e.x_root, e.y_root)
+            except Exception:
+                pass
+            finally:
+                try:
+                    m.grab_release()
+                except Exception:
+                    pass
+            return "break"
+
         entry.bind("<Button-3>", show_popup)
 
         def on_key_paste(e):
-            paste()
+            do_paste()
             return "break"
+
+        def on_key_copy(e):
+            do_copy()
+            return "break"
+
         entry.bind("<Control-v>", on_key_paste)
         entry.bind("<Control-V>", on_key_paste)
         entry.bind("<Shift-Insert>", on_key_paste)
+        entry.bind("<Control-c>", on_key_copy)
+        entry.bind("<Control-C>", on_key_copy)
 
     attach_context_menu(url_entry, url_var)
     attach_context_menu(tok_entry, tok_var)
