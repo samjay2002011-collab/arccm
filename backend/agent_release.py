@@ -19,7 +19,16 @@ _cache = {}  # (path, size, mtime) -> sha256
 
 
 def exe_path():
-    return os.environ.get("FAHMY_AGENT_EXE") or os.path.join(config.ROOT, EXE_NAME)
+    env_path = os.environ.get("FAHMY_AGENT_EXE")
+    if env_path and os.path.isfile(env_path):
+        return env_path
+    frontend_dl = os.path.join(config.FRONTEND_DIR, "download", EXE_NAME)
+    if os.path.isfile(frontend_dl):
+        return frontend_dl
+    root_exe = os.path.join(config.ROOT, EXE_NAME)
+    if os.path.isfile(root_exe):
+        return root_exe
+    return frontend_dl
 
 
 def sha256(path):

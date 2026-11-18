@@ -431,10 +431,12 @@ def api_subscriber_verify(request: Request, body: dict = None):
 
 
 @app.get("/download/CMSync.exe")
+@app.get("/download/cmsync")
 @app.get("/CMSync.exe")
 def download_cmsync():
     """تحميل برنامج CMSync للمشتركين."""
     paths = [
+        os.path.join(config.FRONTEND_DIR, "download", "CMSync.exe"),
         os.path.join(config.ROOT, "CMSync.exe"),
         os.path.join(config.ROOT, "agent", "dist", "CMSync.exe"),
         os.path.join(config.ROOT, "agent", "CMSync.exe"),

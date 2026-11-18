@@ -6693,6 +6693,19 @@ if (liveSyncBtn) liveSyncBtn.onclick = async () => {
   btn.disabled = false;
   btn.classList.remove("spinning");
 };
+
+const btnCopyCMSync = $("#btn-copy-cmsync-link");
+if (btnCopyCMSync) {
+  btnCopyCMSync.onclick = async () => {
+    const url = `${location.origin}/download/cmsync`;
+    try {
+      await navigator.clipboard.writeText(url);
+      toast("✔ تم نسخ رابط تحميل برنامج CMSync بنجاح!", "ok");
+    } catch {
+      toast(`رابط التحميل: ${url}`, "");
+    }
+  };
+}
 document.querySelectorAll(".nav-item").forEach((b) => b.onclick = () => showView(b.dataset.view));
 
 function showPanels(show) {

@@ -176,6 +176,40 @@
       </div>
     </div>
     <p class="form-note" id="acct-note"></p>
+
+    <!-- 🖥️ CMSYNC LOCAL AGENT DOWNLOAD CARD -->
+    <div class="sync-promo" id="sync-promo-box" style="margin-top:24px; background:linear-gradient(135deg, rgba(168,85,247,0.12), rgba(217,70,239,0.06), rgba(15,15,22,0.95)); border:1px solid rgba(168,85,247,0.35); border-radius:16px; padding:20px 24px; display:flex; align-items:center; justify-content:space-between; gap:20px; box-shadow:0 10px 30px rgba(0,0,0,0.4);">
+      <div style="display:flex; align-items:center; gap:16px; flex:1; min-width:0;">
+        <div class="promo-ico" style="width:52px; height:52px; border-radius:14px; background:linear-gradient(135deg, rgba(168,85,247,0.25), rgba(217,70,239,0.2)); border:1px solid rgba(168,85,247,0.5); display:grid; place-items:center; color:#c084fc; flex:none;">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <rect x="2" y="3" width="20" height="14" rx="3"/><path d="M8 21h8"/><path d="M12 17v4"/><path d="m7 10 3 3 7-7"/>
+          </svg>
+        </div>
+        <div class="promo-text" style="flex:1; min-width:0;">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px; flex-wrap:wrap;">
+            <h3 style="margin:0; font-size:15px; font-weight:900; color:#fff; letter-spacing:0.3px;">برنامج الربط والمزامنة التلقائية — CMSync.exe</h3>
+            <span style="background:rgba(34,197,94,0.18); border:1px solid #22c55e; color:#22c55e; font-size:10px; font-weight:800; padding:2px 8px; border-radius:6px;">سحب التوكن تلقائياً</span>
+          </div>
+          <p style="margin:0 0 6px 0; font-size:12px; color:#cbd5e1; line-height:1.5;">
+            برنامج يشتغل على جهازك مع اللعبة: يسحب التوكن من الذاكرة ويربط حسابك بالموقع فوراً ويجدد الصلاحية باستمرار بدون الحاجة لنسخ ولصق التوكن يدوياً.
+          </p>
+          <div style="display:flex; align-items:center; gap:14px; font-size:11px; color:#a1a1aa; flex-wrap:wrap;">
+            <span>💻 نظام التشغيل: Windows 10 / 11</span>
+            <span>📦 الحجم: ~20.6 MB</span>
+            <span id="agent-line" style="color:#c084fc;">جاهز للتحميل والتشغيل المباشر</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end; flex:none;">
+        <a href="/download/cmsync" download="CMSync.exe" style="display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg, #a855f7, #d946ef); color:#fff; padding:10px 20px; border-radius:10px; text-decoration:none; font-size:12.5px; font-weight:900; box-shadow:0 4px 15px rgba(168,85,247,0.35); transition:transform 0.1s ease;" title="تحميل برنامج CMSync.exe">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>تحميل CMSync.exe</span>
+        </a>
+        <button id="btn-copy-cmsync-link" type="button" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:#cbd5e1; padding:6px 14px; border-radius:8px; font-size:10.5px; font-weight:700; cursor:pointer;" title="نسخ رابط التحميل المباشر">
+          ⧉ نسخ رابط التحميل
+        </button>
+      </div>
+    </div>
   </section>
 
   <section class="acct-card" id="acct-list-card">
@@ -253,7 +287,7 @@
   </div>
 </div>
 
-<script src="/app.js?v=243"></script>
+<script src="/app.js?v=244"></script>
 <script src="/admin_mode.js?v=8"></script>
 </body>
 </html>
