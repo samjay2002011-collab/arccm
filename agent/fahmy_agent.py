@@ -1374,7 +1374,12 @@ def run_tray(cfg, state):
 
     threading.Thread(target=lambda: loop(cfg, state, stop, notify=on_notify), daemon=True).start()
     threading.Thread(target=reporter, daemon=True).start()
-    icon.run()
+    try:
+        icon.run()
+    except Exception as e:
+        log("pystray icon.run() exited: %s" % e)
+        while not stop.is_set():
+            time.sleep(1)
 
 
 def say(message):
