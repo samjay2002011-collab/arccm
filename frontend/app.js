@@ -273,22 +273,49 @@ function renderHeader() {
   }).join("");
   $("#wallet").innerHTML = chips + levelRing(state.level);
 
-  // الحسابات أزرار قدامه على طول — ضغطة واحدة تنقّل للتاني، والنقطة بتقول حالة التوكن
-  const tabs = state.accounts.map((a) => {
-    const d = tokenDot(a);
-    return `<button class="acc-tab ${a.name === state.account ? "on" : ""}" data-pick="${esc(a.id)}"
-             title="${esc(a.display_name)} — ${esc(d.tip)}">
-        <span class="tok-dot ${d.cls}"></span><b>${a.is_main ? "★ " : ""}${esc(a.display_name)}</b>
-        ${isUnnamed(a) ? `<small class="need-name" data-rename="${esc(a.id)}">✎</small>` : ""}
-      </button>`;
-  }).join("");
-  $("#acc-switch").innerHTML = state.accounts.length
-    ? `<div class="acc-tabs">${tabs}</div>`
-    : `<div class="acc-tabs"><button class="acc-tab" data-manage="1"><b>NO ACCOUNT</b><small>ADD ONE</small></button></div>`;
+  // حساب التاب النشط الحالي
+  const currentAcc = state.accounts.find((a) => a.name === state.account) || state.accounts[0] || {};
+  const currDot = tokenDot(currentAcc);
 
-  const rename = (node) => {
-    node.onclick = (e) => { e.stopPropagation(); editAccount(node.dataset.rename); };
-  };
+  if (!state.accounts.length) {
+    $("#acc-switch").innerHTML = `<div class="acc-dropdown-wrap"><button class="acc-select-btn" data-manage="1" type="button"><b>NO ACCOUNT</b><span class="acc-chevron">⚙</span></button></div>`;
+  } else {
+    const itemsHtml = state.accounts.map((a) => {
+      const d = tokenDot(a);
+      const isSel = a.name === state.account;
+      return `<button class="acc-dropdown-item ${isSel ? "active" : ""}" data-pick="${esc(a.id)}" type="button" title="${esc(a.display_name)} — ${esc(d.tip)}">
+        <span class="tok-dot ${d.cls}"></span>
+        <b>${a.is_main ? "★ " : ""}${esc(a.display_name)}</b>
+        ${isSel ? `<span style="font-size:11px; font-weight:800; color:#22c55e;">✓</span>` : ""}
+      </button>`;
+    }).join("");
+
+    $("#acc-switch").innerHTML = `
+      <div class="acc-dropdown-wrap">
+        <button class="acc-select-btn" id="acc-select-btn" type="button" title="${esc(currentAcc.display_name || "")} — ${esc(currDot.tip)}">
+          <span class="tok-dot ${currDot.cls}"></span>
+          <b>${currentAcc.is_main ? "★ " : ""}${esc(currentAcc.display_name || "SELECT ACCOUNT")}</b>
+          <span class="acc-chevron">▾</span>
+        </button>
+        <div class="acc-dropdown-menu" id="acc-dropdown-menu" style="display:none;">
+          ${itemsHtml}
+          <div class="acc-dropdown-divider"></div>
+          <button class="acc-dropdown-manage" data-manage="1" type="button">⚙️ Manage Accounts</button>
+        </div>
+      </div>
+    `;
+
+    const selectBtn = document.getElementById("acc-select-btn");
+    const dropdownMenu = document.getElementById("acc-dropdown-menu");
+    if (selectBtn && dropdownMenu) {
+      selectBtn.onclick = (e) => {
+        e.stopPropagation();
+        const isOpen = dropdownMenu.style.display !== "none";
+        dropdownMenu.style.display = isOpen ? "none" : "flex";
+      };
+    }
+  }
+
   document.querySelectorAll("#acc-switch [data-pick]").forEach((button) => {
     button.oncontextmenu = (event) => {
       event.preventDefault();
@@ -303,15 +330,26 @@ function renderHeader() {
         renderInventory();
       }, account.is_main ? "REMOVE MAIN" : "MARK AS MAIN");
     };
+
+    button.onclick = (e) => {
+      e.stopPropagation();
+      const menu = document.getElementById("acc-dropdown-menu");
+      if (menu) menu.style.display = "none";
+      state.menuOpen = false;
+      renderHeader();
+      selectAccountById(button.dataset.pick);
+    };
   });
-  document.querySelectorAll("#acc-switch [data-rename]").forEach(rename);
-  document.querySelectorAll("#acc-switch [data-pick]").forEach((b) => b.onclick = () => {
+
+  const manageBtn = document.querySelector("#acc-switch [data-manage]");
+  if (manageBtn) manageBtn.onclick = (e) => {
+    e.stopPropagation();
+    const menu = document.getElementById("acc-dropdown-menu");
+    if (menu) menu.style.display = "none";
     state.menuOpen = false;
     renderHeader();
-    selectAccountById(b.dataset.pick);
-  });
-  const manageBtn = document.querySelector("[data-manage]");
-  if (manageBtn) manageBtn.onclick = () => { state.menuOpen = false; renderHeader(); showView("accounts"); };
+    showView("accounts");
+  };
 }
 
 function acctRowHTML(a) {
@@ -2794,7 +2832,7 @@ async function settleMoveGroupFailure(group, message, partial = false, restored 
 }
 
 let _loadSectionsTimer = null;
-function scheduleLoadSections(delay = 1800) {
+function scheduleLoadSections(delay = 100) {
   if (_loadSectionsTimer) clearTimeout(_loadSectionsTimer);
   _loadSectionsTimer = setTimeout(() => {
     _loadSectionsTimer = null;
@@ -2828,10 +2866,10 @@ async function pumpMoveQueue() {
         if (bagMove && out.bag && out.bag.pointed === false)
           toast("⚠ Went into «" + (out.bag.container || "the container") + "» but the equipped slot still points at «" +
                 (out.bag.equipped || "?") + "» — fixing the targeting.", "bad");
-        // بعد ما الطابور يخلص بنرجع نقرأ من السيرفر — السعة وخانات الشنطة
-        // بتتغير مع الأوجمنت ولازم الواجهة تاخد الأرقام الرسمية فورًا.
-        if (!state.moveQueue.length && state.account === job.account)
-          scheduleLoadSections(1800);
+        // بعد كل حركة نقل مباشرة: مزامنة فورية وتحديث المخزن من السيرفر بدون أي تأخير
+        if (!state.moveQueue.length && state.account === job.account) {
+          loadSections().catch(() => {});
+        }
         loadLog().catch(() => {});
         continue;
       }
@@ -6789,6 +6827,11 @@ document.addEventListener("visibilitychange", () => {
     watchAgentSync().catch(() => {});
   }
 });
-window.addEventListener("focus", () => {
-  watchAgentSync().catch(() => {});
+document.addEventListener("click", (e) => {
+  const wrap = document.querySelector(".acc-dropdown-wrap");
+  if (wrap && !wrap.contains(e.target)) {
+    const menu = document.getElementById("acc-dropdown-menu");
+    if (menu) menu.style.display = "none";
+  }
 });
+

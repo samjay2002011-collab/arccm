@@ -315,6 +315,12 @@ def _active_loadout(tree, inventory_root):
             base = _base_loadout(tree, equipped, inventory_root)
             if base:
                 return base, "base"
+        if _filled_items(tree, equipped) > 0:
+            return equipped, "equipped"
+        for root in tree.roots():
+            if root != inventory_root and not tree.label(root).lower().startswith("da_inventory_lf_raider"):
+                if tree.find_child(root, "backpack slot") and _filled_items(tree, root) > 0:
+                    return root, "active_tree"
         return equipped, "equipped"
     best = None
     for root in tree.roots():

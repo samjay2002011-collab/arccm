@@ -34,25 +34,142 @@
 
 .acc-switch { position: relative; }
 
-/* الحسابات في الهيدر: أزرار جنب بعض — ضغطة تنقّل، والنقطة حالة التوكن */
-.acc-tabs { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
-.acc-tab {
-  display: flex; align-items: center; gap: 7px; height: 34px; padding: 0 11px;
-  background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.09);
-  border-radius: 10px; color: var(--muted); cursor: pointer; font: inherit;
-  font-size: 11px; font-weight: 800; letter-spacing: .6px;
+/* قائمة الحسابات المنسدلة في الهيدر */
+.acc-dropdown-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
 }
-.acc-tab:hover { color: var(--text); background: rgba(255,255,255,.06); border-color: rgba(168,85,247,.4); }
-.acc-tab b { font-size: 12px; font-weight: 800; max-width: 130px; overflow: hidden;
-  text-overflow: ellipsis; white-space: nowrap; color: var(--text); }
-.acc-tab small { font-size: 7px; letter-spacing: 1.6px; color: rgba(255,255,255,.25);
-  font-weight: 800; text-transform: uppercase; }
-.acc-tab.on { background: rgba(139,92,246,.22); border-color: rgba(168,85,247,.55); color: #fff; }
-.acc-tab.on b { color: #fff; }
-.acc-tab .need-name { color: #ffcf6b; font-size: 10px; letter-spacing: 0; text-transform: none; cursor: pointer; }
-.acc-tab .need-name:hover { color: #ffe1a8; }
-.acc-tab.acc-manage { height: 38px; padding: 0 9px; cursor: pointer; transition: all .15s ease; }
-.acc-tab.acc-manage:hover { background: rgba(255,255,255,.08); border-color: rgba(234,179,8,.5); box-shadow: 0 0 12px rgba(234,179,8,.2); }
+
+.acc-select-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 13px;
+  background: rgba(20, 20, 29, 0.95);
+  border: 1px solid rgba(168, 85, 247, 0.45);
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.acc-select-btn:hover {
+  background: rgba(30, 25, 45, 0.95);
+  border-color: rgba(217, 70, 239, 0.6);
+}
+
+.acc-select-btn b {
+  font-size: 12px;
+  font-weight: 800;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.acc-chevron {
+  font-size: 9px;
+  opacity: 0.75;
+  margin-left: 2px;
+}
+
+.acc-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 210px;
+  background: #11111a;
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.acc-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  color: #e8e8ef;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.acc-dropdown-item:hover {
+  background: rgba(168, 85, 247, 0.2);
+  color: #fff;
+}
+
+.acc-dropdown-item.active {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.35);
+}
+
+.acc-dropdown-item b {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.acc-dropdown-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 4px 0;
+}
+
+.acc-dropdown-manage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #a855f7;
+  border-radius: 8px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+}
+
+.acc-dropdown-manage:hover {
+  background: rgba(168, 85, 247, 0.15);
+  color: #d946ef;
+}
+
+/* تسريع فائق وإلغاء أي انيميشن لإلغاء أي بطء في المتصفح */
+.tile, .tile *, .slot, .col-stash, .acc-tab, .btn, .stat, .nav-item,
+.lo-slot, .lo-slot *, .inv-col, .inv-col * {
+  transition: none !important;
+  animation: none !important;
+}
+
+.is-syncing::after, .is-syncing::before {
+  animation: none !important;
+  display: none !important;
+}
+
+.sync-flash, .stash-sync {
+  animation: none !important;
+}
 
 /* ⚙️ GEAR / SETTINGS DROPDOWN MENU */
 .gear-menu-wrap {
