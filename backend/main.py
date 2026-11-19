@@ -174,11 +174,12 @@ async def cache_headers(request, call_next):
 
 # مسارات مفتوحة بدون توكن مشترك
 _PUBLIC_PATHS = {
-    "/login", "/auth/subscriber/login", "/admin", "/favicon.png",
+    "/login", "/auth/subscriber/login", "/auth/auto-login", "/auth/subscriber/auto-login", "/admin", "/favicon.png",
     "/login.js", "/admin.js", "/admin_mode.js",
-    "/api/status", "/api/subscriber/verify", "/download/CMSync.exe", "/CMSync.exe"
+    "/api/status", "/api/subscriber/verify", "/download/CMSync.exe", "/CMSync.exe",
+    "/download/CMSync_Setup.exe", "/download/cmsync"
 }
-_PUBLIC_PREFIXES = ("/admin/api/", "/auth/subscriber/", "/download/")
+_PUBLIC_PREFIXES = ("/admin/api/", "/auth/", "/download/")
 # مفتاح جلسة الأدمين — بيتغير مع كل restart
 _ADMIN_SESSIONS = set()
 
