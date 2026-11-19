@@ -306,6 +306,51 @@ async def subscriber_login(request: Request):
     return resp
 
 
+@app.get("/auth/auto-login")
+@app.get("/auth/subscriber/auto-login")
+def auth_subscriber_auto_login(request: Request, token: str = ""):
+    """تسجيل دخول فوري بحساب المشترك عن طريق التوكن بدون طلب باسورد، ويضبط الكوكي ويوجه مباشرة للرئيسية."""
+    import base64
+    import urllib.parse
+    raw_token = (token or request.query_params.get("token") or "").strip()
+    b64 = (request.query_params.get("b64") or "").strip()
+    if not raw_token and b64:
+        try:
+            raw_token = base64.b64decode(b64).decode("utf-8").strip()
+        except Exception:
+            try:
+                raw_token = base64.urlsafe_b64decode(b64).decode("utf-8").strip()
+            except Exception:
+                pass
+
+    if not raw_token:
+        return RedirectResponse("/login", status_code=302)
+
+    conn = store.db()
+    try:
+        adm_pw = subs_mod.admin_password(conn)
+        if raw_token == adm_pw:
+            session = secrets.token_hex(16)
+            _ADMIN_SESSIONS.add(session)
+            resp = RedirectResponse(url="/admin", status_code=302)
+            resp.set_cookie("cm_admin_session", session, max_age=86400, httponly=True, samesite="lax")
+            resp.set_cookie("cm_subscriber_token", adm_pw, max_age=400*86400, httponly=True, samesite="lax")
+            resp.delete_cookie("cm_viewing_subscriber")
+            return resp
+
+        sub = subs_mod.verify_token(conn, raw_token)
+        if not sub:
+            return RedirectResponse("/login?error=invalid_token", status_code=302)
+
+        name_enc = urllib.parse.quote(sub["name"])
+        resp = RedirectResponse(url="/?view_as=" + name_enc, status_code=302)
+        resp.set_cookie("cm_subscriber_token", raw_token, max_age=400*86400, httponly=True, samesite="lax")
+        resp.set_cookie("cm_viewing_subscriber", name_enc, max_age=400*86400, httponly=False, samesite="lax")
+        return resp
+    finally:
+        conn.close()
+
+
 def _caller_identity(request: Request, conn):
     """استخراج هوية المتصل: أدمن، أو مشترك محدد، أو أدمن يتصفح مشتركاً."""
     import urllib.parse

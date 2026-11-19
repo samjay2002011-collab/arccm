@@ -87,6 +87,17 @@ function fmtAgo(ts) {
   return Math.round(m/1440) + " d ago";
 }
 
+function subscriberLoginUrl(sub) {
+  if (!sub || !sub.token) return "https://arccm.pages.dev/";
+  try {
+    const b64 = encodeURIComponent(btoa(unescape(encodeURIComponent(sub.token))));
+    const tok = encodeURIComponent(sub.token);
+    return "https://arccm.pages.dev/auth/auto-login?b64=" + b64 + "&token=" + tok;
+  } catch (e) {
+    return "https://arccm.pages.dev/auth/auto-login?token=" + encodeURIComponent(sub.token);
+  }
+}
+
 function renderList() {
   if (!SUBS.length) { $("#sub-list").innerHTML = '<div class="empty-state">No subscribers yet — create one above.</div>'; return; }
   $("#sub-list").innerHTML = SUBS.map((s, i) => {
@@ -96,6 +107,7 @@ function renderList() {
     const daysCls = s.days_left !== null && s.days_left <= 3 ? (s.days_left <= 0 ? "gone" : "warn") : "";
     const maxAcc = s.max_accounts || 1;
     const curAcc = s.accounts_count !== undefined ? s.accounts_count : 0;
+    const autoLoginUrl = subscriberLoginUrl(s);
     return `<div class="sub-row">
       <span class="num">#${s.id}</span>
       <div class="name">${esc(s.name)}<small>Created: ${fmtDate(s.created_at)} · Last login: ${fmtAgo(s.last_login)} · Logins: ${s.login_count}</small></div>
@@ -108,7 +120,7 @@ function renderList() {
         <small style="font-size:10px; color:${curAcc >= maxAcc ? '#ef4444' : '#22c55e'}; font-weight:800;">(${curAcc}/${maxAcc})</small>
       </div>
       <div class="actions">
-        <a href="/admin/api/subscribers/${s.id}/view-as" target="_blank" rel="noopener noreferrer" class="btn btn-green btn-sm" data-viewas="${s.id}" style="font-weight:900; background:linear-gradient(135deg, #22c55e, #16a34a); color:#000; font-size:11px; padding:7px 14px; text-decoration:none; display:inline-flex; align-items:center; gap:4px;" title="فتح حساب المشترك في تاب جديد لتصفح ومتابعة وإدارة حسابات اللعبة">👤 ادخل حسابه ↗</a>
+        <a href="${autoLoginUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-green btn-sm" data-autologin="${autoLoginUrl}" style="font-weight:900; background:linear-gradient(135deg, #22c55e, #16a34a); color:#000; font-size:11px; padding:7px 14px; text-decoration:none; display:inline-flex; align-items:center; gap:4px;" title="فتح حساب المشترك في تاب جديد على موقع https://arccm.pages.dev بدون الحاجة للباسورد">👤 ادخل حسابه ↗</a>
         <button class="btn btn-primary btn-sm" data-profile="${s.id}">ℹ DETAILS</button>
         <button class="btn btn-ghost btn-sm" data-tokens="${s.id}" style="border-color:rgba(168,85,247,0.5); color:#c084fc; font-weight:800;" title="عرض سجل توكنات حسابات اللعبة للمشترك لآخر 24 ساعة">📜 سجل التوكنات</button>
         <button class="btn btn-ghost btn-sm" data-edit="${s.id}">✎ EDIT</button>
@@ -209,7 +221,10 @@ function openProfile(id) {
 $("#prf-btn-close").onclick = () => { $("#profile-modal").hidden = true; };
 $("#prf-btn-viewas").onclick = (e) => {
   e.preventDefault();
-  window.open("/admin/api/subscribers/" + PROFILE_ID + "/view-as", "_blank");
+  const s = SUBS.find(x => x.id === PROFILE_ID);
+  if (s) {
+    window.open(subscriberLoginUrl(s), "_blank");
+  }
 };
 const btnPrfTokens = $("#prf-btn-tokens");
 if (btnPrfTokens) btnPrfTokens.onclick = () => {

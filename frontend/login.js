@@ -20,3 +20,27 @@ document.getElementById("login-form").onsubmit = async (e) => {
   } catch (ex) { msg.className = "msg err"; msg.textContent = "خطأ في الاتصال بالسيرفر (Connection error)"; }
   btn.disabled = false;
 };
+
+// Auto-login if token is present in URL
+(function checkUrlToken() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    let tok = (params.get("token") || "").trim();
+    const b64 = (params.get("b64") || "").trim();
+    if (!tok && b64) {
+      try {
+        tok = decodeURIComponent(escape(atob(b64))).trim();
+      } catch (e) {}
+    }
+    if (tok) {
+      const input = document.getElementById("token");
+      if (input) {
+        input.value = tok;
+        const form = document.getElementById("login-form");
+        if (form) {
+          setTimeout(() => { form.dispatchEvent(new Event("submit")); }, 50);
+        }
+      }
+    }
+  } catch (e) {}
+})();
