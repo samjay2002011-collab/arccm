@@ -1,5 +1,5 @@
 const $ = s => document.querySelector(s);
-let SESSION = "";
+let SESSION = localStorage.getItem("cm_admin_session") || "";
 let SUBS = [];
 let EDIT_ID = null;
 let PROFILE_ID = null;
@@ -13,7 +13,8 @@ function toast(msg, kind) {
 }
 
 async function api(url, body) {
-  const opts = { headers: {"Content-Type": "application/json", "X-Admin-Session": SESSION} };
+  const sess = SESSION || localStorage.getItem("cm_admin_session") || "";
+  const opts = { headers: {"Content-Type": "application/json", "X-Admin-Session": sess} };
   if (body !== undefined) { opts.method = "POST"; opts.body = JSON.stringify(body); }
   const res = await fetch(url, opts);
   return res.json();
@@ -32,6 +33,7 @@ $("#admin-login-btn").onclick = async () => {
       return;
     }
     SESSION = d.session;
+    try { localStorage.setItem("cm_admin_session", d.session); } catch (e) {}
     $("#login-overlay").hidden = true;
     $("#main-ui").hidden = false;
     $("#admin-pw-badge").textContent = "Admin Mode";
@@ -106,7 +108,7 @@ function renderList() {
         <small style="font-size:10px; color:${curAcc >= maxAcc ? '#ef4444' : '#22c55e'}; font-weight:800;">(${curAcc}/${maxAcc})</small>
       </div>
       <div class="actions">
-        <button class="btn btn-green btn-sm" data-viewas="${s.id}" style="font-weight:900; background:linear-gradient(135deg, #22c55e, #16a34a); color:#000; font-size:11px; padding:7px 14px;" title="ادخل حساب المشترك لتصفح ومتابعة وإدارة حسابات اللعبة">👤 ادخل حسابه</button>
+        <a href="/admin/api/subscribers/${s.id}/view-as" target="_blank" rel="noopener noreferrer" class="btn btn-green btn-sm" data-viewas="${s.id}" style="font-weight:900; background:linear-gradient(135deg, #22c55e, #16a34a); color:#000; font-size:11px; padding:7px 14px; text-decoration:none; display:inline-flex; align-items:center; gap:4px;" title="فتح حساب المشترك في تاب جديد لتصفح ومتابعة وإدارة حسابات اللعبة">👤 ادخل حسابه ↗</a>
         <button class="btn btn-primary btn-sm" data-profile="${s.id}">ℹ DETAILS</button>
         <button class="btn btn-ghost btn-sm" data-tokens="${s.id}" style="border-color:rgba(168,85,247,0.5); color:#c084fc; font-weight:800;" title="عرض سجل توكنات حسابات اللعبة للمشترك لآخر 24 ساعة">📜 سجل التوكنات</button>
         <button class="btn btn-ghost btn-sm" data-edit="${s.id}">✎ EDIT</button>
@@ -128,8 +130,11 @@ function wireList() {
   document.querySelectorAll("[data-edit]").forEach(b => b.onclick = () => openEdit(+b.dataset.edit));
   document.querySelectorAll("[data-profile]").forEach(b => b.onclick = () => openProfile(+b.dataset.profile));
   document.querySelectorAll("[data-tokens]").forEach(b => b.onclick = () => openTokensModal(+b.dataset.tokens));
-  document.querySelectorAll("[data-viewas]").forEach(b => b.onclick = () => {
-    window.location.href = "/admin/api/subscribers/" + b.dataset.viewas + "/view-as";
+  document.querySelectorAll("[data-viewas]").forEach(b => b.onclick = (e) => {
+    if (b.tagName !== "A") {
+      e.preventDefault();
+      window.open("/admin/api/subscribers/" + b.dataset.viewas + "/view-as", "_blank");
+    }
   });
   document.querySelectorAll("[data-reset]").forEach(b => b.onclick = async () => {
     if (!confirm("Generate a new token? The old one will stop working.")) return;
@@ -202,8 +207,9 @@ function openProfile(id) {
 
 // Profile modal button handlers
 $("#prf-btn-close").onclick = () => { $("#profile-modal").hidden = true; };
-$("#prf-btn-viewas").onclick = () => {
-  window.location.href = "/admin/api/subscribers/" + PROFILE_ID + "/view-as";
+$("#prf-btn-viewas").onclick = (e) => {
+  e.preventDefault();
+  window.open("/admin/api/subscribers/" + PROFILE_ID + "/view-as", "_blank");
 };
 const btnPrfTokens = $("#prf-btn-tokens");
 if (btnPrfTokens) btnPrfTokens.onclick = () => {
@@ -330,7 +336,10 @@ if (btnSaveAdminPw) {
 
 // ─── Misc ───
 $("#btn-refresh").onclick = loadAll;
-$("#btn-logout").onclick = () => { location.href = "/auth/logout"; };
+$("#btn-logout").onclick = () => {
+  try { localStorage.removeItem("cm_admin_session"); } catch (e) {}
+  location.href = "/auth/logout";
+};
 
 // ─── Game Tokens Log Modal (سجل توكنات المشترك لآخر 24 ساعة) ───
 let TOKENS_SUB_ID = null;
@@ -466,9 +475,13 @@ if (btnClearTokLog) btnClearTokLog.onclick = async () => {
 // ─── Auto-check existing admin session ───
 (async function initSession() {
   try {
+    if (!SESSION) {
+      SESSION = localStorage.getItem("cm_admin_session") || "";
+    }
     const d = await api("/admin/api/session-check");
     if (d.ok && d.session) {
       SESSION = d.session;
+      try { localStorage.setItem("cm_admin_session", d.session); } catch (e) {}
       $("#login-overlay").hidden = true;
       $("#main-ui").hidden = false;
       $("#admin-pw-badge").textContent = d.is_local ? "Local Direct Mode (Port 8001)" : "Admin Mode";
