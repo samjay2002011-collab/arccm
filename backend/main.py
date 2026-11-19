@@ -312,16 +312,21 @@ def auth_subscriber_auto_login(request: Request, token: str = ""):
     """تسجيل دخول فوري بحساب المشترك عن طريق التوكن بدون طلب باسورد، ويضبط الكوكي ويوجه مباشرة للرئيسية."""
     import base64
     import urllib.parse
-    raw_token = (token or request.query_params.get("token") or "").strip()
+    raw_token = ""
     b64 = (request.query_params.get("b64") or "").strip()
-    if not raw_token and b64:
+    if b64:
+        b64_clean = b64.replace(" ", "+")
+        b64_clean += "=" * (-len(b64_clean) % 4)
         try:
-            raw_token = base64.b64decode(b64).decode("utf-8").strip()
+            raw_token = base64.b64decode(b64_clean).decode("utf-8").strip()
         except Exception:
             try:
-                raw_token = base64.urlsafe_b64decode(b64).decode("utf-8").strip()
+                raw_token = base64.urlsafe_b64decode(b64_clean).decode("utf-8").strip()
             except Exception:
                 pass
+
+    if not raw_token:
+        raw_token = (token or request.query_params.get("token") or "").strip()
 
     if not raw_token:
         return RedirectResponse("/login", status_code=302)
