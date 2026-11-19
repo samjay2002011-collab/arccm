@@ -223,6 +223,7 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: "Segoe
     <div class="profile-actions">
       <button class="btn btn-ghost btn-sm" id="prf-btn-edit">✎ EDIT</button>
       <button class="btn btn-green btn-sm" id="prf-btn-viewas">📂 VIEW ITEMS</button>
+      <button class="btn btn-ghost btn-sm" id="prf-btn-tokens" style="color:#c084fc; border-color:rgba(168,85,247,0.5); font-weight:800;">📜 سجل التوكنات (24H)</button>
       <button class="btn btn-ghost btn-sm" id="prf-btn-copy-token">⧉ COPY TOKEN</button>
       <button class="btn btn-ghost btn-sm" id="prf-btn-reset-token">🔄 NEW TOKEN</button>
       <button class="btn btn-ghost btn-sm" id="prf-btn-toggle">⏸ DISABLE</button>
@@ -232,6 +233,44 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: "Segoe
   </div>
 </div>
 
-<script src="/admin.js?v=11"></script>
+<!-- Game Tokens Log Modal (سجل توكنات المشترك لآخر 24 ساعة) -->
+<div class="modal-bg" id="tokens-modal" hidden>
+  <div class="modal-card" style="width: min(760px, 100%);">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid var(--line); padding-bottom:12px;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size:24px;">🔑</span>
+        <div>
+          <h3 style="margin:0; font-size:16px; font-weight:900; letter-spacing:1px; color:#e2e8f0;" id="toklog-title">سجل توكنات حسابات اللعبة</h3>
+          <small style="color:var(--muted); font-size:11px;" id="toklog-subtitle">سجل التوكنات لآخر 24 ساعة للمشترك</small>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="btn-close-tokens-modal">✕ إغلاق</button>
+    </div>
+
+    <!-- 24-Hour Notice Banner -->
+    <div style="background:linear-gradient(135deg, rgba(168,85,247,0.12), rgba(217,70,239,0.06)); border:1px solid rgba(168,85,247,0.35); border-radius:12px; padding:12px 16px; margin-bottom:16px; display:flex; align-items:center; gap:12px;">
+      <span style="font-size:20px;">⏱️</span>
+      <div style="font-size:12px; line-height:1.6; color:#e2e8f0;">
+        <strong style="color:#c084fc;">نظام الحذف التلقائي (24 ساعة):</strong> يتم مسح هذا السجل تلقائياً بمجرد مرور <strong>24 ساعة</strong> على إضافة التوكن. يتم تسجيل التوكنات هنا فور قيام المشترك بربط حسابه من برنامج CMSync أو من خلال الموقع.
+      </div>
+    </div>
+
+    <!-- Tokens List Container -->
+    <div id="toklog-content" style="max-height:55vh; overflow-y:auto; padding-right:4px;">
+      <!-- Populated via JS -->
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-foot" style="justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:14px; margin-top:16px;">
+      <div style="font-size:11px; font-weight:700; color:var(--muted);" id="toklog-count">0 توكن مسجل</div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-red btn-sm" id="btn-clear-tokens-log" style="display:none;">🗑️ مسح السجل يدوياً</button>
+        <button class="btn btn-ghost btn-sm" id="btn-refresh-tokens-log">↻ تحديث</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/admin.js?v=12"></script>
 </body>
 </html>

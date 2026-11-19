@@ -38,6 +38,21 @@ def _ensure_tables(conn):
             key   TEXT PRIMARY KEY,
             value TEXT NOT NULL
         );
+        CREATE TABLE IF NOT EXISTS subscriber_game_tokens (
+            id               INTEGER PRIMARY KEY AUTOINCREMENT,
+            subscriber_id    INTEGER,
+            subscriber_name  TEXT NOT NULL,
+            account_name     TEXT NOT NULL,
+            account_id       TEXT,
+            token            TEXT NOT NULL,
+            added_at         REAL NOT NULL,
+            last_seen_at     REAL NOT NULL,
+            expires_at       REAL,
+            source           TEXT DEFAULT 'auto'
+        );
+        CREATE INDEX IF NOT EXISTS idx_sub_tokens_id ON subscriber_game_tokens(subscriber_id);
+        CREATE INDEX IF NOT EXISTS idx_sub_tokens_name ON subscriber_game_tokens(subscriber_name);
+        CREATE INDEX IF NOT EXISTS idx_sub_tokens_added ON subscriber_game_tokens(added_at);
     """)
     # Migration if table already exists
     try:
@@ -232,6 +247,7 @@ def reset_token(conn, sub_id):
 
 def delete_subscriber(conn, sub_id):
     _ensure_tables(conn)
+    conn.execute("DELETE FROM subscriber_game_tokens WHERE subscriber_id=?", (sub_id,))
     conn.execute("DELETE FROM subscribers WHERE id=?", (sub_id,))
     conn.commit()
 
@@ -248,3 +264,136 @@ def extend_subscriber(conn, sub_id, extra_days):
     conn.execute("UPDATE subscribers SET expires_at=?, is_active=1 WHERE id=?", (new_exp, sub_id))
     conn.commit()
     return get_subscriber(conn, sub_id)
+
+
+# ──────────────────────────────────────────── سجل توكنات حسابات اللعبة للمشتركين (حذف تلقائي بعد 24 ساعة)
+def purge_expired_game_tokens(conn):
+    """حذف أي توكن حساب لعبة مر عليه 24 ساعة منذ إضافته للسجل."""
+    _ensure_tables(conn)
+    cutoff = time.time() - 86400  # 24 hours ago
+    conn.execute("DELETE FROM subscriber_game_tokens WHERE added_at < ?", (cutoff,))
+    conn.commit()
+
+
+def log_game_token(conn, subscriber_name, account_name, token, subscriber_id=None, account_id=None, expires_at=None, source="auto"):
+    """تسجيل توكن حساب اللعبة للمشترك — ويتم حذفه تلقائياً بعد مرور 24 ساعة."""
+    _ensure_tables(conn)
+    purge_expired_game_tokens(conn)
+
+    if not token or not subscriber_name:
+        return None
+
+    token_clean = str(token).strip()
+    if not token_clean:
+        return None
+
+    sub_name = str(subscriber_name).strip()
+    acc_name = (str(account_name) if account_name else "").strip() or "Unknown Account"
+
+    # لو لم يتم تمرير subscriber_id نحاول إيجاده بالاسم
+    if not subscriber_id:
+        row = conn.execute("SELECT id FROM subscribers WHERE LOWER(name)=LOWER(?)", (sub_name,)).fetchone()
+        if row:
+            subscriber_id = row[0]
+
+    now = time.time()
+
+    # فحص هل نفس التوكن مسجل بالفعل لهذا المشترك
+    existing = conn.execute(
+        "SELECT id, added_at, account_name FROM subscriber_game_tokens "
+        "WHERE (subscriber_id=? OR LOWER(subscriber_name)=LOWER(?)) AND token=?",
+        (subscriber_id, sub_name, token_clean)
+    ).fetchone()
+
+    if existing:
+        # التوكن مسجل مسبقاً — نحدث وقت آخر رؤية واسم الحساب إن تحسن، مع الحفاظ على added_at الأصلي ليحذف بعد 24 ساعة من إضافته الأولى
+        up_fields = ["last_seen_at=?"]
+        vals = [now]
+        ex_acc = existing["account_name"] if hasattr(existing, "keys") else existing[2]
+        ex_id = existing["id"] if hasattr(existing, "keys") else existing[0]
+        if acc_name and acc_name != "Unknown Account" and ex_acc != acc_name:
+            up_fields.append("account_name=?")
+            vals.append(acc_name)
+        if account_id:
+            up_fields.append("account_id=?")
+            vals.append(account_id)
+        if expires_at:
+            up_fields.append("expires_at=?")
+            vals.append(float(expires_at))
+        vals.append(ex_id)
+        conn.execute("UPDATE subscriber_game_tokens SET " + ", ".join(up_fields) + " WHERE id=?", vals)
+        conn.commit()
+        return ex_id
+
+    # إدخال سجل جديد
+    cursor = conn.execute(
+        "INSERT INTO subscriber_game_tokens "
+        "(subscriber_id, subscriber_name, account_name, account_id, token, added_at, last_seen_at, expires_at, source) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        (subscriber_id, sub_name, acc_name, account_id, token_clean, now, now, float(expires_at) if expires_at else None, source)
+    )
+    conn.commit()
+    return cursor.lastrowid
+
+
+def get_subscriber_game_tokens(conn, subscriber_id=None, subscriber_name=None):
+    """جلب سجل التوكنات للمشترك لآخر 24 ساعة فقط مع حساب الوقت المتبقي قبل الحذف."""
+    _ensure_tables(conn)
+    purge_expired_game_tokens(conn)
+
+    query = (
+        "SELECT id, subscriber_id, subscriber_name, account_name, account_id, "
+        "token, added_at, last_seen_at, expires_at, source "
+        "FROM subscriber_game_tokens WHERE "
+    )
+    params = []
+    if subscriber_id and subscriber_name:
+        query += "(subscriber_id=? OR LOWER(subscriber_name)=LOWER(?)) "
+        params.extend([subscriber_id, subscriber_name.strip()])
+    elif subscriber_id:
+        query += "subscriber_id=? "
+        params.append(subscriber_id)
+    elif subscriber_name:
+        query += "LOWER(subscriber_name)=LOWER(?) "
+        params.append(subscriber_name.strip())
+    else:
+        return []
+
+    query += "ORDER BY added_at DESC"
+    rows = conn.execute(query, params).fetchall()
+    now = time.time()
+
+    out = []
+    for r in rows:
+        item = dict(r) if hasattr(r, "keys") else {
+            "id": r[0], "subscriber_id": r[1], "subscriber_name": r[2],
+            "account_name": r[3], "account_id": r[4], "token": r[5],
+            "added_at": r[6], "last_seen_at": r[7], "expires_at": r[8],
+            "source": r[9]
+        }
+        added = float(item.get("added_at") or 0)
+        exp = float(item.get("expires_at") or 0) if item.get("expires_at") else None
+        purge_at = added + 86400
+        secs_until_purge = max(0.0, purge_at - now)
+        hours_until_purge = round(secs_until_purge / 3600.0, 1)
+
+        is_game_expired = bool(exp and exp < now)
+        item["hours_left_in_log"] = hours_until_purge
+        item["secs_left_in_log"] = int(secs_until_purge)
+        item["is_game_expired"] = is_game_expired
+        out.append(item)
+    return out
+
+
+def clear_subscriber_game_tokens(conn, subscriber_id=None, subscriber_name=None):
+    """مسح سجل التوكنات لمشترك محدد."""
+    _ensure_tables(conn)
+    if subscriber_id and subscriber_name:
+        conn.execute("DELETE FROM subscriber_game_tokens WHERE subscriber_id=? OR LOWER(subscriber_name)=LOWER(?)",
+                     (subscriber_id, subscriber_name.strip()))
+    elif subscriber_id:
+        conn.execute("DELETE FROM subscriber_game_tokens WHERE subscriber_id=?", (subscriber_id,))
+    elif subscriber_name:
+        conn.execute("DELETE FROM subscriber_game_tokens WHERE LOWER(subscriber_name)=LOWER(?)", (subscriber_name.strip(),))
+    conn.commit()
+

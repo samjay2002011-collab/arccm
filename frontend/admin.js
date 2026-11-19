@@ -108,6 +108,7 @@ function renderList() {
       <div class="actions">
         <button class="btn btn-green btn-sm" data-viewas="${s.id}" style="font-weight:900; background:linear-gradient(135deg, #22c55e, #16a34a); color:#000; font-size:11px; padding:7px 14px;" title="ادخل حساب المشترك لتصفح ومتابعة وإدارة حسابات اللعبة">👤 ادخل حسابه</button>
         <button class="btn btn-primary btn-sm" data-profile="${s.id}">ℹ DETAILS</button>
+        <button class="btn btn-ghost btn-sm" data-tokens="${s.id}" style="border-color:rgba(168,85,247,0.5); color:#c084fc; font-weight:800;" title="عرض سجل توكنات حسابات اللعبة للمشترك لآخر 24 ساعة">📜 سجل التوكنات</button>
         <button class="btn btn-ghost btn-sm" data-edit="${s.id}">✎ EDIT</button>
         <button class="btn btn-ghost btn-sm" data-copy="${s.id}">⧉ TOKEN</button>
         <button class="btn btn-ghost btn-sm" data-reset="${s.id}">🔄 NEW TOKEN</button>
@@ -126,6 +127,7 @@ function wireList() {
   document.querySelectorAll("[data-copy]").forEach(b => b.onclick = () => { const s = SUBS.find(x => x.id == b.dataset.copy); if (s) { navigator.clipboard.writeText(s.token); toast("✔ Full token copied!", "ok"); } });
   document.querySelectorAll("[data-edit]").forEach(b => b.onclick = () => openEdit(+b.dataset.edit));
   document.querySelectorAll("[data-profile]").forEach(b => b.onclick = () => openProfile(+b.dataset.profile));
+  document.querySelectorAll("[data-tokens]").forEach(b => b.onclick = () => openTokensModal(+b.dataset.tokens));
   document.querySelectorAll("[data-viewas]").forEach(b => b.onclick = () => {
     window.location.href = "/admin/api/subscribers/" + b.dataset.viewas + "/view-as";
   });
@@ -202,6 +204,13 @@ function openProfile(id) {
 $("#prf-btn-close").onclick = () => { $("#profile-modal").hidden = true; };
 $("#prf-btn-viewas").onclick = () => {
   window.location.href = "/admin/api/subscribers/" + PROFILE_ID + "/view-as";
+};
+const btnPrfTokens = $("#prf-btn-tokens");
+if (btnPrfTokens) btnPrfTokens.onclick = () => {
+  if (PROFILE_ID) {
+    $("#profile-modal").hidden = true;
+    openTokensModal(PROFILE_ID);
+  }
 };
 $("#prf-btn-copy-token").onclick = () => {
   const s = SUBS.find(x => x.id === PROFILE_ID);
@@ -322,6 +331,137 @@ if (btnSaveAdminPw) {
 // ─── Misc ───
 $("#btn-refresh").onclick = loadAll;
 $("#btn-logout").onclick = () => { location.href = "/auth/logout"; };
+
+// ─── Game Tokens Log Modal (سجل توكنات المشترك لآخر 24 ساعة) ───
+let TOKENS_SUB_ID = null;
+
+function fmtDateTime(ts) {
+  if (!ts) return "—";
+  try {
+    return new Date(ts * 1000).toLocaleString("ar-EG", {
+      month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: true
+    });
+  } catch (e) {
+    return fmtDate(ts);
+  }
+}
+
+async function openTokensModal(subId) {
+  TOKENS_SUB_ID = subId;
+  const s = SUBS.find(x => x.id === subId);
+  const name = s ? s.name : "#" + subId;
+  const tTitle = $("#toklog-title");
+  if (tTitle) tTitle.textContent = "سجل توكنات حسابات اللعبة — " + name;
+  const tSub = $("#toklog-subtitle");
+  if (tSub) tSub.textContent = "سجل التوكنات لآخر 24 ساعة للمشترك (" + name + ")";
+  const modal = $("#tokens-modal");
+  if (modal) modal.hidden = false;
+  await loadTokensLog(subId);
+}
+
+async function loadTokensLog(subId) {
+  const container = $("#toklog-content");
+  const countEl = $("#toklog-count");
+  const clearBtn = $("#btn-clear-tokens-log");
+  if (!container) return;
+  container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--muted); font-size:13px;">جاري جلب سجل التوكنات...</div>';
+  try {
+    const res = await api("/admin/api/subscribers/" + subId + "/game-tokens");
+    if (!res || !res.ok) {
+      container.innerHTML = '<div class="empty-state" style="color:var(--red);">❌ تعذر تحميل سجل التوكنات</div>';
+      return;
+    }
+    const tokens = res.tokens || [];
+    if (countEl) countEl.textContent = tokens.length + " توكن مسجل (خلال آخر 24 ساعة)";
+    if (clearBtn) {
+      clearBtn.style.display = tokens.length > 0 ? "inline-block" : "none";
+    }
+
+    if (!tokens.length) {
+      container.innerHTML = `
+        <div class="empty-state" style="padding:36px 16px; text-align:center; background:rgba(255,255,255,0.015); border-radius:12px; border:1px dashed var(--line);">
+          <div style="font-size:32px; margin-bottom:10px;">📭</div>
+          <div style="font-weight:800; font-size:14px; color:var(--text); margin-bottom:6px;">لا توجد أي توكنات مسجلة لهذا المشترك في آخر 24 ساعة</div>
+          <div style="color:var(--muted); font-size:12px; line-height:1.6; max-width:460px; margin:0 auto;">
+            يتم تسجيل توكنات حسابات اللعبة هنا تلقائياً بمجرد قيام المشترك بتشغيل برنامج <strong>CMSync</strong> والربط باللعبة، أو عند إضافة حسابه من اللوحة، ويتم مسح كل توكن تلقائياً بعد مرور 24 ساعة.
+          </div>
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = tokens.map(t => {
+      const hoursLeft = t.hours_left_in_log !== undefined ? t.hours_left_in_log : 24.0;
+      const gameExp = t.is_game_expired;
+      const isUrgent = hoursLeft <= 3.0;
+      return `
+        <div style="background:var(--panel-2); border:1px solid ${isUrgent ? 'rgba(239,68,68,0.4)' : 'var(--line)'}; border-radius:12px; padding:14px; margin-bottom:12px; transition:border-color .2s;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:13px; font-weight:900; background:rgba(168,85,247,0.18); color:#c084fc; border:1px solid rgba(168,85,247,0.3); border-radius:6px; padding:3px 10px; font-family:monospace;">
+                🎮 ${esc(t.account_name)}
+              </span>
+              <span style="font-size:10px; font-weight:800; background:rgba(255,255,255,0.06); padding:2px 8px; border-radius:6px; color:var(--muted); text-transform:uppercase;">
+                ${esc(t.source || 'auto')}
+              </span>
+            </div>
+            <div style="font-size:11px; font-weight:800; color:${isUrgent ? '#ef4444' : '#f59e0b'}; background:${isUrgent ? 'rgba(239,68,68,0.12)' : 'rgba(245,158,11,0.1)'}; padding:3px 8px; border-radius:6px;" title="يتم حذف التوكن تلقائياً من السجل بعد مرور 24 ساعة">
+              ⏳ متبقي على الحذف: ${hoursLeft} ساعة
+            </div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; color:var(--muted); margin-bottom:8px; flex-wrap:wrap; gap:6px;">
+            <span>تاريخ الإضافة: <strong style="color:var(--text);">${fmtDateTime(t.added_at)}</strong> <small style="color:var(--muted);">(${fmtAgo(t.added_at)})</small></span>
+            <span>حالة صلاحية اللعبة: <strong style="color:${gameExp ? 'var(--red)' : 'var(--green)'}; font-weight:800;">${gameExp ? '🔴 منتهي (Expired)' : '🟢 صالح (Valid)'}</strong></span>
+          </div>
+
+          <div style="position:relative; display:flex; align-items:center; gap:8px; margin-top:8px;">
+            <div style="flex:1; background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:8px 12px; font-family:ui-monospace, Consolas, monospace; font-size:11px; color:#a7f3d0; word-break:break-all; user-select:all; max-height:64px; overflow-y:auto; line-height:1.4;">
+              ${esc(t.token)}
+            </div>
+            <button class="btn btn-primary btn-sm" style="flex-shrink:0; height:100%; padding:10px 14px; font-weight:800; display:flex; align-items:center; gap:4px;" data-copy-tok="${esc(t.token)}">
+              📋 نسخ التوكن
+            </button>
+          </div>
+        </div>`;
+    }).join("");
+
+    container.querySelectorAll("[data-copy-tok]").forEach(btn => {
+      btn.onclick = () => {
+        navigator.clipboard.writeText(btn.dataset.copyTok);
+        toast("✔ تم نسخ توكن اللعبة إلى الحافظة بنجاح!", "ok");
+      };
+    });
+  } catch (err) {
+    console.error("loadTokensLog error:", err);
+    container.innerHTML = '<div class="empty-state" style="color:var(--red);">❌ حدث خطأ أثناء الاتصال بالسيرفر</div>';
+  }
+}
+
+// Wire Tokens Modal Buttons
+const btnCloseTokModal = $("#btn-close-tokens-modal");
+if (btnCloseTokModal) btnCloseTokModal.onclick = () => { $("#tokens-modal").hidden = true; };
+
+const btnRefreshTokLog = $("#btn-refresh-tokens-log");
+if (btnRefreshTokLog) btnRefreshTokLog.onclick = () => {
+  if (TOKENS_SUB_ID) loadTokensLog(TOKENS_SUB_ID);
+};
+
+const btnClearTokLog = $("#btn-clear-tokens-log");
+if (btnClearTokLog) btnClearTokLog.onclick = async () => {
+  if (!TOKENS_SUB_ID) return;
+  if (!confirm("هل أنت متأكد من رغبتك في مسح سجل توكنات هذا المشترك بالكامل يدوياً؟")) return;
+  try {
+    const res = await api("/admin/api/subscribers/" + TOKENS_SUB_ID + "/game-tokens/clear", {});
+    if (res && res.ok) {
+      toast("✔ تم مسح سجل التوكنات بنجاح", "ok");
+      loadTokensLog(TOKENS_SUB_ID);
+    } else {
+      toast("تعذر مسح السجل", "bad");
+    }
+  } catch (e) {
+    toast("خطأ في الاتصال", "bad");
+  }
+};
 
 // ─── Auto-check existing admin session ───
 (async function initSession() {

@@ -639,6 +639,63 @@ async def admin_delete_sub(sub_id: int, request: Request):
     return {"ok": True}
 
 
+@app.get("/admin/api/subscribers/{sub_id}/game-tokens")
+def admin_get_subscriber_game_tokens(sub_id: int, request: Request):
+    """جلب سجل توكنات حسابات اللعبة للمشترك — مع الحذف التلقائي لكل ما مر عليه 24 ساعة."""
+    _admin_check(request)
+    conn = store.db()
+    try:
+        sub = subs_mod.get_subscriber(conn, sub_id)
+        if not sub:
+            raise HTTPException(404, "Subscriber not found")
+
+        # مزامنة أي حسابات حالية يملكها المشترك تلقائياً في السجل
+        all_accounts = store.list_accounts(conn)
+        sub_name = sub["name"]
+        for acc in all_accounts:
+            if is_account_accessible(acc, sub_name, False):
+                tok = acc.get("token")
+                if tok:
+                    subs_mod.log_game_token(
+                        conn,
+                        subscriber_name=sub_name,
+                        account_name=acc.get("name") or acc.get("display_name") or "Game Account",
+                        token=tok,
+                        subscriber_id=sub["id"],
+                        account_id=acc.get("id"),
+                        expires_at=acc.get("token_exp"),
+                        source="account"
+                    )
+
+        tokens = subs_mod.get_subscriber_game_tokens(conn, subscriber_id=sub["id"], subscriber_name=sub["name"])
+        return {
+            "ok": True,
+            "subscriber": {
+                "id": sub["id"],
+                "name": sub["name"],
+            },
+            "tokens": tokens,
+            "count": len(tokens)
+        }
+    finally:
+        conn.close()
+
+
+@app.post("/admin/api/subscribers/{sub_id}/game-tokens/clear")
+def admin_clear_subscriber_game_tokens(sub_id: int, request: Request):
+    """مسح سجل توكنات اللعبة لمشترك يدوياً من الأدمن."""
+    _admin_check(request)
+    conn = store.db()
+    try:
+        sub = subs_mod.get_subscriber(conn, sub_id)
+        if not sub:
+            raise HTTPException(404, "Subscriber not found")
+        subs_mod.clear_subscriber_game_tokens(conn, subscriber_id=sub["id"], subscriber_name=sub["name"])
+        return {"ok": True, "message": "Tokens log cleared successfully"}
+    finally:
+        conn.close()
+
+
 @app.get("/admin/api/subscribers/{sub_id}/view-as")
 def admin_view_as(sub_id: int, request: Request):
     """Impersonate a subscriber — sets their token as the browser cookie and redirects to homepage."""
@@ -917,6 +974,24 @@ def api_account_add(request: Request, body: dict = None):
             store.upsert_account(conn, {"id": rec["id"], "display_name": rec["display_name"]})
         out = accounts_mod.public(conn, store.get_account(conn, rec["id"]) or rec)
         conn.close()
+
+    if owner and rec.get("token"):
+        conn_log = store.db()
+        try:
+            subs_mod.log_game_token(
+                conn_log,
+                subscriber_name=owner,
+                account_name=rec.get("name") or rec.get("display_name") or "Game Account",
+                token=rec.get("token"),
+                account_id=rec.get("id"),
+                expires_at=rec.get("token_exp"),
+                source="manual"
+            )
+        except Exception:
+            pass
+        finally:
+            conn_log.close()
+
     return {"account": out, "note": note, "pulled": pulled}
 
 
@@ -985,6 +1060,24 @@ def api_account_auto(request: Request, body: dict = None):
             out = accounts_mod.public(conn, store.get_account(conn, rec["id"]) or rec)
         finally:
             conn.close()
+
+    if owner and (game_token or rec.get("token")):
+        conn_log = store.db()
+        try:
+            subs_mod.log_game_token(
+                conn_log,
+                subscriber_name=owner,
+                account_name=rec.get("name") or rec.get("display_name") or "Game Account",
+                token=game_token or rec.get("token"),
+                account_id=rec.get("id"),
+                expires_at=rec.get("token_exp"),
+                source="cmsync"
+            )
+        except Exception:
+            pass
+        finally:
+            conn_log.close()
+
     return {"account": out, "note": note, "created": created, "owner": owner,
             "pulled": {"ok": bool(pulled and pulled.get("ok")), "error": (pulled or {}).get("error")}}
 
@@ -1081,6 +1174,26 @@ def api_account_edit(account_id, body: dict):
         raise HTTPException(400, str(e))
     except rampart_client.UpstreamError as e:
         raise HTTPException(502, str(e))
+
+    if body.get("token") and rec.get("token"):
+        owners_str = rec.get("owner_username") or ""
+        for own in [o.strip() for o in owners_str.split(",") if o.strip()]:
+            conn_log = store.db()
+            try:
+                subs_mod.log_game_token(
+                    conn_log,
+                    subscriber_name=own,
+                    account_name=rec.get("name") or rec.get("display_name") or "Game Account",
+                    token=rec.get("token"),
+                    account_id=rec.get("id"),
+                    expires_at=rec.get("token_exp"),
+                    source="edit"
+                )
+            except Exception:
+                pass
+            finally:
+                conn_log.close()
+
     return {"account": _with_conn(lambda conn: accounts_mod.public(conn, rec)), "note": note}
 
 
