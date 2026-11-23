@@ -9,7 +9,7 @@ import os
 import re
 import threading
 
-from . import asset_meta, config
+from . import asset_meta, config, item_catalog, item_overrides
 
 CATALOG_FILE = os.path.join(config.DATA_DIR, "items_catalog.json")
 ARCTRACKER_FILE = os.path.join(config.DATA_DIR, "arctracker_items_cache.json")
@@ -78,8 +78,14 @@ def _arctracker_data():
         mtime = os.path.getmtime(ARCTRACKER_FILE)
     except OSError:
         return _ar_cache
+    # تعديلات المستخدم اليدوية هي أول ما بيتقرا في بيانات اللعبة — أي حقل معدّل
+    # بيغلب نسخة الملف (وملفاته الافتراضية ما بتتعدلش).
+    try:
+        over_mtime = os.path.getmtime(item_overrides.FILE)
+    except OSError:
+        over_mtime = -1.0
     with _ar_lock:
-        if _ar_cache["mtime"] == mtime and _ar_cache["exact"]:
+        if _ar_cache["mtime"] == mtime and _ar_cache.get("over") == over_mtime and _ar_cache["exact"]:
             return _ar_cache
         with open(ARCTRACKER_FILE, "r", encoding="utf-8") as f:
             raw = json.load(f)
@@ -96,7 +102,23 @@ def _arctracker_data():
         for group in tiers.values():
             group.sort(key=lambda it: ROMAN_RANK.get(
                 normalize(it.get("name")).rsplit(" ", 1)[-1], 99))
-        _ar_cache.update({"mtime": mtime, "exact": exact, "compact": compact, "tiers": tiers})
+        overrides = list(item_overrides.all_rows().items())
+        for key, rec in overrides:
+            item = exact.get(normalize(rec.get("name")))
+            if isinstance(item, dict):
+                item = dict(item)
+                exact[normalize(rec.get("name"))] = item
+            else:
+                item = {"id": key, "asset_ids": [key]}
+                exact[normalize(rec.get("name"))] = item
+            for field, value in (("name", rec.get("name")), ("rarity", rec.get("rarity")),
+                                 ("type", rec.get("type")), ("value", rec.get("value"))):
+                if value not in (None, ""):
+                    item[field] = value
+            # صور الكتالوج الخام بتيجي من الموقع — العرض هنا بيعتمد على الصور المحلية,
+            # فمفيش أي رابط خارجي بيتحفظ أو بيتعرض من خلال التعديل اليدوي.
+            item["image_local"] = item_overrides.local_image(rec.get("image") or item.get("image_local") or "")
+        _ar_cache.update({"mtime": mtime, "over": over_mtime, "exact": exact, "compact": compact, "tiers": tiers})
         return _ar_cache
 
 
@@ -153,6 +175,71 @@ def patch_candidates(limit=12):
              "rarity": it.get("rarity") or "", "image": it.get("image_local") or "",
              "value": it.get("value"), "updated_at": "%04d-%02d-%02d" % newest}
             for it in out[:limit]]
+
+
+# صور بيضيفها صاحب الموقع لقطع الفهرس ماعندهوش أرت: بمفتاح asset id (أو الاسم لو
+# مفيش id). الملف data/index_art.json — الصور نفسها في assets/items/arctracker
+# أو assets/items/uploaded، فبتتخدم زي أي أرت تاني.
+INDEX_ART_FILE = os.path.join(config.DATA_DIR, "index_art.json")
+_art_lock = threading.Lock()
+_art_cache = {"mtime": None, "map": {}}
+
+
+def _index_art_data():
+    try:
+        mtime = os.path.getmtime(INDEX_ART_FILE)
+    except OSError:
+        return {}
+    with _art_lock:
+        if _art_cache["mtime"] == mtime:
+            return _art_cache["map"]
+        try:
+            with open(INDEX_ART_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f) or {}
+        except (OSError, ValueError):
+            data = {}
+        _art_cache.update({"mtime": mtime, "map": data})
+        return data
+
+
+def index_art(asset_id="", name=""):
+    """الصورة المضافة يدوياً لقطعة — بالـ id الأول، وبعدين بالاسم."""
+    data = _index_art_data()
+    aid = str(asset_id or "").strip()
+    if aid and aid in data:
+        return data[aid].get("image") or ""
+    key = normalize(name)
+    for row in data.values():
+        if row.get("name") and normalize(row.get("name")) == key and row.get("image"):
+            return row["image"]
+    return ""
+
+
+def set_index_art(asset_id="", name="", image="", source="arctracker"):
+    """يحفظ صورة لقطعة في فهرس الصور ويجعل الكاشات تحس بالتغيير فوراً."""
+    aid = str(asset_id or "").strip()
+    img = str(image or "").strip()
+    if not img:
+        raise ValueError("The image path is empty.")
+    row = {"image": img, "name": str(name or "").strip(), "source": "upload" if source == "uploaded" else "arctracker"}
+    with _art_lock:
+        try:
+            with open(INDEX_ART_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f) or {}
+        except (OSError, ValueError):
+            data = {}
+        key = aid or ("name:" + normalize(name))
+        data[key] = row
+        os.makedirs(os.path.dirname(INDEX_ART_FILE), exist_ok=True)
+        tmp = INDEX_ART_FILE + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        os.replace(tmp, INDEX_ART_FILE)
+    # الكاشات بتقارن mtime — ملف جديد أو تعديل على arctracker لازم يتشاف في نفس الطلب
+    _art_cache.update({"mtime": None, "map": data})
+    _ar_cache.update({"mtime": None})
+    _ids_cache.update({"mtime": None})
+    return row
 
 
 _ids_lock = threading.Lock()
@@ -271,6 +358,20 @@ def _arctracker_group(item, blueprint):
     return AR_TYPE_GROUPS.get(kind, "Misc")
 
 
+def manual_group(kind):
+    """جروب قطعة معرّفة يدوياً من نوع اللعبة — اللي ملهاش نوع بيقع في Misc."""
+    low = normalize(kind)
+    if low == "design":
+        return "Designs"
+    if low == "stencil":
+        return "Stencils"
+    if low == "blueprint":
+        return "Blueprints"
+    if low in WEAPON_TYPES:
+        return "Weapons"
+    return AR_TYPE_GROUPS.get(low, "Misc")
+
+
 def normalize(name):
     text = str(name or "").strip().lower()
     text = text.replace("\u2019", "'").replace("\u2018", "'")
@@ -350,6 +451,24 @@ def load():
             data = json.load(f)
         _cache["data"] = data
         _cache["mtime"] = mtime
+        # تعديلات المستخدم اليدوية بتتجمّل جوه فهرس الاسم نفسه، فأي مطابقة بالاسم
+        # (التصنيف/الجروب/الوصف) بتلاقيها الأول قبل أي بيانات تانية في الفهرس.
+        items = data.setdefault("items", {})
+        for key, rec in item_overrides.all_rows().items():
+            name = normalize(rec.get("name"))
+            if not name or not any(str(v.get("asset_id") or "") == key
+                                   for entry in items.values() for v in entry.get("variants") or []):
+                continue
+            entry = items.setdefault(name, {"variants": []})
+            variants = entry.setdefault("variants", [])
+            target = next((v for v in variants if str(v.get("asset_id") or "") == key), None)
+            if target is None:
+                target = {"asset_id": key}
+                variants.insert(0, target)
+            for field, value in (("name", rec.get("name")), ("rarity", rec.get("rarity")),
+                                 ("type", rec.get("type")), ("value", rec.get("value"))):
+                if value not in (None, ""):
+                    target[field] = value
         return data
 
 
@@ -417,6 +536,11 @@ def group_for(name="", item_type="", raw_categories=None, asset_id=""):
     fixed = asset_meta.get(asset_id)
     if fixed.get("group"):
         return fixed["group"]
+    # القطعة المعرّفة يدوياً بتتجمّع بس من نوعها اللي اتسجل (زي Weapon أو Quick Use)،
+    # من غير باقي مسار الاسم/الفهرس: القطعة دي أصلاً مش في أي فهرس.
+    manual = item_catalog.kind(asset_id)
+    if manual:
+        return manual_group(manual)
     blueprint = _is_blueprint(name, item_type)
     item = arctracker_lookup(name)
     if item:
@@ -544,6 +668,18 @@ def decorate(row):
         row["value"] = item.get("value")
     if row.get("stack_size") is None and (item or {}).get("stack_size") is not None:
         row["stack_size"] = item.get("stack_size")
+    art = index_art(row.get("asset_id"), name)
+    if art:
+        row["image"] = art
+        row["index_art"] = True
+    # قطعة معرّفة يدوياً أو موجودة في فهرس الأيقونات المحلي: الاسم والأيقونة
+    # والندرة بتتغلب على الفهرس العام، من غير أي طلب خارجي.
+    local = item_catalog.resolve(row.get("asset_id"))
+    if not row.get("image") and local.get("image"):
+        row["image"] = local["image"]
+        row["catalog_art"] = True
+    if not str(row.get("rarity") or "").strip() and local.get("rarity"):
+        row["rarity"] = local["rarity"]
     if not row.get("image"):
         # "Unlock Surge Coil Craft" وأمثالها (١٣٣ سطر في الفهرس العام): دي tokens
         # بفتح وصفة التصنيع، ومش موجودة في arctracker خالص، فالصورة بتتقرا من
@@ -566,6 +702,37 @@ def decorate(row):
         for key in ("value", "stack_size", "weight_kg"):
             if fixed.get(key) is not None:
                 row[key] = fixed[key]
+    if local.get("manual"):
+        # التعريف اليدوي هو الكلمة الأخيرة على الاسم/الندرة: الجدول المخزّن
+        # (asset_meta) لسه مش عارف القطعة، فمينفعش يمسح اللي المستخدم كتبه.
+        row["display_name"] = local["name"]
+        row["name"] = local["name"]
+        if local.get("image"):
+            row["image"] = local["image"]
+            row["catalog_art"] = True
+        if local.get("rarity"):
+            row["rarity"] = local["rarity"]
+        if local.get("type"):
+            row["type"] = local["type"]
+            row["type_label"] = local["type"]
+        row["manual_definition"] = True
+    # تعديل المستخدم اليدوي (data/item_overrides.json) هو الكلمة الأخيرة على كل حقل
+    item_overrides.apply(row, row.get("asset_id"))
+    if not row.get("image"):
+        resolved = item_catalog.resolve(row.get("asset_id"))
+        if resolved.get("image"):
+            row["image"] = resolved["image"]
+    bg = row.get("card_bg")
+    if bg == "blueprint":
+        row["item_kind"] = "blueprint"
+        row["is_blueprint"] = True
+    elif bg == "design":
+        row["item_kind"] = "design"
+        row["is_blueprint"] = False
+    elif bg == "standard":
+        if row.get("item_kind") in ("blueprint", "design"):
+            row["item_kind"] = ""
+        row["is_blueprint"] = False
     _decorate_attachments(row)
     return row
 

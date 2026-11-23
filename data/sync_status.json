@@ -1,16 +1,16 @@
 {
- "generated_at": 1794935980.580978,
- "duration_sec": 3.0,
- "mode": "degraded",
- "accounts_online": 2,
- "accounts_total": 4,
+ "generated_at": 1795469356.680434,
+ "duration_sec": 6.6,
+ "mode": "online",
+ "accounts_online": 3,
+ "accounts_total": 3,
  "results": [
   {
-   "account": "RAIDER40512",
+   "account": "ACCOUNT409954",
    "ok": true,
-   "items": 80,
-   "instances": 483,
-   "snapshot": "RAIDER40512_20261117-191941.json.gz",
+   "items": 444,
+   "instances": 4543,
+   "snapshot": "ACCOUNT409954_20261123-232918.json.gz",
    "assets": {},
    "traders": {
     "ok": false,
@@ -19,21 +19,24 @@
    }
   },
   {
-   "account": "G21",
-   "ok": false,
-   "error": "The account token is expired (2026-11-16 21:49) — refresh it from the game."
-  },
-  {
-   "account": "G14",
-   "ok": false,
-   "error": "The account token is expired (2026-11-16 21:49) — refresh it from the game."
+   "account": "ACCOUNT711892",
+   "ok": true,
+   "items": 303,
+   "instances": 1813,
+   "snapshot": "ACCOUNT711892_20261123-232920.json.gz",
+   "assets": {},
+   "traders": {
+    "ok": false,
+    "skipped": "pioneer_source",
+    "detail": "Trader offers are not published on the direct gateway — the last saved copy is what is shown."
+   }
   },
   {
    "account": "G22",
    "ok": true,
-   "items": 439,
-   "instances": 4356,
-   "snapshot": "G22_20261117-191943.json.gz",
+   "items": 444,
+   "instances": 4543,
+   "snapshot": "G22_20261123-232922.json.gz",
    "assets": {},
    "traders": {
     "ok": false,

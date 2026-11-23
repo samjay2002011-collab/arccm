@@ -1,0 +1,95 @@
+def _fill_plan_of(found, want, cap, extra=0):
+    """الخطة الرسمية: كل اللي بيتنقل كامل في طلب واحد، وكسر واحد آخره بيتفصل.
+
+    • الناقص بيتاخد من الستاش/الأوفر: الأكوام الكبيرة كاملة، وآخر كومة (أو قطعة)
+      فيها الكسر بتتفصل جوّه الشنطة.
+    • لو الستاش مش مكفي: أكبر كومة في الشنطة بتكمّل التغطية وبتتفصل برضه.
+    • الزيادة أصلاً جوّه الشنطة: পстак واحدة بتتفصل للّي زاد والكسر بترجع.
+    • مكان الفصل: الأكوام اللي خانتها فيها مساحة الأول؛ لو كل الأكوام مسدودة
+      الكسر بيتعمل على قطعة منفردة كاملة بدالها.
+    • قطع خانات التجهيز/السلاح مش مصادر فصل — بتتحسب في الإجمالي بس.
+    """
+    box = found["box"]
+    stacks = sorted([s for s in found["stacks"] if s["amount"] > 1],
+                    key=lambda s: (0 if s["container"] == "stash" else 1,
+                                   -s["amount"], s["instance_id"]))
+    loose = sorted([s for s in found["stacks"] if s["amount"] <= 1] + found["pieces"],
+                   key=lambda s: (-s["amount"], 0 if s["container"] == "stash" else 1,
+                                  s["instance_id"]))
+    roomy = [s for s in stacks if box.seat_room(s["cell"])]
+    if not roomy and loose:
+        stacks, loose = [], sorted(stacks + loose,
+                                   key=lambda s: (-s["amount"],
+                                                  0 if s["container"] == "stash" else 1,
+                                                  s["instance_id"]))
+    in_bag = found["in_bag"]
+    need = want - in_bag
+    short = max(0, need - sum(s["amount"] for s in stacks + loose))
+    out = {"need": need, "want": want, "short": short, "items": [], "cells": 0,
+           "member": [], "plan": None}
+    if need <= 0:
+        if not need:
+            return out
+        # الشنطة فيها أكتر من المطلوب: كومة واحدة جوّاها بتتفصل والكسر بيخرج.
+        cands = [b for b in box.in_bag_of(found.get("aid") or "") if b["amount"] > 1]
+        big = max(cands, key=lambda b: (b["amount"], b["instance_id"])) if cands else None
+        if not big:
+            out["short"] = 1
+            return out
+        out["member"] = [big]
+        out["cells"] = 2
+        out["plan"] = {"items": [], "tail": dict(big, take=want, side="remove"),
+                       "split": True, "group": True, "keep": want, "cells": 2}
+        return out
+    items = []
+    pick, left = [], need
+    for s in stacks:
+        if left <= 0:
+            break
+        pick.append((s, min(s["amount"], left)))
+        left -= min(s["amount"], left)
+    if left > 0:
+        for p in loose:
+            if left <= 0:
+                break
+            pick.append((p, min(p["amount"], left)))
+            left -= min(p["amount"], left)
+    short = max(0, left)
+    out["short"] = short
+    if short:
+        # أكبر كومة في الشنطة بتكمّل الناقص وبتتفصل للّي منها.
+        cands = [b for b in box.in_bag_of(found.get("aid") or "") if b["amount"] > short]
+        big = max(cands, key=lambda b: (b["amount"], b["instance_id"])) if cands else None
+        if not big:
+            return out
+        out["member"] = [big]
+        items = [dict(s, take=amt, side="whole") for s, amt in pick]
+        out["items"] = items
+        cover = dict(big, take=big["amount"] - short, side="cover")
+        out["cells"] = len(items) + (2 if items else 1)
+        out["plan"] = {"items": items, "tail": cover, "split": True, "group": False,
+                       "cells": out["cells"]}
+        return out
+    tail = None
+    for s, amt in pick:
+        if amt < s["amount"]:
+            tail = dict(s, take=amt, side="tail", cover=True)
+        else:
+            items.append(dict(s, take=amt, side="whole"))
+    if tail is None and in_bag > want:
+        # كل المطلوب اتنقل كامل والشنطة أصلاً فيها زيادة: الكسر بيخرج من كومة جوّاها.
+        cands = [b for b in box.in_bag_of(found.get("aid") or "") if b["amount"] > 1]
+        big = max(cands, key=lambda b: (b["amount"], b["instance_id"])) if cands else None
+        if not big:
+            out["short"] = 1
+            return out
+        out["member"] = [big]
+        tail = dict(big, take=want, side="remove")
+    whole = [e for e in items if e["side"] == "whole"]
+    out["items"] = items
+    out["cells"] = len(whole) + (1 if tail else 0)
+    out["plan"] = {"items": items, "tail": tail, "split": bool(tail),
+                   "group": need <= 0, "cells": out["cells"]}
+    return out
+
+

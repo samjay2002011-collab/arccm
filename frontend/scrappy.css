@@ -76,7 +76,7 @@
   border-radius: 10px; border: 1px solid var(--line);
   background: rgba(255, 255, 255, .028);
   color: #e5e7eb; text-align: left; cursor: pointer; overflow: hidden;
-  transition: background .12s ease, border-color .12s ease;
+
 }
 .scr-row:hover { background: rgba(255, 255, 255, .07); border-color: rgba(168, 85, 247, .5); }
 .scr-row.short { border-color: rgba(239, 68, 68, .3); background: rgba(239, 68, 68, .05); }

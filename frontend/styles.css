@@ -33,8 +33,9 @@ body {
 .topbar {
   position: sticky; top: 0; z-index: 20;
   /* ثلاث أعمدة: يسار (شنطة/فل/سكرابي) — SYNCHRONIZE في النص — يمين (الحسابات/إلغاء القفل).
-     العمودان الجانبيان minmax(0,1fr) فالزرار الأوسط مابيتغطّيوش العناصر دي أبدًا. */
-  display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+     الشمال هو اللي بياخد العرض الباقي، واليمين على قد زراراته بالظبط، فالزرار الأوسط
+     مابيتغطّيوش العناصر دي أبدًا ومفيش زرار بيتركب فوق زرار. */
+  display: grid; grid-template-columns: minmax(0, 1fr) auto max-content;
   align-items: center; gap: 14px;
   padding: 12px 20px;
   background: rgba(8, 8, 12, .86);
@@ -155,9 +156,9 @@ body {
   background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px;
   padding: 10px; cursor: default; position: relative; overflow: hidden;
   display: flex; flex-direction: column; gap: 8px;
-  transition: transform .12s ease, border-color .12s ease;
+  transition: none;
 }
-.card:hover { transform: translateY(-2px); }
+
 .thumb {
   aspect-ratio: 1 / 1; border-radius: 10px; background: #0c0c12;
   display: grid; place-items: center; border: 1px solid var(--line);
@@ -200,13 +201,17 @@ body {
 /* ================= بطاقة العنصر العائمة (نفس بطاقة الموقع) ================= */
 .item-card {
   position: fixed; left: 0; top: 0; z-index: 100000; width: 340px; max-width: calc(100vw - 28px); box-sizing: border-box; pointer-events: none;
-  will-change: transform;
   background: #121518;
   border: 1px solid #343a40; border-top: 2px solid var(--card-accent, #7b8791); border-radius: 10px; padding: 18px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, .45);
   color: #edf0f2;
+  /* الموقع بيتكتب بـ translate3d جوه rAF؛ هنا الانتقال بس على الظهور */
+  will-change: transform, opacity;
+  opacity: 0;
+  transition: opacity 110ms ease-out, transform 110ms ease-out;
 }
-@keyframes card-in { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: scale(1); } }
+.item-card.on { opacity: 1; }
+.item-card[hidden] { display: none; }
 .ic-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 .ic-id { min-width: 0; }
 .ic-name {
@@ -363,18 +368,28 @@ body {
   --arc-b: #788091;
   --arc-glow: rgba(120, 128, 145, .22);
   --arc-card: radial-gradient(85% 65% at 50% 100%, var(--arc-glow) 0%, #11121a 75%);
-  position: relative; aspect-ratio: 1 / 1; border-radius: 16px; cursor: grab; overflow: hidden;
+  position: relative; aspect-ratio: 1 / 1; border-radius: 16px; cursor: default; overflow: hidden;
+  user-select: none; -webkit-user-select: none; -webkit-user-drag: none; touch-action: manipulation;
   padding: clamp(6px, .6vw, 14px); background: var(--arc-card);
   border: 2px solid var(--arc-b);
   display: flex; align-items: center; justify-content: center;
-  transition: all .16s ease;
+  transition: none;
 }
 .tile:hover {
-  transform: translateY(-2px); border-color: var(--arc-r);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, .45);
+  border-color: var(--arc-r);
+  box-shadow: inset 0 0 0 1px var(--arc-glow), 0 3px 8px rgba(0, 0, 0, .4);
+}
+/* وقت السكرول السريع: البلاطات مالهاش هوفر ولا ظل بيتغير — الـ hover بيتقفل 80ms
+   بعد ما التمرير يهدى، فالتمرير بيفضل 60fps */
+body.is-scrolling .inv-body .tile,
+body.is-scrolling .inv-body .tile:hover {
+  pointer-events: none;
+  box-shadow: none;
+  border-color: var(--arc-b);
 }
 .tile img {
-  max-width: 78%; max-height: 78%; object-fit: contain; position: relative; z-index: 1;
+  display: block; max-width: 78%; max-height: 78%; object-fit: contain; position: relative; z-index: 1;
+  user-select: none; -webkit-user-select: none; -webkit-user-drag: none; pointer-events: none;
 }
 .tile.broken img { opacity: .75; }
 .tile .ph { color: var(--muted); font-size: 20px; position: relative; z-index: 1; }
@@ -454,32 +469,32 @@ body {
 .tile .warn-red { color: #ff4d4d; font-size: 11px; }
 
 /* Blueprints & Designs: Rampart navy grid + vignette, neutral frame */
-.tile.bp {
-  background-color: #080d1a;
+.tile.bp, .tile.blueprint, .tile[data-card-bg="blueprint"] {
+  background-color: #080d1a !important;
   background-image:
     radial-gradient(circle at 35% 55%, rgba(26, 68, 148, .55) 0%, rgba(10, 22, 54, .75) 55%, rgba(7, 9, 16, .96) 100%),
     linear-gradient(to right, rgba(65, 130, 235, .22) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(65, 130, 235, .22) 1px, transparent 1px);
-  background-size: 100% 100%, 28px 28px, 28px 28px;
-  background-position: center center;
+    linear-gradient(to bottom, rgba(65, 130, 235, .22) 1px, transparent 1px) !important;
+  background-size: 100% 100%, 28px 28px, 28px 28px !important;
+  background-position: center center !important;
   border: 1.5px solid #484c5a !important;
-  box-shadow: inset 0 0 18px rgba(5, 8, 15, .85);
+  box-shadow: inset 0 0 18px rgba(5, 8, 15, .85) !important;
 }
-.tile.bp:hover {
-  box-shadow: inset 0 0 18px rgba(5, 8, 15, .85), 0 6px 16px rgba(0, 0, 0, .45);
+.tile.bp:hover, .tile.blueprint:hover, .tile[data-card-bg="blueprint"]:hover {
+  box-shadow: inset 0 0 18px rgba(5, 8, 15, .85), 0 6px 16px rgba(0, 0, 0, .45) !important;
 }
-.tile.bp img { filter: none; }
+.tile.bp img, .tile.blueprint img, .tile[data-card-bg="blueprint"] img { filter: none; }
 
 /* Designs: charcoal + subtle crosshair pattern + rarity corner glow */
-.tile.design {
-  background-color: #181a22;
+.tile.design, .tile[data-card-bg="design"] {
+  background-color: #181a22 !important;
   background-image:
     linear-gradient(45deg, var(--arc-r) 0%, var(--arc-glow) 28%, transparent 55%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Cpath d='M10 6.5v7M6.5 10h7' fill='none' stroke='%23ffffff' stroke-opacity='.08' stroke-width='1'/%3E%3C/svg%3E");
-  background-size: 100% 100%, 20px 20px;
-  background-position: center center, 0 0;
-  border: 1.5px solid var(--arc-r);
-  box-shadow: inset 0 0 24px rgba(0, 0, 0, .5), inset 0 0 16px var(--arc-glow);
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Cpath d='M10 6.5v7M6.5 10h7' fill='none' stroke='%23ffffff' stroke-opacity='.08' stroke-width='1'/%3E%3C/svg%3E") !important;
+  background-size: 100% 100%, 20px 20px !important;
+  background-position: center center, 0 0 !important;
+  border: 1.5px solid var(--arc-r) !important;
+  box-shadow: inset 0 0 24px rgba(0, 0, 0, .5), inset 0 0 16px var(--arc-glow) !important;
 }
 /* Stencils: clean dark card, no pattern */
 .tile.stencil {
@@ -490,11 +505,11 @@ body {
   border: 1.5px solid var(--arc-r);
   box-shadow: inset 0 0 24px rgba(0, 0, 0, .5), inset 0 0 16px var(--arc-glow);
 }
-.tile.design:hover, .tile.stencil:hover {
+.tile.design:hover, .tile[data-card-bg="design"]:hover, .tile.stencil:hover {
   box-shadow: inset 0 0 24px rgba(0, 0, 0, .5), inset 0 0 16px var(--arc-glow),
-              0 6px 16px rgba(0, 0, 0, .45);
+              0 6px 16px rgba(0, 0, 0, .45) !important;
 }
-.tile.design img, .tile.stencil img { transform: translateY(-6px); }
+.tile.design img, .tile[data-card-bg="design"] img, .tile.stencil img { transform: translateY(-6px); }
 .tile .cat-strip {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; height: 22px;
   display: flex; align-items: center; gap: 5px; padding: 0 8px;
@@ -531,35 +546,7 @@ body {
   --arc-r: #ff4d2e; --arc-b: #ff4d2e; --arc-glow: rgba(255, 77, 46, .3);
   --arc-card: radial-gradient(85% 65% at 50% 100%, var(--arc-glow) 0%, #11121a 75%);
 }
-body.dragging .tile { cursor: grabbing; }
-/* أثناء السحب: بلاطات الستاش/الشنطة مالهاش أي hover ولا transition. المتصفح كان
-   بيرسم ظل + transform لكل بلاطة بيعدي عليها الماوس، فالستاش المليان كان بيقطّع.
-   pointer-events: none بتخلّي التقاط الـ dragover على الحاوية نفسها مش على 300
-   بلاطة، واللي محتاج عناصر (بلاطة الوجهة اللي بتتقسم COMBINE/SWAP) بيرجع
-   pointer-events: auto في قاعدته. */
-body.dragging .inv-body .tile {
-  pointer-events: none;
-  transition: none;
-}
-body.dragging .inv-body .tile:hover {
-  transform: none;
-  box-shadow: none;
-}
-body.dragging .inv-body .tile.dnd-live { pointer-events: auto; }
-/* نفس الـ pointer-events للبلاطة اللي بتتسحب أو للوجهة: ظل الماوس فوقها بيولّد
-   hover + transition على كل حركة. */
-body.dragging .tile.drag-src,
-body.dragging .tile.dnd-combo,
-body.dragging .tile.dnd-combine,
-body.dragging .tile.dnd-swap { transition: none; }
-body.dragging .tile.drag-src { opacity: 0.25; }
-/* بلاطة الوجهة بترسم فوق GPU بدل إعادة تخطيط الشجرة مع كل حركة ماوس. */
-body.dragging .tile.dnd-combo,
-body.dragging .tile.dnd-combine,
-body.dragging .tile.dnd-swap,
-body.dragging .tile.drag-src { will-change: transform; }
-
-/* البلاطة "الميتة": للعرض بس — مفيش drag ولا selection (بتتعلّم في wireInventory بـ :not(.cat)) */
+/* البلاطة "الميتة": للعرض بس — مفيش selection (بتتعلّم في wireInventory بـ :not(.cat)) */
 .tile.cat { cursor: default; outline: 1px dashed rgba(148, 163, 184, .55); outline-offset: -3px; }
 .tile.cat:hover { transform: none; }
 .tile.cat img { max-width: 62%; max-height: 58%; }
@@ -675,15 +662,23 @@ body.dragging .tile.drag-src { will-change: transform; }
 .rec-foot .pill[disabled] { opacity: .35; pointer-events: none; }
 .code { font-family: ui-monospace, Consolas, monospace; font-size: 10px; color: #cbd5e1; background: #0a0a10; border: 1px solid var(--line); border-radius: 10px; padding: 12px; overflow-x: auto; white-space: pre-wrap; word-break: break-all; }
 
+#toast-container {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: 26px; z-index: 9999;
+  display: flex; flex-direction: column-reverse; align-items: center; gap: 8px;
+  pointer-events: none; max-width: 90vw;
+}
 .toast {
-  position: fixed; left: 50%; transform: translateX(-50%); bottom: 26px; z-index: 95;
+  position: relative; left: auto; bottom: auto; transform: none; pointer-events: auto;
   padding: 11px 18px; border-radius: 12px; font-size: 12px; font-weight: 700;
   background: rgba(16,16,23,.97); border: 1px solid var(--line); box-shadow: 0 18px 40px rgba(0,0,0,.6);
+  animation: toast-in 0.2s ease-out;
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .toast.ok { border-color: rgba(34,197,94,.5); color: #bbf7d0; }
 .toast.bad { border-color: rgba(239,68,68,.5); color: #fecaca; }
-
-
 
 /* ---------- queued moves: plans waiting for Embark to reopen the write route ---------- */
 .queue-wrap { position: relative; display: flex; }
@@ -707,5 +702,32 @@ body.dragging .tile.drag-src { will-change: transform; }
 .q-x:hover { color: #fff; border-color: rgba(239, 68, 68, .7); background: rgba(239, 68, 68, .28); }
 .q-foot { display: flex; gap: 8px; margin-top: 9px; }
 .q-foot .pill { flex: 1; justify-content: center; padding: 7px 8px; font-size: 10px; letter-spacing: 1px; }
+
+.badge-new {
+  display: inline-block;
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-left: 6px;
+  letter-spacing: 0.5px;
+  vertical-align: middle;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.4);
+}
+
+.dl-pill:hover {
+  background: rgba(168, 85, 247, 0.25) !important;
+  border-color: rgba(168, 85, 247, 0.8) !important;
+  color: #fff !important;
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.35);
+}
+
+.acc-dd-dl:hover {
+  background: rgba(168, 85, 247, 0.18) !important;
+  color: #fff !important;
+}
 
 

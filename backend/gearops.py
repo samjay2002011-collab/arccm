@@ -344,7 +344,8 @@ def direct_plan(kind, rows, payload):
         out["detail"] = "The selected items are in perfect condition — the gateway refuses to repair anything undamaged."
     if kind == "repair" and items:
         # القاموس المحلي (data/repair_costs.json): قياسات من إصلاحاته هو، والنموذج
-        # بالفئة لسدّ القطع اللي لسه ما اتقاست. الأرقام للعرض — البوابة بتقرر خصمها.
+        # بالفئة لسدّ القطع اللي لسه ما اتقاست. الأرقام للعرض فقط — البوابة بتحسب
+        # التكلفة من تعريف القطعة وبتخصم الخامات لوحدها، فمابقاش فيه رفض محلي.
         totals, estimated = {}, 0
         for item in items:
             obs = repair_costs.cost_for(item["asset_id"], item)
@@ -359,13 +360,6 @@ def direct_plan(kind, rows, payload):
         out["materials"] = materials
         out["cost_estimated"] = estimated
         out["measured"] = len(items) - estimated
-        if estimated:
-            out["can_repair"] = False
-            out["blocked"] = "repair_cost_unknown"
-            out["detail"] = "Verified repair materials are unavailable. Repair is disabled rather than using guessed costs."
-        if totals and estimated == 0 and not all(m["has_enough"] for m in materials):
-            out["can_repair"] = False
-            out["blocked"] = "insufficient_materials"
     if kind == "recycle":
         totals, unknown = {}, 0
         for item in items:

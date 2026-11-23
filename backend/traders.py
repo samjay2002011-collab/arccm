@@ -6,6 +6,10 @@ stats الحساب، والـ SEEDS من شجرة المخزن (بند حقيق�
 
 بوابة Embark بتنفّذ قبو العروض عبر POST /v1/pioneer/offers/accept. الشراء بيتعمل
 بعد تأكيد صريح، بيحترم قفل الكتابة الحالي، وبيتحقق من المخزون الرسمي بعد التنفيذ.
+
+العروض اللي ليها `requiredItems` (مفاتيح فتح مستويات التجار) بترفض 400 لو القبول
+راحت بدونها: البوابة بتطلب الأصناف دي صراحة في `itemsToConsume` بالرصة الحية
+و etag بتاعها — بنقرأها من رد اللعبة الرسمي لأن العروض نفسها مش بتتشارك على البوابة.
 """
 import json
 import os
@@ -14,6 +18,7 @@ import time
 from . import accounts, catalog, config, items_db, pioneer_client as pc, pioneer_tree, store, sync
 
 CATALOG_FILE = os.path.join(config.DATA_DIR, "traders_catalog.json")
+GAME_DATA_FILE = os.path.join(config.DATA_DIR, "pioneer_game_data.json")
 CATALOG_VERSION = 1
 PLAN_KEY = "trader_plan:%s"
 OFFER_ACCEPT_PATH = "/v1/pioneer/offers/accept"
@@ -251,6 +256,95 @@ def _offer_index(conn, account):
         for offer in trader.get("offers") or []:
             out[str(offer.get("offer_id"))] = (trader, _offer_for(offer, live.get(str(offer.get("offer_id"))), account))
     return out
+
+
+# البوابة ما بتنشرش وصف العروض (الشراء من التجار مش في /v1/pioneer/offers)، فالحقل
+# الوحيد اللي بيرجع من رد اللعبة الرسمي هو requiredItems — وهو اللي بيفصل عرض
+# بيقبل 200 عن عرض بيرفض 400 internal error.
+_requirements_cache = {"key": None, "rows": {}}
+
+
+def offer_requirements():
+    """offer_id -> قائمة requiredItems من data/pioneer_game_data.json (كاش بالميل تايم)."""
+    try:
+        key = (os.path.getmtime(GAME_DATA_FILE), os.path.getsize(GAME_DATA_FILE))
+    except OSError:
+        return {}
+    if _requirements_cache["key"] != key:
+        try:
+            with open(GAME_DATA_FILE, encoding="utf-8") as fh:
+                data = json.load(fh)
+        except (OSError, ValueError):
+            data = {}
+        rows = {}
+        for offer in ((data.get("offer-descriptions") or {}).get("offerDescriptions") or []):
+            if offer.get("requiredItems"):
+                rows[str(offer.get("offerId"))] = [
+                    {"itemGameAssetId": int(r.get("itemGameAssetId")),
+                     "amount": int(r.get("amount") or 1)}
+                    for r in offer["requiredItems"] if r.get("itemGameAssetId") is not None]
+        _requirements_cache.update({"key": key, "rows": rows})
+    return _requirements_cache["rows"]
+
+
+def required_of(offer):
+    """الأصناف اللي العرض بيطلبها صراحةً: من الكتالوج، ولو مفقود من رد اللعبة الرسمي."""
+    rows = (offer or {}).get("required")
+    if rows:
+        return rows
+    return offer_requirements().get(str((offer or {}).get("offer_id"))) or []
+
+
+# أصغر شكل معروف لـ openapi.InventoryItem: الرصة الحية + الكمية + نسخة_etag_اللي
+# البوابة بتقارنه قبل الصرف. حقول بره القائمة دي بترفع رسالة فك الترميز.
+ITEM_FIELDS = ("gameAssetId", "etag")
+
+
+def consume_required(tree, offer, qty=1):
+    """يبني itemsToConsume من الشجرة الحية: (خطوط، الناقص).
+
+    بنبدأ بالرصات اللي حجمها = المطلوب بالظبط (مفيش تقسيم)، وبعدين الأكبر. الناقص
+    بيتقارن قبل الإرسال، والقرار النهائي للصرف بيفضل للبوابة.
+    """
+    lines, missing = [], []
+    for row in required_of(offer):
+        try:
+            aid = int(row.get("itemGameAssetId"))
+        except (TypeError, ValueError):
+            continue
+        need = int(row.get("amount") or 1) * max(1, int(qty or 1))
+        pool = []
+        for iid, node in (tree.by_id.items() if tree else []):
+            if str(node.get("gameAssetId")) != str(aid):
+                continue
+            have = int(node.get("amount") or 1)
+            pool.append((0 if have == need else 1, -have, iid, node))
+        pool.sort(key=lambda r: (r[0], r[1], r[2]))
+        got = 0
+        for _bucket, _neg, iid, node in pool:
+            if got >= need:
+                break
+            take = min(need - got, int(node.get("amount") or 1))
+            if take <= 0:
+                continue
+            line = {"instanceId": str(iid), "amount": take}
+            line.update({k: node[k] for k in ITEM_FIELDS if k in node})
+            lines.append(line)
+            got += take
+        if got < need:
+            missing.append((aid, need, got))
+    return lines, missing
+
+
+def _missing_detail(missing):
+    names = pioneer_tree.asset_names()
+    parts = []
+    for aid, need, got in missing:
+        row = names.get(str(aid)) or {}
+        parts.append("%d× %s" % (need - got,
+                                 row.get("display_name") or row.get("game_asset_name")
+                                 or "unlock item %s" % aid))
+    return ", ".join(parts)
 
 
 def _asset_totals(data, asset_ids):
@@ -546,9 +640,6 @@ def _purchase_error(exc):
     if "401" in text:
         return {"error": "token_expired", "code": 401,
                 "detail": "The account token was locked by the gateway — a new login is required."}
-    if "400" in text:
-        return {"error": "offer_rejected", "code": 400,
-                "detail": "The gateway rejected the purchase (daily limit reached or offer requirement not met in game)."}
     return {"error": "gateway_error", "code": 502, "detail": text[:300]}
 
 
@@ -725,15 +816,86 @@ def buy(conn, account, offer_id, amount, confirmed=False):
                           (total_cost, cost.get("name") or cost_asset, actual.get(cost_asset, 0)),
                 "balance": actual.get(cost_asset, 0), "total": total_cost}
 
-    request = {"offerId": gateway_offer_id, "itemsToConsume": [], "amount": qty}
+    # عروض فتح المستويات بتخصم أصناف من المخزن قبل التسليم: لو مش موجودة البوابة
+    # بترد 400 internal error من غير ما تشرح، فبنمنعها هنا وبنقول الناقص بالاسم.
+    tree = pioneer_tree.Tree((before or {}).get("items") or [])
+    consume, lacking = consume_required(tree, offer, qty)
+    if lacking:
+        detail = ("This offer also takes %s from your stash, and %s missing. "
+                  "Nothing was sent to the gateway and nothing was charged." %
+                  (_missing_detail(lacking), "it is" if len(lacking) == 1 else "they are"))
+        store.log_action(conn, account, "trade:buy",
+                         {"offerId": gateway_offer_id, "itemsToConsume": consume, "amount": qty},
+                         "blocked", detail, 0)
+        return {"ok": False, "error": "missing_required", "code": 409, "stage": "requirements",
+                "detail": detail,
+                "required": [{"asset_id": aid, "need": need, "have": got} for aid, need, got in lacking]}
+
+    # الستاش مليان = البوابة بتخصم الثمن وبعدين ترفض التسليم بـ 400 عام. بننقل
+    # قطعة مؤقتاً لشنطة اللوداوت، ونعيد القراءة — الشراء ميتّبعتش غير وخانة فضت.
+    request = {"offerId": gateway_offer_id, "itemsToConsume": consume, "amount": qty}
+    room = {"moved": [], "free": 0, "total": 0}
+    for _attempt in range(3):
+        full = _stash_full(conn, account, before, reward_asset, qty, expected_reward)
+        if not full:
+            break
+        need = _space_need(conn, account, before, reward_asset, expected_reward)
+        step = _auto_make_room(conn, account, need, before)
+        if not step.get("ok"):
+            store.log_action(conn, account, "trade:buy", request, "blocked", step["detail"], 0)
+            return {"ok": False, "error": step.get("error") or "stash_full", "code": 409,
+                    "stage": "space_check", "detail": step["detail"],
+                    "free_cells": step.get("free"), "total_cells": step.get("total"), "need_cells": need}
+        room["moved"].extend(step.get("moved") or [])
+        room.update({k: step.get(k) for k in ("free", "total", "before", "mode")})
+        if step.get("data"):
+            before = step["data"]
+            actual = _asset_totals(before, [cost_asset, reward_asset])
+            # النقل غيّر نسخ_etag_الرصات، فخطوط الأصناف المطلوبة بتتعيد من القراءة الجديدة.
+            consume, lacking = consume_required(pioneer_tree.Tree((before or {}).get("items") or []), offer, qty)
+            if lacking:
+                detail = ("Clearing room moved the items this offer takes, and %s is no longer "
+                          "available in full. Nothing was sent to the gateway." % _missing_detail(lacking))
+                store.log_action(conn, account, "trade:buy", request, "blocked", detail, 0)
+                return {"ok": False, "error": "missing_required", "code": 409, "stage": "requirements",
+                        "detail": detail}
+            request["itemsToConsume"] = consume
+        _log_make_room(conn, account, step)
+    else:
+        free, total = _free_stash(before)
+        detail = ("The stash is full (%d / %d cells) and clearing cells did not free enough room for the delivery. "
+                  "Nothing was purchased and nothing was charged." % (total - free, total))
+        store.log_action(conn, account, "trade:buy", request, "blocked", detail, 0)
+        return {"ok": False, "error": "stash_full", "code": 409, "stage": "space_check",
+                "detail": detail, "free_cells": free, "total_cells": total}
+
     try:
         response = pc.post_json(OFFER_ACCEPT_PATH, request, token=rec["token"])
     except Exception as exc:
         store.log_action(conn, account, "trade:buy", request, "failed", str(exc)[:300], 0)
+        if _not_enough_space(exc):
+            # القراءة فاتت على أمل إن حد فضّى خانة في اللعبة — البوابة رفضت برضه.
+            free, total = _free_stash(before)
+            if consume and free:
+                # الخامات متبعتة وفي الخانات سِعة: 400 عام هنا معناه إن نسخة_etag_
+                # رصة مطلوبة اتغيّرت بعد القراءة (الستاش اتلمس في اللعبة مثلاً).
+                return {"ok": False, "error": "stale_tree", "code": 409, "stage": "accept",
+                        "detail": ("The gateway refused the purchase even though %s is included and the stash "
+                                   "has room (%d free of %d cells) — the inventory copy it was read from has "
+                                   "changed since. Press SYNC and buy again; nothing was charged." %
+                                   ("the offer items" if qty > 1 else "the offer item", free, total)),
+                        "free_cells": free, "total_cells": total, "gateway": str(exc)[:200]}
+            return {"ok": False, "error": "stash_full", "code": 409, "stage": "accept",
+                    "detail": ("The gateway refused the purchase: the stash is full (%d / %d cells), so the item "
+                               "cannot be delivered. Buy inside the game for now, or free a cell and try again. "
+                               "The balance was not charged." % (total - free, total)),
+                    "free_cells": free, "total_cells": total, "gateway": str(exc)[:200]}
         return dict(_purchase_error(exc), stage="accept")
     rejected = _gateway_rejection(response)
     if rejected:
         store.log_action(conn, account, "trade:buy", request, "rejected", rejected["detail"], qty)
+        if room["moved"]:
+            _put_items_back(conn, account, room, before)
         return dict(rejected, stage="accept")
 
     try:
@@ -749,10 +911,9 @@ def buy(conn, account, offer_id, amount, confirmed=False):
     cost_delta = post_totals.get(cost_asset, 0) - actual.get(cost_asset, 0)
     reward_delta = post_totals.get(reward_asset, 0) - actual.get(reward_asset, 0)
     # التحقق المعتبر: البوابة قبلت + الثمن اتخصم من الرصيد الرسمي. الشحنة نفسها
-    # بتنزل في الستاش أو في الأوفر ستاش تلقائيًا لو الستاش مليان.
+    # ممكن تنزل في أي مكان (تجهيز/أوفر فلو/قطعة مش ستاك) ففرقها استعلامي بس.
     paid = cost_delta == -total_cost
     refreshed = pioneer_write._refresh_data(conn, account, after)
-    pioneer_write.invalidate_live_cache(account)
     _consume_plan(conn, account, gateway_offer_id, qty)
     summary = {
         "trader": trader.get("name"), "reward": reward.get("name"), "cost": cost.get("name"),
@@ -764,6 +925,16 @@ def buy(conn, account, offer_id, amount, confirmed=False):
 
     detail = ("Bought %s × %s for %s %s." %
               (qty, reward.get("name") or "the item", total_cost, cost.get("name") or "the currency"))
+    if room["moved"]:
+        detail += _moved_note(room["moved"], room["free"], room["total"])
+        restored = _put_items_back(conn, account, room, after)
+        if restored:
+            detail += _restored_note(restored)
+            try:
+                refreshed = pioneer_write._refresh_data(conn, account,
+                                                        pc.fetch_inventory_for(account))
+            except Exception:
+                pass
     if not paid:
         detail += " the gateway accepted the request but the deduction did not appear in the tree — press SYNC and check the balance."
     elif reward_delta < expected_reward:

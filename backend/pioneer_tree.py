@@ -23,6 +23,11 @@ SLOT_PATTERNS = (
     ("backpack", ("backpack",)),
     ("quick_use", ("quick use",)),
     ("safe_pocket", ("safe pocket",)),
+    # خانة الدرع الحقيقية في اللوداوت اسمها "Light Shield Slot" / "Medium Shield Slot"
+    # (مش "Shield Slot" زي الحاوية اللي فوقيها)، وخانة السلاح اسمها "Firearm Slot".
+    # من غير السطرين دول القسم بيطلع بره الخريطة والخانة تبان «لسه ما اتفعّلتش».
+    ("shield", ("shield slot",)),
+    ("gun_1", ("firearm slot",)),
     # حاوية «Auxiliary» جوه شجرة اللوداوت = خانات الأتاتشمنت بتاعت الأوجمنت
     # (Looting Mk. 2 مثلا 3 خانات). من غيرها القسم ده بيبان فاضي خالص.
     ("augmented_slots", ("auxiliary",)),
@@ -120,6 +125,16 @@ class Tree:
                 self.parent[kid] = iid
         self._names = asset_names()
 
+    def copy(self):
+        """نسخة مستقلة بنفس المحتوى — للتخطيط على الاحتمالات قبل الكتابة."""
+        other = object.__new__(Tree)
+        other.items = self.items
+        other.by_id = self.by_id
+        other.kids = {k: list(v) for k, v in self.kids.items()}
+        other.parent = dict(self.parent)
+        other._names = self._names
+        return other
+
     def _row(self, iid):
         entry = self.by_id.get(str(iid)) or {}
         return self._names.get(str(entry.get("gameAssetId"))) or {}
@@ -189,10 +204,19 @@ class Tree:
 
 def _slot_key(label):
     low = label.lower()
+    # أخص أولاً: "Melee Weapon Slot" فيه "weapon" وعشان كده لازم يتقري قبل
+    # أي نمط عام للسلاح.
+    if "melee" in low:
+        return "melee"
+    if "backpack" in low:
+        return "backpack"
     for key, needles in SLOT_PATTERNS:
         if any(needle in low for needle in needles):
             return key
     return ""
+
+
+slot_key = _slot_key
 
 
 def _filled_items(tree, node):
@@ -257,7 +281,7 @@ def _norm_name(text):
 def _augment_loadout(tree, inventory_root, augment_id):
     """شجرة اللوداوت الي باسم الأوجمنت المجهّز — واحدة لكل أوجمنت (قياس لايف 2026-11-05).
 
-    الخانة المجهّزة بتفضل شايلة آخر أوجمنت اتلمس: على G22 وG14 كانت لسه ماسكة
+    الخانة المجهّزة بتفضل شايلة آخر أوجمنت اتلمس: كانت لسه ماسكة
     "Looting Mk. 2" الفاضية بينما الرايد الحيّ في شجرة "Looting Mk. 3 (…)".
     """
     want = _norm_name(tree.name_of(augment_id))
@@ -275,7 +299,7 @@ def _augment_loadout(tree, inventory_root, augment_id):
     if len(loose) > 1:
         # "Free Loadout Augment" يطابق "Free Loadout" و"Tactical Free Loadout"
         # و"Looting Free Loadout" — الاتنين الأولانيين تيمبليتات فاضية، والحية
-        # هي الوحيدة اللي فيها قطع (مقيس G22 2026-11-13: 20 قطعة جواها).
+        # هي الوحيدة اللي فيها قطع (مقيس 2026-11-13: 20 قطعة جواها).
         filled = [iid for iid in loose if _filled_items(tree, iid)]
         loose = filled if len(filled) == 1 else published_loose(tree, loose)
     return loose[0] if len(loose) == 1 else ""
@@ -299,7 +323,7 @@ def _active_loadout(tree, inventory_root):
     المؤشر وحدها كانت بتعرض شنطة فاضية بينما شنطة اللعبة فيها غنائم الرايد
     (Candleberries في الخانة التاسعة كانت في السيرفر واللوحة مافيةاش).
     فالقاعدة: فيه أوجمنت مجهّز → شجرته هي الوجهة، وبنجيبها بالاسم لأن المؤشر
-    بيغلط (حالة G22/G14 اللي فوقا). مفيش أوجمنت → الشجرة القياسية
+    بيغلط (الحالة اللي فوقا). مفيش أوجمنت → الشجرة القياسية
     "Equipped Loadout" هي الحيّة، حتى لو المؤشر لسه ماسك شجرة أوجمنت قديمة.
     المسار الاحتياطي بيفضل بس للحالة الي مافيهوش أي حاوية معروفة أصلًا.
     """
@@ -315,12 +339,6 @@ def _active_loadout(tree, inventory_root):
             base = _base_loadout(tree, equipped, inventory_root)
             if base:
                 return base, "base"
-        if _filled_items(tree, equipped) > 0:
-            return equipped, "equipped"
-        for root in tree.roots():
-            if root != inventory_root and not tree.label(root).lower().startswith("da_inventory_lf_raider"):
-                if tree.find_child(root, "backpack slot") and _filled_items(tree, root) > 0:
-                    return root, "active_tree"
         return equipped, "equipped"
     best = None
     for root in tree.roots():
@@ -451,12 +469,11 @@ def _destinations(tree, wrappers, sources, target_wrapper_id, allow_occupied=Fal
     if target_wrapper_id:
         if target_wrapper_id not in wrappers:
             raise TreeError(400, "bad_wrapper", "The requested cell does not belong to the destination.")
-        if (not allow_occupied and tree.first_child(target_wrapper_id)
-                and target_wrapper_id not in sources):
-            if not fallback_if_full:
-                raise TreeError(409, "slot_occupied", "The requested cell is occupied.")
-            target_wrapper_id = ""
-        if target_wrapper_id:
+        # الخانة المليانة هي نفسها الهدف في التبديل: اللي جواها بيرجع لخانته من
+        # عند البوابة بنفس الطلب (نفس منطق تبديل الأوجمنت المقيس على البوابة)،
+        # فالطلب الواحد بيحط الاتنين في نفس الوقت — وده اللي بيشتغل في الستاش
+        # وهو 280/280.
+        if not fallback_if_full:
             if len(sources) > 1:
                 raise TreeError(400, "one_slot_per_item",
                                 "Every move needs one empty cell per item — pick a single item or leave the cell empty.")
@@ -716,8 +733,68 @@ def spread_plan(tree, asset_id, max_moves=40, gap_pref=0):
             "targets": [index[c] for c in chosen], "detail": detail}
 
 
+def _move_with_unload(tree, lay, ids, unload, target_container, target_slot):
+    """خلع الشنطة: طلب واحد بيطلّع المحتوى من خانات اللوداوت وبيطلّع الشنطة من
+    خانة AUGMENT في نفس اللحظة — البوابة بتنفّذ العمليات بترتيبها، فمفيش حالة
+    وسطى اللوداوت شارشها على الشنطة وهي مش موجودة."""
+    steps, moved, labels = [], [], []
+    for aug in ids:
+        job = unload.get(aug)
+        if not job:
+            continue
+        inner = list(job["ids"])
+        if not inner:
+            continue
+        if job["container"] == "overflow":
+            body, dest, got, _lay = plan_move(tree, inner, "overflow", "", "")
+        else:
+            body, dest, got, _lay = plan_move(tree, inner, "stash", "", "", fallback_if_full=True)
+        apply_steps(tree, body["steps"])
+        steps.extend(body["steps"])
+        moved.extend(got)
+        labels.append(dest.get("label") or job["container"].upper())
+    for aug in ids:
+        body, dest, got, _lay = plan_move(tree, [aug], target_container, target_slot, "")
+        apply_steps(tree, body["steps"])
+        steps.extend(body["steps"])
+        moved.extend(got)
+        labels.append(dest.get("label") or target_container.upper())
+    return ({"target_container": target_container, "requests": [], "steps": steps},
+            {"container": target_container, "wrappers": [], "label": labels[-1] if labels else ""},
+            moved, layout(tree))
+
+
+_DEAD_CELL_DETAIL = ("The gateway accepted the write and the item stayed put — this loadout cell "
+                     "is not one the game writes items into.")
+
+
+def _dead_loadout_cells(tree, lay, key):
+    """خانة لوداوت البوابة بتقبل الكتابة عليها وما بتحطش حاجة.
+
+    القياس لايف 2026-11-20 (G21، شجرة Combat Mk. 2): خانة "Auxiliary Grenade Slot"
+    اللي اللوداوت موجّه عليها ردت 200 على setParents وما اتغيرتش في القراية،
+    وأي أب جديد تحتها رد INVALID_ARGUMENT. نفس المحتوى تحت حاوية الشنطة
+    ("Grenade Auxiliary Slot" جوّه "Combat Mk. 2 Auxiliary Slot") هو اللي اللعبة
+    بتقراه، فدي الوجهة الحقيقية للخانة.
+    """
+    slots = lay["loadout"]["slots"].get(key) or []
+    if not slots:
+        return {}
+    cell = str(slots[0].get("wrapper") or "")
+    holder = next((h for h, kids in tree.kids.items() if cell in kids), "")
+    if not holder:
+        return {}
+    kids = tree.children(holder)
+    if len(kids) > 1:
+        return {"owner": holder, "cells": kids}
+    tag = str((tree._row(cell) or {}).get("game_asset_name") or tree.label(cell) or "").upper()
+    if any(t in tag for t in ("GRENADE", "CONSUMABLE", "MINE")):
+        return {"owner": holder, "cells": kids, "detail": _DEAD_CELL_DETAIL}
+    return {}
+
+
 def plan_move(tree, instance_ids, target_container, target_slot="", target_wrapper_id="",
-              fallback_if_full=False):
+              fallback_if_full=False, source_steps=None):
     """يخطط نقل عناصر بين خانات المخزن الرسمية.
 
     كل خانة في المخزن (ستاش/شنطة/تجهيز) هي نفسها حاوية بـ slots — النقل بيتم
@@ -731,13 +808,51 @@ def plan_move(tree, instance_ids, target_container, target_slot="", target_wrapp
     if missing:
         raise TreeError(404, "unknown_instance",
                         "These items are not in the official stash: %s" % ", ".join(missing[:5]))
-    sources = [tree.parent.get(i, "") for i in ids]
     target_container = str(target_container or "").lower()
+    # خلع الشنطة الملبوسة = ملكشوبة: القطع اللي جواها بتخرج الأول (للأوفر
+    # اللي طلبه المستخدم، وإلا لخاناتها)، وبعدها الشنطة نفسها بتخرج من خانة
+    # AUGMENT. خانات اللوداوت بقت بتشاور على حاويات الأوجمنت ده، فلو اللوداوت
+    # اتساب موجّه عليها وهي اتخلعت، أول نقل جديد للخانة بيرفضه الموضوع.
+    worn = set(lay["loadout"]["slots"].get("augment", [])[0].get("item") or "")
+    unload = {}
+    for iid in ids:
+        if iid not in worn:
+            continue
+        inside, seen = [], set()
+        for slot in tree.children(iid):
+            for holder in tree.children(slot):
+                for cell in tree.children(holder):
+                    content = tree.first_child(cell)
+                    if content and content not in seen and content not in ids:
+                        seen.add(content)
+                        inside.append(content)
+        if not inside:
+            continue
+        pending_ids = [r for r in inside if tree.parent.get(r, "")]
+        unload[iid] = {"ids": pending_ids,
+                       "container": "overflow" if target_container in ("overflow", "stash") else "stash"}
+    if unload:
+        return _move_with_unload(tree, lay, ids, unload, target_container, target_slot)
+    sources = [tree.parent.get(i, "") for i in ids]
     if target_container == "overflow":
         label = "OVERFLOW"
         pending = [(iid, src) for iid, src in zip(ids, sources) if src]
         if not pending:
             raise TreeError(409, "already_there", "The items are already in the overflow stash.")
+        if source_steps is not None:
+            # طلب خروج خانة بيفضّيها بمحتواها كله. ده مقصود في نقل عادي، لكن اختبار
+            # النقل (api_unknown_cover) لازم ينقل قطعة واحدة من أوفر مزدحم — الخروج
+            # بيتكتب هنا للقطعة نفسها ولخانتها.
+            steps, requests, moved = [], [], []
+            for iid, src in [(str(i), str(s)) for i, s in source_steps]:
+                requests.append({"mutations": [
+                    {"discriminator": "update", "instanceId": src,
+                     "slots": [tree.first_child(src)], "amount": tree.amount(src)}],
+                    "requestId": ""})
+                steps.append({"instance_id": iid, "source": src, "target": ""})
+            body = {"target_container": target_container, "requests": requests, "steps": steps}
+            dest = {"container": target_container, "wrappers": [], "label": label}
+            return body, dest, moved, lay
         steps, requests, moved = [], [], []
         for iid, src in pending:
             requests.append({"mutations": [
@@ -765,15 +880,22 @@ def plan_move(tree, instance_ids, target_container, target_slot="", target_wrapp
         label = "BACKPACK"
     elif target_container == "loadout":
         key = str(target_slot or "").lower()
-        if not key:
-            raise TreeError(400, "bad_slot",
-                            "Specify the loadout cell (gun_1/gun_2/shield/quick_use/safe_pocket/melee).")
-        slots = lay["loadout"]["slots"].get(key) or []
-        if not slots:
+        quirk = _dead_loadout_cells(tree, lay, key)
+        if key not in lay["loadout"]["slots"]:
             raise TreeError(400, "bad_slot",
                             "The loadout cell '%s' is not in the active loadout." % key)
-        wrappers = [s["wrapper"] for s in slots]
-        label = "LOADOUT"
+        if quirk.get("detail") and ids and ids[0] == str((lay["loadout"]["slots"].get(key) or [{}])[0].get("wrapper") or ""):
+            raise TreeError(409, "cell_inactive", _DEAD_CELL_DETAIL)
+        holder = quirk.get("owner")
+        if holder:
+            # خانات AUGMENTED الحقيقية في اللعبة هي خانات الحاوية اللي متعلّقة على
+            # الشنطة الملبوسة (شوف _dead_loadout_cells) — مش الخانة الظاهرة.
+            wrappers = list(quirk.get("cells") or [])
+            label = "AUGMENTED"
+        else:
+            slots = lay["loadout"]["slots"].get(key) or []
+            wrappers = [s["wrapper"] for s in slots]
+            label = "LOADOUT"
     elif target_container == "mod_slot":
         # خانة مرفق: نفس منطق النقل بالظبط — الـ wrapper بتاع الخانة بياخد
         # آيد المرفق. بنقبل خانات DA_ModSlot_* بس عشان مفيش كتابة في غيرو.

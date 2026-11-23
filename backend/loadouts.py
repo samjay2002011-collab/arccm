@@ -32,30 +32,21 @@ def _instance_rows(conn, account):
 
 def _slot_list(payload, key, rows):
     raw = (payload.get(key) if key == "backpack" else (payload.get("containers") or {}).get(key)) or []
-    by_wrapper = {str(r.get("wrapper_id") or ""): r for r in rows.values() if r.get("wrapper_id")}
-    by_slot = {(r.get("container"), r.get("slot_index")): r for r in rows.values() if r.get("slot_index") is not None}
-
     out = []
     for slot in raw:
-        wid = str(slot.get("wrapper_id") or "")
-        s_idx = slot.get("slot_index")
         item = slot.get("item") or {}
         iid = str(item.get("instanceId") or item.get("id") or "")
         row = rows.get(iid)
-        if not row and wid and wid in by_wrapper:
-            row = by_wrapper[wid]
-        if not row and s_idx is not None and (key, s_idx) in by_slot:
-            row = by_slot[(key, s_idx)]
         out.append({
-            "wrapper_id": wid,
-            "slot_index": s_idx,
+            "wrapper_id": str(slot.get("wrapper_id") or ""),
+            "slot_index": slot.get("slot_index"),
             "item": row,
         })
     out.sort(key=lambda s: (s["slot_index"] if s["slot_index"] is not None else 9999))
     return out
 
 
-def state(conn, account):
+def state(conn, account, saved=None):
     payload, fetched = store.read_snapshot(conn, account)
     payload = payload or {}
     rows = _instance_rows(conn, account)
@@ -96,7 +87,7 @@ def state(conn, account):
         "augment": equipped_augment,
         "base": augments.capacities(augments.resolve(None)),
         "required": required,
-        "saved": store.list_loadouts(conn),
+        "saved": store.list_loadouts(conn) if saved is None else saved,
         "snapshot_age_minutes": round((time.time() - (fetched or 0)) / 60, 1) if fetched else None,
     }
 
@@ -180,7 +171,7 @@ def _stand_in(asset_id, by_id, claimed, blocked_containers=(), prefer=""):
 def plan(conn, account, loadout_id):
     """خطة تحميل قالب محفوظ على الحساب الحالي.
 
-    القوالب مشتركة بين حساباته: القالب اللي اتحفظ من G14 بيتحمّل على G22 عادي —
+    القوالب مشتركة بين حساباته: القالب اللي اتحفظ من G14 بيتحمّل على حساب تاني عادي —
     الآيدز المتخزنة مالهاش وجود هنا فبتنزل لمطابقة النوع (`_stand_in`)، وده مقصود:
     هو عايز نفس التشكيل، مش نفس القطع بالذات."""
     rec = store.get_loadout(conn, loadout_id)

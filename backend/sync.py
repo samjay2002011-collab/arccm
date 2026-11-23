@@ -206,16 +206,15 @@ def status_snapshot():
                     "expires_in_hours": round((exp - time.time()) / 3600, 1) if exp else None}
     for account, _ in account_pairs(conn):
         last = store.last_success(conn, account)
-        items_c = conn.execute("SELECT COUNT(*) c FROM items WHERE account=?", (account,)).fetchone()["c"]
         out["accounts"][account] = {
             "last_success": last,
             "age_minutes": round((time.time() - last) / 60, 1) if last else None,
-            "snapshot_available": bool(store.latest_snapshot_path(conn, account)) or (items_c > 0),
-            "items": items_c,
+            "snapshot_available": bool(store.latest_snapshot_path(conn, account)),
+            "items": conn.execute("SELECT COUNT(*) c FROM items WHERE account=?", (account,)).fetchone()["c"],
         }
     last_pull = dict(LAST_PULL or store.get_meta(conn, "last_pull") or {})
     age = time.time() - float(last_pull.get("generated_at") or 0)
-    cached = any(a["snapshot_available"] for a in out["accounts"].values()) or any(a["items"] > 0 for a in out["accounts"].values())
+    cached = any(a["snapshot_available"] for a in out["accounts"].values())
     if last_pull.get("mode") == "online" and age < max(config.REFRESH_SECONDS * 3, 600):
         out["mode"] = "online"
     elif cached:
@@ -251,7 +250,7 @@ if __name__ == "__main__":
     args = ap.parse_args()
 
     if args.assets_only and DIRECT:
-        print("[assets] skipped: direct sync mode — pulling from rampart.su is stopped.")
+        print("[assets] skipped: direct sync mode — pulling from the upstream service is stopped.")
     elif args.assets_only:
         conn = store.db()
         total = {"downloaded": 0, "failed": 0}

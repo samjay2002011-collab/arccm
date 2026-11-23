@@ -1,0 +1,139 @@
+{
+ "version": 1,
+ "items": {
+  "972768070": {
+   "name": "Rock Salt",
+   "rarity": "Uncommon",
+   "type": "Trinket",
+   "value": 640,
+   "image": "arctracker/rock_salt.png",
+   "note": "",
+   "manual_override": true,
+   "at": 1795109620
+  },
+  "1167788899": {
+   "name": "Riven Tides Secure Storage Keycard",
+   "rarity": "Epic",
+   "type": "Key",
+   "value": 100,
+   "image": "static/item_icons/asset_1167788899.png",
+   "note": "",
+   "manual_override": true,
+   "at": 1795114002
+  },
+  "237676669": {
+   "name": "Golden Olive",
+   "rarity": "Uncommon",
+   "type": "Stencil",
+   "value": 5000,
+   "image": "static/item_icons/asset_237676669.png",
+   "note": "",
+   "manual_override": true,
+   "at": 1795328501
+  },
+  "1061683355": {
+   "name": "Emperor Modulator",
+   "rarity": "Legendary",
+   "type": "Topside Material",
+   "value": 7000,
+   "image": "static/item_icons/asset_1061683355.png",
+   "note": "",
+   "manual_override": true,
+   "at": 1795330282
+  },
+  "1379349900": {
+   "name": "Green Geometric Chair Design",
+   "rarity": "Rare",
+   "type": "Design",
+   "value": 5000,
+   "image": "static/item_icons/asset_1379349900.png",
+   "note": "",
+   "manual_override": true,
+   "at": 1795330475
+  },
+  "2124548786": {
+   "name": "Tattered ARC Lining",
+   "rarity": "Uncommon",
+   "type": "Recyclable",
+   "value": 640,
+   "image": "static/item_icons/asset_2124548786.png",
+   "note": "",
+   "manual_override": true,
+   "at": 1795330550
+  },
+  "1729534311": {
+   "name": "Impure ARC Coolant",
+   "rarity": "Uncommon",
+   "type": "Recyclable",
+   "value": 640,
+   "image": "static/item_icons/asset_1729534311.png",
+   "note": "",
+   "manual_override": true,
+   "at": 1795331417
+  },
+  "-1061683355": {
+   "name": "Emperor Modulator",
+   "rarity": "Legendary",
+   "type": "Topside Material",
+   "value": 7000,
+   "image": "static/item_icons/asset_1061683355.png",
+   "note": "",
+   "manual_override": true,
+   "at": 1795331814
+  },
+  "-1379349900": {
+   "name": "Green Geometric Chair Design",
+   "rarity": "Rare",
+   "type": "Design",
+   "value": 5000,
+   "image": "static/item_icons/asset_1379349900.png",
+   "note": "",
+   "manual_override": true,
+   "at": 1795332064
+  },
+  "784941499": {
+   "name": "Emperor Gateway Conduit Blueprint",
+   "rarity": "Common",
+   "type": "Blueprint",
+   "value": 5000,
+   "image": "static/item_icons/asset_784941499.png",
+   "note": "",
+   "card_bg": "blueprint",
+   "manual_override": true,
+   "at": 1795334467
+  },
+  "-2124548786": {
+   "name": "Tattered ARC Lining",
+   "rarity": "Uncommon",
+   "type": "Recyclable",
+   "value": 640,
+   "image": "static/item_icons/asset_2124548786.png",
+   "note": "",
+   "card_bg": "standard",
+   "manual_override": true,
+   "at": 1795334524
+  },
+  "-1018214374": {
+   "name": "Bronze Statuette",
+   "rarity": "Legendary",
+   "type": "Trinket",
+   "value": 20000,
+   "image": "static/item_icons/asset_1018214374.png",
+   "note": "",
+   "card_bg": "standard",
+   "manual_override": true,
+   "at": 1795336631
+  },
+  "-320978515": {
+   "name": "Damaged Hornet Driver",
+   "rarity": "Common",
+   "type": "Recyclable",
+   "value": 640,
+   "image": "static/item_icons/asset_320978515.png",
+   "note": "",
+   "card_bg": "standard",
+   "manual_override": true,
+   "at": 1795335208
+  }
+ }
+}

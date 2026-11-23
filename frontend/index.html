@@ -5,17 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CM — Inventory &amp; Loadout Manager</title>
 <!-- 🛡️ SHIELD: حماية ضد نسخ الكود — أول حاجة تتحمل -->
-<script src="/shield.js?v=2"></script>
-<link rel="preload" href="/app.js?v=242" as="script">
+<script src="/shield.js?v=4"></script>
+<link rel="preload" href="/app.js?v=355" as="script">
 <link rel="icon" href="/favicon.png?v=1">
-<link rel="stylesheet" href="/styles.css?v=72">
-<link rel="stylesheet" href="/accounts.css?v=39">
-<link rel="stylesheet" href="/loadout.css?v=39">
-<link rel="stylesheet" href="/phase10.css?v=29">
-<link rel="stylesheet" href="/traders.css?v=34">
-<link rel="stylesheet" href="/workshop.css?v=33">
-<link rel="stylesheet" href="/scrappy.css?v=3">
-<link rel="stylesheet" href="/sync.css?v=1">
+<link rel="stylesheet" href="/styles.css?v=79">
+<link rel="stylesheet" href="/accounts.css?v=38">
+<link rel="stylesheet" href="/loadout.css?v=46">
+<link rel="stylesheet" href="/phase10.css?v=54">
+<link rel="stylesheet" href="/traders.css?v=35">
+<link rel="stylesheet" href="/workshop.css?v=34">
+<link rel="stylesheet" href="/sync.css?v=2">
+<link rel="stylesheet" href="/item_editor.css?v=5">
 </head>
 <body>
 <header class="topbar">
@@ -40,46 +40,23 @@
       <button class="nav-item" data-view="workshop" title="WORKSHOP — craft recipes, your materials and the craft list"><img class="nav-ico" src="/icons/hammer.svg" alt=""></button>
     </nav>
     <div class="wallet" id="wallet"></div>
-  </div>
+      </div>
   <button class="pill sync-pill" id="btn-live-sync" title="SYNCHRONIZE — instant pull of the game state (stash/loadout/coins) from the Embark Pioneer gateway">
     <span class="sync-ico">⟳</span><span class="sync-label">SYNCHRONIZE</span>
   </button>
   <div class="bar-right">
-    <div id="view-as-bar" style="display:none !important; align-items:center; gap:10px; background:linear-gradient(135deg, rgba(34,197,94,.18), rgba(168,85,247,.22)); border:1px solid #22c55e; border-radius:20px; padding:5px 16px; font-size:12px; font-weight:800; color:#fff; box-shadow:0 0 15px rgba(34,197,94,.25);">
-      <span>👁️ وضع الأدمن: تتصفح حساب المشترك <b id="view-as-name" style="color:#22c55e; text-decoration:underline;">—</b></span>
-      <a href="/admin/exit-view-as?to=/admin" style="margin-left:8px; background:linear-gradient(135deg, #a855f7, #d946ef); color:#fff; padding:4px 12px; border-radius:8px; text-decoration:none; font-size:10px; font-weight:800;" title="العودة للوحة الأدمن وقائمة المشتركين">↩ العودة للوحة الأدمن والمشتركين</a>
+    <a href="/download/CMSync_Setup.exe" class="pill dl-pill" id="btn-topbar-download" download="CMSync_Setup.exe" title="Download CMSync Client v2.2.2" style="text-decoration:none; color:#c084fc; border-color:rgba(168,85,247,.45); background:rgba(168,85,247,.12); display:flex; align-items:center; gap:6px; font-weight:700;">
+      <span style="font-size:12px;">⬇</span><span>Download CMSync v2.2.2</span><span class="badge-new">NEW</span>
+    </a>
+    <button class="pill admin-tool" id="btn-admin-item-data" type="button" style="display:none; background:rgba(34,197,94,.16); border-color:rgba(34,197,94,.55); color:#dcfce7;" title="ITEM DATA — add or edit any ASSET ID / DEF ID, and open the saved overrides list; every edited field always wins">🗂️ ITEM DATA</button>
+    <button class="pill" id="btn-admin-mode" style="display:none; background:rgba(168,85,247,.22); border-color:rgba(168,85,247,.65); color:#f3e8ff; font-weight:800; cursor:pointer; align-items:center; gap:6px;" title="ADMIN MODE">
+      <span style="font-size:13px;">⚙️</span><span>ADMIN MODE</span>
+    </button>
+    <div id="view-as-bar" style="display:none; align-items:center; gap:8px; background:linear-gradient(135deg, rgba(245,158,11,.18), rgba(168,85,247,.22)); border:1px solid #f59e0b; border-radius:20px; padding:4px 14px; font-size:11px; font-weight:800; color:#fbbf24; box-shadow:0 0 10px rgba(245,158,11,.2);">
+      <span>👁️ VIEWING: <b id="view-as-name" style="color:#fff; text-decoration:underline;">—</b></span>
+      <a href="/admin/exit-view-as" id="btn-return-admin" style="margin-left:8px; background:linear-gradient(135deg, var(--purple, #a855f7), var(--fuchsia, #d946ef)); color:#fff; padding:3px 10px; border-radius:8px; text-decoration:none; font-size:10px; font-weight:800;" title="Return to Admin Panel">↩ RETURN TO ADMIN</a>
     </div>
     <div class="acc-switch" id="acc-switch"></div>
-    <!-- ⚙️ GEAR / SETTINGS MENU -->
-    <div class="gear-menu-wrap" id="gear-menu-wrap">
-      <button class="acc-tab acc-manage" id="btn-gear-toggle" type="button" title="الإعدادات وإدارة الحسابات (Settings & Admin)">
-        <img class="nav-ico" src="/icons/gear.webp" alt="⚙">
-      </button>
-      <div id="gear-dropdown" class="gear-dropdown" style="display:none;">
-        <div class="gear-dropdown-header">
-          <div style="display:flex; align-items:center; gap:6px;">
-            <img src="/icons/gear.webp" style="width:14px; height:14px;" alt="">
-            <span>الإعدادات والتحكم</span>
-          </div>
-          <button id="btn-gear-close" type="button" title="إغلاق">✕</button>
-        </div>
-
-        <!-- 🔐 ADMIN MODE BUTTON -->
-        <button class="gear-btn-admin" id="btn-admin-mode" style="display:none;" type="button" title="ADMIN MODE">
-          <span style="font-size:14px;">⚙️</span>
-          <span>ADMIN MODE</span>
-        </button>
-
-        <div class="gear-section-divider"></div>
-
-        <!-- 📋 MANAGE ACCOUNTS -->
-        <button class="gear-item-btn" id="btn-gear-accounts" type="button" title="إدارة الحسابات وإضافة التوكنات">
-          <span style="font-size:14px;">📋</span>
-          <span style="flex:1; text-align:left;">إدارة وتعديل الحسابات (Accounts)</span>
-          <span style="color:#64748b; font-size:11px;">›</span>
-        </button>
-      </div>
-    </div>
     <div class="queue-wrap">
       <button class="pill queue-pill" id="btn-queue" hidden title="QUEUED MOVES — moves waiting for Embark to reopen the write route; they run on their own the moment it is back">
         <span class="queue-ico">⏳</span><span id="queue-count">0</span>
@@ -129,29 +106,7 @@
 
 <main class="accounts-page" id="view-accounts" hidden>
   <section class="acct-card" id="acct-add-card">
-    <div id="acct-admin-quick-bar" style="display:none; margin-bottom:16px; padding:10px 14px; background:linear-gradient(135deg, rgba(168,85,247,.15), rgba(59,130,246,.15)); border:1px solid rgba(168,85,247,.35); border-radius:10px; align-items:center; justify-content:space-between; gap:10px;">
-      <div style="display:flex; align-items:center; gap:8px;">
-        <span style="font-size:16px;">🔐</span>
-        <div>
-          <b style="color:#f3e8ff; font-size:12px;">Admin Controls</b>
-          <div style="color:#94a3b8; font-size:11px;">لوحة الإدارة وقائمة المشتركين</div>
-        </div>
-      </div>
-      <button class="pill primary" id="btn-admin-mode-page" type="button" style="font-size:11px; padding:6px 14px; cursor:pointer;">OPEN ADMIN PANEL</button>
-    </div>
     <h1>Accounts</h1>
-    <div id="acct-assign-existing-box" style="display:none; margin-bottom:18px; padding:14px 16px; background:linear-gradient(135deg, rgba(34,197,94,0.1), rgba(168,85,247,0.12)); border:1px solid rgba(34,197,94,0.3); border-radius:12px;">
-      <label style="display:block; font-size:11px; font-weight:800; letter-spacing:1px; color:#22c55e; margin-bottom:8px;">
-        🔗 ربط حساب لعبة مسجل مسبقاً في النظام بهذا المشترك
-      </label>
-      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-        <select id="acct-existing-select" style="flex:1; min-width:200px; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.15); background:#14141d; color:#e8e8ef; font:inherit; font-size:12px; font-weight:700;">
-          <option value="">-- اختر حساب لعبة من السيرفر --</option>
-        </select>
-        <button class="btn-primary" id="btn-assign-existing" style="padding:10px 18px; font-size:11px; font-weight:800; background:linear-gradient(135deg, #22c55e, #16a34a); color:#000;">+ ربط بالمشترك</button>
-      </div>
-      <div id="acct-assign-note" style="margin-top:8px; font-size:11px; font-weight:600; min-height:16px;"></div>
-    </div>
     <div class="acct-form">
       <div class="field">
         <label for="acct-token">
@@ -177,38 +132,18 @@
     </div>
     <p class="form-note" id="acct-note"></p>
 
-    <!-- 🖥️ CMSYNC LOCAL AGENT DOWNLOAD CARD -->
-    <div class="sync-promo" id="sync-promo-box" style="margin-top:24px; background:linear-gradient(135deg, rgba(168,85,247,0.12), rgba(217,70,239,0.06), rgba(15,15,22,0.95)); border:1px solid rgba(168,85,247,0.35); border-radius:16px; padding:20px 24px; display:flex; align-items:center; justify-content:space-between; gap:20px; box-shadow:0 10px 30px rgba(0,0,0,0.4);">
-      <div style="display:flex; align-items:center; gap:16px; flex:1; min-width:0;">
-        <div class="promo-ico" style="width:52px; height:52px; border-radius:14px; background:linear-gradient(135deg, rgba(168,85,247,0.25), rgba(217,70,239,0.2)); border:1px solid rgba(168,85,247,0.5); display:grid; place-items:center; color:#c084fc; flex:none;">
-          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-            <rect x="2" y="3" width="20" height="14" rx="3"/><path d="M8 21h8"/><path d="M12 17v4"/><path d="m7 10 3 3 7-7"/>
-          </svg>
-        </div>
-        <div class="promo-text" style="flex:1; min-width:0;">
-          <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px; flex-wrap:wrap;">
-            <h3 style="margin:0; font-size:15px; font-weight:900; color:#fff; letter-spacing:0.3px;">برنامج تثبيت الربط والمزامنة — CMSync Installer</h3>
-            <span style="background:rgba(34,197,94,0.18); border:1px solid #22c55e; color:#22c55e; font-size:10px; font-weight:800; padding:2px 8px; border-radius:6px;">تثبيت تلقائي Setup</span>
-          </div>
-          <p style="margin:0 0 6px 0; font-size:12px; color:#cbd5e1; line-height:1.5;">
-            برنامج تثبيت لويندوز (Installer): يقوم بتسطيب البرنامج تلقائياً وإنشاء اختصار على سطح المكتب وفي قائمة إبدأ مع التشغيل التلقائي مع الويندوز، لربط حساب اللعبة ومزامنة المخزن فوراً.
-          </p>
-          <div style="display:flex; align-items:center; gap:14px; font-size:11px; color:#a1a1aa; flex-wrap:wrap;">
-            <span>💻 نظام التشغيل: Windows 10 / 11 (64-bit)</span>
-            <span>📦 الحجم: ~22.4 MB</span>
-            <span id="agent-line" style="color:#c084fc;">معالج تثبيت متكامل Setup Wizard</span>
-          </div>
-        </div>
+    <div class="sync-promo">
+      <div class="promo-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 18v3"/><path d="m7 11 2 2 4-4"/>
+        </svg>
       </div>
-      <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end; flex:none;">
-        <a href="/download/cmsync" download="CMSync_Setup.exe" style="display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg, #a855f7, #d946ef); color:#fff; padding:10px 20px; border-radius:10px; text-decoration:none; font-size:12.5px; font-weight:900; box-shadow:0 4px 15px rgba(168,85,247,0.35); transition:transform 0.1s ease;" title="تحميل برنامج التثبيت CMSync_Setup.exe">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span>تحميل التسطيب (Setup.exe)</span>
-        </a>
-        <button id="btn-copy-cmsync-link" type="button" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:#cbd5e1; padding:6px 14px; border-radius:8px; font-size:10.5px; font-weight:700; cursor:pointer;" title="نسخ رابط التحميل المباشر">
-          ⧉ نسخ رابط التسطيب
-        </button>
+      <div class="promo-text">
+        <h3>CMSYNC — your local agent</h3>
+        <p id="agent-line">It reads the game token from your machine's memory and registers the account automatically — no copying, no pasting. Run <b>CMSync</b> from the desktop.</p>
+        <p class="promo-dl" id="agent-dl" data-agent-dl="1"></p>
       </div>
+      <button class="btn-outline" id="acct-sync-all">⟳ SYNC ALL ACCOUNTS</button>
     </div>
   </section>
 
@@ -272,22 +207,9 @@
   </div>
 </div>
 
-<div class="modal" id="admin-auth-modal" hidden style="background:rgba(0,0,0,.75); z-index:99999;">
-  <div class="modal-card" style="max-width:380px; text-align:center;">
-    <h3 style="margin:0 0 10px; font-size:16px; letter-spacing:2px; font-weight:800; color:#fff;">🔐 ADMIN MODE</h3>
-    <p style="margin:0 0 18px; font-size:12px; color:var(--muted);">Enter admin password to open panel</p>
-    <div style="margin-bottom:14px;">
-      <input id="admin-mode-pw" type="password" placeholder="Admin password…" style="width:100%; box-sizing:border-box; background:var(--panel-2); border:1px solid var(--line); border-radius:10px; color:#fff; padding:12px 14px; font:inherit; font-size:13px;">
-    </div>
-    <div id="admin-mode-err" style="color:var(--red); font-size:12px; min-height:18px; margin-bottom:12px;"></div>
-    <div class="modal-foot" style="justify-content:center; gap:10px; margin-top:0;">
-      <button class="ghost" id="admin-mode-cancel" type="button">CANCEL</button>
-      <button class="pill primary" id="admin-mode-unlock" type="button">UNLOCK</button>
-    </div>
-  </div>
-</div>
-
-<script src="/app.js?v=244"></script>
-<script src="/admin_mode.js?v=8"></script>
+<script src="/app.js?v=358"></script>
+<link rel="preload" href="/item_editor.js?v=17" as="script">
+<script src="/admin_mode.js?v=9"></script>
+<script src="/item_editor.js?v=17"></script>
 </body>
 </html>

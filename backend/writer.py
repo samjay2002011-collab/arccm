@@ -130,16 +130,16 @@ def status():
              "upgrade": "/v1/pioneer/inventory/upgrade",
              "trade_accept": "/v1/pioneer/offers/accept", "trade_accept_limited": "/v1/pioneer/offers/accept"}
             if direct else
-            {"move": config.UPSTREAM_API + BATCH_MOVE,
-             "mutate": config.UPSTREAM_API + BATCH_MUTATE,
-             "overflow_all": config.UPSTREAM_API + MOVE_ALL_TO_OVERFLOW,
-             "sync": config.UPSTREAM_API + SYNC,
-             "attach": config.UPSTREAM_API + ATTACH,
-             "batch_attach": config.UPSTREAM_API + BATCH_ATTACH,
-             "detach": config.UPSTREAM_API + DETACH,
-             "upgrade": config.UPSTREAM_API + UPGRADE,
-             "trade_accept": config.UPSTREAM_API + TRADE_ACCEPT,
-             "trade_accept_limited": config.UPSTREAM_API + TRADE_ACCEPT_LIMITED}
+            {"move": BATCH_MOVE,
+             "mutate": BATCH_MUTATE,
+             "overflow_all": MOVE_ALL_TO_OVERFLOW,
+             "sync": SYNC,
+             "attach": ATTACH,
+             "batch_attach": BATCH_ATTACH,
+             "detach": DETACH,
+             "upgrade": UPGRADE,
+             "trade_accept": TRADE_ACCEPT,
+             "trade_accept_limited": TRADE_ACCEPT_LIMITED}
         ),
     }
 
@@ -180,7 +180,7 @@ def ensure_active(account_id):
     """يفعّل الحساب على rampart قبل الكتابة (نفس ما الموقع بيعمله)."""
     if _state["last_active"] == account_id:
         return True
-    url = config.UPSTREAM_API + config.ACTIVATE_PATH.format(account_id=account_id)
+    url = config.ACTIVATE_PATH.format(account_id=account_id)
     res = requests.post(url, headers=rampart_client.headers(), timeout=config.HTTP_TIMEOUT)
     if res.status_code >= 400:
         raise RuntimeError("activate failed: HTTP %s %s" % (res.status_code, res.text[:200]))
@@ -192,7 +192,7 @@ def _send(path, body, activate_account=None):
     """يرسل الطلب الفعلي للمنبع بعد اجتياز الحرس."""
     if activate_account:
         ensure_active(activate_account)
-    url = config.UPSTREAM_API + path
+    url = path
     res = requests.post(url, headers=rampart_client.headers(),
                         json=body if body is not None else None,
                         timeout=config.HTTP_TIMEOUT)
@@ -206,7 +206,7 @@ def _send(path, body, activate_account=None):
 def sync_upstream(account_id):
     """POST /inventory/sync — مزامنة حالة اللعبة (قراءة/تحديث، مش تعديل عناصر)."""
     ensure_active(account_id)
-    url = config.UPSTREAM_API + SYNC
+    url = SYNC
     res = requests.post(url, headers=rampart_client.headers(), timeout=config.HTTP_TIMEOUT)
     try:
         parsed = res.json()
@@ -266,7 +266,7 @@ def trade(path, body, account_id):
         out = _send(path, body, account_id)
     except Exception as exc:
         return {"ok": False, "code": 502, "error": "upstream_error", "detail": str(exc)[:300]}
-    out["request"] = {"method": "POST", "url": config.UPSTREAM_API + path, "body": body}
+    out["request"] = {"method": "POST", "url": path, "body": body}
     return out
 
 
@@ -282,5 +282,5 @@ def execute(kind, body, account_id, action="", confirmed=False):
         out = _send(path, body if kind != "overflow_all" else None, account_id)
     except Exception as exc:
         return {"ok": False, "code": 502, "error": "upstream_error", "detail": str(exc)[:300]}
-    out["request"] = {"method": "POST", "url": config.UPSTREAM_API + path, "body": body}
+    out["request"] = {"method": "POST", "url": path, "body": body}
     return out

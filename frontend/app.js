@@ -8,18 +8,24 @@ const state = {
   tomain: null, tomainFor: "", tomainFilter: false, tomainMains: [], tomainIsMain: false,
   transferGroups: null, transferFor: "", transferTarget: "",
   accounts: [], profile: null, capacity: { used: 0, limit: null }, level: null, wallet: {},
-  menuOpen: false, filters: null, loadout: null, locations: null, loadoutSel: "", loPopOpen: false, sortBy: "category",
+  menuOpen: false, filters: null, loadout: null, locations: null, loadoutSel: "", loPopOpen: false, sortBy: "category", ctxMoveIds: [],
   /* المعاينة: قالب محفوظ مختار، والشبكة بتتلبى بشكله قبل ما يتنفذ. loFillMode =
      المسار اللي عايز بيه القطع الناقصة (تصنيع ولا شراء). */
   loPreview: null, loFillMode: localStorage.getItem("fahmy.loFillMode") || "craft",
-  clipboard: null, moveSeq: 0, moveQueue: [], moveBusy: false, sectionsGen: 0,
+  clipboard: null, moveSeq: 0, moveQueue: [], moveBusy: false, moveInFlight: null,
+  cellsRefreshBusy: false,
+  sectionsGen: 0,
   queue: { items: [], count: 0, route_alive: false }, queueOpen: false,
   /* قفل اللوحة بعد ↑ UPDATE — مفيش حركة ولا إضافة لحد ما يعمل CANCEL. */
   frozen: false,
+  /* الكتابة مفتوحة من أول رسم؛ السيرفر هو اللي يحددها بعد كده في loadStatus. */
+  writes: { armed: true, move_armed: true, move_mode: "direct_gateway" },
   newItems: {}, patchCandidates: [],
   /* قطع الباتش الجديد اللي مالهاش اسم ولا أيقونة في الفهارس: بتبان "?" وبتزعق
      اللوحة. مخفية افتراضيًا — الزرار اللي في راس الستاش بيظهرها وقت ما ينزل جديد. */
   showUnknown: localStorage.getItem("fahmy.showUnknown") === "1",
+  unkOpen: false,
+  unkPick: "",
   history: [],
   augmentSpecs: null,
   /* صفوف الحسابات التانية اللي اتسحبت وقت البحث — عشان كارت التفاصيل يفتح على
@@ -32,18 +38,125 @@ try { state.clipboard = JSON.parse(localStorage.getItem("fahmy.attach.clipboard"
 /* الحساب اللي بيتحكم فيه التاب ده — sessionStorage بياعتبر كل تاب وحدة مستقلة،
    فالتبويب التاني (أو إعادة تحميل الصفحة) ما يسرقش اختيار التاب الأول. */
 const TAB_ACCOUNT_KEY = "fahmy.tab.account";
-const tabAccount = () => { try { return sessionStorage.getItem(TAB_ACCOUNT_KEY) || ""; } catch { return ""; } };
-const rememberTabAccount = (name) => { try { sessionStorage.setItem(TAB_ACCOUNT_KEY, name || ""); } catch { /* وضع خاص */ } };
+const tabAccount = () => { try { return String(sessionStorage.getItem(TAB_ACCOUNT_KEY) || localStorage.getItem(TAB_ACCOUNT_KEY) || ""); } catch { return ""; } };
+const rememberTabAccount = (name) => {
+  try {
+    sessionStorage.setItem(TAB_ACCOUNT_KEY, String(name || ""));
+    if (name) localStorage.setItem(TAB_ACCOUNT_KEY, String(name));
+    else localStorage.removeItem(TAB_ACCOUNT_KEY);
+  } catch { /* وضع خاص */ }
+};
 state.account = tabAccount();
+/* "وضع الدعم" (تصفح المشترك) مش بيقفل الكتابة خلاص: مفيش حاجة في المتصفح تمسك
+   armed=false بشكل دائم، وأي أثر قديم في localStorage/sessionStorage بيتشال أول
+   ما الصفحة تفتح. الكوكي بتتصلّح من نفسها على أول ضغطة MOVE TO. */
+(() => {
+  try { if (document.cookie.includes("cm_viewing_subscriber="))
+    document.cookie = "cm_viewing_subscriber=; Max-Age=0; path=/"; } catch { /* وضع خاص */ }
+  try {
+    for (let i = localStorage.length - 1; i >= 0; i -= 1) {
+      const key = localStorage.key(i) || "";
+      if (/view|support|armed|writes?(\.|-)?(off|paused|frozen)/i.test(key)) localStorage.removeItem(key);
+    }
+    const frozenKey = "fahmy.tab.frozen";
+    if (sessionStorage.getItem(frozenKey)) sessionStorage.removeItem(frozenKey);
+  } catch { /* وضع خاص */ }
+})();
+// ── عزل جلسة المشترك لكل تبويب (Per-Tab Subscriber Isolation) ──
+const TAB_SUBSCRIBER = (() => {
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    let s = urlParams.get("as_subscriber") || urlParams.get("view_as");
+    if (s) {
+      sessionStorage.setItem("cm_as_subscriber", s);
+      return s;
+    }
+    sessionStorage.removeItem("cm_as_subscriber");
+    return "";
+  } catch { return ""; }
+})();
 
+// حقن هيدر X-As-Subscriber في كل طلبات الـ fetch الخاصة بهذا التبويب فقط
+if (TAB_SUBSCRIBER) {
+  const _origFetch = window.fetch;
+  const _encodedSub = encodeURIComponent(TAB_SUBSCRIBER);
+  window.fetch = function(input, init) {
+    if (input instanceof Request) {
+      input.headers.set("X-As-Subscriber", _encodedSub);
+      return _origFetch.call(this, input, init);
+    }
+    init = init || {};
+    let headers = init.headers ? new Headers(init.headers) : new Headers();
+    if (!headers.has("X-As-Subscriber")) {
+      headers.set("X-As-Subscriber", _encodedSub);
+    }
+    init.headers = headers;
+    return _origFetch.call(this, input, init);
+  };
+}
+
+/* وضع التصفح كمشترك (Viewing As / Impersonation) */
+const VIEWING_AS = (() => {
+  try {
+    const name = TAB_SUBSCRIBER;
+    if (name) {
+      document.documentElement.classList.add("viewing-as");
+      const setupBar = () => {
+        const bar = document.getElementById("view-as-bar");
+        const label = document.getElementById("view-as-name");
+        if (bar) { bar.style.display = "inline-flex"; }
+        if (label) label.textContent = name;
+        const am = document.getElementById("btn-admin-mode");
+        if (am) am.style.display = "none";
+        const ret = document.getElementById("btn-return-admin");
+        if (ret) {
+          ret.onclick = (e) => {
+            e.preventDefault();
+            sessionStorage.removeItem("cm_as_subscriber");
+            window.close();
+            setTimeout(() => { window.location.href = "/admin"; }, 150);
+          };
+        }
+      };
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", setupBar);
+      } else {
+        setupBar();
+      }
+    }
+    return name;
+  } catch { return ""; }
+})();
+const TEST_AS = "";
 const $ = (s) => document.querySelector(s);
 let searchTimer = null;
 let ctxOpenTimer = 0;
+
+/* الكليك اللي بيفتح القائمة على «ALL» بيعمل render بعدين، والتحديد بيتصفّر في
+   الماوس-أب. العلم ده بيمنع التصفير لحد ما القائمة تتقفل. */
+let ctxKillSelectionReset = false;
 let ctxOpenItem = null;
 const FINE_POINTER = !!(window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches);
 const ROMAN = { 1: "I", 2: "II", 3: "III", 4: "IV", 5: "V" };
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const asset = (f) => (f ? `/assets/items/${String(f).split("/").map(encodeURIComponent).join("/")}` : "");
+const asset = (f, v) => {
+  if (!f) return "";
+  let s = String(f).trim();
+  if (/^https?:\/\/[^/]+/i.test(s)) s = s.replace(/^https?:\/\/[^/]+/i, "");
+  let path = "";
+  if (s.startsWith("/")) {
+    path = s;
+  } else if (s.startsWith("static/") || s.startsWith("item_icons/")) {
+    path = s.startsWith("static/") ? `/${s}` : `/static/${s}`;
+  } else if (s.startsWith("items/")) {
+    path = `/assets/${s}`;
+  } else if (s.startsWith("arctracker/") || s.startsWith("metaforge/")) {
+    path = `/assets/items/${s}`;
+  } else {
+    path = `/assets/items/${s}`;
+  }
+  return v ? `${path}${path.includes("?") ? "&" : "?"}v=${encodeURIComponent(v)}` : path;
+};
 const num = (n) => (n === null || n === undefined ? "—" : Number(n).toLocaleString("en-US"));
 const numSpaced = (n) => (n === null || n === undefined ? "—" : Number(n).toLocaleString("en-US").replace(/,/g, " "));
 const RARITY_ORDER = ["Common", "Uncommon", "Rare", "Epic", "Legendary", "Amplified"];
@@ -105,25 +218,77 @@ const FIREARM_TYPES = ["weapon", "smg", "assault rifle", "battle rifle", "shotgu
 
 async function fetchJson(url, opts) {
   const res = await fetch(url, opts);
-  if (res.status === 401) {
-    if (window.location.pathname !== "/login" && !window.location.pathname.startsWith("/login")) {
-      window.location.href = "/login";
-    }
-    return {};
-  }
   const body = await res.json().catch(() => ({}));
+  if (res.status === 401) {
+    // الجلسة/التوكن انتهى أو اتعطّل: رسالة مفهومة بدل رقم إتش تي تي بي خام
+    const err = new Error(body.detail || "Your session has ended — sign in with your access token again.");
+    err.status = 401;
+    throw err;
+  }
   if (!res.ok) throw new Error(body.detail || `${url} -> HTTP ${res.status}`);
   return body;
 }
 
 // نفس الطلب الشغال دلوقتي بيتشارك مع اللي يجي وراه — boot والـ views كانت بتكرره
 const inflight = new Map();
+// تعديل بيانات العناصر (محرّر البيانات) بيغيّر الاسم/الندرة/السعر في القاعدة —
+// كاش اللوحة بعده بيتبني من جديد بدل ما يعدي عليه 3 ثواني من بيانات قديمة.
+let dataRev = 0;
+// صلاحية المحرّر: بنقرالها من حالة السيطرة الحالية، مافيش صلاحية مخزّنة في المتصفح
+let pageIsAdmin = false;
+// صلاحية تعديل بيانات العناصر: للأدمن الفعلي فقط
+fetch("/api/auth/me").then((r) => r.json()).then((me) => { pageIsAdmin = !!me.is_admin && !me.preview && !me.impersonating; }).catch(() => {});
+// تعديل بيانات عنصر من المحرّر: نفس الموضوع لو القطعة في مخزن أي حساب هنا — الصف
+// المخزّن بياخد الاسم/الندرة/السعر/التصنيف/الصورة الجديدة على طول، فالبلاطة
+// والكروت والسعر في أي مكان في اللوحة بيتحدّثوا فوراً بدون ما نستنى السيرفر.
+function applyItemEdit(assetId, data) {
+  if (!assetId || !data) return;
+  let hit = false;
+  const one = (t) => {
+    if (!t || String(t.asset_id ?? "") !== String(assetId)) return;
+    hit = true;
+    if (data.name) { t.name = data.name; t.display_name = data.name; }
+    if (data.rarity) t.rarity = data.rarity;
+    if (data.type) { t.type = data.type; t.type_label = data.type; }
+    if (data.value !== undefined && data.value !== null) t.value = data.value;
+    if (data.image) t.image = data.image;
+    if (data.card_bg) {
+      t.card_bg = data.card_bg;
+      if (data.card_bg === "blueprint") t.item_kind = "blueprint";
+      else if (data.card_bg === "design") t.item_kind = "design";
+      else if (data.card_bg === "standard") t.item_kind = "";
+    }
+    t.manual_override = true;
+    t.at = Date.now();
+  };
+  for (const sec of Object.values(state.sections || {})) {
+    for (const t of sec.slots || []) one(t);
+    for (const bucket of Object.values(sec.buckets || {})) for (const t of (bucket && bucket.slots) || []) one(t);
+  }
+  for (const list of Object.values(state.loadout?.slots || {})) for (const s of list || []) one(s && s.item);
+  try { if (typeof renderInventory === "function") renderInventory(); } catch (err) { /* الرسم بيتعمل بعد التحديث */ }
+  return hit;
+}
+window.AppearanceEdits = { apply: applyItemEdit };
+window.addEventListener("items:edited", (e) => {
+  dataRev++;
+  const aid = String(e.detail?.asset_id || "");
+  if (e.detail && e.detail.row) {
+    applyItemEdit(aid, e.detail.row);
+  }
+  if (state.newItems && aid) {
+    delete state.newItems[aid];
+  }
+  try { if (typeof renderInventory === "function") renderInventory(); } catch (err) {}
+  if (typeof loadSections === "function") loadSections(false);
+});
 function json(url, opts) {
   if (opts && opts.method) return fetchJson(url, opts);
-  const running = inflight.get(url);
+  const key = dataRev + " " + url;
+  const running = inflight.get(key);
   if (running) return running;
-  const pending = fetchJson(url, opts).finally(() => inflight.delete(url));
-  inflight.set(url, pending);
+  const pending = fetchJson(url, opts).finally(() => inflight.delete(key));
+  inflight.set(key, pending);
   return pending;
 }
 /* قفل ↑ UPDATE بيقفل أي كتابة على البوابة من أي مكان في الموقع — حتى زرار
@@ -150,11 +315,21 @@ function ageText(minutes) {
   return `${(minutes / 60).toFixed(1)} h ago`;
 }
 function toast(msg, kind) {
+  let box = document.getElementById("toast-container");
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "toast-container";
+    document.body.appendChild(box);
+  }
   const t = document.createElement("div");
   t.className = "toast " + (kind || "");
   t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 4200);
+  box.appendChild(t);
+  setTimeout(() => {
+    t.style.opacity = "0";
+    t.style.transition = "opacity 0.2s ease";
+    setTimeout(() => t.remove(), 200);
+  }, 4200);
 }
 function tokenText(st) {
   if (!st?.token?.present) return "missing";
@@ -191,33 +366,28 @@ async function loadStatus() {
 /* ------------------------------------------------------------------ الحسابات + الهيدر */
 async function loadAccounts() {
   const data = await json("/api/accounts");
-  if (data.is_admin && !data.viewing_as) {
-    window.location.replace("/admin");
-    return data;
-  }
-  state.isAdmin = !!data.is_admin;
-  state.viewingAs = (state.isAdmin && (data.viewing_as || new URLSearchParams(window.location.search).get("view_as"))) || "";
-  state.allSystemAccounts = state.isAdmin ? (data.all_system_accounts || []) : [];
-
-  const bar = document.getElementById("view-as-bar");
-  const nameEl = document.getElementById("view-as-name");
-  if (state.isAdmin && state.viewingAs) {
-    if (bar) bar.style.setProperty("display", "flex", "important");
-    if (nameEl) nameEl.textContent = state.viewingAs;
-  } else {
-    if (bar) bar.style.setProperty("display", "none", "important");
-  }
-
   state.accounts = data.accounts || [];
   state.profile = data.profile || state.profile;
   state.capacity = data.capacity || { used: state.accounts.length, limit: null };
   // التاب بيحتفظ بحسابه طالعة لسه موجود؛ حساب السيرفر العام مجرد بداية للتابات الجديدة.
-  const mine = (list) => list.find((a) => a.name === state.account);
+  // ولو اللي فاضل في التاب مش من حسابات الطلب الحالي (مثال: الأدمين بقي يتفرج على
+  // بروفايل مشترك) بنرمي الاختيار القديم — غير كده مرّج لصفحة الأدمين الأصلية.
+  const mine = (list) => list.find((a) => a.name === String(state.account));
   if (!mine(state.accounts)) {
-    state.account = (data.active && (data.active !== "" ? data.active : "")) ||
-      (state.accounts.find((a) => a.is_active) || state.accounts[0] || {}).name || state.account;
+    // كل طرف هنا لازم يطلع اسم نص (أو "") — مقارنة نصية فقط، لأن قيمة boolean
+    // بتتلزق في state.account وتخلي كل طلبات الصفحة تروح على حساب اسمه "true".
+    const fromList = (state.accounts.find((a) => a.is_active) || state.accounts[0] || {}).name || "";
+    const activeName = typeof data.active === "string" ? data.active : "";
+    const fallback = (state.accounts.find((a) => a.name === activeName) || {}).name || fromList;
+    if (!state.accounts.length) {
+      state.account = "";
+      rememberTabAccount("");
+    } else {
+      state.account = fallback;
+    }
   }
   if (state.account) rememberTabAccount(state.account);
+  else rememberTabAccount("");
   renderAccountsPage();
   return data;
 }
@@ -273,52 +443,45 @@ function renderHeader() {
   }).join("");
   $("#wallet").innerHTML = chips + levelRing(state.level);
 
-  // حساب التاب النشط الحالي
-  const currentAcc = state.accounts.find((a) => a.name === state.account) || state.accounts[0] || {};
-  const currDot = tokenDot(currentAcc);
-
-  if (!state.accounts.length) {
-    $("#acc-switch").innerHTML = `<div class="acc-dropdown-wrap"><button class="acc-select-btn" data-manage="1" type="button"><b>NO ACCOUNT</b><span class="acc-chevron">⚙</span></button></div>`;
-  } else {
-    const itemsHtml = state.accounts.map((a) => {
-      const d = tokenDot(a);
-      const isSel = a.name === state.account;
-      return `<button class="acc-dropdown-item ${isSel ? "active" : ""}" data-pick="${esc(a.id)}" type="button" title="${esc(a.display_name)} — ${esc(d.tip)}">
+  // الحسابات قائمة منسدلة واحدة — أزرار كتير في الهيدر بتبوظ مع أي عدد كبير
+  const cur = state.accounts.find((a) => a.name === state.account) || state.accounts[0] || null;
+  const curDot = cur ? tokenDot(cur) : null;
+  const manage = `<button class="acc-manage-item" data-manage="1" title="MANAGE — add / delete / re-authorize">
+      <img class="nav-ico" src="/icons/gear.webp" alt=""></button>`;
+  const trigger = cur
+    ? `<button class="acc-dd-trigger ${state.menuOpen ? "open" : ""}" data-toggle="1"
+         title="${esc(cur.display_name)} — ${esc(curDot.tip)}">
+        <span class="tok-dot ${curDot.cls}"></span>
+        <b>${cur.is_main ? "★ " : ""}${esc(cur.display_name)}</b>
+        ${isUnnamed(cur) ? `<small class="need-name" data-rename="${esc(cur.id)}">✎</small>` : ""}
+        <svg class="acc-caret" viewBox="0 0 24 24" width="12" height="12" fill="none"
+             stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>`
+    : `<button class="acc-dd-trigger" data-manage="1"><b>NO ACCOUNT</b><small>ADD ONE</small></button>`;
+  const items = state.accounts.map((a) => {
+    const d = tokenDot(a);
+    return `<button class="acc-dd-item ${a.name === state.account ? "on" : ""}" data-pick="${esc(a.id)}"
+             title="${esc(a.display_name)} — ${esc(d.tip)}">
         <span class="tok-dot ${d.cls}"></span>
         <b>${a.is_main ? "★ " : ""}${esc(a.display_name)}</b>
-        ${isSel ? `<span style="font-size:11px; font-weight:800; color:#22c55e;">✓</span>` : ""}
+        ${isUnnamed(a) ? `<small class="need-name" data-rename="${esc(a.id)}">✎</small>` : ""}
+        ${a.name === state.account ? `<span class="acc-tick">✓</span>` : ""}
       </button>`;
-    }).join("");
+  }).join("");
+  const dlItem = `<a href="/download/CMSync_Setup.exe" download="CMSync_Setup.exe" class="acc-dd-item acc-dd-dl" style="text-decoration:none; color:#c084fc; display:flex; align-items:center; gap:8px; border-top:1px solid rgba(255,255,255,.07);" title="Download CMSync Client v2.2.2">
+      <span>⬇</span><b>Download CMSync v2.2.2</b><span class="badge-new" style="font-size:9px; padding:1px 5px; border-radius:4px; background:rgba(34,197,94,.2); color:#4ade80;">NEW</span>
+    </a>`;
+  $("#acc-switch").innerHTML = state.accounts.length
+    ? `<div class="acc-dd">${trigger}${state.menuOpen ? `<div class="acc-dd-menu">${items}${dlItem}${manage}</div>` : ""}</div>`
+    : `<div class="acc-dd">${trigger}</div>`;
 
-    $("#acc-switch").innerHTML = `
-      <div class="acc-dropdown-wrap">
-        <button class="acc-select-btn" id="acc-select-btn" type="button" title="${esc(currentAcc.display_name || "")} — ${esc(currDot.tip)}">
-          <span class="tok-dot ${currDot.cls}"></span>
-          <b>${currentAcc.is_main ? "★ " : ""}${esc(currentAcc.display_name || "SELECT ACCOUNT")}</b>
-          <span class="acc-chevron">▾</span>
-        </button>
-        <div class="acc-dropdown-menu" id="acc-dropdown-menu" style="display:none;">
-          ${itemsHtml}
-          <div class="acc-dropdown-divider"></div>
-          <button class="acc-dropdown-manage" data-manage="1" type="button">⚙️ Manage Accounts</button>
-        </div>
-      </div>
-    `;
-
-    const selectBtn = document.getElementById("acc-select-btn");
-    const dropdownMenu = document.getElementById("acc-dropdown-menu");
-    if (selectBtn && dropdownMenu) {
-      selectBtn.onclick = (e) => {
-        e.stopPropagation();
-        const isOpen = dropdownMenu.style.display !== "none";
-        dropdownMenu.style.display = isOpen ? "none" : "flex";
-      };
-    }
-  }
-
+  const rename = (node) => {
+    node.onclick = (e) => { e.stopPropagation(); editAccount(node.dataset.rename); };
+  };
   document.querySelectorAll("#acc-switch [data-pick]").forEach((button) => {
     button.oncontextmenu = (event) => {
       event.preventDefault();
+      event.stopPropagation();
       const account = state.accounts.find((row) => row.id === button.dataset.pick);
       if (!account) return;
       openModal(account.display_name, `<p class="note">${account.is_main ? "Remove this account from transfer destinations?" : "Mark this account as a main transfer destination?"}</p>`, async () => {
@@ -330,26 +493,54 @@ function renderHeader() {
         renderInventory();
       }, account.is_main ? "REMOVE MAIN" : "MARK AS MAIN");
     };
+  });
+  document.querySelectorAll("#acc-switch [data-rename]").forEach(rename);
+  wireAccountSwitch();
+}
 
-    button.onclick = (e) => {
-      e.stopPropagation();
-      const menu = document.getElementById("acc-dropdown-menu");
-      if (menu) menu.style.display = "none";
+/* قائمة الحسابات: مستمع واحد على الحاوية بيتصلّى مرة — إعادة الرسم بتغيّر الأبناء
+   بس، فمافيش console ملزوق في onclick نصي ولا ارتباك مع المشتركين التانيين
+   (closestLayer) اللي بيستخدموا onclick نفسها. */
+function wireAccountSwitch() {
+  const host = $("#acc-switch");
+  if (!host || host.dataset.wired === "1") return;
+  host.dataset.wired = "1";
+  host.addEventListener("click", (event) => {
+    const rename = event.target.closest("[data-rename]");
+    if (rename) { event.stopPropagation(); editAccount(rename.dataset.rename); return; }
+    const pick = event.target.closest("[data-pick]");
+    if (pick) {
+      event.preventDefault();
       state.menuOpen = false;
       renderHeader();
-      selectAccountById(button.dataset.pick);
-    };
+      selectAccountById(pick.dataset.pick);
+      return;
+    }
+    const manage = event.target.closest("[data-manage]");
+    if (manage) {
+      state.menuOpen = false;
+      renderHeader();
+      showView("accounts");
+      return;
+    }
+    const dl = event.target.closest(".acc-dd-dl");
+    if (dl) {
+      state.menuOpen = false;
+      renderHeader();
+      return;
+    }
+    const toggle = event.target.closest("[data-toggle]");
+    if (toggle) {
+      event.preventDefault();
+      event.stopPropagation();
+      state.menuOpen = !state.menuOpen;
+      renderHeader();
+    }
   });
-
-  const manageBtn = document.querySelector("#acc-switch [data-manage]");
-  if (manageBtn) manageBtn.onclick = (e) => {
-    e.stopPropagation();
-    const menu = document.getElementById("acc-dropdown-menu");
-    if (menu) menu.style.display = "none";
-    state.menuOpen = false;
-    renderHeader();
-    showView("accounts");
-  };
+  host.addEventListener("contextmenu", (event) => {
+    const pick = event.target.closest("[data-pick]");
+    if (pick) event.stopPropagation();
+  });
 }
 
 function acctRowHTML(a) {
@@ -398,18 +589,18 @@ const AGENT_NOTES = {
 };
 
 function agentDownload() {
-  // نفس السطر بيتحط في كارت CMSync وفي لوحة CONNECTION — مصدر واحد، مكانين.
   const r = (state.status || {}).release || {};
+  const ver = r.version || "2.2.2";
   const html = !r.present
-    ? `<span class="dl-meta">No CMSync build on this server yet.</span>`
-    : `<a class="dl-link" href="/download/cmsync" download title="CMSync.exe — the local agent that registers your account automatically">⬇ Download CMSync</a>
+    ? `<span class="dl-meta">No CMSync_Setup.exe on this server yet.</span>`
+    : `<a class="dl-link" href="/download/CMSync_Setup.exe" download="CMSync_Setup.exe" title="CMSync_Setup.exe — Download and install CMSync Client">⬇ Download CMSync v${esc(ver)} <span class="badge-new">NEW</span></a>
        <span class="dl-meta">build ${esc(r.built_at_text || "")} · ${esc((r.size / 1048576).toFixed(1))} MB</span>
        <button class="ghost tiny dl-copy" type="button" title="Copy the download link to send to someone">⧉ copy link</button>`;
   document.querySelectorAll("[data-agent-dl]").forEach((el) => {
     el.innerHTML = html;
     const btn = el.querySelector(".dl-copy");
     if (btn) btn.onclick = async () => {
-      const url = `${location.origin}/download/cmsync`;
+      const url = `${location.origin}/download/CMSync_Setup.exe`;
       try {
         await navigator.clipboard.writeText(url);
         toast("Download link copied.");
@@ -418,6 +609,10 @@ function agentDownload() {
       }
     };
   });
+  const topDl = $("#btn-topbar-download");
+  if (topDl && r.version) {
+    topDl.innerHTML = `<span style="font-size:12px;">⬇</span><span>Download CMSync v${esc(r.version)}</span><span class="badge-new">NEW</span>`;
+  }
 }
 
 function agentLine() {
@@ -446,53 +641,14 @@ function renderAccountsPage() {
     capEl.textContent = cap.limit ? `${num(cap.used)} / ${num(cap.limit)}` : num(cap.used);
     capEl.classList.toggle("full", !!cap.limit && cap.used >= cap.limit);
   }
+  const atLimit = !!cap.limit && cap.used >= cap.limit;
   host.innerHTML = state.accounts.length
     ? state.accounts.map(acctRowHTML).join("")
-    : `<div class="acct-empty" style="text-align: center; padding: 25px 15px; background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px;">
-        <p style="margin: 0 0 8px 0; color: #f3f4f6; font-size: 14px;">لا توجد حسابات مرتبطة بهذا المشترك حالياً.</p>
-        <p style="margin: 0 0 15px 0; color: #9ca3af; font-size: 12px;">يمكنك ربط حساب مسجل مسبقاً من القائمة أعلاه أو إدخال توكن حساب جديد.</p>
-      </div>`;
+    : `<p class="acct-empty">${atLimit
+        ? "Your account slots are all used (" + num(cap.used) + "/" + num(cap.limit) + ") — remove one or ask for a bigger limit."
+        : "No linked accounts yet — paste a token above and press + Add."}</p>`;
   wireAccountRows();
   agentLine();
-
-  // إدارة صندوق ربط حساب موجود للأدمن
-  const assignBox = $("#acct-assign-existing-box");
-  const assignSelect = $("#acct-existing-select");
-  const btnAssign = $("#btn-assign-existing");
-  const assignNote = $("#acct-assign-note");
-  if (assignBox) {
-    if (state.viewingAs && state.isAdmin && (state.allSystemAccounts || []).length) {
-      assignBox.style.display = "block";
-      const currentIds = new Set((state.accounts || []).map((x) => x.id));
-      const unassigned = (state.allSystemAccounts || []).filter((x) => !currentIds.has(x.id));
-      if (assignSelect) {
-        assignSelect.innerHTML = `<option value="">-- اختر حساب لعبة من السيرفر (${unassigned.length} متاح) --</option>` +
-          unassigned.map((a) => `<option value="${esc(a.id)}">${esc(a.display_name || a.name)} ${a.owners ? `(مشترك في: ${esc(a.owners)})` : ""}</option>`).join("");
-      }
-      if (btnAssign) {
-        btnAssign.onclick = async () => {
-          const accId = assignSelect.value;
-          if (!accId) { if (assignNote) { assignNote.textContent = "يرجى اختيار حساب أولاً"; assignNote.style.color = "#ef4444"; } return; }
-          btnAssign.disabled = true;
-          if (assignNote) { assignNote.textContent = "جاري ربط الحساب بالمشترك…"; assignNote.style.color = "#a855f7"; }
-          try {
-            const res = await post(`/api/accounts/${encodeURIComponent(accId)}/assign-owner`, { owner: state.viewingAs });
-            if (res.ok) {
-              if (assignNote) { assignNote.textContent = "✔ تم ربط الحساب بنجاح!"; assignNote.style.color = "#22c55e"; }
-              toast("✔ تم ربط الحساب بالمشترك بنجاح", "ok");
-              await Promise.all([loadAccounts(), loadHeader(), loadStatus()]);
-              await Promise.all([loadSections(), loadLegend()]);
-            }
-          } catch (e) {
-            if (assignNote) { assignNote.textContent = "⛔ " + e.message; assignNote.style.color = "#ef4444"; }
-          }
-          btnAssign.disabled = false;
-        };
-      }
-    } else {
-      assignBox.style.display = "none";
-    }
-  }
 }
 
 function wireAccountRows() {
@@ -518,11 +674,15 @@ function acctNote(text, kind) {
 async function selectAccountById(id) {
   const modal = $("#modal");
   if (modal) modal.hidden = true;
-  const picked = (state.accounts.find((a) => a.id === id) || {}).name || state.account;
+  // معرف الحساب بييجي UUID نص، وفي مصادر تانية رقم — المقارنة النصية بس كانت
+  // أحيانًا ما بتلاقي الحساب، فالصفحة تفضل على الحساب القديم.
+  const key = String(id);
+  const rec = state.accounts.find((a) => String(a.id) === key) || null;
+  const picked = (rec || {}).name || state.account;
   // الاختيار ده بتاع التاب ده بس — sessionStorage ما بيتشاركش مع التابات التانية.
   state.account = picked;
-  if (state.recentMoves) state.recentMoves.clear();
   rememberTabAccount(picked);
+  renderHeader();
   // اللوحة المقفولة بتاعة حساب واحد — التبديل لحساب تاني يفكّها عنده
   setFrozen(false, true);
   try { await post(`/api/accounts/${encodeURIComponent(id)}/select`); }
@@ -536,12 +696,9 @@ async function selectAccountById(id) {
   state.foreign = {};
   state.loadoutSel = "";
   state.loPreview = null;
-  state.scrappy = null;
-  syncScrappyPill();
   await Promise.all([refreshAll(), loadAccounts()]);
   if (state.view === "traders") loadTraders().catch((e) => toast("⛔ " + e.message, "bad"));
   if (state.view === "workshop") loadWorkshop().catch((e) => toast("⛔ " + e.message, "bad"));
-  loadScrappy().catch(() => {});
 }
 
 async function copyToken(id, btn) {
@@ -627,24 +784,9 @@ function editAccount(id) {
 function removeAccount(id) {
   const a = state.accounts.find((x) => x.id === id);
   if (!a) return;
-  const viewAs = state.viewingAs || new URLSearchParams(window.location.search).get("view_as") || "";
-  if (viewAs) {
-    openModal(`إزالة الحساب من بروفايل المشترك`, `
-      <p class="note" style="font-size:13px; line-height:1.6;">
-        هل أنت متأكد من إزالة حساب اللعبة <b>${esc(a.display_name || a.name)}</b> من بروفايل المشترك <b>${esc(viewAs)}</b>؟
-      </p>
-      <p class="note" style="margin-top:10px; color:#22c55e;">
-        ✔ لن يتم حذف بيانات الحساب أو قطعه من السيرفر — سيبقى الحساب متاحاً في النظام وفي أي بروفايلات مشتركين آخرين مرتبط بها.
-      </p>`,
-      async () => {
-        const wasActive = a.name === state.account;
-        const out = await json(`/api/accounts/${encodeURIComponent(id)}?unlink=0`, { method: "DELETE" });
-        await Promise.all([loadAccounts(), loadHeader(), loadStatus()]);
-        if (wasActive) await Promise.all([loadSections(), loadLegend()]);
-        toast(out.note || "✔ تمت إزالة الحساب من بروفايل المشترك", "ok");
-      }, "إزالة من المشترك", { confirmKind: "danger" });
-    return;
-  }
+  // الحذف بيّمسح التوكن والمحزون كله من القاعدة، وبعدها اللوحة بترفض تسجّله
+  // تاني من الذاكرة (مدرج في قائمة المحذوفين) — فدخلة واحدة على زرابيت الغلط
+  // كانت كفيلة إنها تضيّع حساب كامل. الحذف بقى بخطوة تأكيد صريحة.
   openModal(`DELETE ACCOUNT — ${esc(a.display_name || a.name)}`, `
     <p class="note">Removed from this board: the stored token, all inventory rows, saved loadouts
     and pull snapshots of <b>${esc(a.name)}</b>. The in-game inventory itself is
@@ -667,150 +809,29 @@ async function addAccount() {
   const btn = $("#acct-add");
   btn.disabled = true;
   acctNote("Verifying the token and pulling account data from Embark…", "");
-  const viewAs = new URLSearchParams(window.location.search).get("view_as") || document.getElementById("view-as-name")?.textContent?.trim() || "";
   try {
-    const out = await post("/api/accounts/add", { token, label, owner: viewAs || undefined });
+    const out = await post("/api/accounts/add", { token, label });
     const a = out.account || {};
     $("#acct-token").value = "";
     $("#acct-label").value = "";
     const pulled = out.pulled?.ok ? ` — ${num(out.pulled.items)} items pulled` : "";
     acctNote(`✔ Added ${a.display_name || a.name}${pulled} · ${out.note || ""}`, "ok");
     toast(`✔ ${a.display_name || "the account"} added.`, "ok");
-    if (a.id) {
-      await selectAccountById(a.id);
-      showView("inventory");
-    } else {
-      await Promise.all([loadAccounts(), loadHeader(), loadStatus()]);
-      await Promise.all([loadSections(), loadLegend()]);
-    }
+    await Promise.all([loadAccounts(), loadHeader(), loadStatus()]);
+    if (out.pulled?.ok) await Promise.all([loadSections(), loadLegend()]);
   } catch (e) {
-    acctNote("⛔ " + e.message, "bad");
+    const reason = String(e.message || "");
+    if (/account limit reached/i.test(reason)) {
+      acctNote(`⛔ ${reason} Remove an account or ask the admin to raise the limit for your profile.`, "bad");
+      btn.disabled = false;
+      return;
+    }
+    const rejected = /rejected|401|expired|already expired|not a valid/i.test(reason);
+    acctNote(rejected
+      ? `⛔ This token was refused: ${reason}. The game token has expired or is incomplete — copy a fresh one from the game and try again.`
+      : "⛔ " + reason, "bad");
   }
   btn.disabled = false;
-}
-
-/* ------------------------------------------------------------------ حفظ الحركات الأخيرة ومنع ارتداد العناصر
-   عند النقل (المخزن ⇄ الشنطة ⇄ اللود آوت)، الباكند ينفّذ النقلة على بوابة اللعبة
-   فوراً لكن إعادة سحب السنابشوت من Embark تأخذ بضع ثوان في خيط خلفي.
-   هذه الدالة تضمن 100%:
-   1. تثبيت القطعة في مكانها الجديد المستهدف.
-   2. مسحها تماماً من أي مكان قديم أو مكرر.
-   3. منع التكرار العام (Global Deduplication): لا يمكن لأي قطعة التواجد في مكانين في آن واحد. */
-/* ---------------- مزامنة الحركات المتفائلة واللود آوت ----------------
-   1. الحركات المتفائلة (recentMoves): لا تفقد القطعة المنقولة أثناء انتظار السيرفر.
-   2. الأولوية المطلقة للود آوت: إذا تم تجهيز قطعة في الـ loadout، تظل في الـ loadout
-      وتُزال من الـ stash/overflow إذا أرجع السيرفر سنابشوت قديم يحتويها.
-   3. منع التكرار العام (Deduplication): تصفية أي تكرارات شبحية. */
-function reconcileSectionsWithRecentMoves(data) {
-  if (!data) return;
-  const sections = data.sections || (data.sections = {});
-  const loadout = data.loadout || (data.loadout = {});
-  const lSlots = loadout.slots || (loadout.slots = {});
-  const now = Date.now();
-
-  // 1. تنظيف الحركات القديمة بعد 60 ثانية
-  if (state.recentMoves && state.recentMoves.size) {
-    for (const [id, m] of state.recentMoves.entries()) {
-      if (now - m.at > 60000) {
-        state.recentMoves.delete(id);
-      }
-    }
-  }
-
-  // 2. تطبيق جميع الحركات الأخيرة المسجلة محلياً
-  if (state.recentMoves && state.recentMoves.size) {
-    for (const [id, m] of state.recentMoves.entries()) {
-      const targetContainer = m.container;
-      let targetRow = m.row ? { ...m.row } : null;
-
-      // البحث عن بيانات القطعة من أي قسم بالسيرفر
-      for (const bucket of Object.values(sections)) {
-        const found = (bucket.slots || []).find((s) => s && s.instance_id === id);
-        if (found) { targetRow = { ...found, ...(targetRow || {}) }; break; }
-      }
-      if (!targetRow || !targetRow.image) {
-        for (const list of Object.values(lSlots)) {
-          const found = (list || []).find((s) => s && s.item && s.item.instance_id === id);
-          if (found && found.item) { targetRow = { ...found.item, ...(targetRow || {}) }; break; }
-        }
-      }
-      if (!targetRow) continue;
-
-      targetRow.container = targetContainer;
-      targetRow.wrapper_id = m.wrapper || "";
-      if (m.slot_index !== null && m.slot_index !== undefined) {
-        targetRow.slot_index = m.slot_index;
-      }
-
-      // مسح القطعة فوراً من كافة أقسام الـ sections
-      for (const [cName, bucket] of Object.entries(sections)) {
-        if (bucket.slots) {
-          bucket.slots = bucket.slots.filter((s) => s && s.instance_id !== id);
-        }
-      }
-      // ومسحها فوراً من كافة خانات الـ loadout/backpack
-      for (const list of Object.values(lSlots)) {
-        for (const slot of list || []) {
-          if (slot.item && slot.item.instance_id === id) {
-            slot.item = null;
-          }
-        }
-      }
-
-      // وضع القطعة حصراً في مكانها الجديد المستهدف
-      if (lSlots[targetContainer]) {
-        let placed = false;
-        if (m.wrapper) {
-          const targetSlot = lSlots[targetContainer].find((s) => s && s.wrapper_id === m.wrapper);
-          if (targetSlot) { targetSlot.item = targetRow; placed = true; }
-        }
-        if (!placed) {
-          const emptySlot = lSlots[targetContainer].find((s) => s && !s.item);
-          if (emptySlot) { emptySlot.item = targetRow; placed = true; }
-          else if (lSlots[targetContainer].length) { lSlots[targetContainer][0].item = targetRow; placed = true; }
-        }
-      } else {
-        if (!sections[targetContainer]) {
-          sections[targetContainer] = { container: targetContainer, capacity: null, slots: [] };
-        }
-        sections[targetContainer].slots = sections[targetContainer].slots || [];
-        sections[targetContainer].slots.push(targetRow);
-      }
-    }
-  }
-
-  // 3. قاعدة مانعة للتكرار وحماية خانات اللود آوت والشنطة (Loadout Priority Deduplication):
-  // القطع المجهزة في الـ loadout أو الـ backpack لها الأولوية المطلقة!
-  // أي قطعة موجودة في الـ loadout لا يجوز أن تظهر في الـ stash أو الـ overflow كشبح من سنابشوت قديم.
-  const loadoutIds = new Set();
-  for (const list of Object.values(lSlots)) {
-    for (const slot of list || []) {
-      if (slot && slot.item && slot.item.instance_id) {
-        if (loadoutIds.has(slot.item.instance_id)) {
-          slot.item = null; // مكرر داخل خانات اللودآوت نفسها
-        } else {
-          loadoutIds.add(slot.item.instance_id);
-        }
-      }
-    }
-  }
-
-  // تنظيف الـ sections (المخزن والأوفرستاش) من أي قطعة مجهزة بالفعل
-  for (const bucket of Object.values(sections)) {
-    if (!bucket.slots) continue;
-    const cleanSlots = [];
-    const seenSectionIds = new Set();
-    for (const item of bucket.slots) {
-      if (!item || !item.instance_id) continue;
-      // إذا كانت القطعة مجهزة في اللودآوت، لا تظهر في الستاش كشبح
-      if (loadoutIds.has(item.instance_id)) continue;
-      // منع التكرار داخل نفس القسم
-      if (seenSectionIds.has(item.instance_id)) continue;
-      seenSectionIds.add(item.instance_id);
-      cleanSlots.push(item);
-    }
-    bucket.slots = cleanSlots;
-  }
 }
 
 async function loadSections(forceUnknown = false) {
@@ -819,7 +840,6 @@ async function loadSections(forceUnknown = false) {
     reqs.push(loadUnknown());
   }
   const [data] = await Promise.all(reqs);
-  reconcileSectionsWithRecentMoves(data);
   state.sections = data.sections || {};
   state.transferGroups = null;
   setUnlocked(data.unlocked);
@@ -828,7 +848,10 @@ async function loadSections(forceUnknown = false) {
   state.locations = data.locations || null;
   state.augmentSpecs = data.augments || state.augmentSpecs;
   state.sectionsGen += 1;
+  const flight = refreshInFlight();
+  if (flight) { hideInFlight(flight.ids); flight.apply(); }
   renderInventory();
+  refreshUnbuiltCells();
 }
 
 /* بنود الباتش الجديد ملهاش اسم في الفهارس العامة — بنقرا الـ asset ids المملوكة
@@ -862,19 +885,10 @@ async function identifyAsset(assetId) {
 }
 
 async function loadLegend() {
-  try {
-    const f = await json(`/api/filters?account=${state.account}`);
-    state.filters = f || {};
-    if (!f || !f.counts || !f.counts.rarities) {
-      $("#legend-box").innerHTML = "";
-      return;
-    }
-    $("#legend-box").innerHTML = RARITY_ORDER.filter((r) => f.counts.rarities[r])
-      .map((r) => `<div><i class="sw" style="background:${rarityColor(r)}"></i>${r} <span class="count">${f.counts.rarities[r]}</span></div>`).join("");
-  } catch (e) {
-    console.warn("[legend]", e);
-    $("#legend-box").innerHTML = "";
-  }
+  const f = await json(`/api/filters?account=${state.account}`);
+  state.filters = f;
+  $("#legend-box").innerHTML = RARITY_ORDER.filter((r) => f.counts.rarities[r])
+    .map((r) => `<div><i class="sw" style="background:${rarityColor(r)}"></i>${r} <span class="count">${f.counts.rarities[r]}</span></div>`).join("");
 }
 
 function rarityColor(r) {
@@ -897,7 +911,7 @@ async function loadLog() {
   $("#log-box").innerHTML = d.log.length ? d.log.map((row) => {
     const ok = row.status === "executed";
     return `<div class="log-row ${ok ? "ok" : "bad"}"><b>${esc(row.kind)}</b>
-      <span>${esc(row.account)} · ${row.items} · ${new Date(row.ts * 1000).toLocaleTimeString("en-GB")}</span>
+      <span>${esc(row.account || state.account || VIEWING_AS || "")} · ${row.items} · ${new Date(row.ts * 1000).toLocaleTimeString("en-GB")}</span>
       <em>${esc(String(row.response || row.status).slice(0, 90))}</em></div>`;
   }).join("") : `<p class="note">No actions yet.</p>`;
 }
@@ -986,6 +1000,11 @@ function sortTiles(tiles) {
     if (by === "value") return itemTotalValue(b, b.qty) - itemTotalValue(a, a.qty) || byName(a, b);
     return byCategory(a, b);
   });
+}
+
+/* بلاطة "?" — قطعة ملهاش أرت في الفهارس. فلتر زرار "?" بيستخدمها. */
+function isUnknownTile(t) {
+  return !!t && !t.image;
 }
 
 function searchNeedle(q) {
@@ -1129,30 +1148,30 @@ function qtyPickFor(items, want) {
   return whole || { items: usable.slice(0, 1), total: 0, exact: false, short: true };
 }
 
-/* نسخة العرض من خطة الباكند: رصّات كاملة الأول، والفاضل chunks ما بتعديش سقف الأكوم. */
+/* نسخة العرض من خطة الباكند (actions.fill_plan): أكوام كاملة الأول، والباقي
+   rem تغطيه كومة واحدة — بتنقل كاملة للشنطة وتتفصل جوّاها، مش chunk في الستاش. */
 function fillTakes(rows, want, cap) {
-  const pool = rows.map((r) => ({ row: r, amount: Number(r.qty) || 0 }))
+  const pool = rows.map((r) => ({ row: r, amount: Number(r.qty) || 0, left: Number(r.qty) || 0 }))
     .filter((s) => s.amount > 0 && s.row.instance_id)
     .sort((a, b) => b.amount - a.amount);
   let left = want;
   if (!pool.length || pool.reduce((s, x) => s + x.amount, 0) < left) return null;
-  const takes = [];
+  const takes = [], used = new Set();
   for (const s of pool) {
-    if (left <= 0) break;
-    if (s.amount <= left) {
-      takes.push({ row: s.row, amount: s.amount, partial: false });
-      left -= s.amount;
-      s.amount = 0;
-    }
+    if (s.amount > left) continue;
+    takes.push({ row: s.row, amount: s.amount, partial: false, stack: s.amount });
+    used.add(s.row.instance_id);
+    s.left = 0;
+    left -= s.amount;
+    if (!left) break;
   }
-  while (left > 0) {
-    const chunk = cap > 1 ? Math.min(left, cap) : left;
-    const cands = pool.filter((s) => s.amount > chunk);
+  if (left > 0) {
+    const cands = pool.filter((s) => !used.has(s.row.instance_id) && s.amount > left)
+      .sort((a, b) => a.amount - b.amount);
     if (!cands.length) return null;
-    const s = cands.reduce((a, b) => (b.amount < a.amount ? b : a));
-    takes.push({ row: s.row, amount: chunk, partial: true });
-    s.amount -= chunk;
-    left -= chunk;
+    const c = cands[0];
+    takes.push({ row: c.row, amount: left, partial: true, stack: c.amount, cover: true });
+    left = 0;
   }
   return takes;
 }
@@ -1187,7 +1206,7 @@ function qtyStripHTML(rows, poolRows, want) {
   const shown = picks.slice(0, 12);
   const head = `<div class="qty-head"><span>QTY ${num(want)}</span>
     <b>${shown.filter((p) => p.pick.exact).length} of ${picks.length} types give the exact amount</b>
-    <i>Drag the card to the backpack — whatever cannot be made from whole stacks is split off a larger stack on the official split route</i></div>`;
+    <i>Right-click the card → MOVE TO… BACKPACK — whole stacks go first, then the stack that covers the rest moves whole and is split inside the backpack, so exactly ${num(want)} arrives</i></div>`;
   if (!shown.length) {
     return `<div class="qty-strip">${head}<p class="note">No type in the stash has stacks adding up to ${num(want)}.
       Type the item name in search first, or raise the number.</p></div>`;
@@ -1203,23 +1222,28 @@ function qtyCardHTML(entry) {
   const pieces = takes.length
     ? takes.map((t) => num(t.amount) + (t.partial ? " *" : "")).join(" + ")
     : pick.items.map((r) => num(Number(r.qty) || 0)).join(" + ") || "0";
-  const note = pick.exact ? (pick.splits ? `splits off ${num(pick.splits)}` : "")
+  const cover = (pick.takes || []).find((t) => t.cover);
+  const note = pick.exact ? (cover ? `split in bag from ${num(cover.stack)}` : "")
     : pick.missing ? `missing ${num(pick.missing)}`
     : pick.extra ? `extra ${num(pick.extra)}` : "all available is less";
   markQtyPick(ids);
   // أي بطاقة QTY بتسحب خطة كاملة من الباكند (الستاكات الكاملة لوحدها ما بتوصلش
   // للرقم، وخانة مشغولة في الشنطة كانت بتبلع الرصة كلها). البطاقة اللي ما بتحتاجش
   // تقسيم بتفضل بنفس الرقم، بس بتروح على نفس مسار التحقق.
+  // البطاقة اللي بتوصل للرقم بالظبط بتحمل خطتها معاها: كليك يمين عليها → MOVE TO
+  // بيعمل نفس اللي زر السحبة كان بيعمله (الباكند يعيد الخطة على الشجرة الحية:
+  // رصّات كاملة + فصل الفاضل) — مش نقل الرصّات كاملة زي أي قطعة عادية.
   const fill = pick.exact && pick.total
     ? ` data-fill-asset="${esc(entry.asset)}" data-fill-amount="${Number(pick.total) || 0}"` : "";
   const tip = pick.exact && pick.splits
-    ? `${esc(first.display_name || first.name)} — ${esc(pieces)} (* split off a larger stack)`
-    : `${esc(first.display_name || first.name)} — ${esc(pieces)}`;
-  return `<div class="qty-card ${pick.exact ? "exact" : "approx"}"${fill} title="${esc(tip)}">
+    ? `${esc(first.display_name || first.name)} — ${esc(pieces)} (* split inside the backpack) — right-click → MOVE TO… BACKPACK moves exactly this`
+    : `${esc(first.display_name || first.name)} — ${esc(pieces)}${pick.exact ? " — right-click → MOVE TO… BACKPACK moves exactly this" : ""}`;
+  const card = `<div class="qty-card ${pick.exact ? "exact" : "approx"}"${fill} title="${esc(tip)}">
     ${tileHTML({ ...first, qty: pick.total || first.qty, ids }, "stash")}
     <span class="qty-pieces">${pieces}</span>
     <span class="qty-note">${note}</span>
   </div>`;
+  return card;
 }
 
 /* التقسيم كتابة حقيقية على المنبع: بنسأله split ونردّ رده. مفيش استنى ولا مراقبة —
@@ -1268,7 +1292,7 @@ function fieldFocus() {
    كل حساب تاني فيه كام قطعة من نفس الـ id. */
 let xToken = 0;
 
-/* الاسم المختصر لحساب التاب ده — نفس شكل _acc_short في الباكند (G22 من G22#7334). */
+/* الاسم المختصر لحساب التاب ده — نفس شكل _acc_short في الباكند (G14 من G14#0847). */
 function myAccountLabel() {
   const a = (state.accounts || []).find((x) => x.name === state.account) || {};
   const text = String(a.display_name || a.label || a.name || state.account || "").trim();
@@ -1279,15 +1303,14 @@ function myAccountLabel() {
 function wireForeignHover(host) {
   host.querySelectorAll(".tile.cat").forEach((t) => {
     if (!t.dataset.ids) return;
-    t.onmouseenter = (e) => showCard(t, e);
-    t.onmousemove = (e) => positionCard(e);
-    t.onmouseleave = () => hideCard();
+    t.onmouseenter = (e) => hoverCard(t, e);
+    t.onmouseleave = () => leaveCard(t);
   });
 }
 
 /* أيقونة لكل حساب تاني: قطعك المكررة عنده بالذات + كام قطعة منه عنده.
    نفس الخانة ممكن تظهر في أكتر من أيقونة (لو id مكرر في حسابين) — التحديد Set
-   فبيتنضّف تلقائياً، وده أدق: أيقونة G22 بتحدد الـ 17 اللي عند G22 بس. */
+   فبيتنضّف تلقائياً، وده أدق: أيقونة الحساب بتحدد قطعه بس. */
 function xaccTilesByAccount(rows) {
   const buckets = new Map();
   for (const r of rows) {
@@ -1305,7 +1328,7 @@ function xaccTilesByAccount(rows) {
     label: b.label, theirs: b.theirs, tile: groupTiles(b.rows, true)[0],
   }));
   /* ترتيب مستقر: جوه نفس العنصر والصحة، الحسابات بالأبجدية — فالأيقونتين بتاعت
-     Il Toro بيطلعوا جنب بعض (G18 ثم G22) بدل ما يتفرقوا. */
+     Il Toro بيطلعوا جنب بعض (G18 ثم G14) بدل ما يتفرقوا. */
   list.sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()));
   return sortTiles(list.map((x) => ({ ...x.tile, xaccLabel: x.label, xaccTheirs: x.theirs })));
 }
@@ -1363,7 +1386,7 @@ function findmeTileHTML(r) {
   return `<div class="tile cat fm r-${esc(r.rarity)} ${kind === "blueprint" ? "bp" : ""} ${special ? kind : ""}" title="${esc(tip)}"
        data-ids="${esc((r.ids || [r.instance_id]).join(","))}" data-name="${esc(r.name)}"
        data-qty="${Number(r.qty) || 1}" data-kind="${esc(kind)}" data-type="${esc(r.arctracker_type || r.type || "")}">
-    ${r.image ? `<img loading="lazy" src="${asset(r.image)}" alt="" onerror="this.style.visibility='hidden'">` : `<span class="ph">?</span>`}
+    ${r.image ? `<img loading="lazy" src="${asset(r.image, r.at || (r.manual_override ? dataRev : 0))}" alt="" onload="this.style.visibility='visible'" onerror="this.style.visibility='hidden'">` : `<span class="ph">?</span>`}
     ${special ? `<span class="cat-strip">${KIND_ICON[kind]}<span>${kind.toUpperCase()}</span></span>` : ""}
     ${lvl ? `<span class="lvl">${lvl}</span>` : ""}
     ${dura ? `<span class="dura ${dura.warn ? "dura-" + dura.warn : ""}">${dura.current}/${dura.max}</span>` : ""}
@@ -1528,10 +1551,80 @@ function renderInventory() {
   host.querySelectorAll(".inv-body[data-scroll]").forEach((b) => {
     if (scrolled[b.dataset.scroll]) b.scrollTop = scrolled[b.dataset.scroll];
   });
+  wireSmoothScroll();
   updateSelCount();
   paintSync();
 }
 function renderColumns() { renderInventory(); }
+
+/* ------------------------------------------------------------------ سكرول انسيابي
+   عجلة الماوس في الستاش بتتخطف قبل المتصفح وتتحرك بـ requestAnimationFrame.
+   المسافة المعلّقة بتتصفّر بتخميد معتمد على الزمن: alpha = 1 - exp(-k·dt)، فالطريق
+   اللي بتعديه العجلة بيخلص في نفس الوقت على 60 و144 و240Hz. الموقع اللي بيتكتب
+   = الموقع المنطقي مقرّب محسوب من المعلّق (target - pend)، فالإزاحة بتتقدم بكسلاً
+   بكسلاً بدون قفزات. أي سكرول جاي من شريط التمرير أو الكيبورد (قيمته مختلفة عن
+   اللي إحنا كتبناه) بيوقف الانزلاق ويسيب التحكم للمستخدم. */
+const SMOOTH_SCROLL = { k: 18, cycleMs: 200, maxFrame: 48 };
+function smoothScroller(pane) {
+  const s = { pane, target: 0, pend: 0, written: -1, raf: 0, t: 0, quiet: 0 };
+  const maxTop = () => Math.max(0, pane.scrollHeight - pane.clientHeight);
+  const stop = () => {
+    if (s.raf) cancelAnimationFrame(s.raf);
+    s.raf = 0;
+    clearTimeout(s.quiet); s.quiet = 0;
+    scrollIdleSoon();
+  };
+  const tick = (now) => {
+    const last = s.t || now;
+    s.t = now;
+    const dt = Math.min(SMOOTH_SCROLL.maxFrame, Math.max(1, now - last));
+    s.pend *= Math.exp(-SMOOTH_SCROLL.k * dt / 1000);
+    if (Math.abs(s.pend) < 0.5) s.pend = 0;
+    const want = Math.max(0, Math.min(maxTop(), Math.round(s.target - s.pend)));
+    if (want !== s.written) {
+      s.written = want;
+      pane.scrollTop = want;
+    }
+    s.raf = s.pend ? requestAnimationFrame(tick) : 0;
+    if (!s.raf) stop();
+  };
+  /* أي سكرول مش من حركتنا = سحب الشريط أو الكيبورد: نرجّع الهدف للموقع الحقيقي
+     ونقفل الانزلاق. */
+  const syncFromUser = () => {
+    const live = pane.scrollTop;
+    if (Math.abs(live - s.written) > 1) {
+      s.target = live; s.pend = 0; s.t = 0;
+      stop();
+    }
+  };
+  pane.addEventListener("scroll", syncFromUser, { passive: true });
+  pane.addEventListener("wheel", (e) => {
+    if (e.ctrlKey || e.metaKey || Math.abs(e.deltaY) < 0.5) return;
+    // خطوط (Firefox) أو صفحات بموديفاير — كلهم لبايكسل، وأفقي بيتساب للمتصفح.
+    let dy = e.deltaY;
+    if (e.deltaMode === 1) dy *= 33;
+    else if (e.deltaMode === 2) dy *= pane.clientHeight * 0.9;
+    if (maxTop() <= 0 || Math.abs(e.deltaX) > Math.abs(dy)) return;
+    e.preventDefault();
+    if (!s.raf) { s.target = s.written = pane.scrollTop; s.pend = 0; }
+    s.target = Math.max(0, Math.min(maxTop(), s.target + dy));
+    s.pend = s.target - (s.written < 0 ? s.target : s.written + s.pend);
+    scrollBusy();
+    clearTimeout(s.quiet);
+    s.quiet = setTimeout(scrollIdleSoon, SMOOTH_SCROLL.cycleMs);
+    if (!s.raf) { s.t = 0; s.raf = requestAnimationFrame(tick); }
+  }, { passive: false });
+  return s;
+}
+
+function wireSmoothScroll() {
+  const stash = document.querySelector('.inv-body[data-scroll="stash"]');
+  if (stash && stash._smooth) {
+    stash._smooth.target = stash._smooth.pos = stash._smooth.written = stash.scrollTop;
+    return;
+  }
+  if (stash) stash._smooth = smoothScroller(stash);
+}
 
 function invColumn(key, cls, head, body, foot) {
   return `<section class="inv-col ${cls}" data-container="${esc(key)}">
@@ -1563,21 +1656,36 @@ function stashColumn() {
   /* البلاطة اللي ملهاش أيقونة بتترسم "?" — دي قطع الباتش الجديد اللي الفهارس لسه
      معرفاهاش. الزرار بيبدّل بينها وبين اللوحة النضيفة، والعداد بيقول كام واحدة.
      البحث بيكشفها دايمًا: اسم البلاطة نفسها "Item <asset id>" فلو كتب الرقم
-     وهو مخفي عايز يلاقيها قدامه، مش صفحة فاضية. */
-  const visible = (state.showUnknown || String(q).trim()) ? filtered : filtered.filter((r) => r.image);
+     وهو مخفي عايز يلاقيها قدامه، مش صفحة فاضية.
+     زرار «؟» = فلتر: لوحده بيعرض القطع اللي ملهاش بيانات بس. */
+  /* القطعة اللي chooseتها من لوحة "?" بتفضل لوحدها معروضة — هي اللي بيتحدد عليها
+     الاسم والصورة، فمش منطقي إنها تختفي وهي معرّفة. التحديد ده البلاطة الوحيدة اللي
+     بتظهر جوه فلتر «؟» — مش فلتر علي الستاش كلها. */
+  const picked = state.showUnknown && !String(q).trim() ? state.unkPick : "";
+  const visible = !state.showUnknown ? filtered.filter((r) => !isUnknownTile(r))
+    : !String(q).trim() ? filtered.filter((r) => isUnknownTile(r)) : filtered;
+  const shown = picked ? visible.filter((r) => r.instance_id === picked) : visible;
   /* وقت البحث أو الفلتر التجميع إجباري: عايز قطع حسابك في صف واحد مجمّع ومرتب
      بالصحة، مش خمس بلاطات متطابقة. زر STACKED بيضل يتحكم في الوضع العادي. */
   const stackedNow = state.stacked || !!String(q).trim() || !!onlyDupes || !!onlyMain;
-  const tiles = sortTiles(groupTiles(visible, stackedNow));
+  const tiles = sortTiles(groupTiles(shown, stackedNow));
   const head = `<span class="bar purple"></span><h2>STASH</h2>
     <button class="ghost tiny toggle ${stackedNow ? "on" : ""}" data-act="stacked"
             title="${q || onlyDupes || onlyMain ? "Grouping is on — your items are merged and sorted by durability" : "Merge identical items into one tile"}">STACKED</button>
     <button class="ghost tiny toggle ${state.dupeFilter ? "on" : ""}" data-act="dupes"
             title="Repeated IDs grouped by account">DUP id</button>
+    ${(() => {
+      const n = unkCount();
+      return `<button class="ghost tiny toggle unk-btn ${state.showUnknown ? "on" : ""}${n ? " has-unk" : ""}" data-act="unk" id="btn-unk"
+            title="${n ? `Show only the pieces with no data in the indexes (${num(n)}) — press again to show everything` : "No piece on this account is missing its data"}">?${n ? `<span class="unk-btn-n">${num(n)}</span>` : ""}</button>`;
+    })()}
     ${state.tomainIsMain ? "" : `<button class="ghost tiny toggle ${state.tomainFilter ? "on" : ""}" data-act="tomain"
             title="Pieces on this account whose item type is not on ${esc((state.tomainMains || []).join(" / ")) || "your main accounts"} — the ones worth carrying over before this account is emptied. Click to see only them and select them all at once; the move itself is in-game, your token here cannot write to another account.">TO MAIN${tmap ? " · " + num(tcount) : " · …"}</button>`}
     <button class="ghost tiny" id="btn-merge-all"
-            title="Merges every pile in the account up to each type stack cap — stash and overflow together, run on the official gateway.">⇄ MERGE ALL</button>
+            title="Merges every pile in the account up to each type stack cap — stash and overflow together, in the background on the official gateway. With text in the search box only the matching types are merged.">⇄ MERGE ALL${q ? " (SEARCH)" : ""}</button>
+    <button class="ghost tiny" id="btn-merge-stop" hidden
+            title="Stops the background merge after the current pile, then syncs once.">■ STOP</button>
+    <span class="merge-progress" id="merge-progress" hidden></span>
     <div class="spacer"></div>
     <input class="inline-search inv-search" id="inv-search" data-search="inventory" type="search"
            placeholder="SEARCH INVENTORY..." value="${esc(q)}" autocomplete="off"
@@ -1586,34 +1694,37 @@ function stashColumn() {
            maxlength="6" placeholder="QTY" value="${esc(state.queries.qty || "")}" autocomplete="off"
            title="Type a number — it groups the stacks whose total equals that number, splits the rest off a larger stack when the number cannot be made exactly, then lets you drag them in one go">
     <span class="cap-box" title="STASH ${num(stashSlots.length)}/${num(stash.capacity || 0)} · OVERFLOW ${num(ovfSlots.length)}/${num(overflow.capacity || 0)}">${num(slots.length)}/${num(capacity)}</span>`;
+  const unkPanel = unknownPanelHTML();
   const pool = q ? visible : slots.filter((r) => state.selected.has(r.instance_id));
   const strip = want ? qtyStripHTML(pool, slots, want) : "";
   const xHost = q ? `<div class="xacc-results" id="xacc-results"><p class="note empty-col">…</p></div>` : "";
   const fmHost = q ? `<div class="findme" id="findme"><p class="note empty-col">…</p></div>` : "";
-  const duplicateRows = slots.filter((r) => matchesSearch(r, q) && (state.showUnknown || String(q).trim() || r.image));
+  const duplicateRows = slots.filter((r) => matchesSearch(r, q) && (!state.showUnknown ? !isUnknownTile(r)
+    : !String(q).trim() ? isUnknownTile(r) : true));
   const duplicateGroups = onlyDupes && dmap ? dupAccountGroups(duplicateRows, dmap) : [];
   const duplicatesHTML = onlyDupes ? (dmap ? duplicateGroups.map((group) => `<p class="dup-acc">ALSO IN ${esc(group.acc)}</p><div class="dup-row">${group.tiles.map((tile) => tileHTML(tile, "stash")).join("")}</div>`).join("") || `<p class="note empty-col">No repeated IDs in other accounts</p>` : `<p class="note empty-col">Loading repeated IDs...</p>`) : "";
   const transferHeading = onlyMain ? `<p class="dup-acc">${target ? `TO ${esc(target.label)} · IDs absent in saved snapshot · ${target.last_success ? esc(new Date(target.last_success * 1000).toLocaleString()) : "Target never synchronized — synchronize before transfer"}` : "Right-click an account name and mark a main destination"}</p>` : "";
   const renderedTiles = tiles.map((t) => tileHTML(t, "stash")).join("");
   const tilesHTML = onlyDupes ? duplicatesHTML : transferHeading + strip + (tiles.length ? (onlyMain ? `<div class="dup-row">${renderedTiles}</div>` : renderedTiles) : `<p class="note empty-col">${onlyMain ? "No suggestions for this destination" : "EMPTY"}</p>`);
-  return invColumn("stash", "col-stash", head, tilesHTML + xHost + fmHost);
+  return invColumn("stash", "col-stash", head + unkPanel, tilesHTML + xHost + fmHost);
 }
 
 function slotCell(s, key, idx) {
   const item = s && s.item ? s.item : null;
   const wrapper = s?.wrapper_id || "";
-  return `<div class="slot-cell ${item ? "filled" : ""} ${wrapper ? "" : "no-wrapper"}"
-       title="${esc(wrapper ? "" : NO_WRAPPER_HINT)}"
+  return `<div class="slot-cell ${item ? "filled" : ""} ${wrapper ? "" : s?.pending ? "pending" : "no-wrapper"}"
+       title="${esc(wrapper ? "" : s?.pending ? PENDING_CELL_HINT : NO_WRAPPER_HINT)}"
        data-slot-cell="${esc(key)}" data-slot="${esc(key)}" data-slot-index="${idx}"
-       data-wrapper="${esc(wrapper)}" ${wrapper ? "" : 'data-nowrapper="1"'}>
+       data-wrapper="${esc(wrapper)}" ${wrapper ? "" : s?.pending ? 'data-pending="1"' : 'data-nowrapper="1"'}>
     ${item ? tileHTML(item, key, { slot: key }) : `<span class="slot-cross"></span>`}
-    ${lockMark(wrapper)}
+    ${wrapper ? "" : s?.pending ? `<span class="slot-pending" aria-hidden="true">◌</span>` : lockMark(wrapper)}
   </div>`;
 }
 
-/* الخانة بلا wrapper = قالب من مواصفات الأوجمنت لسه اللعبة ما بنيحه في حاوية الحساب.
-   بتقفل أول ما تدخل ماتش، فبنبيّنها مقفولة بدل ما نسيبها ترفض السحبة في الصمت. */
-const NO_WRAPPER_HINT = "This cell is not built yet in the game backpack — the equipped augment is larger than the container the game created for your account. The game rebuilds the backpack as soon as you enter a match, and after that this cell becomes usable.";
+/* الخانة بلا wrapper = سعة قايمة من مواصفات الأوجمنت بس ومالهاش حاوية في
+   الحساب لحد الآن: بتتفعّل لوحدها أول قراية بعد ما اللعبة تبنيها. */
+const NO_WRAPPER_HINT = "This cell is not built in the account yet — it unlocks with the next read of the backpack.";
+const PENDING_CELL_HINT = "This cell is part of the backpack you just equipped — the account container is rebuilt in the next match. It is already reserved.";
 function lockMark(wrapper) {
   return wrapper ? "" : `<span class="slot-lock" aria-hidden="true">🔒</span>`;
 }
@@ -1639,8 +1750,9 @@ function backpackColumn() {
   /* الخانة اللي ليها wrapper_id واحدة بتاعت الحاوية الحقيقية اللي اللعبة عاملها على
      الحساب. الخانات الزايدة مجرد قالب من مواصفات الأوجمنت — اللعبة تبنيها أول ما
      تدخل ماتش، فالعدّاد بيربط السعة المبنية بس ويوري القالب المقفول جنبه. */
-  const built = slots.filter((s) => s.wrapper_id).length;
-  const template = Math.max(0, capacity - built);
+  const built = slots.filter((s) => s?.wrapper_id).length;
+  const changing = slots.some((s) => s?.pending);
+  const template = changing ? 0 : Math.max(0, capacity - built);
   const shownCap = built || capacity;
   let cells = "";
   for (let i = 0; i < capacity; i++) cells += slotCell(slots.find((x) => x.slot_index === i) || null, "backpack", i);
@@ -1809,7 +1921,7 @@ function pvTile(card) {
     : (card.in_place ? "IN PLACE" : (PV_TAG[cls] || "MISSING"));
   return `<div class="tile cat pv r-${esc(card.rarity || "Common")} pv-${cls}${route ? " pv-via-" + route : ""}"
       data-pv="${esc(String(card.i ?? ""))}" title="${esc(pvHint(card))}">
-    ${card.image ? `<img loading="lazy" src="${asset(card.image)}" alt="" onerror="this.style.visibility='hidden'">` : `<span class="ph">?</span>`}
+    ${card.image ? `<img loading="lazy" src="${asset(card.image, card.at || (card.manual_override ? dataRev : 0))}" alt="" onload="this.style.visibility='visible'" onerror="this.style.visibility='hidden'">` : `<span class="ph">?</span>`}
     ${Number(card.qty) > 1 ? `<span class="qty">${num(card.qty)}</span>` : ""}
     <span class="pv-tag pv-tag-${cls}${card.in_place && cls !== "short" ? " pv-tag-in" : ""}">${tag}</span>
     ${route ? `<span class="pv-via${cross ? " cross" : ""}">${route === "craft" ? "⚒" : "🛒"}</span>` : ""}
@@ -2088,7 +2200,585 @@ function itemTotalValue(t, amount) {
   return Math.floor(total);
 }
 
+/* بلاطات «؟» = قطع البوابة مبعتة بـ asset id مفيش له أرت في الفهرس الرسمي:
+   اللعبة نفسها بترسمها كده. السطر ده بيجمعها في مكان واحد عشان تقدر تضيفها. */
+function unknownTiles() {
+  const seen = new Map();
+  const sections = state.sections || {};
+  const add = (t) => {
+    if (!t || !t.instance_id || t.image || t.manual_override || (window.ItemEditor?.itemOverrides?.()?.find?.(t.asset_id)) || seen.has(t.instance_id)) return;
+    seen.set(t.instance_id, { instance_id: t.instance_id, asset_id: String(t.asset_id ?? ""), name: t.name || "", container: String(t.container || "") });
+  };
+  for (const key of Object.keys(sections)) {
+    const sec = sections[key] || {};
+    for (const t of sec.slots || []) add(t);
+    // الشنطة بتتقسم على wrapper ids — القطع اللي في خانات مش معروضة بتتجمّع في buckets
+    // تحت "__hidden" وبتظهر في المودال بعد ما تتفتح؛ الكشف لازم يقراها كمان.
+    for (const bucket of Object.values(sec.buckets || {})) {
+      for (const t of (bucket && bucket.slots) || []) add(t);
+    }
+  }
+  return [...seen.values()];
+}
+
+function unkCount() {
+  return new Set(unknownTiles().map((t) => t.asset_id || t.instance_id)).size;
+}
+
+/* القائمة المنسدلة تحت زرار «؟»: القطع اللي ملهاش بيانات في أي فهرس. */
+function unknownPanelHTML() {
+  if (state.account === "ALL") return "";
+  const list = unknownTiles();
+  const movable = state.unknownMovable || {};
+  const moved = list.filter((t) => movable[t.instance_id] === true).length;
+  const dead = list.filter((t) => movable[t.instance_id] === false).length;
+  const mark = (n, label, cls, note) => n
+    ? `<span class="unk-split ${cls}" title="${esc(note)}">${cls === "ok" ? "⇄" : "✕"} ${num(n)} ${label}</span>` : "";
+  const chip = (t) => {
+    const v = movable[t.instance_id];
+    const bad = v === false;
+    return `<button type="button" class="unk-chip${bad ? " dead" : ""}${state.unkPick === t.instance_id ? " picked" : ""}" data-unk-find="${esc(t.instance_id)}"
+        data-unknown-open="${esc(t.instance_id)}" data-asset="${esc(t.asset_id || "")}"
+        title="${esc(t.name || "Unknown piece")} — asset ${esc(t.asset_id || "—")}${bad ? " · the game refuses to move it" : v === true ? " · the game accepts it in a move" : ""}">
+      <span class="unk-chip-ico">${bad ? "✕" : "?"}</span>
+      <span class="unk-chip-name">${esc(t.name || `ASSET ${t.asset_id}`)}</span>
+      <small>${esc(t.asset_id || "")}</small>
+    </button>`;
+  };
+  return `<div class="unk-panel${state.unkOpen ? " open" : ""}" id="unk-panel">
+    <div class="unk-line">
+      <span class="unk-mark">?</span>
+      ${list.length
+        ? `<b>${num(list.length)}</b> ${list.length === 1 ? "piece has" : "pieces have"} no data or artwork in the indexes`
+        : `Everything on this account is known to the indexes`}
+      ${mark(moved, "CAN MOVE", "ok", "The game accepts this piece in a move — it is a live item, only the site's indexes are behind.")}
+      ${mark(dead, "NO MOVE", "no", "The game refuses to move it (412 FAILED_PRECONDITION) — a leftover the live game does not know.")}
+      <button type="button" class="unk-copy" data-copy-assets="1" title="Copy the asset ids so you can find their artwork">COPY IDS</button>
+      <button type="button" class="unk-add" data-add-images="1">ADD IMAGES</button>
+    </div>
+    ${list.length ? `<div class="unk-chips">${list.map(chip).join("")}</div>` : ""}
+  </div>`;
+}
+
+/*
+  القطع اللي عليها «؟» مش كلها موجودة في اللعبة الحية: بقايا قديمة البوابة بترفض
+  أي نقل ليها بـ 412 FAILED_PRECONDITION، بينما قطعة الباتش الجديد بتتقبل. أقرب
+  حاجة للحقيقة هي محاولة نقل حقيقية — واحدة لكل asset (بتروح لخانة مؤقتة وترجع
+  في نفس الطلب) — والنتيجة بتتقفل 6 ساعات لكل pair (asset id + instance).
+*/
+function unknownMovableSig(list) {
+  return list.map((t) => `${t.instance_id}:${t.asset_id || ""}`).sort().join(",");
+}
+
+async function coverUnknown() {
+  const list = unknownTiles();
+  if (!list.length || state.account === "ALL") { state.unknownMovable = {}; return false; }
+  // قطعة اتعرّفت من لوحة «؟» بقت عندها أيقونة فخرجت من القائمة — اختبار
+  // النقل المحفوظ بتاعها مش صالح خلاص، وبصمة القائمة الجديدة أقل من القديمة
+  // فمينفعش نقارن، فبنتأكد إن أي معرف اتغير بيتمسح.
+  if (state.unknownSig && state.unknownSig[state.account] !== undefined) {
+    const oldIds = String(state.unknownSig[state.account] || "").split(",").filter(Boolean)
+      .map((x) => x.slice(0, x.indexOf(":"))).filter(Boolean);
+    const nowIds = new Set(list.map((t) => String(t.instance_id)));
+    if (oldIds.some((id) => !nowIds.has(id))) {
+      state.unknownKeys = {};
+      state.unknownSig = {};
+    }
+  }
+  if (state.unknownForce) {
+    state.unknownKeys = {};
+    state.unknownSig = {};
+    state.unknownForce = false;
+  }
+  const sig = unknownMovableSig(list);
+  state.unknownSig = state.unknownSig || {};
+  if (state.unknownSig[state.account] === sig) return false;
+  const cached = state.unknownKeys || {};
+  const byAsset = new Map();
+  for (const t of list) {
+    const key = t.asset_id || t.instance_id;
+    if (!byAsset.has(key)) byAsset.set(key, []);
+    byAsset.get(key).push(t);
+  }
+  const map = {};
+  const probes = [];
+  for (const [key, rows] of byAsset) {
+    const hit = cached[key];
+    if (hit && Date.now() - hit.at < 6 * 3600e3) {
+      rows.forEach((t) => { map[t.instance_id] = hit.movable; });
+    } else {
+      probes.push(rows[0]);
+    }
+  }
+  if (probes.length) {
+    let res = null;
+    try {
+      const r = await post("/api/unknown/cover", {
+        account: state.account, probe: probes.map((t) => t.instance_id),
+      });
+      res = r.results || null;
+    } catch (err) {
+      toast("Move test failed: " + err.message, "bad");
+      return false;
+    }
+    if (!res) return false;
+    for (const [key, rows] of byAsset) {
+      const t = rows[0];
+      const movable = res[t.instance_id];
+      if (typeof movable !== "boolean") continue;  // البوابة ما جاوبتش على القطعة دي
+      cached[key] = { movable, at: Date.now() };
+      rows.forEach((x) => { map[x.instance_id] = movable; });
+    }
+  }
+  state.unknownKeys = cached;
+  state.unknownSig[state.account] = sig;
+  state.unknownMovable = map;
+  return probes.length > 0;
+}
+
+/* ------------------------------------------------------------------ تعريف قطعة مجهولة
+   نافذة صغيرة: بحث بالحروف في مكتبة الأيقونات المحلية (صورة + اسم)، معاينة،
+   تأكيد، وخيار احتياطي لاسم وصورة من الجهاز لو القطعة لسه مش في المكتبة.
+   التعريف بيتقفل على asset id — كل نسخة جديدة من نفس القطعة بتتعرف لوحدها. */
+const RARITY_CHOICES = ["Common", "Uncommon", "Rare", "Epic", "Legendary", "Amplified"];
+
+function factsHTML(facts) {
+  const f = facts || {};
+  const rows = [];
+  if (f.item_type) rows.push(["TYPE", f.item_type]);
+  if (f.stackable !== undefined) rows.push(["STACKS", f.stackable ? "yes" : "no"]);
+  if (f.max_amount) rows.push(["STACK MAX", num(f.max_amount)]);
+  if (f.dissolves_to) {
+    const to = f.dissolves_to;
+    rows.push(["DISSOLVES INTO", `${num(to.amount)} × asset ${to.asset_id}`]);
+  }
+  if (f.repair) rows.push(["REPAIR", num(f.repair)]);
+  if (f.release) rows.push(["RELEASE", String(f.release).replace("Online.", "")]);
+  if (f.note) rows.push(["NOTE", f.note]);
+  if (!rows.length) return `<p class="note empty-col">The game gateway has no technical data for this piece.</p>`;
+  return `<table class="unk-facts">${rows.map(([k, v]) =>
+    `<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join("")}</table>`;
+}
+
+function identIconHTML(ico, cls = "") {
+  if (ico && ico.image) {
+    return `<span class="ident-ico ${cls} r-${esc(ico.rarity || "Common")}"><img src="${esc(ico.image)}" alt="" loading="lazy" onerror="this.parentNode.classList.add('noimg');this.remove()"></span>`;
+  }
+  return `<span class="ident-ico ${cls} noimg"><span class="ph">?</span></span>`;
+}
+
+function openIdentify(assetId, instanceId, options = {}) {
+  const aid = String(assetId || "").trim();
+  if (!aid) { toast("This piece has no asset id — nothing to lock a definition to.", "bad"); return; }
+  let status = null;
+  let choice = null;
+  let custom = null;
+  let useFile = false;
+  let searchSeq = 0;
+  // openModal بينادي onMount قبل ما الدالة ترجّع — فبنبني العناصر جوه onMount
+  const host = { el: null };
+  const body = () => host.el || $("#m-body");
+  // المرساة بتتبني قبل openModal: الدالة دي بترسم على طول بعد ما onMount بيرجع.
+  // بنقول اللي المتوقع تشوفه: علامة استفهام، والاسم/الصورة بعد الربط.
+  const anchor = options.anchor || {};
+  const anchorTile = anchor.instance_id
+    ? tileHTML({ ...anchor, image: anchor.preview_image || "" , rarity: anchor.preview_rarity || anchor.rarity }, "stash")
+    : "";
+  const anchorHTML = anchor.instance_id
+    ? `<div class="ident-anchor">${anchorTile}<small>THE PIECE YOU PRESSED${anchor.preview_name ? `: ${esc(anchor.preview_name)}` : ""}</small></div>`
+    : "";
+  openModal(`IDENTIFY ASSET ${aid}`, `
+    <div class="ident">
+      ${anchorHTML}
+      <p class="note" id="ident-state">Reading the game data for this piece…</p>
+      <div id="ident-known"></div>
+      <label class="ident-label">FIND THE ITEM IN THE LOCAL LIBRARY</label>
+      <input id="ident-search" class="inline-search ident-search" type="text" autocomplete="off"
+             placeholder="Type the first letters of the name…">
+      <div id="ident-results" class="ident-results"></div>
+      <div id="ident-preview" class="ident-preview" hidden>
+        <div id="ident-preview-ico" class="ident-preview-ico"></div>
+        <div class="ident-preview-main">
+          <b id="ident-preview-name"></b>
+          <span id="ident-preview-sub"></span>
+          <label class="ident-label">RARITY</label>
+          <div id="ident-rarity" class="ident-rarity">
+            ${RARITY_CHOICES.map((r) => `<button type="button" class="ident-rar r-${r}" data-rar="${r}">${r}</button>`).join("")}
+          </div>
+        </div>
+      </div>
+      <details class="ident-more">
+        <summary>New piece the library does not have yet? Define it by hand</summary>
+        <div class="ident-manual">
+          <label class="ident-label">ITEM NAME — the library name goes here once you pick it</label>
+          <input id="ident-name" class="inline-search" type="text" placeholder="Custom item name…">
+          <div class="ident-manual-row">
+            <label class="ident-filebtn"><input id="ident-file" type="file" accept="image/png,image/jpeg,image/webp" hidden>CHOOSE IMAGE…</label>
+            <span id="ident-file-name" class="note">no image chosen</span>
+            <button type="button" class="ghost tiny" id="ident-file-clear">CLEAR</button>
+          </div>
+          <label class="ident-label">NOTE (optional — kept with the definition)</label>
+          <input id="ident-note" class="inline-search" type="text" placeholder="Anything you want to remember about this piece…">
+        </div>
+      </details>
+      <div class="ident-facts" id="ident-facts"></div>
+    </div>`, async () => {
+    await identSave(aid);
+  }, "OK", { wide: true, cancelLabel: "CANCEL", confirmKind: "primary", onMount: (el) => { host.el = el; wire(); } });
+
+  function refreshButton() {
+    const btn = $("#m-confirm");
+    const ready = !!choice || !!String(body().querySelector("#ident-name").value || "").trim()
+      || !!body().querySelector("#ident-file").files[0];
+    btn.disabled = !ready;
+    btn.style.opacity = ready ? "1" : ".5";
+  }
+
+  function showPreview() {
+    const box = body().querySelector("#ident-preview");
+    const src = choice || custom || null;
+    if (!src) { box.hidden = true; return; }
+    box.hidden = false;
+    body().querySelector("#ident-preview-ico").innerHTML = identIconHTML(src, "big");
+    body().querySelector("#ident-preview-name").textContent = src.name;
+    body().querySelector("#ident-preview-sub").textContent =
+      `${src.rarity || "no rarity"} · ${src.manual ? "typed by hand" : "local library"}${src.image ? "" : " · no picture"}`;
+    body().querySelectorAll("[data-rar]").forEach((b) =>
+      b.classList.toggle("on", b.dataset.rar === src.rarity));
+  }
+
+  function pick(row) {
+    custom = null;
+    choice = row;
+    const nameEl = body().querySelector("#ident-name");
+    nameEl.value = row.name || "";
+    showPreview();
+    body().querySelector("#ident-results").querySelectorAll(".ident-row").forEach((r) =>
+      r.classList.toggle("on", r.dataset.asset === String(row.asset_id)));
+    // المرساة بتورّي اللي البلاطة هتبقى عليه بعد الحفظ
+    const anchorTile = body().querySelector(".ident-anchor .tile");
+    if (anchorTile) {
+      if (row.image) {
+        anchorTile.innerHTML = `<img src="${esc(asset(row.image))}" alt="" loading="eager"
+          onerror="this.style.visibility='hidden'">`;
+      }
+      anchorTile.className = `tile r-${esc(row.rarity || "")}`;
+      const label = body().querySelector(".ident-anchor small");
+      if (label) label.textContent = `THE PIECE YOU PRESSED: ${row.name}`;
+    }
+    refreshButton();
+  }
+
+  async function search(term) {
+    const seq = ++searchSeq;
+    const box = body().querySelector("#ident-results");
+    if (!term.trim()) { box.innerHTML = ""; return; }
+    box.innerHTML = `<p class="note empty-col">searching…</p>`;
+    try {
+      const r = await json(`/api/icons?q=${encodeURIComponent(term)}&limit=24`);
+      if (seq !== searchSeq) return;
+      const rows = r.results || [];
+      box.innerHTML = rows.length ? rows.map((row) => `
+        <button type="button" class="ident-row" data-asset="${esc(row.asset_id)}">
+          ${identIconHTML(row)}
+          <span class="ident-row-name">${esc(row.name)}</span>
+          <span class="ident-row-rar r-${esc(row.rarity || "Common")}">${esc(row.rarity || "")}</span>
+        </button>`).join("") : `<p class="note empty-col">Nothing in the local library matches “${esc(term)}”.</p>`;
+      box.querySelectorAll(".ident-row").forEach((b) => b.onclick = () => {
+        const row = rows.find((x) => String(x.asset_id) === b.dataset.asset);
+        if (row) pick(row);
+      });
+      // مكتبة مصغّرة بترجع أجزاء من الاسم (jup → Jupiter / Amplified Jupiter …):
+      // لو فيه تطابق كامل بنعرضه لوحده عشان اسم غلط ما يتحفظش على القطعة.
+      const exact = rows.filter((row) => String(row.name).trim().toLowerCase() === term.trim().toLowerCase());
+      if (exact.length === 1 && rows.length > 1) {
+        pick(exact[0]);
+        window.setTimeout(() => { if (seq === searchSeq) search(exact[0].name); }, 0);
+      }
+    } catch (err) {
+      if (seq === searchSeq) box.innerHTML = `<p class="note empty-col">${esc(err.message)}</p>`;
+    }
+  }
+
+  function wire() {
+    const input = body().querySelector("#ident-search");
+    let timer = 0;
+    input.addEventListener("input", () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => search(input.value), 120);
+    });
+    input.focus();
+    body().querySelectorAll("[data-rar]").forEach((b) => b.onclick = () => {
+      const rar = b.dataset.rar;
+      if (choice) choice.rarity = rar;
+      if (custom) custom.rarity = rar;
+      if (!choice && !custom) {
+        custom = { name: body().querySelector("#ident-name").value.trim() || `Asset ${aid}`, rarity: rar, image: "" };
+      }
+      showPreview();
+      refreshButton();
+    });
+    const file = body().querySelector("#ident-file");
+    file.onchange = () => {
+      const f = file.files[0];
+      body().querySelector("#ident-file-name").textContent = f ? f.name : "no image chosen";
+      // صورة من الجهاز = صورة القطعة دي داخلة الحفظ (مع اسم/ندرة السطر اللي متختار)
+      if (f) useFile = true;
+      refreshButton();
+    };
+    body().querySelector("#ident-file-clear").onclick = () => {
+      file.value = "";
+      body().querySelector("#ident-file-name").textContent = "no image chosen";
+      refreshButton();
+    };
+    body().querySelector("#ident-name").addEventListener("input", () => {
+      const name = body().querySelector("#ident-name").value.trim();
+      if (!choice && !file.files[0]) {
+        custom = name ? { name, rarity: (custom && custom.rarity) || "", image: "" } : null;
+        showPreview();
+      }
+      refreshButton();
+    });
+    // نفس الاسم بالظبط زي اللي متخزن = نفس الصورة — الصورة بتتنقل قصاد الاسم
+    const nameEl = body().querySelector("#ident-name");
+    nameEl.addEventListener("change", () => {
+      if (!choice) return;
+      const name = nameEl.value.trim();
+      if (!name || name === choice.name) return;
+      json(`/api/icons?q=${encodeURIComponent(name)}&limit=8`).then((r) => {
+        const hit = (r.results || []).find((row) => String(row.name).toLowerCase() === name.toLowerCase());
+        if (hit && String(hit.asset_id) !== String(choice.asset_id)) {
+          choice = hit;
+          showPreview();
+        }
+      }).catch(() => {});
+    });
+    json(`/api/unknown/item?asset_id=${encodeURIComponent(aid)}`).then((d) => {
+      status = d;
+      body().querySelector("#ident-facts").innerHTML = factsHTML(d.facts);
+      if (d.known) {
+        body().querySelector("#ident-state").innerHTML =
+          `This piece is already defined as <b>${esc(d.name)}</b> — save again to rename it or change its picture.`;
+        body().querySelector("#ident-known").innerHTML = `
+          <div class="ident-known">${identIconHTML(d, "big")}
+            <div><b>${esc(d.name)}</b><span>${esc(d.rarity || "no rarity")} · ${d.manual ? "defined by hand" : "local library"}</span></div>
+          </div>`;
+      } else {
+        body().querySelector("#ident-state").textContent =
+          "Not in any local library yet. Find it by name below, or define it by hand — the technical data on the right comes from the game itself.";
+      }
+      refreshButton();
+    }).catch((err) => {
+      body().querySelector("#ident-state").textContent = err.message;
+    });
+  }
+
+  async function identSave(aidKey) {
+    const nameEl = body().querySelector("#ident-name");
+    const fileEl = body().querySelector("#ident-file");
+    const noteEl = body().querySelector("#ident-note");
+    const form = new FormData();
+    form.append("asset_id", aidKey);
+    let finalChoice = choice;
+    if (choice && !fileEl.files[0]) {
+      // الاسم اللي في خانة الاسم هو الأقرب للصح — لو هو مكتبة بنفس الاسم بنستخدمها
+      const name = (nameEl.value || "").trim();
+      if (name && name !== choice.name) {
+        finalChoice = await json(`/api/icons?q=${encodeURIComponent(name)}&limit=8`)
+          .then((r) => (r.results || []).find((row) => String(row.name).toLowerCase() === name.toLowerCase()))
+          .catch(() => null) || choice;
+      }
+    }
+    useFile = useFile || !!fileEl.files[0] || (custom && !choice);
+    if (finalChoice && finalChoice.name) {
+      // "أعد الحفظ للتغيير" مش لازم يرمي اللي متسجل: اسم/ندرة/صورة القطعة
+      // اللي متعرّفة بيدخلوا الحفظ لو المستخدم ما كتبش حاجة بنفسه
+      const current = status && status.known ? status : null;
+      const typed = (nameEl.value || "").trim();
+      form.append("name", typed && typed !== finalChoice.name ? typed : finalChoice.name);
+      form.append("rarity", finalChoice.rarity || (current && !choice ? current.rarity : "") || "");
+      form.append("image", finalChoice.image || (current && !choice ? current.image : "") || "");
+    } else {
+      const current = status && status.known ? status : null;
+      form.append("name", (nameEl.value || "").trim() || (custom && custom.name) || (current && current.name) || `Asset ${aidKey}`);
+      form.append("rarity", (custom && custom.rarity) || (current && current.rarity) || "");
+      if (current && current.image) form.append("image", current.image);
+    }
+    if (noteEl.value.trim()) form.append("note", noteEl.value.trim());
+    if (useFile && fileEl.files[0]) form.append("file", fileEl.files[0]);
+    const res = await fetch("/api/unknown/item", { method: "POST", body: form });
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(out.detail || `save failed (${res.status})`);
+    toast(`Defined ${out.name} on asset ${out.asset_id} — every copy of it now shows this name and picture`, "ok");
+    state.unknownKeys = {};
+    state.unknownSig = {};
+    state.unknownForce = true;
+    await loadSections(true);
+    if (instanceId) {
+      const row = displayRow(instanceId);
+      if (row) {
+        // القطعة دي بقت معرّفة، فمش من حقها تفضل في فلتر «؟» —
+        // الفلتر بيتقفل والبلاطة بتظهر في الستاش باسمها وصورتها
+        state.unkPick = "";
+        if (state.showUnknown) {
+          state.showUnknown = false;
+          state.unkOpen = false;
+          localStorage.setItem("fahmy.showUnknown", "0");
+        }
+        state.queries.inventory = row.asset_id || "";
+        const input = document.querySelector('[data-search="inventory"]');
+        if (input) input.value = state.queries.inventory;
+        renderInventory();
+      }
+    }
+  }
+}
+
+function openAddImages() {
+  const list = unknownTiles();
+  if (!list.length) { toast("Every piece on the board already has artwork.", ""); return; }
+  const movable = state.unknownMovable || {};
+  const byAsset = new Map();
+  for (const t of list) {
+    const key = t.asset_id || t.instance_id;
+    if (!byAsset.has(key)) byAsset.set(key, { asset_id: t.asset_id, name: t.name, count: 0, rows: [] });
+    const u = byAsset.get(key);
+    u.count += 1;
+    u.rows.push(t);
+    if (movable[t.instance_id] !== undefined) u.movable = movable[t.instance_id];
+  }
+  const verdict = (rows) => {
+    const seen = rows.map((t) => movable[t.instance_id]).filter((v) => v !== undefined);
+    if (!seen.length) return `<span class="unk-verdict">—</span>`;
+    return seen[0] === true
+      ? `<span class="unk-verdict ok" title="The game moved it — it is a live item, only the site's indexes are behind.">⇄ CAN MOVE</span>`
+      : `<span class="unk-verdict no" title="The game refused to move it (412 FAILED_PRECONDITION) — a leftover the live game does not know.">✕ NO MOVE</span>`;
+  };
+  const rows = [...byAsset.values()].map((u) => `
+    <tr${u.movable === false ? ` class="dead"` : ""}>
+      <td class="unk-cell"><span class="unk-mark">?</span><img data-unk-preview="${esc(u.asset_id)}" alt="" hidden></td>
+      <td class="unk-name">${esc(u.name || "Unknown piece")}<small>asset ${esc(u.asset_id || "—")} · ×${u.count}</small></td>
+      <td>${verdict(u.rows || [])}</td>
+      <td><input class="unk-file" type="file" accept="image/png,image/jpeg,image/webp" data-unk-id="${esc(u.asset_id)}" data-unk-type="arctracker"></td>
+    </tr>`).join("");
+  openModal("ADD IMAGES TO THE INDEX", `
+    <p class="note">Each <b>?</b> piece is a real item in your stash whose artwork the official index does not have. Put a picture on it and every place the site shows that item uses it — the board, the search and the card.</p>
+    <p class="note">A <b>.png / .jpg / .webp</b> file goes to the site's item folder and is served like the rest of the artwork, so it survives a refresh.</p>
+    <p class="note">A piece the game refuses to move is <b>not in the live game</b> — the server answers 412 for it. Press TEST MOVES to ask the game again about every piece.</p>
+    <div class="unk-add-wrap">
+      <button type="button" class="pill" id="unk-retest">TEST MOVES</button>
+      <div class="unk-add-head">IMAGE URL <input id="unk-url" placeholder="https://…"></div>
+      <button type="button" class="pill" id="unk-url-apply" disabled>USE THIS URL FOR ALL</button>
+      <small>Optional: a picture link applied to every piece below (you can still swap any file after).</small>
+    </div>
+    <table class="unk-table">${rows}</table>`,
+    null, "", { wide: true, cancelLabel: "DONE", onMount: wireAddImages });
+}
+
+/* رفع صورة لقطعة: الملف بيمشي على مسار الموقع نفسه (index_art)، فالبلاطة بتاخد
+   الصورة من فهرس arctracker بعد الرفع على طول، والأسطر اللي مالهاش ملف بتتقري
+   من رابط الصورة لو اتحطّى. */
+function wireAddImages(root) {
+  const list = unknownTiles();
+  const retest = root.querySelector("#unk-retest");
+  if (retest) {
+    retest.onclick = async () => {
+      retest.disabled = true;
+      retest.textContent = "TESTING...";
+      state.unknownForce = true;
+      await coverUnknown();
+      retest.textContent = "TEST MOVES";
+      retest.disabled = false;
+      $("#modal").hidden = true;
+      renderInventory();
+    };
+  }
+  const byId = new Map(list.map((t) => [t.asset_id || t.instance_id, t]));
+  const url = root.querySelector("#unk-url");
+  const apply = root.querySelector("#unk-url-apply");
+  if (url && apply) {
+    url.oninput = () => { apply.disabled = !url.value.trim(); };
+    apply.onclick = () => {
+      const value = url.value.trim();
+      if (!value) return;
+      root.querySelectorAll("[data-unk-id]").forEach((input) => {
+        if (!input.files || !input.files.length) input.dataset.pendingUrl = value;
+      });
+      toast("Link set for every piece without a file — press SAVE to keep it.", "");
+    };
+  }
+  root.querySelectorAll("[data-unk-id]").forEach((input) => {
+    input.onchange = () => {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const img = root.querySelector(`[data-unk-preview="${CSS.escape(input.dataset.unkId)}"]`);
+      if (img) { img.src = URL.createObjectURL(file); img.hidden = false; }
+    };
+  });
+  const foot = $("#modal .modal-foot");
+  if (foot) {
+    // زرار SAVE جوه المودال بدل الفوتر العام: كل سطر له ملفه.
+    let save = foot.querySelector("[data-unk-save]");
+    if (!save) {
+      save = document.createElement("button");
+      save.type = "button";
+      save.className = "pill primary";
+      save.dataset.unkSave = "1";
+      save.textContent = "SAVE";
+      foot.insertBefore(save, foot.firstChild);
+    }
+    save.onclick = async () => {
+      const jobs = [...root.querySelectorAll("[data-unk-id]")].filter((i) => (i.files && i.files.length) || i.dataset.pendingUrl);
+      if (!jobs.length) { toast("No image chosen yet.", "bad"); return; }
+      save.disabled = true;
+      let ok = 0;
+      for (const input of jobs) {
+        const key = input.dataset.unkId;
+        const row = byId.get(key) || {};
+        try {
+          if (input.files && input.files.length) {
+            const file = input.files[0];
+            const b64 = await new Promise((resolve, reject) => {
+              const fr = new FileReader();
+              fr.onload = () => resolve(String(fr.result).split(",")[1] || "");
+              fr.onerror = () => reject(new Error("The file could not be read."));
+              fr.readAsDataURL(file);
+            });
+            await post("/api/index_art/upload", {
+              account: state.account, asset_id: key, name: row.name || "", filename: file.name,
+              data: b64,
+            });
+          } else {
+            await post("/api/index_art/link", { account: state.account, asset_id: key, name: row.name || "", image: input.dataset.pendingUrl });
+          }
+          ok += 1;
+          input.closest("tr")?.classList.add("done");
+        } catch (err) {
+          toast(`Failed for ${row.name || key}: ${err.message}`, "bad");
+        }
+      }
+      save.disabled = false;
+      if (ok) toast(`✔ ${ok} piece${ok > 1 ? "s" : ""} given artwork.`, "ok");
+      await Promise.all([loadSections(), loadLog()]);
+      $("#modal").hidden = true;
+    };
+  }
+}
+
+function copyUnknownIds() {
+  const ids = [...new Set(unknownTiles().map((t) => t.asset_id).filter(Boolean))].join(" ");
+  const done = () => toast("✔ Asset ids copied — a picture per id goes where the ? pieces are.", "ok");
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(ids).then(done).catch(() => toast(ids, "", 9000));
+  } else toast(ids, "", 9000);
+}
+
 function itemKind(t) {
+  if (!t) return "";
+  const over = t.card_bg || (window.ItemEditor?.itemOverrides?.()?.find?.(t.asset_id)?.card_bg);
+  if (over === "blueprint") return "blueprint";
+  if (over === "design") return "design";
+  if (over === "standard") return "";
   const group = String(t.group || "");
   if (group === "Designs") return "design";
   if (group === "Stencils") return "stencil";
@@ -2141,17 +2831,18 @@ function tileHTML(t, container, opts = {}) {
   // قطع بتوصل من البوابة برقم من غير اسم ولا أيقونة: بعضها نزل بعد آخر نسخة من
   // الفهرس الرسمي، وبعضها بقايا عناصر اتغيّرت أو اتشالت (اللعبة نفسها بتعرضها
   // "ITEM <id>"). من غير التلميح ده البلاطة بتبان فاضية وهي قطعة حقيقية في حسابك.
-  const unnamed = !t.image && /^Item\s-?\d+$/.test(String(t.name || "").trim());
+  const unknown = !t.image;
   const learned = bpLearned(t);
   return `
   <div class="tile r-${esc(t.rarity)} ${chosen ? "sel selected" : ""} ${syncing ? "is-syncing" : ""} ${t.damaged ? "dmg" : ""} ${broken ? "broken" : ""} ${equip ? "eq" : ""} ${kind === "blueprint" ? "bp" : ""} ${special ? kind : ""} ${picked ? "qty-hit" : ""} ${learned ? "bpl" : ""}"
-       draggable="true" data-id="${esc(t.instance_id)}" data-ids="${esc((t.ids || [t.instance_id]).join(","))}"
+       draggable="false" data-id="${esc(t.instance_id)}" data-ids="${esc((t.ids || [t.instance_id]).join(","))}"
        data-wrapper="${esc(t.wrapper_id)}" data-container="${esc(container)}" data-slot="${esc(slot)}"
        data-qty="${Number(t.qty) || 1}" data-group="${esc(t.group || "")}" data-kind="${esc(kind)}"
        data-asset="${esc(t.asset_id ?? "")}" data-cap="${Number(t.stack_size) || 0}"
        data-name="${esc(t.name)}" data-type="${esc(t.arctracker_type || t.type || "")}"
-       ${unnamed ? `title="Unknown item: the official gateway returns it as a number with no name and no icon, and the official index has no entry for it — so the game and the site both show it like this. It really is in your account — asset ${esc(t.asset_id || "")}"` : ""}>
-    ${t.image ? `<img loading="lazy" src="${asset(t.image)}" alt="" onerror="this.style.visibility='hidden'">` : `<span class="ph">?</span>`}
+       ${unknown ? `title="MARKED ?: the official index has no artwork for this piece${t.name ? ` (${esc(t.name)})` : ""} — asset ${esc(t.asset_id || "")}. The question mark is the handle for adding it: press ADD IMAGES on the inventory's question-mark line."` : ""}>
+    ${t.image ? `<img loading="lazy" draggable="false" src="${asset(t.image, t.at || (t.manual_override ? dataRev : 0))}" alt="" onload="this.style.visibility='visible'" onerror="this.style.visibility='hidden'">` : `<span class="ph">?</span>`}
+    ${unknown ? `<span class="unk-fallback" hidden><img draggable="false" alt="" loading="eager" onerror="this.parentNode.hidden=true"></span>` : ""}
     ${special ? `<span class="cat-strip">${KIND_ICON[kind]}<span>${kind.toUpperCase()}</span></span>` : ""}
     ${lvl ? `<span class="lvl">${lvl}</span>` : ""}
     ${dura ? `<span class="dura ${dura.warn ? "dura-" + dura.warn : ""}">${dura.current}/${dura.max}</span>` : ""}
@@ -2198,7 +2889,10 @@ function slotAccepts(slot, type, group, row) {
   const firearm = FIREARM_TYPES.some((k) => kind.includes(k));
   if (slot === "gun_1" || slot === "gun_2") return firearm && !(row && row.is_blueprint);
   if (slot === "augment") return kind === "augment";
-  if (slot === "shield") return kind === "shield";
+  if (slot === "shield") {
+    if (!kind.includes("shield")) return false;
+    return (!row || !shieldFitsWorn(row)).ok;
+  }
   if (slot === "quick_use") return group === "Quick Use";
   return true;
 }
@@ -2216,15 +2910,42 @@ const SLOT_GROUP = { gun_1: ["gun_1", "gun_2"], gun_2: ["gun_2", "gun_1"] };
 const CAP_KEY = { augmented_slots: "augmented" };
 function slotGroupOf(slot) { return SLOT_GROUP[slot] || [slot]; }
 
-function emptyLoadoutCells(slot, startWrapper = "") {
-  const cells = [];
+/* كل خانات القسم اللي ليها حاوية على الحساب (فاضية ومليانة) — الوجهات الفاضية
+   والتبديل بيتحسبوا منها. */
+function loadoutCells(slot) {
+  const out = [];
   const cap = state.loadout?.capacity || {};
   for (const key of slotGroupOf(slot)) {
     const list = [...(state.loadout?.slots?.[key] || [])]
       .sort((a, b) => (Number(a.slot_index) || 0) - (Number(b.slot_index) || 0));
     const limit = ESSENTIAL_SLOTS.includes(key) ? 1 : (Number(cap[CAP_KEY[key] || key]) || list.length);
-    for (const s of list) {
-      if (!s.item && s.wrapper_id && Number(s.slot_index) < limit) cells.push({ slotKey: key, entry: s });
+    for (const s of list) if (s.wrapper_id && Number(s.slot_index) < limit) out.push(s);
+  }
+  return out;
+}
+
+/* القسم متسجل من سعة الشنطة بس — الشجرة الحية لسه مابتعرضش خاناته (البوابة
+   بتنشئ الخانات وقت الكتابة). من القائمة الوجهة دي تتفتح والاختيار بيتخطى
+   الحساب المحلي للخانة. */
+function sectionBare(key) {
+  const list = state.loadout?.slots?.[key] || [];
+  return !list.some((s) => s.wrapper_id);
+}
+
+function emptyLoadoutCells(slot, startWrapper = "") {
+  const cells = [];
+  for (const key of slotGroupOf(slot)) {
+    // الخانة اللي مالها حاوية في الحساب (واخدة سعة من مواصفات الشنطة بس) مش
+    // وجهة للنقل: loadoutCells بترجّع اللي ليها wrapper_id في الحساب بس.
+    // الشنطة نفسها استثناء: الأوجمنت بيتلبس في خانته حتى لو حاويتها فاضية —
+    // الباكدج بيدوّر على حاويتها في الشجرة قبل ما يقول إنها مش موجودة.
+    if (key === "augment" && !loadoutCells(key).length) {
+      const empty = augmentBareCell();
+      if (empty) cells.push({ slotKey: key, entry: empty });
+      continue;
+    }
+    for (const s of loadoutCells(key)) {
+      if (!s.item) cells.push({ slotKey: key, entry: s });
     }
   }
   if (startWrapper) {
@@ -2236,6 +2957,11 @@ function emptyLoadoutCells(slot, startWrapper = "") {
 
 function slotDropCheck(slot, wrapper, filled, d) {
   if (!d || !(d.ids || []).length) return { ok: false, reason: "" };
+  if (slot === "shield") {
+    const bad = d.ids.map(displayRow).map((r) => (r ? shieldFitsWorn(r) : { ok: true })).find((f) => !f.ok);
+    if (bad) return { ok: false, reason: bad.reason };
+  }
+  if (!wrapper && d.fromMenu) return { ok: true, swap: !!filled };
   if ((d.container === "loadout" || d.container === "backpack") && d.wrapper && wrapper && d.wrapper === wrapper)
     return { ok: false, reason: "", self: true };
   if (d.ids.length !== 1) {
@@ -2243,7 +2969,10 @@ function slotDropCheck(slot, wrapper, filled, d) {
     if (free.length) return { ok: true, batch: true, free: free.length };
     return { ok: false, reason: slot === "backpack" ? "Backpack is full — no free cell." : "No free cell in this section." };
   }
-  if (!wrapper) return { ok: false, neutral: true, reason: "This cell is not activated on the game account yet — play one match so the container gets built, then SYNC." };
+  // من قائمة MOVE TO الوجهة القسم كله مش خانة بعينها: الباكند يختار الخانة
+  // الفاضية من الشجرة الحية، فغياب wrapper محلي مش سبب لوقف النقل.
+  if (!wrapper && d.fromMenu) return { ok: true, swap: !!filled };
+  if (!wrapper) return { ok: false, neutral: true, reason: "" };
   return { ok: true, swap: !!filled };
 }
 
@@ -2254,7 +2983,7 @@ function dropCheck(cell, d) {
   const filled = cell.classList.contains("filled");
   if (cell.dataset.slotCell === "loadout") return slotDropCheck(cell.dataset.slot, wrapper, filled, d);
   if (cell.dataset.slotCell === "backpack") {
-    if (!wrapper) return { ok: false, reason: "This cell is not activated on the game account yet — open the game once so the backpack expands, then SYNC." };
+    if (!wrapper) return { ok: false, reason: "" };
     return slotDropCheck("backpack", wrapper, filled, d);
   }
   return { ok: false, reason: "" };
@@ -2355,10 +3084,6 @@ function clearDropMarkers() {
 }
 
 function endDragVisuals() {
-  state.drag = null;
-  document.body.classList.remove("dragging");
-  if (document._rrCancelSettle) document._rrCancelSettle();
-  document.querySelectorAll(".tile.drag-src").forEach((t) => t.classList.remove("drag-src"));
   clearDropMarkers();
   updateSelCount();
 }
@@ -2394,6 +3119,9 @@ function tileDropRelation(d, tile) {
     out.cap = cap;
   }
   if (d.wrapper && tile.dataset.wrapper) out.swap = true;
+  // الموقع بيسمح بالسحب على اللي اللعبة بتقبله بس: قطعة الـ «؟» اللي اللعبة
+  // مش عارفاها البوابة بترفض نقلها بـ 412 (شوف coverUnknown).
+  if ((state.unknownMovable || {})[d.ids[0]] === false) return null;
   return out.combine || out.swap ? out : null;
 }
 
@@ -2531,44 +3259,120 @@ function restoreMoveSnapshot(snap) {
 function applyOneMoveLocally(move) {
   const ids = new Set(move.rows.map((r) => r.instance_id));
   const dbContainer = move.slotKey || move.container;
+  const loadoutList = move.container === "loadout"
+    ? (state.loadout?.slots?.[move.slotKey] || []) : (state.loadout?.slots?.backpack || []);
+  // الخانة بتتقري من جديد من اللوحة الحالية، مش من الكائن اللي اتبني عليه التخطيط:
+  // بعد أي قراءة من السيرفر كائنات اللوَد أوت بتبقى جديدة، والكتابة على الكائن
+  // القديم بتروح لخانة مش معروضة — فالقطعة تختفي من الخانة.
+  const entry = (move.wrapper && loadoutList.find((s) => s.wrapper_id === move.wrapper)) || null;
+  for (const list of Object.values(state.loadout?.slots || {})) {
+    for (const slot of list || []) if (slot.item && ids.has(slot.item.instance_id)) slot.item = null;
+  }
+  for (const row of move.rows) {
+    row.container = dbContainer;
+    row.wrapper_id = move.wrapper || "";
+    row.slot_index = entry ? entry.slot_index : null;
+  }
+  if (entry) entry.item = move.rows[0];
+  let bucket = state.sections[dbContainer];
+  if (!bucket) bucket = state.sections[dbContainer] = { container: dbContainer, capacity: null, slots: [] };
+  bucket.slots = bucket.slots || [];
+  // نفس القطعة ممكن تكون في الستاش لسه (السيرفر ما لحقش يكتب) — تتشال من كل
+  // الأحواض الأول، وبعد كده تتحط في حوضها الجديد. العكس بيسيب نسخة قديمة في
+  // مقدمة الحوض وبتغلب النسخة المحلية.
+  for (const part of Object.values(state.sections || {})) part.slots = (part.slots || []).filter((r) => !ids.has(r.instance_id));
+  bucket.slots.push(...move.rows);
+}
+
+/* الشنطة اللي بقت في خانة الأوجمنت سعتها جديدة فورًا، بس حاوية الحساب لسه بعدد
+   الخانات القديم. الخانات المبنيّة تفضل، والزيادة تاخد علاقة «قيد التأسيس» بدل
+   ما تتعرض مقفولة (🔒) كأنها محتاجة SYNCHRONIZE. */
+function markGrowingBackpack(prevAsset, prevBuilt) {
+  const lo = state.loadout;
+  const item = ((lo?.slots?.augment || []).find((s) => s.item) || {}).item;
+  if (!item || String(item.asset_id ?? "") === String(prevAsset ?? "")) return;
+  const items = lo.slots.backpack || [];
+  for (const slot of items) slot.pending = !slot.wrapper_id;
+  // الشنطة الجديدة أكبر: خاناتها الزيادة بتاخد مكان آخر الخانات في الشنطة
+  // القديمة، فبنعرضها كخانات إضافية لحد ما الحاوية الحقيقية تتأسس.
+  const want = Number(lo.capacity?.backpack) || 0;
+  const extra = Math.max(0, want - (Number(prevBuilt) || 0));
+  const excess = Math.max(0, (Number(prevBuilt) || 0) - want);
+  const now = items.filter((s) => s.wrapper_id).length;
+  // الشنطة الجديدة أصغر: الخانات الزيادة مش بقيت جزء منها، فبتتشال من العرض
+  // هي كمان لحد ما القراءة الجديدة تنزّلها.
+  if (excess && items.length > want) items.splice(want, items.length - want);
+  for (let i = items.length; i < now + extra; i++) items.push({ wrapper_id: "", slot_index: i, item: null, pending: true });
+  items.sort((a, b) => (Number(a.slot_index) || 0) - (Number(b.slot_index) || 0));
+}
+
+function applyMoveLocally(plan) {
+  const prevAug = state.loadout?.augment?.asset_id;
+  const prevBuilt = (state.loadout?.slots?.backpack || []).filter((s) => s.wrapper_id).length;
+  for (const move of plan.moves || []) applyOneMoveLocally(move);
+  recalcLoadoutRequired();
+  applyAugmentCapacity();
+  markGrowingBackpack(prevAug, prevBuilt);
+}
+
+/* ------------------------------------------------------------ النقلات اللي لسه في الطريق
+   اللوحة بتترسم من ذاكرة التاب، وأي قراءة من السيرفر (كل 6 ثواني، أو دورة الـ60
+   ثانية) بتحل محلها. لو القراءة سابقة النقلة على القاعدة، القطعة اللي الرحلة
+   بتاعتها ما خلصتش بترجع لبيتها القديم — فبتختفي من اللوحة لحد ما حد يدوس SYNCHRONIZE.
+   الحل: كل نقلة منتظرة أو شغالة بتسجّل خطتها، وقطعها بتتشال من نتيجة السيرفر
+   وتتحرك بالنقلة المحلية تاني قبل أي رسم. */
+function refreshInFlight() {
+  const moves = [...(state.moveInFlight || []), ...state.moveQueue]
+    .flatMap((job) => job.plan.moves || []);
+  const ids = new Set(moves.flatMap((move) => (move.rows || []).map((r) => r.instance_id)));
+  if (!ids.size) return null;
+  return {
+    ids,
+    apply: () => {
+      // قراءة السيرفر بترجّع الشنطة القديمة لحد ما الحاوية تتأسس — بعد إعادة
+      // النقلات بنعيد وسم الزيادة بنفس حساب لحظة التخطيط.
+      const prevBuilt = (state.loadout?.slots?.backpack || []).filter((s) => s.wrapper_id).length;
+      const augMove = moves.find((m) => m.container === "loadout" && m.slotKey === "augment");
+      const prevAug = augMove ? state.loadout?.augment?.asset_id : "";
+      for (const move of moves) applyOneMoveLocally(move);
+      recalcLoadoutRequired();
+      applyAugmentCapacity();
+      if (augMove) markGrowingBackpack(prevAug, prevBuilt);
+    },
+  };
+}
+
+function hideInFlight(ids) {
+  if (!ids || !ids.size) return;
   for (const bucket of Object.values(state.sections || {})) {
-    if (!bucket.slots) bucket.slots = [];
-    bucket.slots = bucket.slots.filter((r) => !ids.has(r.instance_id));
+    bucket.slots = (bucket.slots || []).filter((r) => !ids.has(r.instance_id));
   }
   for (const list of Object.values(state.loadout?.slots || {})) {
     for (const slot of list || []) if (slot.item && ids.has(slot.item.instance_id)) slot.item = null;
   }
-  state.recentMoves = state.recentMoves || new Map();
-  for (const row of move.rows) {
-    row.container = dbContainer;
-    row.wrapper_id = move.wrapper || "";
-    row.slot_index = move.entry ? move.entry.slot_index : null;
-    state.recentMoves.set(row.instance_id, {
-      container: dbContainer,
-      wrapper: move.wrapper || "",
-      slot_index: row.slot_index,
-      row: { ...row },
-      at: Date.now()
-    });
-  }
-  if (move.entry) move.entry.item = move.rows[0];
-  if (dbContainer === "stash" || dbContainer === "overflow") {
-    let bucket = state.sections[dbContainer];
-    if (!bucket) bucket = state.sections[dbContainer] = { container: dbContainer, capacity: null, slots: [] };
-    bucket.slots = bucket.slots || [];
-    bucket.slots.push(...move.rows);
-  } else if (state.loadout?.slots?.[dbContainer]) {
-    if (!move.entry) {
-      const freeSlot = state.loadout.slots[dbContainer].find((s) => !s.item) || state.loadout.slots[dbContainer][0];
-      if (freeSlot) freeSlot.item = move.rows[0];
-    }
-  }
 }
 
-function applyMoveLocally(plan) {
-  for (const move of plan.moves || []) applyOneMoveLocally(move);
-  recalcLoadoutRequired();
-  applyAugmentCapacity();
+/* خانات الأوجمنت اللي اللوداوت الحالي بيقراها فعلاً (بدون سقف السعة) — بنستخدمها
+   لما الشنطة الجديدة تدعم عدد خانات أكبر من اللي متولّد تقرأه في اللحظة دي. */
+function augmentCellMap(spec) {
+  const out = {};
+  if (!spec) return out;
+  const slots = state.loadout?.slots || {};
+  const counted = (key, capKey) => {
+    const list = [...(slots[key] || [])].sort((a, b) => (Number(a.slot_index) || 0) - (Number(b.slot_index) || 0));
+    return list.filter((s) => s.wrapper_id).length || Number(spec[capKey]) || 0;
+  };
+  out.backpack = counted("backpack", "backpack");
+  out.quick_use = Math.min(counted("quick_use", "quick_use"), Number(spec.quick_use) || 0) || Number(spec.quick_use) || 0;
+  out.augmented = Math.min(counted("augmented_slots", "augmented"), Number(spec.augmented) || 0) || Number(spec.augmented) || 0;
+  out.safe_pocket = Math.min(counted("safe_pocket", "safe_pocket"), Number(spec.safe_pocket) || 0) || Number(spec.safe_pocket) || 0;
+  const filledMax = (key) => (slots[key] || []).filter((s) => s.item)
+    .reduce((m, s) => Math.max(m, (Number(s.slot_index) || 0) + 1), 0);
+  for (const k of ["quick_use", "augmented", "safe_pocket"]) {
+    const srcKey = k === "augmented" ? "augmented_slots" : k;
+    out[k] = Math.max(out[k], filledMax(srcKey));
+  }
+  return out;
 }
 
 /* الشنطة الملبوسة بتحدد سعة الخانات — بنحسبها محليًا من مواصفات الأوجمنت عشان
@@ -2578,24 +3382,75 @@ function augmentSpecFor(assetId) {
   if (!pub) return null;
   if (assetId === null || assetId === undefined || assetId === "") return pub.base || null;
   const all = [...(pub.augments || []), pub.base].filter(Boolean);
-  const hit = all.find((s) => (s.asset_ids || []).some((id) => String(id) === String(assetId)));
+  // نفس العنصر بيوصل برقم لعبة مكوّن (أدوات، دخان...) — الرقم في صف الحساب مش
+  // التاني اللي في مواصفات الأوجمنت، فالمطابقة برقم موحّد بعد الفتح.
+  const want = assetNumber(assetId);
+  const hit = all.find((s) => (s.asset_ids || []).some((id) => assetNumber(id) === want));
   return hit || pub.base || null;
+}
+
+function assetNumber(id) {
+  const n = Number(id);
+  return Number.isFinite(n) ? n : String(id);
+}
+
+/* الشنطة الملبوسة بتحدد نوع الدرع المسموح (shield_compatibility: 1 لايت،
+   2 لايت+ميديوم، 3 التلاتة). النوع بيتقري من اسم القطعة زي اللعبة. */
+const SHIELD_LEVEL = { light: 1, medium: 2, heavy: 3 };
+function shieldFitsWorn(row) {
+  const name = String(row?.name || row?.display_name || "").toLowerCase();
+  const level = Object.keys(SHIELD_LEVEL).find((k) => name.includes(k));
+  if (!level) return { ok: true, reason: "" };
+  const bag = augmentSpecFor((((state.loadout?.slots?.augment || []).find((s) => s.item) || {}).item || {}).asset_id);
+  const top = Number(bag?.shield_compatibility) || 3;
+  if (SHIELD_LEVEL[level] <= top) return { ok: true, reason: "" };
+  const kinds = top === 1 ? "Light" : (top === 2 ? "Light and Medium" : "Light, Medium and Heavy");
+  return { ok: false, bag: bag?.name || "The worn bag",
+           reason: `⛔ ${bag?.name || "The worn bag"} supports ${kinds} shields only — a ${level[0].toUpperCase() + level.slice(1)} shield won't fit. The current shield stays where it is.` };
+}
+
+/* الشنطة نفسها (أوجمنت) — القطعة اللي بتلبس في خانة AUGMENT. */
+function isAugmentRow(row) {
+  if (!row) return false;
+  // شجرة اللوداوت الحية باسم الأوجمنت الملبوس (زي "Combat Mk. 2") — مش شنطة
+  // بتتلبس، فالـ AUGMENT مش وجهة ليها (ولو اتوجهت كان الباكند بيرفضها).
+  if (String(row.container || "").toLowerCase() === "augment_loadout") return false;
+  if (String(row.container || "").toLowerCase() === "augment") return true;
+  if (row.asset_id === null || row.asset_id === undefined || row.asset_id === "") return false;
+  const spec = augmentSpecFor(row.asset_id);
+  if (!spec || spec === (state.augmentSpecs || {}).base) return false;
+  const type = String(row.type || row.type_label || row.catalog_group || "").toLowerCase();
+  if (type.includes("augment")) return true;
+  // جدول السعات بيرجّع الأوجمنتية بأسمائها (Tactical/Looting/Combat/Free Loadout).
+  return !type || type === "item" || type === "container" || type === "other";
+}
+
+/* خانة AUGMENT في الصفحة: الخانة الشغّالة، أو الخانة اللي لسه بتتأسس. */
+function augmentBareCell() {
+  const list = [...(state.loadout?.slots?.augment || [])]
+    .sort((a, b) => (Number(a.slot_index) || 0) - (Number(b.slot_index) || 0));
+  return list.find((s) => s.wrapper_id && !s.item) || null;
 }
 
 function applyAugmentCapacity() {
   const lo = state.loadout;
   if (!lo || !lo.slots) return;
   const item = ((lo.slots.augment || []).find((s) => s.item) || {}).item || null;
-  const spec = augmentSpecFor(item ? item.asset_id : "");
-  if (!spec) return;
-  // رقم السيرفر (من asset_id السنابشوت) أدق من صف العنصر المحلي: لو الصف مش
-  // مطابق بعدة لسه، بنفضل رقم السيرفر بدل ما نرجع للشنطة القياسية (10).
+  // صف العنصر المحلي هو المرجع: رقم السيرفر لسه بيوصف الشنطة اللي كانت مجهزة
+  // لحد ما قراءة جديدة تخلص، فلو خدنا الأكبر منه الخانات القديمة بتقعد لحد
+  // ما الـin-flight يخلص أو حد يدوس SYNCHRONIZE.
+  const base = augmentSpecFor(item ? item.asset_id : "") || augmentSpecFor("");
+  if (!base) return;
   const srv = lo.capacity || {};
+  // رقم السيرفر بديل بس لما الصف المحلي مش معروف — عشان ما نرجعش للشنطة
+  // القياسية (10) وقت أي عدم تطابق مؤقت.
+  const known = !!item && (base.asset_ids || []).some((id) => String(id) === String(item.asset_id));
+  const pick = (key) => (known ? Number(base[key]) : (Number(srv[key]) || Number(base[key]))) || 0;
   const cap = {
-    backpack: Math.max(Number(srv.backpack) || 0, Number(spec.backpack) || 0),
-    quick_use: Math.max(Number(srv.quick_use) || 0, Number(spec.quick_use) || 0),
-    safe_pocket: Math.max(Number(srv.safe_pocket) || 0, Number(spec.safe_pocket) || 0),
-    augmented: Math.max(Number(srv.augmented) || 0, Number(spec.augmented) || 0),
+    backpack: pick("backpack"),
+    quick_use: pick("quick_use"),
+    safe_pocket: pick("safe_pocket"),
+    augmented: pick("augmented"),
   };
   const filledMax = (key) => (lo.slots[key] || [])
     .filter((s) => s.item)
@@ -2603,13 +3458,34 @@ function applyAugmentCapacity() {
   cap.quick_use = Math.max(cap.quick_use, filledMax("quick_use"));
   cap.safe_pocket = Math.max(cap.safe_pocket, filledMax("safe_pocket"));
   cap.augmented = Math.max(cap.augmented, filledMax("augmented_slots"));
-  // البوابة بتسيب حاويات الأوجمنت القديم بعد التبديل — بنزود العدد بس لو الخانة
-  // الفاضية الزيادة فيها عنصر، عشان السعة تفضل مواصفات الأوجمنت المجهز.
+  // الشنطة القديمة بتسيب خاناتها على اللوحة لحد ما القراءة الجديدة تخلص —
+  // بنعرضها بس لو الخانة الزيادة فيها عنصر، والأهم عمرها ما تغلط عدد
+  // الشنطة الجديدة نفسها.
   cap.backpack = Math.max(cap.backpack, filledMax("backpack"));
   lo.capacity = cap;
   lo.augment = item
     ? { asset_id: String(item.asset_id ?? ""), name: item.name, image: item.image || "", specs: { ...cap }, item }
     : null;
+}
+
+/* لبس الشنطة في الواجهة قبل ما ترجع القراءة: الخانة المجهّزة تاخد الشنطة،
+   والسعة تتغير من مواصفاتها في نفس اللحظة (BACKPACK/QUICK USE/AUGMENTED/SAFE
+   POCKET)، ولو كانت الشنطة القديمة بتعرض قطع — ليها زيارة تانية بعد دورة
+   السيرفر تدور حالتها الحقيقية من جديد. */
+function optimisticWear(row) {
+  const lo = state.loadout;
+  const cell = augmentBareCell() || ((lo?.slots?.augment || []).find((s) => s.wrapper_id) || null);
+  if (!lo || !cell) return false;
+  const worn = ((lo.slots.augment || []).find((s) => s.item) || {}).item || null;
+  const item = { ...row, container: "augment", wrapper_id: cell.wrapper_id, slot_index: cell.slot_index || 0 };
+  cell.item = item;
+  lo.slots.augment = [cell, ...(lo.slots.augment || []).filter((s) => s !== cell)];
+  const spec = augmentSpecFor(row.asset_id);
+  const cells = augmentCellMap(spec);
+  lo.capacity = { ...cells };
+  lo.augment = { asset_id: String(row.asset_id ?? ""), name: row.display_name || row.name,
+                 image: row.image || "", specs: { ...cells }, item };
+  return { restored: !!(worn && worn.instance_id), bagUpgraded: !!spec };
 }
 
 function sourceHome(row) {
@@ -2635,8 +3511,12 @@ function swapPlan(old, row, target) {
   // يرجع بالظبط للخانة اللي الجديد خرج منها — مش بيتحط في أي مكان فاضي على مزاجه.
   // لو الجديد جاي من الأوفر ستاش، القديم بيفضل في الأوفر (مفيش "بيت" نرجّعه ليه).
   const home = sourceHome(row);
+  // الستاش بيطلع منه القديم مؤقتًا والجديد واقف: لما الستاش مليان مفيش خانة مؤقتة،
+  // والأوفر مابيترفضش عليه حاجة — القديم بيقعد فيه لحد ما يترجع لبيته.
+  const stashFull = (state.sections?.stash?.capacity || 0) > 0
+    && (state.sections.stash.slots || []).filter(Boolean).length >= state.sections.stash.capacity;
   const steps = [
-    { container: "stash", wrapper: "", rows: [old], entry: null, slotKey: "" },
+    { container: stashFull ? "overflow" : "stash", wrapper: "", rows: [old], entry: null, slotKey: "" },
     { container: target.container, wrapper: target.wrapper || "", rows: [row], entry: target.entry || null, slotKey: target.slotKey },
   ];
   if (home.container !== "overflow")
@@ -2651,11 +3531,16 @@ function validateLocalMove(spec) {
   if (target === "loadout") {
     const slotKey = spec.target_slot || "";
     if (!SLOT_META[slotKey]) return { ok: false, reason: "Unknown loadout slot." };
+    if (spec.fromMenu && sectionBare(slotKey) && slotKey !== "augment")
+      // الخانات دي لسه في سعة الشنطة بس — الباك اند بيكتب عليها واللعبة بتفتحها.
+      return { ok: true, bare: true, moves: [], rows: ids.map(findRow).filter(Boolean),
+               container: "loadout", slotKey, wrapper: "" };
     const rows = ids.map(findRow);
     if (rows.some((r) => !r)) return { ok: false, reason: "The item is not in the local copy — run SYNCHRONIZE." };
     if (rows.length > 1) {
       // الدفعة: أول عدد الخانات الفاضية بنفس ترتيب العرض، والباقي يفضل في مكانه
-      const cells = emptyLoadoutCells(slotKey, spec.target_wrapper_id || "");
+      const cells = emptyLoadoutCells(slotKey, spec.target_wrapper_id || "")
+        .filter((c) => !rows.some((r) => r.wrapper_id && r.wrapper_id === c.entry.wrapper_id));
       if (!cells.length) return { ok: false, reason: "No free cell in this section." };
       const accepted = rows.slice(0, cells.length);
       const skipped = rows.slice(accepted.length);
@@ -2668,15 +3553,21 @@ function validateLocalMove(spec) {
     }
     const row = rows[0];
     const list = state.loadout?.slots?.[slotKey] || [];
-    const entry = spec.target_wrapper_id
-      ? list.find((s) => s.wrapper_id === spec.target_wrapper_id)
-      : list.find((s) => !s.item && s.wrapper_id);
+    // من قائمة MOVE TO: الوجهة متاحة دايماً — فاضي = ينزل فيها، مليان = تبديل،
+    // ولو القسم كله في المكان ده بنرجع نفس الخانة (اللعبة هي اللي تقرر، ورفضها
+    // بيطلع توست واضح).
+    const entry = (spec.target_wrapper_id && list.find((s) => s.wrapper_id === spec.target_wrapper_id))
+      || list.find((s) => !s.item && s.wrapper_id)
+      || (spec.fromMenu ? list.slice().sort((a, b) => (Number(a.slot_index) || 0) - (Number(b.slot_index) || 0))[0] : null);
     if (!entry) return { ok: false, reason: spec.target_wrapper_id ? "The cell is not on the source container." : "No free cell in this section." };
     const touched = [row];
     const moves = [];
     if (entry.item && entry.item.instance_id !== row.instance_id) {
       const old = entry.item;
-      moves.push(...swapPlan(old, row, { container: "loadout", wrapper: entry.wrapper_id, slotKey, entry }));
+      // SWAP على خانة مجهزة: القديم بيروح الأوفر والجديد ياخد مكانه في نفس
+      // الطلب — والباك اند بيرجّع القديم لو البوابة رفضت الجديد.
+      moves.push({ container: "loadout", wrapper: entry.wrapper_id, rows: [row],
+                   entry, slotKey, swap: true });
       touched.push(old);
     } else {
       moves.push({ container: "loadout", wrapper: entry.wrapper_id, rows: [row], entry, slotKey });
@@ -2687,9 +3578,10 @@ function validateLocalMove(spec) {
     const rows = ids.map(findRow);
     if (rows.some((r) => !r)) return { ok: false, reason: "Some items are not in the local copy — run SYNCHRONIZE." };
     if (ids.length === 1) {
-      const entry = spec.target_wrapper_id
-        ? (state.loadout?.slots?.backpack || []).find((s) => s.wrapper_id === spec.target_wrapper_id)
-        : emptyBackpackSlots()[0];
+      const pack = state.loadout?.slots?.backpack || [];
+      const entry = (spec.target_wrapper_id && pack.find((s) => s.wrapper_id === spec.target_wrapper_id))
+        || emptyBackpackSlots()[0]
+        || (spec.fromMenu ? pack.filter((s) => s.wrapper_id && s.wrapper_id !== rows[0].wrapper_id)[0] : null);
       if (!entry) return { ok: false, reason: spec.target_wrapper_id ? "The backpack cell does not exist." : "Backpack is full." };
       const all = [rows[0]];
       const moves = [];
@@ -2737,6 +3629,7 @@ function movePayload(account, move) {
     target_wrapper_id: move.wrapper || "",
     instance_ids: move.rows.map((r) => r.instance_id),
     target_slot: move.container === "loadout" ? move.slotKey : "",
+    swap: !!move.swap,
   };
 }
 
@@ -2779,9 +3672,6 @@ async function sendMove(group) {
 }
 
 async function settleMoveFailure(job, message, partial, restored = false, reason = "") {
-  if (state.recentMoves && job && job.plan && job.plan.rows) {
-    job.plan.rows.forEach((r) => state.recentMoves.delete(r.instance_id));
-  }
   const dropped = state.moveQueue.splice(0);
   if (reason === "gateway_route_down") {
     // الباب مقفول من عند Embark: الخطة ما اتنفذتش ومفيش حاجة اتغيّرت،
@@ -2808,11 +3698,6 @@ async function settleMoveFailure(job, message, partial, restored = false, reason
 }
 
 async function settleMoveGroupFailure(group, message, partial = false, restored = false, reason = "") {
-  if (state.recentMoves && group) {
-    group.forEach((job) => {
-      (job.plan?.rows || []).forEach((r) => state.recentMoves.delete(r.instance_id));
-    });
-  }
   if (group.length === 1) return settleMoveFailure(group[0], message, partial, restored, reason);
   // الخطة المجمّعة atomic: لو التخطيط فشل مفيش أي نقل اتنفذ، فنرجّع اللوحة من السيرفر
   // بدل ما نرجّع snapshot حركة واحدة (الباقي اتحرك optimistic على اللوحة).
@@ -2832,12 +3717,30 @@ async function settleMoveGroupFailure(group, message, partial = false, restored 
 }
 
 let _loadSectionsTimer = null;
-function scheduleLoadSections(delay = 100) {
+const MOVE_INFLIGHT_MS = 2500;
+function scheduleLoadSections(delay = 1200) {
   if (_loadSectionsTimer) clearTimeout(_loadSectionsTimer);
   _loadSectionsTimer = setTimeout(() => {
     _loadSectionsTimer = null;
     loadSections().catch(() => {});
   }, delay);
+}
+
+/* الشنطة مبنية عند اللعبة بعدد خانات ثابت على الحساب: لما السعة تكبر، الخانات
+   الزيادة بتفضل «مقفولة» لحد ما حاوية الحساب نفسها تتأسس. القراءة كل 6 ثواني
+   بتنادي /api/sections من نفس السنابشوت القديم، فالخانات تقعد مقفولة لحد ما حد
+   يدوس SYNCHRONIZE. هنا بنقرأ السنابشوت من البوابة على طول (نفس مسار المزامنة)
+   ما دامت سعة الشنطة أكبر من الخانات المبنية عندنا. */
+function refreshUnbuiltCells() {
+  if (state.cellsRefreshBusy || state.moveBusy || state.moveQueue.length || state.moveInFlight) return;
+  const bp = state.loadout?.slots?.backpack || [];
+  const want = Number(state.loadout?.capacity?.backpack) || 0;
+  if (!want || bp.filter((s) => s.wrapper_id).length >= want) return;
+  state.cellsRefreshBusy = true;
+  post("/api/actions/sync", { account: state.account })
+    .then(() => loadSections())
+    .catch(() => {})
+    .finally(() => { state.cellsRefreshBusy = false; });
 }
 
 async function pumpMoveQueue() {
@@ -2850,9 +3753,13 @@ async function pumpMoveQueue() {
       const toStash = job.spec.target_container === "stash" || job.spec.target_container === "overflow";
       const endAll = (ok) => group.forEach((g) => endSync(syncIdsOf(g.plan), ok, toStash));
       let out;
+      // النقلة بتفضل «في الطريق» لحد ما اللي بعدها ياخد مكانها: أي قراءة تحصل
+      // في النافذة دي بتعيد رسمها فوق اللي جاي من السيرفر.
+      state.moveInFlight = group;
       try {
         out = await sendMove(group);
       } catch (err) {
+        state.moveInFlight = null;
         endAll(false);
         await settleMoveGroupFailure(group, "Connection failed: " + err.message);
         continue;
@@ -2866,21 +3773,30 @@ async function pumpMoveQueue() {
         if (bagMove && out.bag && out.bag.pointed === false)
           toast("⚠ Went into «" + (out.bag.container || "the container") + "» but the equipped slot still points at «" +
                 (out.bag.equipped || "?") + "» — fixing the targeting.", "bad");
-        // بعد كل حركة نقل مباشرة: مزامنة فورية وتحديث المخزن من السيرفر بدون أي تأخير
-        if (!state.moveQueue.length && state.account === job.account) {
-          loadSections().catch(() => {});
-        }
         loadLog().catch(() => {});
         continue;
       }
+      state.moveInFlight = null;
       endAll(false);
       const reason = out.result?.error || out.error || "blocked";
-      await settleMoveGroupFailure(group, out.result?.detail || out.detail || reason,
-                                   !!out.partial, !!out.restored, reason);
+      // من MOVE TO... الوجهة اختيار صريح، فالرفض بيتقال بلطف: القطعة رجعت
+      // مكانها، ومفيش حاجة علقت.
+      const menu = group.every((g) => g.spec.fromMenu);
+      const where = group.map((g) => g.spec.target).filter(Boolean)[0] || "there";
+      const friendly = menu && !out.partial && !out.restored
+        ? `The game won't let «${job.spec.name || "this item"}» go to ${where} — it stays where it is.`
+        : out.result?.detail || out.detail || reason;
+      await settleMoveGroupFailure(group, friendly, !!out.partial, !!out.restored, reason);
     }
   } finally {
     state.moveBusy = false;
   }
+  // بعد ما الطابور يخلص بنرجع نقرأ السعة وخانات الشنطة من السيرفر (الأوجمنت
+  // بيغيرها). القراءة دي ممكن تسبق تثبيت الصف، فآخر نقلة بتفضل «في الطريق»
+  // لحد ما التهدئة تخلص.
+  const last = state.moveInFlight;
+  if (last) setTimeout(() => { if (state.moveInFlight === last) state.moveInFlight = null; }, MOVE_INFLIGHT_MS);
+  scheduleLoadSections(1200);
 }
 
 /* ---------------- طابور النقل المؤجّل ----------------
@@ -3005,6 +3921,8 @@ function wireInventory() {
   if (spreadBtn) spreadBtn.onclick = spreadStacks;
   const allBtn = $("#btn-merge-all");
   if (allBtn) allBtn.onclick = mergeAllStacks;
+  const stopBtn = $("#btn-merge-stop");
+  if (stopBtn) stopBtn.onclick = mergeAllStop;
   const sortBtn = $("#sort-btn");
   if (sortBtn) sortBtn.onclick = (e) => {
     e.stopPropagation();
@@ -3067,7 +3985,7 @@ function wireInventory() {
   document.querySelectorAll('[data-act="dupes-pick"]').forEach((b) => b.onclick = (e) => {
     e.stopPropagation();
     const allowed = new Set(transferGroup()?.ids || []);
-    state.selected = new Set(["stash", "overflow"].flatMap((key) => state.sections[key]?.slots || []).filter((row) => allowed.has(row.instance_id) && matchesSearch(row, state.queries.inventory || "") && (state.showUnknown || state.queries.inventory || row.image)).map((row) => row.instance_id));
+    state.selected = new Set(["stash", "overflow"].flatMap((key) => state.sections[key]?.slots || []).filter((row) => allowed.has(row.instance_id) && matchesSearch(row, state.queries.inventory || "")).map((row) => row.instance_id));
     renderInventory();
     toast(`${num(state.selected.size)} suggested items selected — verify both accounts are synchronized before carrying them over`, "ok");
   });
@@ -3086,7 +4004,34 @@ function wireInventory() {
     toast(`${num(state.selected.size)} items your main accounts do not have — drag them to the backpack and carry them over in-game`, "ok");
   });
 
-  /* إظهار/إخفاء بلاطات "?" (قطع الباتش اللي ملهاش اسم في الفهارس). */
+  /* زرار "?" = فلتر القطع اللي ملهاش بيانات: يشغّله ويفتح القائمة، ويدوس تاني يرجع
+     كل حاجة. بيفضل محفوظ في المتصفح زي باقي الفلاتر. */
+  document.querySelectorAll('[data-act="unk"]').forEach((b) => b.onclick = (e) => {
+    e.stopPropagation();
+    const on = !(state.showUnknown || state.unkOpen);
+    state.showUnknown = on;
+    state.unkOpen = on;
+    if (!on) state.unkPick = "";
+    localStorage.setItem("fahmy.showUnknown", on ? "1" : "0");
+    renderInventory();
+    e.stopImmediatePropagation();
+  });
+  document.querySelectorAll("[data-unk-find]").forEach((b) => b.onclick = (e) => {
+    e.stopPropagation();
+    const row = unknownTiles().find((t) => t.instance_id === b.dataset.unkFind) || {};
+    // القطعة بتفضل معروضة لوحدها جوه الفلتر (unkPick) عشان تفضل قدامه وقت التعريف
+    const term = b.dataset.asset || row.asset_id || row.name || "";
+    state.queries.inventory = term;
+    state.showUnknown = true;
+    state.unkOpen = true;
+    state.unkPick = b.dataset.unkFind;
+    localStorage.setItem("fahmy.showUnknown", "1");
+    const input = document.querySelector('[data-search="inventory"]');
+    if (input) input.value = term;
+    renderInventory();
+    openIdentify(row.asset_id || term, b.dataset.unkFind, { anchor: row });
+    e.stopImmediatePropagation();
+  });
   document.querySelectorAll('[data-act="unknown"]').forEach((b) => b.onclick = (e) => {
     e.stopPropagation();
     state.showUnknown = !state.showUnknown;
@@ -3094,106 +4039,8 @@ function wireInventory() {
     renderInventory();
   });
 
-  /* زارع واحد على الصفحة بيستقبل كل أحداث السحب: البلاطات نفسها pointer-events: none
-     وقت السحب، فالـ target هو الحاوية/السطر تحت الماوس، وبنعرف البلاطة الحقيقية
-     بـ elementsFromPoint. كده مفيش رابطة dragover شغالة على كل بلاطة. */
+  // مفيش أحداث سحب على البلاطات — الضغط والسحب بالماوس مش بيعمل حاجة غير التحديد.
   document.querySelectorAll(".tile:not(.cat)").forEach(wireTile);
-  if (!document._rrDropSink) {
-    let paintFrame = 0;
-    let settleTimer = 0;
-    let settled = "";
-    /* الماوس لازم يستقر فوق الخانة ~170ms قبل ما نرسم الهايلايت ونحسب القبول/الرفض.
-       أثناء المرور السريع على عشرات الخانات بنصفّر المؤقت ومبنعملش أي شغل، فالباكدج
-       واللوداوت مبيتحسبوش لكل خانة بيعدي عليها المؤشر في الطريق للهدف. */
-    const SETTLE_MS = 170;
-    document._rrCancelSettle = () => {
-      if (settleTimer) { clearTimeout(settleTimer); settleTimer = 0; }
-      settled = "";
-    };
-    const hitOf = (e) => dropHitAt(e.clientX, e.clientY);
-    const clearPaint = () => {
-      const live = document.querySelector(".inv-body.drop, .tile.dnd-combo, .tile.dnd-combine, .tile.dnd-swap");
-      if (live) paintDropVisual(null, 0, 0);
-      settled = "";
-    };
-    document.addEventListener("dragover", (e) => {
-      const d = state.drag;
-      if (!d) return;
-      const el = hitOf(e);
-      if (!el) { if (settleTimer) { clearTimeout(settleTimer); settleTimer = 0; } clearPaint(); return; }
-      const droppable = el.classList.contains("tile") || el.dataset.slotCell
-        || el.classList.contains("dnd-ok");
-      if (!droppable) { if (settleTimer) { clearTimeout(settleTimer); settleTimer = 0; } clearPaint(); return; }
-      e.preventDefault();
-      if (e.dataTransfer) e.dataTransfer.dropEffect = "move";
-      const key = el.classList.contains("tile")
-        ? "t" + (el.dataset.ids || "") + el.dataset.container
-        : (el.dataset.slotCell ? "c" + el.dataset.slotCell + el.dataset.slot + el.dataset.slotIndex : "b" + el.dataset.scroll);
-      if (key === settled) return;
-      const x = e.clientX, y = e.clientY;
-      if (settleTimer) { clearTimeout(settleTimer); settleTimer = 0; }
-      settleTimer = setTimeout(() => {
-        settleTimer = 0;
-        if (!state.drag) return;
-        settled = key;
-        if (paintFrame) return;
-        paintFrame = requestAnimationFrame(() => {
-          paintFrame = 0;
-          paintDropVisual(dropHitAt(x, y), x, y);
-        });
-      }, SETTLE_MS);
-    });
-    document.addEventListener("drop", (e) => {
-      const d = state.drag;
-      if (!d) return;
-      if (settleTimer) { clearTimeout(settleTimer); settleTimer = 0; }
-      settled = "";
-      const el = hitOf(e);
-      if (!el) { endDragVisuals(); return; }
-      if (e.dataTransfer) e.dataTransfer.dropEffect = "move";
-      if (el.classList.contains("tile")) {
-        const rel = tileDropRelation(d, el);
-        if (!rel) return;
-        e.preventDefault(); e.stopPropagation();
-        clearTileChoices(el);
-        // سحبة بكمية محددة فوق خانة شنطة مشغولة: الدمج/التبديل بينقل الرصة كلها، وده
-        // اللي كان بيرمي 4 في الشنطة والرقم المطلوب 1. فالخطة بتاخد مكانها، والبابه
-        // بتحط الرقم في أي خانة فاضية.
-        if (d.fill && el.dataset.container === "backpack") { runFill(d.fill, ""); return; }
-        const src = (d.ids || [])[0];
-        if (dropChoiceOf(el, rel, e.clientX) === "combine") runCombine(src, rel);
-        else runSwap(src, rel);
-        return;
-      }
-      if (el.dataset.slotCell) {
-        e.preventDefault(); e.stopPropagation();
-        const check = dropCheck(el, d);
-        if (!check.ok) {
-          if (check.reason) toast(check.reason, "bad");
-          endDragVisuals();
-          return;
-        }
-        if (el.dataset.slotCell === "loadout") onDropTarget("loadout", el.dataset.slot, el.dataset.wrapper || "");
-        else onDropTarget(el.dataset.slotCell, "", el.dataset.wrapper || "");
-        endDragVisuals();
-        return;
-      }
-      const key = el.dataset.scroll;
-      if (key !== "stash" && key !== "backpack") return;
-      e.preventDefault();
-      e.stopPropagation();
-      const check = bodyDropCheck(el, d);
-      if (!check.ok) {
-        if (check.reason) toast(check.reason, "bad");
-        endDragVisuals();
-        return;
-      }
-      if (key === "backpack") onDropTarget("backpack", "", "");
-      else onDropTarget("stash", "", "");
-      endDragVisuals();
-    });
-    document._rrDropSink = true;
-  }
   document.querySelectorAll(".inv-body").forEach((body) => body.onscroll = hideCard);
 
   const bpClear = $("#bp-clear");
@@ -3235,50 +4082,9 @@ function wireTile(tile) {
     pick(tile, ids, e);
   };
   tile.oncontextmenu = (e) => { e.preventDefault(); hideCard(); openCtx(e, tile, ids); };
-  tile.ondragstart = (e) => {
-    hideCard();
-    let dragIds = ids;
-    // بطاقة QTY = الرقم اللي مكتوب فيها لوحدها. قبل كده كانت السحبة بتلمّ أي محدد
-    // تاني في نفس العمود معها، فالشنطة كانت تستلم الرقم + قطع زيادة ما اتطلبش.
-    const qtyCard = !!tile.closest(".qty-card");
-    if (!qtyCard && ids.some((i) => state.selected.has(i)) && state.selected.size > ids.length) {
-      const sameCol = (t) => t.dataset.container === tile.dataset.container
-        && (!tile.dataset.slot || (t.dataset.slot || "") === tile.dataset.slot);
-      const scope = tile.closest(".inv-col") || document;
-      const pool = [];
-      scope.querySelectorAll(".tile:not(.cat)").forEach((t) => {
-        if (!sameCol(t)) return;
-        const tIds = t.dataset.ids.split(",").filter(Boolean);
-        if (tIds.some((i) => state.selected.has(i))) pool.push(...tIds);
-      });
-      if (pool.length > ids.length) dragIds = [...new Set(pool)];
-    }
-    // قبل الإفلات: الشريط السفلي بيقول عدد القطع اللي السحبة دي شايلها فعلاً،
-    // مش كل التحديد — عشان ما تفضلش سحبة بتحرّك قطع هو ما علمش عليها.
-    const chip = document.getElementById("sel-float-count");
-    if (chip && dragIds.length !== state.selected.size) {
-      chip.textContent = `this drag: ${num(dragIds.length)} piece${dragIds.length > 1 ? "s" : ""}`;
-    }
-    // بطاقة QTY اللي الرقم ما بيتعملش برصّات كاملة بتسحب خطة تقسيم كاملة، مش الستاكات دي.
-    const card = tile.closest("[data-fill-asset]");
-    const fillAmount = Number(card && card.dataset.fillAmount) || 0;
-    state.drag = {
-      ids: dragIds, wrapper: tile.dataset.wrapper, container: tile.dataset.container,
-      slot: tile.dataset.slot || "", name: tile.dataset.name, type: tile.dataset.type || "",
-      group: tile.dataset.group || "", kind: tile.dataset.kind || "",
-      asset: tile.dataset.asset || "",
-      fill: card && fillAmount > 0 ? { asset: card.dataset.fillAsset, amount: fillAmount } : null,
-    };
-    e.dataTransfer.setData("text/plain", tile.dataset.name);
-    e.dataTransfer.effectAllowed = "move";
-    tile.classList.add("drag-src");
-    document.body.classList.add("dragging");
-    markDropTargets(state.drag);
-  };
-  tile.ondragend = () => endDragVisuals();
-  tile.onmouseenter = (e) => { if (!state.drag) showCard(tile, e); };
-  tile.onmousemove = (e) => { if (!state.drag) positionCard(e); };
-  tile.onmouseleave = () => hideCard();
+  // مفيش سحب: النقل من كليك يمين → MOVE TO...
+  tile.onmouseenter = (e) => hoverCard(tile, e);
+  tile.onmouseleave = () => leaveCard(tile);
 }
 
 function pick(tile, ids, e, forceAdditive = false) {
@@ -3326,7 +4132,14 @@ function findRow(instanceId) {
 /* للعرض بس — بلاطة من حساب تاني مسجلة من نتائج البحث. أي مسار نقل بيفضل يستعمل
    findRow وحده، فصف حساب غريب ما يدخلش في validateLocalMove خالص. */
 function displayRow(instanceId) {
-  return findRow(instanceId) || state.foreign[instanceId] || null;
+  const row = findRow(instanceId) || state.foreign[instanceId] || null;
+  // كارت الأوجمنت الملبوس في اللوحة بيحمل معرّف الشجرة الجليدية — القطعة
+  // نفسها بتتقري من خانة AUGMENT.
+  if (row && String(row.container || "").toLowerCase() === "augment_loadout") {
+    const worn = ((state.loadout?.slots?.augment || []).find((s) => s.item) || {}).item;
+    if (worn) return { ...worn, container: "augment" };
+  }
+  return row;
 }
 function updateSelCount() {
   const n = state.selected.size;
@@ -3355,26 +4168,43 @@ function dropIds(d, target, slot, wrapper) {
   });
 }
 
-async function onDropTarget(target, slot, wrapper) {
-  const d0 = state.drag;
+async function onDropTarget(target, slot, wrapper, drag) {
+  const d0 = drag;
   if (!d0) return;
   const ids = dropIds(d0, target, slot, wrapper);
   if (!ids.length) { toast("The whole selection is already in this destination.", ""); return; }
   const d = ids.length === d0.ids.length ? d0 : { ...d0, ids };
   // الاسم لوحده بيخفي إن السحبة شايلة أكتر من قطعة (المحدد بـ ctrl)، فالنص
   // بيقول العدد صراحة قبل ما الكتابة تروح للبوابه.
-  const tag = d.ids.length > 1 ? `${d.name} ×${d.ids.length}` : d.name;
+  const tag = d.ids.length > 1 ? (d.name || `${d.ids.length} items`) : (d.name || rowNameOf(d.ids[0]));
   if (target === "loadout") {
     const check = slotDropCheck(slot, wrapper, false, d);
-    if (!check.ok) { if (check.reason) toast(check.reason, "bad"); return; }
+    if (!check.ok) {
+      toast(check.self ? `Already in ${SLOT_META[slot]?.label || slot}.`
+        : (check.reason || `⛔ Can't move to ${SLOT_META[slot]?.label || slot} — no usable cell there.`), "bad");
+      return;
+    }
+    // الوجهة اللي جاية مع الحركة (من القائمة) هي القرار: الخانة المختارة بعينها،
+    // والطابور ما يختارش خانة تانية مكانها.
+    const home = !!wrapper || d.container === "loadout" || d.container === "backpack";
     await runAction({
-      kind: "move", target_container: "loadout", target_slot: slot, target_wrapper_id: wrapper,
+      kind: "move", target_container: "loadout", target_slot: slot,
+      target_wrapper_id: home ? wrapper : "",
       instance_ids: d.ids, label: `${tag} → ${SLOT_META[slot]?.label || slot}`,
+      fromMenu: !!d0.fromMenu,
     });
     return;
   }
   if (target === "backpack") {
     if (d.fill) { await runFill(d.fill, wrapper); return; }
+    if (wrapper && d0.fromMenu) {
+      // من القائمة الهدف بعينه: الخانة مشغولة = تبديل في نفس الطلب، مش رفض.
+      await runAction({
+        kind: "move", target_container: "backpack", target_wrapper_id: wrapper,
+        instance_ids: d.ids, label: `${tag} → BACKPACK`,
+      });
+      return;
+    }
     if (wrapper) {
       const check = slotDropCheck("backpack", wrapper, false, d);
       if (!check.ok) { if (check.reason) toast(check.reason, "bad"); return; }
@@ -3435,8 +4265,7 @@ async function runCombine(srcId, rel) {
     }));
   } catch (err) { toast("⛔ Connection failed: " + err.message, "bad"); return; }
   if (out.executed) {
-    scheduleLoadSections(1800);
-    loadLog().catch(() => {});
+    await Promise.all([loadSections(), loadLog()]);
     toast(`✔ ${out.detail || "Merge " + rel.name + ": now " + num(out.after?.target) + "."}`, "ok");
     return;
   }
@@ -3455,8 +4284,7 @@ async function runSwap(srcId, rel) {
   } catch (err) { toast("⛔ Connection failed: " + err.message, "bad"); return; }
   if (out.executed) {
     pushHistory(out, "Swap " + (rel.name || "two items"));
-    scheduleLoadSections(1800);
-    loadLog().catch(() => {});
+    await Promise.all([loadSections(), loadLog()]);
     toast("✔ " + (out.detail || "Swap done."), "ok");
     return;
   }
@@ -3465,12 +4293,102 @@ async function runSwap(srcId, rel) {
   await Promise.all([loadSections(), loadLog()]).catch(() => {});
 }
 
+/* حماية تفريغ اللوداوت والباك باك باستخدام أمر CLEAR ALL الواحد قبل لبس أي AUGMENT:
+   تفريغ مسبق فوري يحمي العناصر من الاختفاء في أمر بوابة واحد سريع ورسمي. */
+async function equipAugmentWithDrainGuard(spec, account) {
+  const newAugId = spec.instance_ids?.[0];
+  if (!newAugId) {
+    toast("No augment item selected.", "bad");
+    return;
+  }
+
+  // التأكد من تحميل الحالة الحية
+  if (!state.loadout || !state.loadout.slots) {
+    await loadSections().catch(() => {});
+  }
+
+  // التحقق هل الشنطة مركبة بالفعل
+  const wornAug = ((state.loadout?.slots?.augment || []).find((s) => s.item) || {}).item;
+  if (wornAug && String(wornAug.instance_id) === String(newAugId)) {
+    toast("That augment is already equipped in the AUGMENT slot.", "");
+    return;
+  }
+
+  // 1. تحقق سريع Boolean: هل يوجد أي عنصر داخل BACKPACK أو LOADOUT؟
+  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  const hasBackpackItems = (state.loadout?.slots?.backpack || []).some(
+    (c) => c?.item?.instance_id && String(c.item.instance_id) !== String(newAugId)
+  );
+  const hasLoadoutItems = Object.entries(state.loadout?.slots || {}).some(
+    ([k, list]) => k !== "backpack" && (list || []).some(
+      (c) => c?.item?.instance_id && String(c.item.instance_id) !== String(newAugId)
+    )
+  ) || (state.loadout?.augment?.instance_id && String(state.loadout.augment.instance_id) !== String(newAugId));
+
+  const hasItems = hasBackpackItems || hasLoadoutItems;
+
+  // 2. إذا وُجد أي عنصر: استدعاء نفس وظيفة زر CLEAR ALL (clearBackpack("all")) مباشرة
+  if (hasItems) {
+    toast("Clearing Backpack & Loadout (CLEAR ALL) before equipping Augment...", "");
+    const clearOut = await clearBackpack("all");
+    if (!clearOut || !clearOut.executed) {
+      toast("⛔ CLEAR ALL failed: " + (clearOut?.detail || clearOut?.error || "Error") + ". Augment equip aborted.", "bad");
+      return;
+    }
+    // انتظر 400ms بعد نجاح أمر CLEAR ALL
+    await sleep(400);
+  }
+
+  // 3. تنفيذ أمر لبس الـ AUGMENT الرسمي في خانتها
+  toast("⏳ Equipping augment in AUGMENT slot...", "");
+  try {
+    const targetWrapper = spec.target_wrapper_id || augmentBareCell()?.wrapper_id || "";
+    const equipRes = await post("/api/actions/move", {
+      account,
+      target_container: "loadout",
+      target_slot: "augment",
+      instance_ids: [newAugId],
+      ...(targetWrapper ? { target_wrapper_id: targetWrapper } : {}),
+    });
+    if (!equipRes || !equipRes.executed) {
+      toast("⛔ Failed to equip augment: " + (equipRes?.detail || equipRes?.error || "Error"), "bad");
+      await loadSections().catch(() => {});
+      return;
+    }
+  } catch (err) {
+    toast("⛔ Error equipping augment: " + err.message, "bad");
+    await loadSections().catch(() => {});
+    return;
+  }
+
+  // 4. مزامنة SYNC واحدة لتحديث الواجهة
+  await sleep(450);
+  toast("⏳ Synchronizing inventory...", "");
+  try {
+    await post("/api/actions/sync", { account });
+    await Promise.all([loadSections(), loadLegend(), loadHeader(), loadStatus(), loadLog()]);
+    toast("✔ Augment equipped successfully. Stash and loadout updated.", "ok");
+  } catch (err) {
+    await loadSections().catch(() => {});
+    toast("✔ Augment equipped. (Sync note: " + err.message + ")", "ok");
+  }
+}
+
 async function runAction(spec) {
   const account = state.account;
   if (account === "ALL") { toast("Pick one account first before any action.", "bad"); return; }
   if (state.frozen) { frozenBlock("This move"); return; }
 
-  if (spec.kind === "move") {
+  // التفريغ المسبق التلقائي وتجهيز الأوجمنت عبر مسار الحماية الموحد
+  const isAugmentMove = spec.kind === "move" && (
+    spec.target_slot === "augment" ||
+    spec.target_container === "augment" ||
+    (spec.target_container === "loadout" && spec.target_slot === "augment")
+  );
+  if (isAugmentMove) {
+    return equipAugmentWithDrainGuard(spec, account);
+  }
+  if (spec.kind === "move" && (state.writes?.armed || state.writes?.move_armed)) {
     const plan = validateLocalMove(spec);
     if (!plan.ok) { toast("⛔ " + (plan.reason || "This move is not allowed."), "bad"); return; }
     if (plan.skippedCount) {
@@ -3480,27 +4398,82 @@ async function runAction(spec) {
     enqueueMove(spec, plan, account);
     return;
   }
+  return runLiveMove(spec, account);
+}
 
+/* المسار الحي: طلب واحد على البوابة. الأوجمنت (لبس/تبديل آمن) بيمشي عليه دايماً. */
+async function runLiveMove(spec, account) {
+  const isAugmentMove = spec.kind === "move" && (
+    spec.target_slot === "augment" ||
+    spec.target_container === "augment" ||
+    (spec.target_container === "loadout" && spec.target_slot === "augment")
+  );
+  if (isAugmentMove) {
+    return equipAugmentWithDrainGuard(spec, account);
+  }
   let out;
+  const fallbackPlan = (spec.kind === "move" && spec.target_slot !== "augment") ? validateLocalMove(spec) : null;
+  const wearing = spec.kind === "move" && spec.target_slot === "augment";
+  if (wearing && !spec.target_wrapper_id) {
+    // الخانة لسه ما اتأسستش على البوابة: الباكند بيكتب عليها بالمعرف مباشرة.
+    spec.target_wrapper_id = augmentBareCell()?.wrapper_id || "";
+  }
+  if (spec.target_container === "loadout" && spec.target_slot === "shield") {
+    const fits = shieldFitsWorn(displayRow(spec.instance_ids[0]));
+    if (!fits.ok) { toast(fits.reason, "bad"); return; }
+  }
+  const optimistic = wearing ? optimisticWear(displayRow(spec.instance_ids[0])) : false;
+  if (optimistic) renderColumns();
   try {
     const toStash = spec.kind === "move" && (spec.target_container === "stash" || spec.target_container === "overflow");
-    out = await withSync(spec.instance_ids || [], toStash, () =>
+    const carry = Array.isArray(spec.carry_instance_ids) ? spec.carry_instance_ids : [];
+    out = await withSync([...(spec.instance_ids || []), ...carry], toStash, () =>
       spec.kind === "move"
-        ? post("/api/actions/move", { account, target_container: spec.target_container,
-                                      target_wrapper_id: spec.target_wrapper_id || "", instance_ids: spec.instance_ids,
-                                      target_slot: spec.target_slot || "" })
+        ? (wearing
+            // اللبس/التبديل الذكي في نفس النداء: الزائد يتطلع للأوفر، والباقي
+            // يتنقل، والتبديل بيتحقق منه قبل ما القديم يتشال.
+            ? post("/api/actions/move-batch", { account, moves: [{
+                account, target_container: spec.target_container,
+                target_wrapper_id: spec.target_wrapper_id || "",
+                instance_ids: spec.instance_ids, target_slot: spec.target_slot || "",
+                swap: !!spec.swap,
+                ...(carry.length ? { carry_instance_ids: carry } : {}) }] })
+            : post("/api/actions/move", { account, target_container: spec.target_container,
+                                          target_wrapper_id: spec.target_wrapper_id || "", instance_ids: spec.instance_ids,
+                                          target_slot: spec.target_slot || "",
+                                          ...(carry.length ? { carry_instance_ids: carry } : {}) }))
         : post("/api/actions/mutate", { account, action: spec.action, instance_ids: spec.instance_ids,
                                         target_wrapper_id: spec.target_wrapper_id || "",
                                         target_instance_id: spec.target_instance_id || "", amount: spec.amount }));
   } catch (err) { toast("Failed: " + err.message, "bad"); return; }
 
-  if (out.executed) {
+  if (out && out.executed) {
     state.selected.clear();
     pushHistory(out, spec.label || spec.kind);
-    scheduleLoadSections(1800);
+    if (fallbackPlan && fallbackPlan.ok) {
+      // النقلة نجحت عند البوابة: بتفضل «في الطريق» شوية، فالقراءة اللي بعدها
+      // بتعيد رسمها لو لسه الصف ما اتزامنش — نفس حماية الطابور السريع.
+      state.moveInFlight = [{ plan: fallbackPlan }];
+      setTimeout(() => {
+        if (state.moveInFlight && state.moveInFlight[0]?.plan === fallbackPlan) state.moveInFlight = null;
+      }, MOVE_INFLIGHT_MS);
+    }
+    await loadSections();
     loadLog().catch(() => {});
     toast("✔ Executed on the game account: " + spec.label, "ok");
+    if (optimistic) {
+      // الخانة بتقرا القديمة لحظة الرد (الخناقة اللي اتصلّحت في الباكند بقراية
+      // تانية). لو الرسم لسه بيقول إن القديمة لابسة، بنعيد القراية مرة كمان.
+      const wornNow = (((state.loadout?.slots?.augment || []).find((s) => s.item) || {}).item || {}).instance_id;
+      if (wornNow !== spec.instance_ids[0])
+        setTimeout(() => loadSections().catch(() => {}), 1200);
+    }
     return;
+  }
+  if (wearing) {
+    // التبديل/اللبس ما تمش: نرجّع اللوحة لقراءة السيرفر بدل ما تفضل الشنطة
+    // المعروضة غلط، والرسالة بتقول السبب زي أي كتابة تانية.
+    loadSections().catch(() => {});
   }
   const reason = out.result?.error || out.error || "blocked";
   if (reason === "gateway_route_down") {
@@ -3518,7 +4491,7 @@ async function runAction(spec) {
 /* ------------------------------------------------------------------ سجل الحركة: UNDO خطوة خطوة (زي Excel)
    كل كتابة ناجحة بترجعلنا out.undo.cells = حالة كل خانة قبل الحركة، فالتراجع
    بيبعت الفرق ده لنفس مسار النقل المتحقق منه. آخر خطوة = أول حاجة تتراجع.
-   السجل بيتقارن بالحساب: التاب اللي على G14 ما يشيلش حاجة اتعملت في G22. */
+   السجل بيتقارن بالحساب: التاب اللي على G14 ما يشيلش حاجة اتعملت في حساب تاني. */
 function pushHistory(out, label, account) {
   const cells = (out && out.undo && out.undo.cells) || null;
   if (!cells || !Object.keys(cells).length) return;
@@ -3557,10 +4530,6 @@ function setFrozen(on, quiet) {
   document.body.classList.toggle("locked", state.frozen);
   const cancel = $("#btn-unlock");
   if (cancel) cancel.hidden = !state.frozen;
-  // SCRAPPY في الهيدر برّه اللوحة — بنقفل الحفظ بتاعه بس (النقل كتابة)
-  const scrappy = $("#btn-scrappy");
-  if (scrappy) scrappy.disabled = state.frozen || !SCRAPPY_LIVE;
-  syncScrappyPill();
   renderUndoButtons();
   if (!quiet) toast(state.frozen
     ? "🔒 Board is locked — no moves and no adds until you press CANCEL or ESC."
@@ -3613,50 +4582,23 @@ async function undoStep() {
 }
 
 async function clearBackpack(scope) {
-  if (state.account === "ALL") { toast("Pick one account first.", "bad"); return; }
+  if (state.account === "ALL") { toast("Pick one account first.", "bad"); return { executed: false, detail: "Pick one account first." }; }
   const all = scope === "all";
   const ids = [...document.querySelectorAll(all ? ".col-backpack .tile[data-ids], [data-slot-cell] .tile[data-ids]"
     : ".col-backpack .tile[data-ids]")].flatMap((t) => (t.dataset.ids || "").split(",").filter(Boolean));
-  if (!ids.length) return;
-
-  state.recentMoves = state.recentMoves || new Map();
-  const bpRows = (state.sections.backpack?.slots || []).filter((r) => ids.includes(r.instance_id));
-  bpRows.forEach((r) => {
-    state.recentMoves.set(r.instance_id, {
-      container: "stash",
-      wrapper: "",
-      slot_index: null,
-      row: { ...r, container: "stash" },
-      at: Date.now()
-    });
-  });
-  if (state.sections.backpack) {
-    state.sections.backpack.slots = (state.sections.backpack.slots || []).filter((r) => !ids.includes(r.instance_id));
-  }
-  if (!state.sections.stash) state.sections.stash = { container: "stash", slots: [] };
-  state.sections.stash.slots.push(...bpRows);
-  renderInventory();
-
   let out;
   try {
     out = await withSync([...new Set(ids)], true,
       () => post("/api/actions/clear-backpack", { account: state.account, scope }));
-  } catch (err) {
-    bpRows.forEach((r) => state.recentMoves.delete(r.instance_id));
-    await loadSections().catch(() => {});
-    toast("⛔ Connection failed: " + err.message, "bad");
-    return;
-  }
-  if (out.executed) {
+  } catch (err) { toast("⛔ Connection failed: " + err.message, "bad"); return { executed: false, detail: err.message }; }
+  if (out && out.executed) {
     pushHistory(out, all ? "CLEAR ALL" : "CLEAR");
-    scheduleLoadSections(1800);
-    loadLog().catch(() => {});
+    await Promise.all([loadSections(), loadLog()]);
     toast("✔ " + (out.note || "Backpack emptied into the stash."), "ok");
-    return;
+    return out;
   }
-  bpRows.forEach((r) => state.recentMoves.delete(r.instance_id));
-  await loadSections().catch(() => {});
-  toast("⛔ " + ((out.result || {}).detail || out.detail || "Refused"), "bad");
+  toast("⛔ " + ((out && out.result || {}).detail || (out && out.detail) || "Refused"), "bad");
+  return out || { executed: false };
 }
 
 /* ------------------------------------------------------------------ SCRAPPY: ديك الورشة
@@ -4615,31 +5557,96 @@ async function spreadStacks() {
 
 /* ⇄ دمج الكل: الباكند بيبعت لكل نوع طلب update+delete بيحفظ الوحدات، فالدمج
    بيحصل فعليًا على البوابة — تنفيذ فوري من غير لوحة ولا سؤال، والنتيجة توست بس. */
+const MERGE_STATE = { account: "", timer: 0 };
+function mergeIdleUI() {
+  state.merging = false;
+  const btn = $("#btn-merge-all"), stop = $("#btn-merge-stop"), pg = $("#merge-progress");
+  if (btn) { btn.disabled = false; btn.textContent = "⇄ MERGE ALL"; }
+  if (stop) { stop.hidden = true; stop.disabled = false; stop.textContent = "■ STOP"; }
+  if (pg) { pg.hidden = true; pg.textContent = ""; }
+}
+function mergeProgressUI(job) {
+  const pg = $("#merge-progress");
+  if (!pg) return;
+  pg.hidden = false;
+  pg.textContent = job && job.total
+    ? `MERGING ${num(job.done || 0)}/${num(job.total)}${job.step ? " · " + job.step : ""}`
+    : "MERGING...";
+}
+function searchAssetIds() {
+  const q = searchNeedle(state.queries.inventory);
+  if (!q) return [];
+  const ids = new Set();
+  for (const r of state.rows || []) {
+    if (r.asset_id && matchesSearch(r, q)) ids.add(String(r.asset_id));
+  }
+  return [...ids];
+}
 async function mergeAllStacks() {
   if (state.account === "ALL") { toast("Pick one account first.", "bad"); return; }
   if (!writesLive()) { toast(writeBlockMsg(), "bad"); return; }
   if (state.merging) return;
+  const only = searchAssetIds();
+  if (searchNeedle(state.queries.inventory) && !only.length) {
+    toast("The search matches no stackable type — clear it to merge the whole stash.", "bad");
+    return;
+  }
   const btn = $("#btn-merge-all");
   state.merging = true;
-  if (btn) { btn.disabled = true; btn.textContent = "⇄ MERGING…"; }
+  MERGE_STATE.account = state.account;
+  if (btn) { btn.disabled = true; btn.textContent = "⇄ STARTING..."; }
   let out;
   try {
-    out = await post("/api/actions/merge-all", { account: state.account, execute: 1 });
+    out = await post("/api/actions/merge-all", { account: state.account, execute: 1, only_assets: only });
   } catch (err) {
     toast("⛔ Connection failed: " + err.message, "bad");
+    out = null;
   }
-  if (btn) { btn.disabled = false; btn.textContent = "⇄ MERGE ALL"; }
-  state.merging = false;
-  if (!out) return;
-  await Promise.all([loadSections(), loadLog()]);
-  const s = (out.merge_all || {}).summary || {};
-  if (out.executed) {
-    toast(`✔ Merged ${num(out.merged)} piles across ${num(s.owed || 0)} types.`, "ok");
-  } else if (out.reason === "already_merged") {
-    toast("Every pile is already at its cap.", "info");
+  if (!out || !out.executed) {
+    mergeIdleUI();
+    if (!out) return;
+    if (out.error === "already_merged") toast(out.detail || "Every pile is already at its cap.", "info");
+    else if (out.error !== "busy") toast("⛔ " + (out.detail || out.error || "The gateway refused the merge."), "bad");
   } else {
-    toast("⛔ " + (out.detail || out.error || "The gateway refused the merge."), "bad");
+    if (btn) btn.textContent = "⇄ MERGING";
+    const stop = $("#btn-merge-stop");
+    if (stop) stop.hidden = false;
   }
+  if (!out) return;
+  mergeProgressUI(out.job || {});
+  mergePoll(only.length ? "search" : "all", 0);
+}
+async function mergePoll(mode, tries) {
+  const account = MERGE_STATE.account;
+  if (!account) return;
+  let out = null;
+  try { out = await post("/api/actions/merge-all/status", { account }); } catch (err) { out = null; }
+  const job = out && out.job ? out.job : null;
+  if (job && job.running) {
+    mergeProgressUI(job);
+    if (tries < 2400) window.setTimeout(() => mergePoll(mode, tries + 1), 900);
+    return;
+  }
+  mergeIdleUI();
+  if (!state.merging && job && !job.total) return;
+  await Promise.all([loadSections(), loadLog()]).catch(() => {});
+  if (!job) { toast("⛔ The merge job left no state — press SYNCHRONIZE to see the stash as it is.", "bad"); return; }
+  const where = mode === "search" ? " from the search results" : "";
+  if ((job.ok || 0) > 0) {
+    toast(`✔ ${num(job.ok)} merges ran${where}${job.failed ? `, ${num(job.failed)} refused` : ""}.`, "ok", 9000);
+  } else {
+    toast("↔ " + (job.detail || "Nothing was merged."), job.failed ? "bad" : "info");
+  }
+}
+async function mergeAllStop() {
+  const account = MERGE_STATE.account || state.account;
+  if (!account) return;
+  const stop = $("#btn-merge-stop");
+  const pg = $("#merge-progress");
+  if (stop) { stop.disabled = true; stop.textContent = "■ STOPPING"; }
+  if (pg) { pg.hidden = false; pg.textContent = "STOPPING after the current pile..."; }
+  try { await post("/api/actions/merge-all/stop", { account }); } catch (err) { /* the poll settles it */ }
+  window.setTimeout(() => mergePoll("all", 0), 600);
 }
 
 
@@ -4915,15 +5922,16 @@ async function openSellModal(rows) {
 function splitPlanFor(row) {
   const container = String(row.container || "").toLowerCase();
   if (container === "stash" || container === "overflow") {
-    const target = (state.loadout?.slots?.backpack || []).find((s) => !s.item && s.wrapper_id)?.wrapper_id || "";
-    return target ? { group: "stash", mode: "to_backpack", target_wrapper_id: target, split_wrapper_id: "" } : null;
+    const bpEmpty = (state.loadout?.slots?.backpack || []).find((s) => !s.item && s.wrapper_id)?.wrapper_id || "";
+    const stashEmpty = (state.sections?.stash?.slots || []).find((s) => !s.item && s.wrapper_id)?.wrapper_id || "";
+    return { group: "stash", mode: bpEmpty ? "to_backpack" : "stash", target_wrapper_id: bpEmpty || stashEmpty || "", split_wrapper_id: "" };
   }
   if (["backpack", "safe_pocket", "quick_use"].includes(container)) {
     const empty = (state.loadout?.slots?.[container] || [])
       .find((s) => !s.item && s.wrapper_id && s.wrapper_id !== row.wrapper_id)?.wrapper_id || "";
-    return empty ? { group: "loadout", mode: "split", target_wrapper_id: "", split_wrapper_id: empty } : null;
+    return { group: "loadout", mode: "split", target_wrapper_id: "", split_wrapper_id: empty || "" };
   }
-  return null;
+  return { group: container, mode: "split", target_wrapper_id: "", split_wrapper_id: "" };
 }
 
 function openSplitModal(row) {
@@ -4934,11 +5942,15 @@ function openSplitModal(row) {
   const wrapper = plan ? (plan.target_wrapper_id || plan.split_wrapper_id || "") : "";
   const max = qty - 1;
   const initial = Math.max(1, Math.floor(qty / 2));
+  const bagEmpty = String(row.container || "").toLowerCase() === "backpack" && !plan && !state.loadout;
   const where = String(row.container || "").toUpperCase();
   const DEST = { backpack: "Backpack", safe_pocket: "Safe pocket", quick_use: "Quick use",
                  stash: "Stash", overflow: "Overflow" };
   const destName = plan ? (plan.group === "stash" ? "Backpack"
                          : (DEST[String(row.container || "").toLowerCase()] || where)) : "";
+  const hint = bagEmpty
+    ? "The backpack layout is still loading — wait a second and press SPLIT again."
+    : `ALLOWED: 1 TO ${max}`;
   const body = `
     <div class="split-modal">
       ${gearHero(row, `${num(qty)} × ${where}`)}
@@ -4950,10 +5962,10 @@ function openSplitModal(row) {
           <button type="button" class="split-step" data-step="1" aria-label="Increase">+</button>
         </div>
         <input id="split-range" type="range" min="1" max="${max}" step="1" value="${initial}">
-        <div class="split-hint"><span id="split-preview"></span><span>ALLOWED: 1 TO ${max}</span></div>
+        <div class="split-hint"><span id="split-preview"></span><span>${esc(hint)}</span></div>
       </div>
       <div class="split-actions">
-        <button type="button" class="pill purple" data-split-run="go">✂ SPLIT</button>
+        <button type="button" class="pill purple" data-split-run="go" ${bagEmpty ? "disabled" : ""}>✂ SPLIT</button>
       </div>
       <p class="gear-note">The site performs the split on the official gateway route in one atomic batch: <b>moveAmount</b> takes the amount off the source pile into a brand-new piece, and <b>setParents</b> drops that piece into the free cell${plan ? ` in ${esc(destName)}` : ""} — live-verified, no in-game step needed. ${plan ? "" : "It needs an empty cell: free one if the gateway refuses."} To undo: merge the two piles back with COMBINE.</p>
       ${gearArmNote()}
@@ -5295,9 +6307,445 @@ async function attachmentAction(label, url, body) {
   return out;
 }
 
+/* الخانة اللي اختارها المستخدم كهدف بعينه — بتقبل النقل أو التبديل معاها. */
+/* الخانات اللي نوع القطعة بيسمح بيها — نفس قواعد slotAccepts. الخامات والقطع
+   العادية مالهاش خانة مخصوصة: بتدخل BACKPACK/STASH، وباقي خانات الشنطة بتظهر
+   بس لو اللوداوت الحالي فيه سطور ليها. */
+function ctxDestSlots(row) {
+  // كل الوجهات اللي موجودة في الحساب — مفيش فلترة حسب نوع القطعة، والقسم اللي
+  // القطعة فيه حالياً بيتشال هو بس. الأوجمنت بس بيحدد خاناته الفعلية.
+  const slots = state.loadout?.slots || {};
+  const from = String(row?.container || "").toLowerCase();
+  const worn = ((slots.augment || []).find((s) => s.item) || {}).item || null;
+  const hasAug = !!worn;
+  const has = state.loadout?.capacity || {};
+  const bare = (k) => (slots[k] || []).length || Number(has[CAP_KEY[k] || k]) > 0;
+  // AUGMENT دايماً: فاضي = يلبس الشنطة المختارة (وقتها زر واحدة تظهر بتركيبه)،
+  // مليان = تبديل آمن. بس القطعة اللي لابسة نفسها مالهاش الخيار.
+  // الشنطة السايبة وراها الأوجمنت (يلبسها) — مش خانة كويك يوز.
+  if (isBagRow(row))
+    return ["augment"].filter((k) => k !== from &&
+      !(worn && row && row.instance_id === worn.instance_id));
+  const order = ["quick_use", "safe_pocket",
+    ...(hasAug ? ["augmented_slots"] : []),
+    "augment", "shield", "gun_1", "gun_2"];
+  return order.filter((k) => k !== from && bare(k));
+}
+
+function ctxMoveSteps(row) {
+  const out = [];
+  if (!row) return out;
+  const from = String(row.container || "").toLowerCase();
+  const loose = ["stash", "overflow"].includes(from) || !from;
+  // سلاحين محددين: وجهة واحدة بتنزلهم في WEAPON 1 و WEAPON 2 في نفس الضغطة.
+  if (ctxWeaponPair()) {
+    if (!loose) out.push({ container: "overflow", slot: "", note: "the overflow stash", free: true, full: false, count: 1 });
+    out.push({ container: "weapons", slot: "", note: "WEAPON 1 + WEAPON 2 in one press — whoever was there goes to OVERFLOW",
+               free: true, full: true, count: 2, pair: true });
+    return out;
+  }
+  // free = عدد الخانات الفاضية • full = فيه خانة مشغولة تتبدّل معاها.
+  // القواعد دي بتحدد الخانة اللي هتتختار بس — كل وجهة بتفضل قابلة للنقر،
+  // ولو اللعبة رفضت القطعة بنطلع رسالة واضحة.
+  const add = (container, slot, free, full, note) =>
+    out.push({ container, slot, note, free: free > 0, full: !!full, count: Math.max(0, free) });
+  // شنطة مختارة: AUGMENT دايماً من غير استثناء (اللي لابس ميتعرضش نفسه) وبدون
+  // STASH — الخلايا اللي بتفضل من الشنطة القديمة بتتنقل هي كمان للشنطة الجديدة.
+  const bag = isAugmentRow(row);
+  if (loose) {
+    if (sectionBare("quick_use") || sectionBare("safe_pocket"))
+      add("loadout", "quick_use", 1, true, "a quick use cell the game builds on the first write");
+    add("backpack", "", emptyBackpackSlots().length, true, "first free cell or swaps with an occupied one");
+    add("overflow", "", 1, false, "overflow stash");
+  } else {
+    // الخروج من اللوداوت دايماً فيه OVERFLOW (الستاش 280/280)، وSTASH لما يمتلئ
+    // الباك اند بيحوّل النقل للأوفر لوحده.
+    add("overflow", "", 1, false, bag ? "unload the bag to the overflow stash — its contents go out first"
+                                        : "the overflow stash");
+    if (!bag) add("stash", "", 1, true, "a free stash cell, or the overflow stash when the stash is full");
+  }
+  const worn = ((state.loadout?.slots?.augment || []).find((s) => s.item) || {}).item || null;
+  // شنطة في الأوفر/الستاش: قائمتها treatsها كشنطة (من غير AUGMENT غلط لنفسها)
+  // بس هي في الحقيقة قطعة سايبة لسه محتاجة STASH.
+  const rowInOverflow = ["stash", "overflow"].includes(from);
+  const dests = ctxDestSlots({ ...row, container: loose ? "" : from });
+  // الخروج للستاش دايماً في القائمة (عنصر لوداوت أو شنطة فاضية) — الستاش
+  // الممتلئ بيحوّل النقل للأوفر في الباك اند.
+  if ((!loose && !bag) || rowInOverflow) dests.unshift("stash");
+  // الشنطة الملبوسة: خيار AUGMENT نفسه بيختفي — هي أصلاً في الخانة. أما شنطة
+  // سايبة بره فالـ AUGMENT هو اللي بيلبسها.
+  const keys = bag && !rowInOverflow ? dests.filter((k) => k !== "augment") : dests;
+  const augAsset = bag ? String(row.asset_id ?? "") : "";
+  for (const key of keys) {
+    const cells = emptyLoadoutCells(key, "").filter((c) => (c.entry?.wrapper_id || "") !== row.wrapper_id);
+    const step = { container: "loadout", slot: key, note: "", free: cells.length > 0, full: true,
+                   count: Math.max(0, cells.length) };
+    const bare = sectionBare(key) && key !== "augment";
+    if (bare) {
+      // الشجرة لسه ماعندهاش الخانات دي: الكتابة نفسها بتفتحها.
+      step.free = true;
+      step.swap = false;
+      step.count = 1;
+      step.note = "the game builds this cell on the first write";
+    }
+    if (key === "augment") {
+      // فاضي = الخانة نفسها (اللبس)، مش "خانة فاضية تتنقل لها": الباكند بيحط
+      // الأوجمنت في الخانة نفسها، والشنطة بتلبس علطول.
+      if (!bag) continue;
+      step.free = true;
+      step.count = 1;
+      step.augment = true;
+      step.spec = augAsset ? augmentSpecFor(augAsset) : null;
+      step.swap = !!(worn && worn.instance_id && worn.instance_id !== row.instance_id);
+      step.carry = looseCarryCount(row);
+      step.note = step.swap ? "safe swap — the bag content moves with it, nothing hidden"
+        : "wear it in the AUGMENT cell — the bag cells switch to it right away";
+      if (step.carry)
+        step.note += ` · ${step.carry} selected item(s) go inside the new bag in the same press`;
+    } else if (!bare) {
+      const usable = loadoutCells(key).filter((c) => (c.wrapper_id || "") !== row.wrapper_id);
+      const freeC = usable.filter((c) => !c.item).length;
+      const swaps = usable.filter((c) => c.item && c.item.instance_id !== row.instance_id).length;
+      step.count = freeC + swaps;
+      step.free = step.count > 0;
+      step.swap = !freeC && swaps > 0;
+      step.note = freeC ? "free cell"
+        : (swaps ? `SWAP — the item in the ${CTX_DEST_LABEL[key] || key} cell goes to OVERFLOW first`
+                 : `no usable ${CTX_DEST_LABEL[key] || key} cell for this item`);
+    }
+    if (key === "shield") {
+      const fits = shieldFitsWorn(row);
+      if (!fits.ok) { step.blocked = fits.reason; step.count = 0; step.free = false; step.note = fits.reason; }
+    }
+    out.push(step);
+  }
+  return out;
+}
+
+/* سلاحين (بس) في التحديد — من الستاش/الأوفر/الشنطة — يروحوا WEAPON 1 & 2 معاً. */
+function ctxWeaponPair() {
+  // من التحديد الكامل لو كله سلاحين، أو من نفس البلاطة لو فتحت على الحاجة التانية.
+  const pool = state.selected.size > 1 ? [...state.selected] : [...(state.ctxMoveIds || [])];
+  const ids = [...new Set(pool)];
+  if (ids.length !== 2) return null;
+  const rows = ids.map(displayRow).filter(Boolean);
+  if (rows.length !== 2 || !rows.every((r) => isWeapon(r) && !r.is_blueprint)) return null;
+  return rows;
+}
+
+/* اللي بره الشنطة فعلاً: الستاش والأوفر (واللي مش عارفين مكانه). القطع اللي
+   جوه الشنطة الحالية عمرها ما بتتحسب منها — هي بتتبع الشنطة نفسها. */
+function isLooseRow(row) {
+  const c = String(row?.container || "").toLowerCase();
+  return c === "stash" || c === "overflow" || c === "";
+}
+/* الشنطة نفسها: خانة الأوجمنت أو جدول السعات بيقول إنه أوجمنت. */
+function isBagRow(row) {
+  const c = String(row?.container || "").toLowerCase();
+  if (c === "augment") return true;
+  if (row?.asset_id === null || row?.asset_id === undefined || row?.asset_id === "") return false;
+  const spec = augmentSpecFor(row.asset_id);
+  return !!spec && spec !== (state.augmentSpecs || {}).base;
+}
+
+/* اللي هيدخل مع الشنطة الجديدة في نفس الضغطة: الباقي من التحديد في الستاش
+   والأوفر (الشنطة نفسها مستبعدة — هي اللي بتلبس). */
+function looseCarryCount(row) {
+  if (!row) return 0;
+  const ids = [...(state.ctxMoveIds || [])].length ? [...state.ctxMoveIds] : [row.instance_id];
+  return new Set(ids.filter((id) => {
+    if (String(id) === String(row.instance_id)) return false;
+    const r = findRow(id);
+    return r && !isBagRow(r) && isLooseRow(r);
+  })).size;
+}
+
+/* MOVE TO... — بياخد كل التحديد لحظة فتح القائمة. الخانة الفرعية بتتقفل على
+   الاختيار، فالتحديد بيفضل سليم لحد ما التحويل يبدأ. */
+function moveToHTML(row, keepCount) {
+  if (!row) return "";
+  // من الكارت الجليدي للشنطة الملبوسة الشجرة بتوصّل شنطة الشجرة، والقائمة لازم
+  // تتكلم عن الشنطة نفسها — وإلا الوجهة الحالية بتبان (وخيار اللبس بيتعرض).
+  const item = String(row.container || "").toLowerCase() === "augment_loadout"
+    ? (((state.loadout?.slots?.augment || []).find((s) => s.item) || {}).item || row) : row;
+  const steps = ctxMoveSteps(item);
+  const cap = Math.max(1, keepCount || 1);
+  const inner = steps.map((s) => {
+    const label = s.pair ? "LOADOUT WEAPONS (1 & 2)"
+      : s.container === "loadout" ? (CTX_DEST_LABEL[s.slot] || s.slot) : CTX_DEST_LABEL[s.container];
+    const spec = s.spec ? ` <span class="ctx-tag" title="${esc(`${label}: ${num(s.spec.backpack)} backpack · ${num(s.spec.quick_use)} quick use · ${num(s.spec.augmented)} augmented · ${num(s.spec.safe_pocket)} safe pocket`)}">${num(s.spec.backpack)}·${num(s.spec.quick_use)}·${num(s.spec.augmented)}·${num(s.spec.safe_pocket)}</span>` : "";
+    const tag = s.pair ? `<span class="ctx-tag" title="${esc(s.note)}">1 + 2</span>`
+      : s.blocked ? `<span class="ctx-tag swap" title="${esc(s.blocked)}">⛔ SHIELD</span>`
+      : s.swap ? `<span class="ctx-tag swap" title="${esc(s.note)}">${Math.min(s.count, cap)} → OVERFLOW</span>`
+      : s.augment && (s.swap || s.carry) ? `<span class="ctx-tag swap" title="${esc(s.note)}">${s.swap ? "SWAP" : `PUT ON +${s.carry}`}</span>`
+      : spec ? spec : s.free ? `<span class="ctx-tag" title="${esc(s.note)}">${Math.min(s.count, cap)}</span>`
+      : `<span class="ctx-tag swap" title="${esc(s.note)}">SWAP</span>`;
+    return `<button type="button" data-moveto="${esc(s.container)}" data-moveto-slot="${esc(s.slot || "")}"${s.augment ? ' data-moveto-augment="1"' : ""}${s.carry ? ` data-carry="${s.carry}"` : ""}>${esc(label)}${tag}</button>`;
+  }).join("");
+  return `<div class="ctx-item">
+      <button type="button" class="ctx-label" data-sub="1">MOVE TO...<span class="arrow">›</span></button>
+      <div class="ctx-sub">${inner || `<span class="ctx-sub-title">nowhere to go right now</span>`}</div>
+    </div>`;
+}
+
+function rowNameOf(id) {
+  const row = findRow(id) || {};
+  return String(row.display_name || row.name || "").trim();
+}
+
+const CTX_DEST_LABEL = {
+  stash: "STASH", overflow: "OVERFLOW", backpack: "BACKPACK",
+  safe_pocket: "SAFE POCKET", quick_use: "QUICK USE", augment: "AUGMENT",
+  shield: "SHIELD", gun_1: "WEAPON 1", gun_2: "WEAPON 2", augmented_slots: "AUGMENTED",
+  weapons: "WEAPON 1 & 2",
+};
+
+function ctxMoveIds(list) {
+  const own = (list || []).filter((id) => {
+    const r = displayRow(id);
+    return r && (!r.account || r.account === state.account);
+  });
+  if (own.length) return { ids: own, switchTo: "" };
+  const other = (displayRow((list || [])[0]) || {}).account || "";
+  return { ids: list || [], switchTo: other };
+}
+
+/* نفس وظيفة الإفلات القديم: onDropTarget ← runAction ← /api/actions/move.
+   الواجهة الهدف بتوصل كـ wrapper_id، ولو مليانة الخطة بتبدّل مع اللي فيها. */
+async function runMoveTo(container, slot, list) {
+  // خطة الكمية بتتفكّ قبل hideCtx: hideCtx بيصفّرها، وبطاقة QTY كانت بتنزل
+  // نقل عادي للرصة كاملة لو اتصلت من مسار تاني غير [data-moveto].
+  const qtyPlan = state.qtyPlan ? { ...state.qtyPlan } : null;
+  const qtyTile = state.qtyPlanTile;
+  hideCtx();
+  if (container === "backpack" && qtyPlan && qtyPlan.asset && qtyPlan.amount > 0
+      && (String(qtyTile || "") === String(list?.[0] || "")
+          || (qtyPlan.ids || []).some((id) => (list || []).includes(id)))) {
+    state.qtyPlan = qtyPlan;
+    state.qtyPlanTile = qtyTile;
+    return runQtyMove("BACKPACK");
+  }
+  if (state.account === "ALL") { toast("Pick one account first before any action.", "bad"); return; }
+  if (state.frozen) { frozenBlock("This move"); return; }
+  if (!writesLive()) { toast(writeBlockMsg(), "bad"); return; }
+  // التحديد المتعدد عبر الأقسام هو الخطة: القائمة بتقرا كل المحدد، مش مجموعة
+  // البلاطة اللي اتفتحت عليها بس — النقر على الوجهة بينفّذ الكل مرة واحدة.
+  const picked = (state.ctxMoveIds || []).filter((id) => state.selected.size > 1 && state.selected.has(id));
+  const wanted = new Set([...(list || []), ...picked]);
+  const { ids, switchTo } = ctxMoveIds([...wanted]);
+  if (!ids.length) { toast("⛔ No movable item behind that click — re-sync this account and try again.", "bad"); return; }
+  if (container === "weapons") return runWeaponPair(ids);
+  if ((container === "overflow" || container === "stash") && ids.length > 1) return runCrossMove(ids, container);
+  if (switchTo) {
+    const rec = state.accounts.find((a) => a.name === switchTo);
+    if (!rec) { toast("This item belongs to an account that is not on the board — SYNC it first.", "bad"); return; }
+    await selectAccountById(rec.id);
+  }
+  const where = CTX_DEST_LABEL[container === "loadout" ? slot : container] || "";
+  // كليك يمين على بطاقة QTY → MOVE TO... BACKPACK = السحبة بالرقم المطلوب، مش نقل
+  // الرصّة اللي في الـ tile. openCtx بيحط الخطة في state.qtyPlan/qtyPlanTile،
+  // والشرط بيتقري قبل ctxMoveIds لأن معرّف البطاقة النشطة هو اللي بيفرّق.
+  // الطريق ده مايمرّش على writeGate بتاع السحب اليدوي (اللي بيقفل في عرض الدعم)؛
+  // الفحص بيفضل جوه runQtyMove عشان رسالة المنع تتقال مرة واحدة.
+  if (container === "backpack" && state.qtyPlan && !switchTo
+      && (String(state.qtyPlanTile || "") === String(list?.[0] || "")
+          || (state.qtyPlan.ids || []).some((id) => (list || []).includes(id))))
+    return runQtyMove(where);
+  if (container === "loadout" && slot === "augment") {
+    const rows = ids.map(displayRow).filter(Boolean);
+    const bad = rows.find((r) => !isAugmentRow(r));
+    if (bad || !rows.length) {
+      // الشنطة اللي في الأوفر مالهاش سطر لوداوت، فالبطاقة كتالوج — السعة هي
+      // اللي بتحكم: شنطة بسعات تلبس، وأي حاجة تانية تتبلّغ بالسبب.
+      const bag = bad && isBagRow(bad);
+      if (bad && bag) {
+        const bare = augmentBareCell();
+        const cell = bare || [...(state.loadout?.slots?.augment || [])].sort(
+          (a, b) => (Number(a.slot_index) || 0) - (Number(b.slot_index) || 0)).find((s) => s.wrapper_id);
+        return runAction({
+          kind: "move", target_container: "loadout", target_slot: "augment",
+          target_wrapper_id: cell ? cell.wrapper_id : "", instance_ids: [bad.instance_id],
+          label: `${bad.display_name || bad.name} → AUGMENT`, wear: true,
+        });
+      }
+      toast(`⛔ ${bad ? (bad.display_name || bad.name || "That item") : "This item"} is not an augment — only a bag (Tactical / Looting / Combat / Free Loadout) goes in the AUGMENT cell.`, "bad");
+      return;
+    }
+    if (rows.length > 1) { toast("One bag at a time — pick a single AUGMENT bag.", "bad"); return; }
+    const row = rows[0];
+    const bare = augmentBareCell();
+    // الخانة الفاضية: اللبس مايحتاجش أي خانة فاضية في مكان تاني.
+    // الخانة المليانة: التبديل الآمن بيتم على نفس الخانة؛ الفاضية: زي ما هي.
+    const cell = bare || [...(state.loadout?.slots?.augment || [])].sort(
+      (a, b) => (Number(a.slot_index) || 0) - (Number(b.slot_index) || 0)).find((s) => s.wrapper_id);
+    // التحديد الكامل بيدخل معاها: الشنطة تلبس الأول والباقي بيتحط في خاناتها.
+    const carry = ids.filter((id) => {
+      if (String(id) === String(row.instance_id)) return false;
+      const r = displayRow(id);
+      return r && !isBagRow(r) && isLooseRow(r);
+    });
+    const name = row.display_name || row.name;
+    return runAction({
+      kind: "move", target_container: "loadout", target_slot: "augment",
+      target_wrapper_id: cell ? cell.wrapper_id : "", instance_ids: [row.instance_id],
+      carry_instance_ids: carry,
+      label: carry.length ? `${name} → AUGMENT + ${carry.length} item(s) inside it` : `${name} → AUGMENT`,
+      wear: true,
+    });
+  }
+  const d = { ids, container: "", wrapper: "", fromMenu: true,
+              name: ids.length > 1 ? `${ids.length} items` : rowNameOf(ids[0]),
+              target: where };
+  await onDropTarget(container, slot || "", "", d);
+}
+
+/* خطة النقل الجماعي: قطعة -> طلب واحد (نفس مسار السحب)، والخطة كلها في نداء
+   واحد للبوابة. اللي متزامنش بيتبلّغ من نص الباكند، والتحديد بيتصفّر بعدها. */
+function crossMoveSteps(ids, container) {
+  const plan = [];
+  for (const id of ids) {
+    const row = displayRow(id);
+    if (!row) continue;
+    const from = String(row.container || "").toLowerCase();
+    if (container === "overflow" && from === "overflow") continue;
+    if (container === "stash" && from === "stash") continue;
+    plan.push({ account: state.account, target_container: container, target_wrapper_id: "",
+                target_slot: "", instance_ids: [id] });
+  }
+  return plan;
+}
+
+async function runCrossMove(ids, container) {
+  hideCtx();
+  if (!writeGate("This move")) return;
+  const moves = crossMoveSteps(ids, container);
+  if (!moves) return;
+  if (!moves.length) { toast(`✔ Already in ${container.toUpperCase()}.`, "ok"); return; }
+  let out;
+  try {
+    out = await withSync(ids, container !== "loadout", () => post("/api/actions/move-batch",
+      { account: state.account, moves }));
+  } catch (err) { toast("⛔ Connection failed: " + err.message, "bad"); return; }
+  if (out && out.executed) {
+    state.selected.clear();
+    pushHistory(out, `${num(moves.length)} item(s) → ${container === "loadout" ? "BACKPACK" : container.toUpperCase()}`);
+    await Promise.all([loadSections(), loadLog()]).catch(() => {});
+    toast("✔ " + (out.detail || `${num(moves.length)} item(s) moved to ${container.toUpperCase()} in one press.`), "ok", 9000);
+    return;
+  }
+  toast("⛔ " + ((out && (out.detail || out.error)) || "The gateway did not answer."), "bad", 9000);
+  await Promise.all([loadSections(), loadLog()]).catch(() => {});
+}
+
+/* سلاحين -> WEAPON 1 & 2: الذخيرة في WEAPON 1، والتانية في WEAPON 2، وأي سلاح
+   كان في الخانتين بينزل الأوفر في نفس الطلب. */
+async function runWeaponPair(ids) {
+  const pair = ctxWeaponPair();
+  if (pair) ids = pair.map((r) => r.instance_id);
+  hideCtx();
+  if (!writeGate("This move")) return;
+  const cells = ["gun_1", "gun_2"].map((key) => loadoutCells(key)[0] || null);
+  if (cells.some((c) => !c || !c.wrapper_id)) {
+    toast("⛔ The worn bag has no WEAPON cell on the account yet — wear it once in the game, then SYNC.", "bad");
+    return;
+  }
+  const moves = ids.map((id, i) => ({
+    account: state.account, target_container: "loadout", target_slot: i ? "gun_2" : "gun_1",
+    target_wrapper_id: cells[i].wrapper_id, swap: true, instance_ids: [id],
+  }));
+  let out;
+  try { out = await withSync(ids, false, () => post("/api/actions/move-batch", { account: state.account, moves })); }
+  catch (err) { toast("⛔ Connection failed: " + err.message, "bad"); return; }
+  if (out && out.executed) {
+    state.selected.clear();
+    pushHistory(out, "2 weapons → WEAPON 1 & 2");
+    await Promise.all([loadSections(), loadLog()]).catch(() => {});
+    toast("✔ " + (out.detail || `${rowNameOf(ids[0])} → WEAPON 1 · ${rowNameOf(ids[1])} → WEAPON 2 — the occupants went to OVERFLOW.`), "ok", 9000);
+    return;
+  }
+  toast("⛔ " + ((out && (out.detail || out.error)) || "The gateway did not answer."), "bad", 9000);
+  await Promise.all([loadSections(), loadLog()]).catch(() => {});
+}
+
+/* الكمية اللي ظاهرة في الستاش دلوقتي للنوع ده (الستاش + الأوفر + الشنطة لو ظاهرين). */
+function liveAssetQty(asset) {
+  let total = 0;
+  const seen = new Set();
+  const add = (row) => {
+    if (!row || seen.has(row.instance_id) || assetKey(row) !== asset) return;
+    seen.add(row.instance_id);
+    total += Number(row.qty) || 0;
+  };
+  for (const part of Object.values(state.sections || {})) for (const r of part.slots || []) add(r);
+  for (const r of state.foreign ? Object.values(state.foreign) : []) add(r);
+  return total;
+}
+
+function bagQtyOf(asset) {
+  let total = 0;
+  for (const cell of state.loadout?.slots?.backpack || []) {
+    const r = cell.item;
+    if (r && assetKey(r) === asset) total += Number(r.qty) || 0;
+  }
+  return total;
+}
+
+/* كليك يمين على بطاقة QTY → MOVE TO… BACKPACK: المسار اللي بيوصل الرقم بالظبط.
+   الرقم اللي بيتنفّذ = المطلوب ناقص اللي وصل الشنطة من نفس النوع في المحاولات
+   اللي فاتت، عشان ضغطتين ورا بعض ما يبعاتوش 14 بدل 7. */
+async function runQtyMove(where) {
+  const plan = state.qtyPlan ? { ...state.qtyPlan } : null;
+  state.qtyPlan = null;
+  state.qtyPlanTile = "";
+  if (!plan || !plan.asset || !plan.amount) return;
+  const account = state.account;
+  if (account === "ALL") { toast("Pick one account first before any action.", "bad"); return; }
+  if (state.frozen) { frozenBlock("The quantity move"); return; }
+  if (!writeGate("The quantity move")) return;
+  const asset = plan.asset;
+  let out;
+  try {
+    out = await post("/api/actions/fill", {
+      account, asset_id: asset, amount: plan.amount, target_wrapper_id: "", confirmed: true,
+    });
+  } catch (err) { toast("⛔ Connection failed: " + err.message, "bad"); return; }
+  if (out && out.executed) {
+    state.selected.clear();
+    pushHistory(out, `${num(out.delivered || plan.amount)} → ${where || "BACKPACK"}`, account);
+    await Promise.all([loadSections(), loadLog()]).catch(() => {});
+    toast("✔ " + (out.detail || `${num(plan.amount)} arrived in the backpack.`), "ok", 9000);
+    return;
+  }
+  toast("⛔ " + ((out && (out.detail || out.error)) || "The gateway did not answer."), "bad", 9000);
+  if (out && (out.partial || (out.steps || []).some((s) => s.result?.executed || s.executed))) {
+    await Promise.all([loadSections(), loadLog()]).catch(() => {});
+  }
+}
+
 function openCtx(e, tile, ids) {
   const row = findRow(ids[0]) || {};
   const displayName = row.display_name || row.name || tile.dataset.name || "";
+  const qtyCard = tile.closest(".qty-card[data-fill-asset]");
+  const qtyAsset = qtyCard ? String(qtyCard.dataset.fillAsset || "") : "";
+  const qtyAmountVal = qtyCard ? Number(qtyCard.dataset.fillAmount) || 0 : 0;
+  const qAmount = qtyAmount();
+  if (qtyAsset && qtyAmountVal > 0) {
+    state.qtyPlan = { asset: qtyAsset, amount: qtyAmountVal, ids: ids.slice() };
+    state.qtyPlanTile = String(tile.dataset.id || "");
+  } else if (qAmount > 0 && row && row.asset_id && ["stash", "overflow"].includes(String(row.container || "").toLowerCase())) {
+    state.qtyPlan = { asset: String(row.asset_id), amount: qAmount, ids: ids.slice() };
+    state.qtyPlanTile = String(tile.dataset.id || "");
+  } else {
+    state.qtyPlan = null;
+    state.qtyPlanTile = "";
+  }
+  const qtyOnlyStash = qtyAsset && ids.every((id) => {
+    const r = findRow(id) || {};
+    return ["stash", "overflow"].includes(String(r.container || "").toLowerCase());
+  });
+  if (qtyAsset && qtyAmountVal > 0 && qtyOnlyStash) {
+    ids = [ids[0]];
+  }
   const container = tile.dataset.container;
   const sourceContainer = String(row.container || "").toLowerCase() || container;
   const multiSelected = state.selected.size > 1 && ids.some((id) => state.selected.has(id));
@@ -5306,26 +6754,29 @@ function openCtx(e, tile, ids) {
   const count = useRows.length || useIds.length;
   const weapons = useRows.filter((r) => isWeapon(r) && !r.is_blueprint);
   const allWeapons = weapons.length > 0 && weapons.length === useRows.length;
-  const damaged = useRows.filter(rowDamaged);
   const lvl = rowLevel(row);
   const lvlText = lvl > 0 && lvl < 5 ? (ROMAN[lvl] || "") : "";
   const name = displayName + (lvlText && !displayName.trim().toUpperCase().endsWith(" " + lvlText) ? " " + lvlText : "");
-  const splitRow = ids.map((id) => findRow(id))
-    .filter((r) => r && (r.qty || 0) > 1 && !r.is_blueprint)
-    .sort((a, b) => (Number(b.qty) || 0) - (Number(a.qty) || 0))[0] || null;
-  const splitGroup = !splitRow ? ""
-    : ["stash", "overflow"].includes(String(splitRow.container || "").toLowerCase()) ? "stash"
-    : ["backpack", "safe_pocket", "quick_use"].includes(String(splitRow.container || "").toLowerCase()) ? "loadout" : "";
-  const bpEmpty = (state.loadout?.slots?.backpack || []).find((s) => !s.item && s.wrapper_id)?.wrapper_id || "";
-  const splitEmpty = !splitRow ? "" : (state.loadout?.slots?.[String(splitRow.container || "").toLowerCase()] || [])
-    .find((s) => !s.item && s.wrapper_id && s.wrapper_id !== splitRow.wrapper_id)?.wrapper_id || "";
-  const splitReady = splitGroup === "stash" ? !!bpEmpty : !!splitEmpty;
-  const canSplit = !!splitRow && !!splitGroup && (Number(splitRow.qty) || 0) > 1;
+
+  const splitCands = [row, ...ids.map((id) => findRow(id))]
+    .filter((r) => r && (Number(r.qty) || 0) > 1 && !r.is_blueprint);
+  const splitRow = splitCands.sort((a, b) => (Number(b.qty) || 0) - (Number(a.qty) || 0))[0] || null;
+  const canSplit = !!splitRow && (Number(splitRow.qty) || 0) > 1;
+  const anyStack = useRows.some((r) => (Number(r.qty) || 0) > 1 && !r.is_blueprint);
   const sellTotal = rowSellTotal(useRows);
   const upgradeable = allWeapons && useRows.some((r) => rowLevel(r) < 4);
   const allMaxed = allWeapons && useRows.every((r) => rowLevel(r) >= 4);
 
   let html = `<div class="ctx-title"><span>${esc(name)}</span>${count > 1 ? `<span class="ctx-count">${count} ITEMS</span>` : ""}</div>`;
+
+  state.ctxMoveIds = useIds.map((id) => String(id));
+  ctxKillSelectionReset = true;
+  if (state.qtyPlan) {
+    state.ctxMoveIds = [String(ids[0])];
+    html += moveToHTML({ ...row, container: "stash" }, 1);
+  } else {
+    html += moveToHTML(row, count);
+  }
 
   if (allWeapons) {
     html += `<div class="ctx-item">
@@ -5339,18 +6790,21 @@ function openCtx(e, tile, ids) {
     </div>`;
   }
 
-  /* اللي البوابة الرسمية بتنفّذه فعلاً: النقل + recycle/scrap/repair/erase + ترقية
-     الأسلحة + تقسيم ودمج الكميات (كلها متقيسة لايف على mutate). */
   if (allWeapons) {
     html += `<button type="button" class="ctx-row" data-upgrade="1" ${upgradeable ? "" : "disabled"} title="Upgrade the weapon on the game gateway — the requirements panel shows up and you pick the grade">${allMaxed ? "UPGRADE (MAX LEVEL)" : "UPGRADE"}</button>`;
-  }
-  if (damaged.length) {
-    html += `<button type="button" class="ctx-row" data-repair="1" title="Repairs with materials from your stash on the game gateway — asks for confirmation">REPAIR</button>`;
   }
   html += `<button type="button" class="ctx-row" data-sell="1" title="Destroys the item on the game gateway and gives credits — asks for confirmation">SELL<span class="sell-total ${sellTotal > 0 ? "" : "zero"}">+${numSpaced(sellTotal)}</span></button>`;
   html += `<button type="button" class="ctx-row danger" data-recycle="1" title="Breaks down into materials on the game gateway — asks for confirmation">RECYCLE</button>`;
   if (canSplit) {
-    html += `<button type="button" class="ctx-row" data-splitstack="1" title="Split on the Embark gateway itself: moveAmount creates the new piece and setParents drops it into ${splitReady ? "the free cell" : "a free cell in the same section"} — one atomic request, no in-game step at all.">SPLIT STACK<span class="ctx-tag" title="Direct write to the source">WRITE</span></button>`;
+    html += `<button type="button" class="ctx-row" data-splitstack="1" title="Split stack">SPLIT STACK<span class="ctx-tag" title="Direct write to the source">WRITE</span></button>`;
+  } else {
+    html += `<button type="button" class="ctx-row" data-splitone="1" title="Pieces of 1">SPLIT STACK<span class="ctx-tag">PIECES OF 1</span></button>`;
+  }
+  const editId = String((row && row.asset_id) || tile.dataset.asset || "").trim();
+  if (editId && pageIsAdmin) {
+    const editorOn = !!window.ItemEditor;
+    html += `<button type="button" class="ctx-row" data-itemedit="${esc(editId)}" title="${editorOn ? "Edit this item's data" : "Item editor loading"}">` +
+      `EDIT ITEM DATA<span class="ctx-tag">${row.manual_override ? "OVERRIDE" : "ADMIN"}</span></button>`;
   }
   const unknownHit = useRows.map((r) => String((r && r.asset_id) || "")).find((id) => id && state.newItems[id]);
   if (unknownHit) {
@@ -5364,6 +6818,7 @@ function openCtx(e, tile, ids) {
   ctxOpenItem = null;
   ctx.hidden = false;
   ctx.innerHTML = html;
+  bindCtxRows(ctx, { row, ids: useIds, useRows, weapons, splitRow, pageIsAdmin, count });
   const pad = 12;
   const w = ctx.offsetWidth, h = ctx.offsetHeight;
   ctx.classList.toggle("left", e.clientX + w + 220 > window.innerWidth);
@@ -5372,7 +6827,10 @@ function openCtx(e, tile, ids) {
   if (y + h > window.innerHeight - pad) y = Math.max(pad, window.innerHeight - h - pad);
   ctx.style.left = Math.max(pad, x) + "px";
   ctx.style.top = Math.max(pad, y) + "px";
+}
 
+function bindCtxRows(ctx, ctxData = {}) {
+  const { row = {}, ids = [], useRows = [], weapons = [], splitRow = null, pageIsAdmin = false } = ctxData;
   if (FINE_POINTER) {
     ctx.querySelectorAll(".ctx-label").forEach((label) => {
       const item = label.closest(".ctx-item");
@@ -5472,13 +6930,21 @@ function openCtx(e, tile, ids) {
     hideCtx();
     openUpgradeModal(weapons);
   });
+  ctx.querySelectorAll("[data-identify]").forEach((b) => b.onclick = () => {
+    hideCtx();
+    identifyAsset(b.dataset.identify);
+  });
+  ctx.querySelectorAll("[data-moveto]").forEach((b) => b.onclick = (ev) => {
+    ev.stopPropagation();
+    const moveIds = state.ctxMoveIds.slice();
+    runMoveTo(b.dataset.moveto, b.dataset.movetoSlot || "", moveIds).catch((err) => {
+      console.error("move failed", err);
+      toast("⛔ " + ((err && err.message) || "The move failed before it reached the gateway."), "bad", 9000);
+    });
+  });
   ctx.querySelectorAll("[data-recycle]").forEach((b) => b.onclick = () => {
     hideCtx();
     openRecycleModal(useRows);
-  });
-  ctx.querySelectorAll("[data-repair]").forEach((b) => b.onclick = () => {
-    hideCtx();
-    openRepairModal(useRows);
   });
   ctx.querySelectorAll("[data-sell]").forEach((b) => b.onclick = () => {
     hideCtx();
@@ -5486,14 +6952,44 @@ function openCtx(e, tile, ids) {
   });
   ctx.querySelectorAll("[data-splitstack]").forEach((b) => b.onclick = () => {
     hideCtx();
-    openSplitModal(splitRow);
+    const target = splitRow || row;
+    if (!target || (Number(target.qty) || 0) <= 1) {
+      toast("SPLIT STACK needs a pile bigger than 1 — this item is a single piece, so there is nothing to split.", "bad", 8000);
+      return;
+    }
+    openSplitModal(target);
   });
-  ctx.querySelectorAll("[data-identify]").forEach((b) => b.onclick = () => {
+  ctx.querySelectorAll("[data-splitexplain]").forEach((b) => b.onclick = () => {
     hideCtx();
-    identifyAsset(b.dataset.identify);
+    toast("SPLIT needs the pile's cell on the board — SYNC this account, then right-click the pile again.", "bad", 8000);
+  });
+  ctx.querySelectorAll("[data-splitone]").forEach((b) => b.onclick = () => {
+    hideCtx();
+    toast("Everything selected here is separate pieces of 1 — nothing to split. Select a pile bigger than 1.", "bad", 8000);
+  });
+  ctx.querySelectorAll("[data-itemedit]").forEach((b) => b.onclick = () => {
+    hideCtx();
+    if (!pageIsAdmin) {
+      toast("Admin access required.", "bad");
+      return;
+    }
+    const target = (useRows && useRows[0]) || row;
+    if (!window.ItemEditor) {
+      toast("The item editor did not load — refresh the page once and try again.", "bad", 7000);
+      return;
+    }
+    const assetId = b.dataset.itemedit || (target && target.asset_id);
+    if (!assetId) {
+      toast("No asset ID found for this item.", "bad");
+      return;
+    }
+    window.ItemEditor.open(assetId, { source: "tile", anchor: target });
   });
 }
+
 function hideCtx() {
+  state.qtyPlan = null;
+  state.qtyPlanTile = "";
   clearTimeout(ctxOpenTimer);
   ctxOpenTimer = 0;
   ctxOpenItem = null;
@@ -5512,6 +7008,14 @@ document.addEventListener("click", (e) => {
       o.classList.remove("open", "hover");
     });
   }
+  const unkChip = e.target.closest("[data-unknown-open]");
+  // الفتح بيحصل من onclick بتاعة الشريحة — المستمع ده كان بيعيد الفتح وبيقفل النافذة
+  if (unkChip && !document.querySelector('#ident-search')) {
+    openIdentify(unkChip.dataset.asset || "", unkChip.dataset.unknownOpen);
+    return;
+  }
+  if (e.target.closest("[data-add-images]")) { openAddImages(); return; }
+  if (e.target.closest("[data-copy-assets]")) { copyUnknownIds(); return; }
   if (e.target.id === "modal") $("#modal").hidden = true;
   if (!e.target.closest("#drawer")) $("#drawer").hidden = true;
   if (!e.target.closest("#sort-dd")) {
@@ -5779,8 +7283,19 @@ function showCard(tile, e) {
       </div>`).join("")}</div></div>` : ""}`;
   card.style.setProperty("--card-accent", color);
   card.classList.toggle("is-special", special);
-  card.hidden = false;
+  // مثبتة جانب البلاطة: بنحسب الموقع بعد ما المحتوى ياخد حجمه، وبعدها بنكشفها
+  // بـ transition خفيف (opacity/transform) — مفيش قفزة من corner الصفحة
+  cardHover.anchor = tile;
+  cardHover.rect = null;
   positionCard(e);
+  // على جهاز فيه prefers-reduced-motion (إعداد ويندوز مش البلاطة ده) الأنيميشن
+  // بيتشال، فبنكشف الكارت على طول. غير كده: الموقع بيتثبت بـ translate3d في نفس
+  // الإطار اللي الكارت بيتكشف فيه، والـ transition بيعمل fade خفيف من نفس
+  // المكان — مفيش حركة جانبية ولا قفزة من corner الصفحة.
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) card.style.transition = "none";
+  card.style.transform = `translate3d(${Math.round(cardHover.x)}px, ${Math.round(cardHover.y)}px, 0)`;
+  card.hidden = false;
+  card.classList.add("on");
   const request = ++cardRecycleRequest;
   const account = row.account || state.account;
   const cacheKey = JSON.stringify([account, row.asset_id, row.name]);
@@ -5798,22 +7313,106 @@ function showCard(tile, e) {
   });
 }
 
+/* ---------------------------------------------------- كارت التفاصيل العائم
+   الموقع ثابت جانب البلاطة (مش بيجري ورا الماوس) وبيتكتب بـ translate3d جوه
+   requestAnimationFrame، والظهور بيبقى بعد 50ms من الوقوف على العنصر — كده
+   المرور السريع على 300 بلاطة مش بيفتح ولا كارت، والكارت اللي بيفتح مابيتحركش. */
+const cardHover = { tile: null, timer: 0, anchor: null, rect: null, frame: 0, x: 0, y: 0 };
+const CARD_SHOW_DELAY = 50;
+const CARD_ATTACH_PX = 16;
+/* المستضيف اللي مؤشر الماوس متسجل عليه بالفعل — الكشف يتم داخل جيستشر الـ hover
+   نفسه، فالبراوزر مايلوّنش الكارت pv-time فاضي؛ لو مفيش جيستشر (مثلاً الماوس باقي
+   فوق بلاطة بعد فتح نافذة أو بعد سكرول) الكشف بيتم في الإطار الجاي. */
+const CARD_TRIGGERS = new Set(["mousemove", "pointermove", "mouseover", "pointerover"]);
+
+function cardPlacement(clientX, clientY) {
+  const card = $("#item-card");
+  const pad = 14, gap = CARD_ATTACH_PX;
+  const w = card ? card.offsetWidth : 340;
+  const h = card ? card.offsetHeight : 200;
+  let x = clientX + gap;
+  let y = clientY + gap;
+  if (x + w > window.innerWidth - pad) x = clientX - w - gap;
+  if (y + h > window.innerHeight - pad) y = clientY - h - gap;
+  return { x: Math.max(pad, x), y: Math.max(pad, y) };
+}
+
+function flushCard() {
+  cardHover.frame = 0;
+  const card = $("#item-card");
+  if (!card || card.hidden || !cardHover.tile) return;
+  card.style.transform = `translate3d(${Math.round(cardHover.x)}px, ${Math.round(cardHover.y)}px, 0)`;
+}
+
+/* بتحسب مكان الكارت جانب البلاطة (أو جانب المؤشر لو البلاطة اتشالت من
+   الصفحة) وبتكتبه في الإطار الجاي. البلاطة الثابتة مابتتحسبش تاني، ومحتوى
+   الكارت اللي بيوصل بعدين بيحسب لو حجمه اتغير بس. */
 function positionCard(e) {
   const card = $("#item-card");
-  if (!card || card.hidden) return;
-  const pad = 14, gap = 16;
-  const w = card.offsetWidth, h = card.offsetHeight;
-  let x = e.clientX + gap;
-  let y = e.clientY + gap;
-  if (x + w > window.innerWidth - pad) x = e.clientX - w - gap;
-  if (y + h > window.innerHeight - pad) y = e.clientY - h - gap;
-  card.style.transform = "translate(" + Math.max(pad, x) + "px," + Math.max(pad, y) + "px)";
+  if (!cardHover.tile) return;
+  if (cardHover.anchor && cardHover.anchor.isConnected) {
+    const r = cardHover.anchor.getBoundingClientRect();
+    const size = `${card.offsetWidth}x${card.offsetHeight}`;
+    if (cardHover.rect && cardHover.rect.right === r.right && cardHover.rect.top === r.top
+        && cardHover.rect.size === size) return;
+    cardHover.rect = { right: r.right, top: r.top, size };
+    cardHover.x = r.right + CARD_ATTACH_PX;
+    // لو الكارت مش هيدخل طوله على اليمين، بيفضل شوية لفوق بدل ما يخرج من الشاشة
+    const h = card.offsetHeight || 200;
+    cardHover.y = Math.max(8, Math.min(r.top, window.innerHeight - h - 8));
+  } else {
+    const p = cardPlacement(e?.clientX ?? cardHover.x, e?.clientY ?? cardHover.y);
+    cardHover.x = p.x;
+    cardHover.y = p.y;
+  }
+  if (!cardHover.frame) cardHover.frame = requestAnimationFrame(flushCard);
 }
 
 function hideCard() {
+  clearTimeout(cardHover.timer);
+  cardHover.timer = 0;
+  cardHover.tile = null;
+  cardHover.anchor = null;
+  cardHover.rect = null;
+  if (cardHover.frame) { cancelAnimationFrame(cardHover.frame); cardHover.frame = 0; }
   const card = $("#item-card");
-  if (card) card.hidden = true;
+  if (card) { card.hidden = true; card.classList.remove("on"); }
 }
+
+function hoverCard(tile, e) {
+  if (tile === cardHover.tile) return;
+  hideCard();
+  cardHover.tile = tile;
+  cardHover.x = e?.clientX ?? 0;
+  cardHover.y = e?.clientY ?? 0;
+  cardHover.timer = setTimeout(() => {
+    cardHover.timer = 0;
+    if (cardHover.tile !== tile) return;
+    if (e?.type && CARD_TRIGGERS.has(e.type)) showCard(tile, e);
+    else requestAnimationFrame(() => { if (cardHover.tile === tile) showCard(tile, e); });
+  }, CARD_SHOW_DELAY);
+}
+
+/* mouseleave بيوصل بعد mouseenter البلاطة اللي جنبها (ترتيب الأحداث في نفس
+   الإطار) — بنقفل بس لو البلاطة دي هي اللي ماسكة الكارت */
+function leaveCard(tile) {
+  if (cardHover.tile === tile) hideCard();
+}
+
+// السكرول بيقفل الكارت على طول — مفيش وميض ولا حسابات وهوفر وسط التمرير.
+// وطول التمرير (و80ms بعده) حسابات الـ hover واقفة على البلاطات (كلاس is-scrolling).
+let scrollIdle = 0;
+function scrollBusy() { document.body.classList.add("is-scrolling"); }
+function scrollIdleSoon() {
+  clearTimeout(scrollIdle);
+  scrollIdle = setTimeout(() => document.body.classList.remove("is-scrolling"), 80);
+}
+document.addEventListener("scroll", () => {
+  scrollBusy();
+  scrollIdleSoon();
+  hideCard();
+}, { capture: true, passive: true });
+window.addEventListener("blur", hideCard);
 
 /* ------------------------------------------------------------------ traders + boot */
 const TRADER_STATE = { data: null, offer: null, trader: null, qty: 1, max: 1, balance: 0 };
@@ -5997,13 +7596,14 @@ function updateBuyState() {
   const soldOut = TRADER_STATE.soldOut;
   const live = Boolean(TRADER_STATE.data?.buyable);
   const paused = live && Boolean(TRADER_STATE.data?.write_paused);
-  /* تنبيه بس مش منع: الستاش مليان = الحاجات بتنزل في الأوفر ستاش تلقائياً */
+  /* تنبيه بس مش منع: الستاش مقفول = الباك-إند هيفضّي خانة بنفسه (أكوام
+     كاملة للأوفر فلو) قبل التسليم، فالرسالة هنا توضّح اللي هيحصل. */
   const room = stashRoom();
   const warn = $("#buy-space");
   if (warn) {
     const short = room && room.free <= 0;
     warn.hidden = !short;
-    if (short) warn.textContent = `⚠ Stash is full (${num(room.free)} / ${num(room.total)} free) — items will be delivered directly to the overflow stash.`;
+    if (short) warn.textContent = `⚠ Stash is full (${num(room.free)} / ${num(room.total)} free) — to deliver the purchase, whole stacks will be moved to the overflow automatically before the buy.`;
   }
   btn.disabled = qty < 1 || tooMuch || overStock || soldOut || paused;
   const label = live ? "BUY" : "ADD TO LIST";
@@ -6637,32 +8237,26 @@ function showView(view) {
   if (view === "traders") loadTraders().catch((e) => toast("⛔ " + e.message, "bad"));
   if (view === "workshop") loadWorkshop().catch((e) => toast("⛔ " + e.message, "bad"));
 }
-window.showView = showView;
 
-const btnScr = $("#btn-scrappy");
-if (btnScr) btnScr.onclick = scrappyTopClick;
 $("#acct-add").onclick = addAccount;
 $("#acct-token").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addAccount(); } });
-const btnSyncAll = $("#acct-sync-all");
-if (btnSyncAll) {
-  btnSyncAll.onclick = async (e) => {
-    const btn = e.currentTarget;
-    const label = btn.innerHTML;
-    btn.disabled = true;
-    btn.textContent = "SYNCING…";
-    acctNote("Pulling every account from the Embark gateway (read only)…", "");
-    try {
-      const out = await post("/api/refresh", {});
-      const results = out.results || [];
-      const online = results.filter((r) => r.ok).length;
-      acctNote(`✔ Sync ${online}/${results.length} accounts · ${out.mode} · ${out.duration_sec}s`, online === results.length ? "ok" : "bad");
-      await Promise.all([loadAccounts(), loadHeader(), loadStatus(), loadSections(), loadLegend()]);
-      toast(`✔ Synced ${online} accounts.`, "ok");
-    } catch (err) { acctNote("⛔ " + err.message, "bad"); }
-    btn.disabled = false;
-    btn.innerHTML = label;
-  };
-}
+$("#acct-sync-all").onclick = async (e) => {
+  const btn = e.currentTarget;
+  const label = btn.innerHTML;
+  btn.disabled = true;
+  btn.textContent = "SYNCING…";
+  acctNote("Pulling every account from the Embark gateway (read only)…", "");
+  try {
+    const out = await post("/api/refresh", {});
+    const results = out.results || [];
+    const online = results.filter((r) => r.ok).length;
+    acctNote(`✔ Sync ${online}/${results.length} accounts · ${out.mode} · ${out.duration_sec}s`, online === results.length ? "ok" : "bad");
+    await Promise.all([loadAccounts(), loadHeader(), loadStatus(), loadSections(), loadLegend()]);
+    toast(`✔ Synced ${online} accounts.`, "ok");
+  } catch (err) { acctNote("⛔ " + err.message, "bad"); }
+  btn.disabled = false;
+  btn.innerHTML = label;
+};
 
 const syncBtn = $("#btn-sync");
 if (syncBtn) syncBtn.onclick = async (e) => {
@@ -6685,7 +8279,6 @@ if (liveSyncBtn) liveSyncBtn.onclick = async () => {
     const out = await post("/api/actions/sync", { account: state.account });
     if (!out.executed) throw new Error(out.result?.detail || out.result?.error || "SYNC failed");
     await Promise.all([loadSections(), loadLegend(), loadHeader(), loadStatus(), loadLog()]);
-    loadScrappy().catch(() => {});
     toast("✔ " + (out.note || "Synced — inventory and loadout updated."), "ok");
   } catch (err) {
     toast("⛔ " + err.message, "bad");
@@ -6693,19 +8286,6 @@ if (liveSyncBtn) liveSyncBtn.onclick = async () => {
   btn.disabled = false;
   btn.classList.remove("spinning");
 };
-
-const btnCopyCMSync = $("#btn-copy-cmsync-link");
-if (btnCopyCMSync) {
-  btnCopyCMSync.onclick = async () => {
-    const url = `${location.origin}/download/cmsync`;
-    try {
-      await navigator.clipboard.writeText(url);
-      toast("✔ تم نسخ رابط تحميل برنامج CMSync بنجاح!", "ok");
-    } catch {
-      toast(`رابط التحميل: ${url}`, "");
-    }
-  };
-}
 document.querySelectorAll(".nav-item").forEach((b) => b.onclick = () => showView(b.dataset.view));
 
 function showPanels(show) {
@@ -6795,31 +8375,32 @@ async function boot() {
 }
 boot().catch((e) => { $("#column-host").innerHTML = `<p class="note">${esc(e.message)}</p>`; });
 setInterval(() => {
-  if (state.moveBusy || state.moveQueue.length) return;
+  if (state.moveBusy || state.moveQueue.length || state.moveInFlight) return;
   refreshAll().catch(() => {});
 }, 60000);
 
-/* ---------------- المزامنة الذكية التلقائية ----------------
-   نراقب مؤشر التحديث في السيرفر كل ثانيتين ونصف، وبمجرد عودة المستخدم للمتصفح
-   أو حدوث أي سحب جديد في الخلفية تتحدث اللوحة تلقائياً دون الحاجة لأي ضغطة زر. */
+/* ---------------- عيون على الأجن ----------------
+   الأجن (CMSync) بيبعت التوكن والباكند يسحب المخزن قراءةً — فاللوحة بتتحدّث
+   فعلاً في القاعدة، بس التاب المفتوح كان لسه عارض القديم لحد ما حد يدوس SYNCHRONIZE
+   أو ياستنى دورة الـ 60 ثانية. بنراقب مؤشر الإرسال بطلب خفيف ونسحب الأقسام أول ما
+   يجي جديد — من غير أي كتابة على حساب اللعبة، قراءة بس. */
 let syncMark = null;
 
 function syncVersion(st) {
-  const acc = Object.entries(st.accounts || {}).map(([a, v]) => `${a}:${v.items || 0}:${v.last_success || 0}`);
+  const acc = Object.entries(st.accounts || {}).map(([a, v]) => `${a}:${v.items || 0}`);
   acc.sort();
-  return `${(st.agent || {}).at || 0}|${st.last_attempt_age_minutes || 0}|${acc.join(",")}`;
+  return `${(st.agent || {}).at || 0}|${acc.join(",")}`;
 }
 
 async function watchAgentSync() {
-  if (state.frozen || state.moveBusy || state.moveQueue.length) return;
-  if (state.menuOpen || state.drag || state.loPopOpen) return; // ما نقطعش أثناء التعامل مع البلاطات
-  if (!$("#modal") || !$("#modal").hidden) return; // مفيش تحديث أثناء وجود نافذة منبثقة
+  if (document.hidden || state.frozen || state.moveBusy || state.moveQueue.length || state.moveInFlight) return;  if (state.menuOpen || state.loPopOpen) return; // ما نقضّش وهو بيتعامل مع البلاطات
+  if (!$("#modal") || !$("#modal").hidden) return; // مفيش نقض على نافذة مفتوحة
   const st = await json("/api/status");
   const mark = syncVersion(st);
   const previous = syncMark;
   syncMark = mark;
   state.status = st;
-  // تفريغ الطابور في الخلفية
+  // الطابور بيتفرّغ في الخلفية من غير ما حد يدوس حاجة — الشيب لازم يلحقه.
   const q = (st.queue || {}).count || 0;
   if (q !== state.queue.count) loadQueue().catch(() => {});
   if (previous === null || previous === mark) return;
@@ -6830,21 +8411,23 @@ async function watchAgentSync() {
     toast(`✔ The agent pulled the state of ${rec.display_name || a.account || "the account"} — the board updated on its own.`, "ok");
   }
 }
+setInterval(() => { watchAgentSync().catch(() => {}); }, 6000);
 
-// فحص دوري سريع كل 2.5 ثانية
-setInterval(() => { watchAgentSync().catch(() => {}); }, 2500);
-
-// تحديث فوري بمجرد رجوع المستخدم لتبويب المتصفح بعد اللعب
-document.addEventListener("visibilitychange", () => {
-  if (!document.hidden) {
-    watchAgentSync().catch(() => {});
-  }
-});
-document.addEventListener("click", (e) => {
-  const wrap = document.querySelector(".acc-dropdown-wrap");
-  if (wrap && !wrap.contains(e.target)) {
-    const menu = document.getElementById("acc-dropdown-menu");
-    if (menu) menu.style.display = "none";
-  }
-});
-
+// ─── مسار تسجيل الخروج النظيف ───
+function handleUserLogout(e) {
+  if (e) e.preventDefault();
+  try { localStorage.clear(); } catch (_) {}
+  try { sessionStorage.clear(); } catch (_) {}
+  const cookiesToClear = [
+    "cm_subscriber_token", "cm_admin_session", "cm_admin_token",
+    "cm_admin_saved", "cm_viewing_subscriber", "cm_test_sub", "cm_test_name"
+  ];
+  cookiesToClear.forEach((name) => {
+    document.cookie = `${name}=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+  });
+  window.location.replace("/auth/logout");
+}
+const btnLogoutTopbar = document.getElementById("btn-topbar-logout");
+if (btnLogoutTopbar) {
+  btnLogoutTopbar.addEventListener("click", handleUserLogout);
+}

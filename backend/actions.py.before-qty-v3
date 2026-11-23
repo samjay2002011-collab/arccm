@@ -1,0 +1,2187 @@
+"""طبقة التنسيق بين اللوحة المحلية وحساب اللعبة: بتحدد العناصر، بتبني الطلب، وبتنفذه.
+
+كل إجراء بيرجع نفس الشكل:
+  {"executed": bool, "preview": {request...}, "result": {...}, "refreshed": {...}}
+لو الكتابة مش مفعّلة: بيرجع preview بس (مفيش أي طلب خارجي).
+"""
+import contextlib
+import json
+import random
+import threading
+import time
+
+from . import (catalog, config, gearops, items_db, pioneer_client as pc, pioneer_tree,
+               pioneer_write, store, sync, weapon_tiers, writer)
+
+MARK_COLORS = ("#ef4444", "#f97316", "#eab308", "#22c55e", "#06b6d4", "#3b82f6", "#a855f7", "#ec4899")
+DIRECT_BLOCK_DETAIL = ("What the Embark gateway executes literally: moves + attachments + recycle "
+                       ", scrap and repair + weapon upgrades. "
+                       "Splitting and trader buys have no mutate kind — those exist in-game only.")
+ATTACH_TARGETS = ("stash", "overflow")
+SLOT_ORDER = {"muzzle": 1, "grip": 2, "stock": 3, "light_mag": 4, "medium_mag": 5,
+              "shotgun_mag": 6, "shotgun_muzzle": 7, "anvil_splitter": 8}
+
+
+def _rows_for(conn, account, instance_ids=None, name=None, container=None, limit=None):
+    sql = "SELECT * FROM instances WHERE account=?"
+    args = [account]
+    if instance_ids:
+        sql += " AND instance_id IN (%s)" % ",".join("?" * len(instance_ids))
+        args += [str(i) for i in instance_ids]
+    if name:
+        sql += " AND name=?"
+        args.append(name)
+    if container:
+        sql += " AND container=?"
+        args.append(container)
+    sql += " ORDER BY container, slot_index"
+    if limit:
+        sql += " LIMIT %d" % int(limit)
+    return [dict(r) for r in conn.execute(sql, args).fetchall()]
+
+
+def sections(conn, account):
+    """تجميع العناصر لكل قسم على حدة (STASH / BACKPACK / OVERFLOW / EQUIPPED).
+
+    حساب واحد في المرة — القراءة بتجميع حسابات مع بعضها بتطلع عناصر مش موجودة في الحساب.
+    """
+    if not account or account == "ALL":
+        return {}
+    rows = _rows_for(conn, account)
+    cats = {}
+    for item in conn.execute("SELECT DISTINCT name, category FROM items WHERE account=?",
+                             (account,)).fetchall():
+        try:
+            cats[item["name"]] = json.loads(item["category"] or "[]")
+        except ValueError:
+            cats[item["name"]] = []
+    groups = {}
+    for r in rows:
+        key = r["container"] or "other"
+        r["category"] = cats.get(r["name"], [])
+        try:
+            r["attachments"] = json.loads(r.get("attachments") or "[]")
+        except (TypeError, ValueError):
+            r["attachments"] = []
+        catalog.decorate(r)
+        bucket = groups.setdefault(key, {"container": key, "count": 0, "qty": 0, "slots": [],
+                                         "rarity": {}, "value": 0, "accounts": {}})
+        bucket["count"] += 1
+        bucket["qty"] += r["qty"] or 0
+        bucket["value"] += (r["value"] or 0) * (r["qty"] or 0)
+        bucket["rarity"][r["rarity"] or "?"] = bucket["rarity"].get(r["rarity"] or "?", 0) + 1
+        bucket["accounts"][r["account"]] = bucket["accounts"].get(r["account"], 0) + 1
+        bucket["slots"].append(r)
+    for bucket in groups.values():
+        bucket["slots"].sort(key=lambda s: (s["slot_index"] if s["slot_index"] is not None else 9999, s["name"]))
+    return groups
+
+
+def empty_wrappers(payload):
+    """خريطة الخانات الفاضية لكل قسم (تحتاجها عملية تقسيم الـ stack)."""
+    out = {}
+    if not payload:
+        return out
+    for key in ("stash", "overflow", "backpack"):
+        out[key] = [s.get("wrapper_id") for s in (payload.get(key) or [])
+                    if (s.get("is_empty") or not s.get("item")) and s.get("wrapper_id")]
+    for key, slots in (payload.get("containers") or {}).items():
+        if key in ("stash", "backpack") or not isinstance(slots, list):
+            continue
+        out[key] = [s.get("wrapper_id") for s in slots
+                    if (s.get("is_empty") or not s.get("item")) and s.get("wrapper_id")]
+    return out
+
+
+def _account_id(conn, account):
+    """المعرّف المحفوظ للحساب (للتسجيل وللسحب في الوضع القديم)."""
+    return (store.get_account(conn, account) or {}).get("id")
+
+
+SLOT_RULES = ("augment", "shield", "gun_1", "gun_2", "quick_use", "safe_pocket", "augmented_slots")
+
+
+def _finish(conn, account, kind, request, outcome, count):
+    store.log_action(conn, account, kind, request,
+                     "executed" if outcome.get("ok") and outcome.get("code") else outcome.get("error", "preview"),
+                     outcome.get("response") or outcome.get("detail"), count)
+    refreshed = None
+    if outcome.get("ok"):
+        acc_id = _account_id(conn, account)
+        refreshed = sync.pull_account(conn, account, acc_id, with_assets=False) if acc_id else None
+    return {"executed": bool(outcome.get("ok")), "preview": request, "result": outcome, "refreshed": refreshed}
+
+
+def _direct_block(kind, allow=()):
+    """في الوضع المباشر المسار الوحيد هو بوابة اللعبة: النقل + الأنواع اللي بتعرفها.
+
+    الأنواع اللي بتعدي هنا مقيسة لايف على البوابة (recycle/scrap/repair) — أي إجراء
+    تاني لسه بيترفض صراحةً برسالة واضحة بدل ما يتنفذ على مصدر تاني."""
+    if config.DATA_SOURCE != "pioneer":
+        return None
+    if kind in allow:
+        return None
+    return {"executed": False, "error": "direct_read_only", "detail": DIRECT_BLOCK_DETAIL, "kind": kind}
+
+
+def move(conn, account, target_container, instance_ids=None, name=None, container=None,
+         target_wrapper_id="", limit=None, target_slot="", carry_instance_ids=None, swap=False):
+    if target_container not in writer.CONTAINERS:
+        return {"executed": False, "error": "bad_target", "detail": "Unknown destination: %s" % target_container}
+    if target_slot and target_slot not in SLOT_RULES:
+        return {"executed": False, "error": "bad_slot", "detail": "Unknown loadout slot: %s" % target_slot}
+    rows = _rows_for(conn, account, instance_ids, name, container, limit)
+    if not rows:
+        return {"executed": False, "error": "nothing_selected", "detail": "No items match the selection."}
+    if config.DATA_SOURCE == "pioneer":
+        if account == "ALL":
+            return {"executed": False, "error": "pick_account", "detail": "Pick one account before moving."}
+        return pioneer_write.move(conn, account, target_container, rows,
+                                  target_wrapper_id=target_wrapper_id, target_slot=target_slot,
+                                  carry_instance_ids=carry_instance_ids,
+                                  swap=bool(swap))
+    if target_container == "loadout" and not target_wrapper_id:
+        return {"executed": False, "error": "no_wrapper", "detail": "The loadout cell is not bound to a wrapper."}
+    body = writer.build_move(rows, target_container, target_wrapper_id)
+    preview = {"method": "POST", "url": writer.BATCH_MOVE, "body": body,
+               "items": [{"name": r["name"], "qty": r["qty"], "from": r["container"]} for r in rows][:40]}
+    if account == "ALL":
+        return {"executed": False, "error": "pick_account", "detail": "Pick one account before moving.", "preview": preview}
+    outcome = writer.execute("move", body, _account_id(conn, account))
+    outcome = dict(outcome, request=None)
+    out = _finish(conn, account, "move:%s" % target_container, body, outcome, len(rows))
+    out["preview"] = preview
+    out["moved"] = [{"name": r["name"], "qty": r["qty"], "from": r["container"]} for r in rows]
+    return out
+
+
+def move_batch(conn, account, moves):
+    """خطة نقل كاملة في نداء واحد — قراءة شجرة واحدة وطلب بوابة واحد.
+
+    الواجهة بتبعت خطة التبديل/النقل كلها هنا بدل ما تعمل نداء لكل قطعة،
+    فالتبديل بين مكانين بقى طلب واحد بدل 3، ونقل 10 قطع بقى طلب واحد بدل 10.
+    """
+    moves = [m for m in (moves or []) if isinstance(m, dict)]
+    if not moves:
+        return {"executed": False, "error": "nothing_selected", "detail": "No moves in the plan."}
+    if config.DATA_SOURCE == "pioneer":
+        if account == "ALL":
+            return {"executed": False, "error": "pick_account", "detail": "Pick one account before moving."}
+        prepared = []
+        for item in moves:
+            target = item.get("target_container") or ""
+            if target not in writer.CONTAINERS:
+                return {"executed": False, "error": "bad_target", "detail": "Unknown destination: %s" % target}
+            slot = item.get("target_slot") or ""
+            if slot and slot not in SLOT_RULES:
+                return {"executed": False, "error": "bad_slot", "detail": "Unknown loadout slot: %s" % slot}
+            ids = [str(i) for i in (item.get("instance_ids") or []) if i]
+            rows = _rows_for(conn, account, ids, item.get("name"), item.get("from_container"),
+                             item.get("limit"))
+            local = {str(r["instance_id"]): r for r in rows}
+            rows = [local[i] for i in ids if i in local] + [{"instance_id": i} for i in ids if i not in local]
+            if not rows:
+                return {"executed": False, "error": "unknown_instance",
+                        "detail": "Some items are not in the local copy — run SYNCHRONIZE."}
+            prepared.append({"target_container": target, "target_slot": slot,
+                             "target_wrapper_id": item.get("target_wrapper_id") or "",
+                             "swap": bool(item.get("swap")),
+                             "carry_instance_ids": [str(i) for i in (item.get("carry_instance_ids") or []) if i],
+                             "instance_ids": list(ids)})
+        return pioneer_write.move_plan(conn, account, prepared)
+    results = []
+    for item in moves:
+        out = move(conn, account, item.get("target_container") or "",
+                   instance_ids=item.get("instance_ids"), name=item.get("name"),
+                   container=item.get("from_container"),
+                   target_wrapper_id=item.get("target_wrapper_id") or "",
+                   limit=item.get("limit"), target_slot=item.get("target_slot") or "")
+        results.append({"executed": bool(out.get("executed")), "error": out.get("error"),
+                        "detail": out.get("detail")})
+        if not out.get("executed"):
+            return {"executed": False, "moves": results, "error": out.get("error"),
+                    "detail": out.get("detail")}
+    return {"executed": True, "moves": results}
+
+
+def _stack_cap(conn, account, asset_id):
+    """السقف الأقصى للأكوم من النوع ده: أعمق مصدرين محليين، ومفيش أي طلب للبوابة."""
+    aid = str(asset_id or "")
+    if not aid:
+        return 0
+    try:
+        cap = int(conn.execute("select max(stack_size) from instances "
+                               "where account=? and asset_id=?", (account, aid)).fetchone()[0] or 0)
+    except Exception:
+        cap = 0
+    if not cap:
+        # الصفوف الجديدة بتدخل قبل ما يتعبّى عمود stack_size — الحد من كتالوج arctracker.
+        try:
+            cap = int((items_db.dossier(asset_id=aid) or {}).get("stack_size") or 0)
+        except Exception:
+            cap = 0
+    return cap
+
+
+def gather(conn, account, instance_ids=None, asset_id=""):
+    """يكشّف كثافة أكوام عنصر واحد ويقرّبها من بعضها في خانات متتالية.
+
+    الدمج الفعلي (تغيير كمية كوم) مش متاح على بوابة Embark — الأقيس لايف
+    2026-10-28: أي amount مختلف عن الحالي = INVALID_ARGUMENT، ومفيش نوع
+    combine/split في الـenum بتاع Pioneer. فبنقرّب الأكوام بس، واللمة نفسها
+    تتم جوه اللعبة بسحب واحد (الدمج الحقيقي له مساره في combine).
+    """
+    if account == "ALL":
+        return {"executed": False, "error": "pick_account", "detail": "Pick one account first."}
+    rows = _rows_for(conn, account, instance_ids)
+    aid = str(asset_id or (rows[0].get("asset_id") if rows else "") or "")
+    if not aid:
+        return {"executed": False, "error": "nothing_selected",
+                "detail": "Select one item or type its name in the search first."}
+    names = {str(r.get("name") or "") for r in rows if r.get("name")}
+    limit = _stack_cap(conn, account, aid)
+    try:
+        tree = pioneer_tree.Tree((pc.fetch_inventory_for(account) or {}).get("items") or [])
+        plan = pioneer_tree.merge_plan(tree, aid, limit=limit)
+    except pioneer_tree.TreeError as exc:
+        return {"executed": False, "error": exc.error, "detail": exc.detail, "kind": "gather"}
+    except pc.PioneerError as exc:
+        return {"executed": False, "error": "gateway_error", "detail": str(exc)[:200], "kind": "gather"}
+    out = {"kind": "gather", "merge": plan, "gather": plan,
+           "item": (list(names)[0] if len(names) == 1 else "%s stacks" % plan["total"])}
+    if not plan["moves"]:
+        # مفيش حركة لازمة — بنرجع التحليل لوحده من غير ما نبعت أي طلب للبوابة.
+        out.update({"executed": False, "reason": "already_together",
+                    "detail": plan["detail"]})
+        return out
+    out.update(pioneer_write.move_plan(conn, account, plan["moves"]))
+    out["merge"] = plan
+    return out
+
+
+def spread(conn, account, instance_ids=None, asset_id="", dry=False):
+    """يفرّد أكوام عنصر واحد على خانات ستاش متباعدة — كل كوم في خانة لوحده.
+
+    عكس gather وبينفس مسار النقل الرسمي. تقسيم الكوم نفسه (نصفه في خانة فاضية)
+    مرفوض على البوابة: أي amount مختلف = INVALID_ARGUMENT، فالحركة دي بتفرد
+    الأكوام الموجودة مش بتولّد أكوام جديدة.
+    """
+    if account == "ALL":
+        return {"executed": False, "error": "pick_account", "detail": "Pick one account first."}
+    rows = _rows_for(conn, account, instance_ids)
+    aid = str(asset_id or (rows[0].get("asset_id") if rows else "") or "")
+    if not aid:
+        return {"executed": False, "error": "nothing_selected",
+                "detail": "Select one item or type its name in the search first."}
+    names = {str(r.get("name") or "") for r in rows if r.get("name")}
+    try:
+        tree = pioneer_tree.Tree((pc.fetch_inventory_for(account) or {}).get("items") or [])
+        plan = pioneer_tree.spread_plan(tree, aid)
+    except pioneer_tree.TreeError as exc:
+        return {"executed": False, "error": exc.error, "detail": exc.detail, "kind": "spread"}
+    except pc.PioneerError as exc:
+        return {"executed": False, "error": "gateway_error", "detail": str(exc)[:200], "kind": "spread"}
+    out = {"kind": "spread", "spread": plan,
+           "item": (list(names)[0] if len(names) == 1 else "%s stacks" % plan["total"])}
+    if not plan["moves"]:
+        out.update({"executed": False, "reason": "already_spread", "detail": plan["detail"]})
+        return out
+    if dry:
+        # معاينة قبل الكتابة: بنرجع الخطة نفسها من غير ما نبعت أي طلب للبوابة.
+        out.update({"executed": False, "reason": "preview", "detail": plan["detail"]})
+        return out
+    out.update(pioneer_write.move_plan(conn, account, plan["moves"]))
+    out["spread"] = plan
+    return out
+
+
+def merge_all(conn, account, dry=True, max_ops=200):
+    """زرار ⇄: يلمّ كل أكوام الحساب (الستاش + الأوفر فلو) على الحد الأقصى لكل نوع.
+
+    الدمج هنا حقيقي على البوابة الرسمية، مش ترتيب خانات: كل عملية طلب واحد فيه
+    update لكمية الهدف + delete (أو update ناقص) للمصدر، والمجموع بيتحقق بعد كل
+    عملية (مقيس لايف 2026-10-31 في pioneer_write.combine_attempt). مفيش سحبة
+    جوه اللعبة ومفيش حاجة لخانة فاضية — الخانة بتفضى لوحدها لما المصدر يتشال.
+    """
+    if account == "ALL":
+        return {"executed": False, "error": "pick_account", "detail": "Pick one account first."}
+    caps, names = {}, {}
+    try:
+        for r in conn.execute("SELECT asset_id, max(stack_size) ss, name FROM instances "
+                              "WHERE account=? AND asset_id IS NOT NULL GROUP BY asset_id",
+                              (account,)).fetchall():
+            aid = str(r["asset_id"])
+            caps[aid] = int(r["ss"] or 0)
+            names[aid] = str(r["name"] or "")
+    except Exception:
+        pass
+    try:
+        tree = pioneer_tree.Tree((pc.fetch_inventory_for(account) or {}).get("items") or [])
+        for aid in {str(e.get("gameAssetId") or "") for e in tree.items}:
+            if not aid or aid == "None":
+                continue
+            if int(caps.get(aid) or 0) < 2:
+                row = items_db.find(asset_id=aid) or {}
+                if row.get("stack_size"):
+                    caps[aid] = int(row["stack_size"])
+                if row.get("name") and not names.get(aid):
+                    names[aid] = str(row["name"])
+        plan = pioneer_tree.merge_all_ops(tree, caps=caps, max_ops=max_ops)
+    except pioneer_tree.TreeError as exc:
+        return {"executed": False, "error": exc.error, "detail": exc.detail, "kind": "merge_all"}
+    except pc.PioneerError as exc:
+        return {"executed": False, "error": "gateway_error", "detail": str(exc)[:200], "kind": "merge_all"}
+    for g in plan["groups"]:
+        g["name"] = g.get("name") or names.get(g["asset_id"]) or g["asset_id"]
+    out = {"kind": "merge_all", "merge_all": plan, "summary": plan["summary"],
+           "detail": plan["detail"], "names": names}
+    if not plan["ops"]:
+        out.update({"executed": False, "reason": "already_merged", "preview": True})
+        return out
+    if dry:
+        out.update({"executed": False, "reason": "preview"})
+        return out
+    results, done, refused = [], 0, None
+    for op in plan["ops"]:
+        r = pioneer_write.combine_attempt(conn, account, op["source"], op["target"],
+                                          amount=op["take"], cap=op["cap"])
+        row = {"asset_id": op["asset_id"], "name": names.get(op["asset_id"]) or op["asset_id"],
+               "source": op["source"], "target": op["target"], "take": op["take"],
+               "ok": bool(r.get("executed"))}
+        results.append(row)
+        if row["ok"]:
+            done += 1
+            continue
+        row["detail"] = str(r.get("detail") or r.get("error") or "refused")
+        refused = row
+        if r.get("lost"):
+            out["lost"] = True
+        break
+    out.update({"executed": done > 0, "merged": done, "results": results})
+    if refused:
+        out["refused"] = refused
+        out["detail"] = ("%s merges ran, then the gateway refused %s: %s"
+                         % (done, refused["name"], refused["detail"])) if done else \
+                        ("The gateway refused the merge: " + refused["detail"])
+    else:
+        out["detail"] = "%s merges ran on the official gateway." % done
+    return out
+
+
+# ── MERGE ALL في الخلفية (نسخة tt_8004) ──
+# زرار ⇄ بيقعد ثواني على البوابة (عملية لكل كوم)، والطلب المتزامن كان بيخلي
+# المتصفح مستني والسيرفر مشغول. هنا الشغل كله في ثريد، والواجهة بتقرا عداد
+# التقدم بس، والـ SYNC بيحصل مرة واحدة بعد ما يخلص أو بعد Stop.
+_MERGE_LOCK = threading.Lock()
+_MERGE_JOBS = {}
+
+
+def merge_all_start(conn, account, only=None, max_ops=400):
+    """يبدأ مهمة دمج خلفية ويرجّع حالتها فوراً (المهمة نفسها مكملة في الخلفية)."""
+    if account == "ALL":
+        return {"executed": False, "error": "pick_account", "detail": "Pick one account first."}
+    only = [str(a) for a in (only or []) if a]
+    with _MERGE_LOCK:
+        job = _MERGE_JOBS.get(account)
+        if job and job.get("running"):
+            return {"executed": False, "error": "busy", "detail": "A merge is already running.",
+                    "job": _merge_snapshot(job)}
+        if not pc.account_token(account):
+            return {"executed": False, "error": "token_expired",
+                    "detail": "No saved token for %s — add it from the accounts page." % account}
+        if pioneer_write.paused():
+            return {"executed": False, "error": "write_paused", "code": 423,
+                    "detail": pioneer_write.PAUSE_DETAIL}
+        caps, names = _merge_caps(conn, account)
+        try:
+            tree = pioneer_tree.Tree((pc.fetch_inventory_for(account) or {}).get("items") or [])
+            plan = pioneer_tree.merge_all_ops(tree, caps=caps, max_ops=max_ops)
+        except pioneer_tree.TreeError as exc:
+            return {"executed": False, "error": exc.error, "detail": exc.detail}
+        except pc.PioneerError as exc:
+            return {"executed": False, "error": "gateway_error", "detail": str(exc)[:200]}
+        ops = plan["ops"]
+        if only:
+            ops = [op for op in ops if str(op.get("asset_id")) in only]
+        for g in plan["groups"]:
+            g["name"] = g.get("name") or names.get(g["asset_id"]) or g["asset_id"]
+        if not ops:
+            return {"executed": False, "error": "already_merged", "preview": True,
+                    "job": {"account": account, "running": False, "total": 0, "done": 0,
+                            "ok": 0, "detail": plan["detail"]},
+                    "detail": plan["detail"] if not only else
+                    "Nothing to merge inside the search results."}
+        job = {"account": account, "running": True, "stop": False, "total": len(ops),
+               "done": 0, "ok": 0, "failed": 0, "step": "", "only": bool(only),
+               "detail": "merging in the background", "results": [], "started": time.time()}
+        _MERGE_JOBS[account] = job
+    worker = threading.Thread(target=_merge_worker, args=(account, job, ops, names), daemon=True)
+    worker.start()
+    return {"executed": True, "error": "", "job": _merge_snapshot(job),
+            "detail": "Merging %d piles in the background." % len(ops)}
+
+
+def _merge_snapshot(job):
+    return {"account": job["account"], "running": bool(job["running"]),
+            "total": job["total"], "done": job["done"], "ok": job["ok"],
+            "failed": job["failed"], "step": job.get("step") or "",
+            "detail": job.get("detail") or "", "only": job.get("only", False)}
+
+
+def merge_all_status(account):
+    with _MERGE_LOCK:
+        job = _MERGE_JOBS.get(account)
+        return {"executed": True, "job": _merge_snapshot(job) if job else None}
+
+
+def merge_all_stop(account):
+    with _MERGE_LOCK:
+        job = _MERGE_JOBS.get(account)
+        if not job:
+            return {"executed": False, "error": "no_job", "detail": "No merge is running."}
+        job["stop"] = True
+        job["detail"] = "stopping after the current pile"
+        return {"executed": True, "job": _merge_snapshot(job)}
+
+
+def _merge_caps(conn, account):
+    caps, names = {}, {}
+    try:
+        for r in conn.execute("SELECT asset_id, max(stack_size) ss, name FROM instances "
+                              "WHERE account=? AND asset_id IS NOT NULL GROUP BY asset_id",
+                              (account,)).fetchall():
+            aid = str(r["asset_id"])
+            caps[aid] = int(r["ss"] or 0)
+            names[aid] = str(r["name"] or "")
+    except Exception:
+        pass
+    return caps, names
+
+
+def _merge_worker(account, job, ops, names):
+    merged = failed = 0
+    try:
+        conn = store.db()
+        try:
+            for i, op in enumerate(ops, 1):
+                if job["stop"]:
+                    break
+                if i > 1:
+                    time.sleep(random.uniform(0.45, 0.60))
+                name = names.get(op["asset_id"]) or op["asset_id"]
+                with _MERGE_LOCK:
+                    job["step"] = "%s %d/%d" % (name, i, len(ops))
+                r = pioneer_write.combine_attempt(conn, account, op["source"], op["target"],
+                                                  amount=op["take"], cap=op["cap"])
+                row = {"asset_id": op["asset_id"], "name": name, "take": op["take"],
+                       "ok": bool(r.get("executed"))}
+                with _MERGE_LOCK:
+                    job["done"] = i
+                    if row["ok"]:
+                        job["ok"] += 1
+                        merged += 1
+                    else:
+                        failed += 1
+                        job["failed"] += 1
+                        row["error"] = r.get("error") or "refused"
+                        row["detail"] = str(r.get("detail") or r.get("error") or "refused")
+                    job["results"].append(row)
+                if not row["ok"]:
+                    break
+                if r.get("lost"):
+                    job["lost"] = True
+        finally:
+            conn.close()
+    except Exception as exc:
+        failed += 1
+        with _MERGE_LOCK:
+            job["detail"] = "stopped with an error: %s" % str(exc)[:160]
+    finally:
+        stopped = bool(job["stop"])
+        with _MERGE_LOCK:
+            job["running"] = False
+            job["step"] = ""
+            why = job["results"][-1].get("detail", "") if failed and job["results"] else ""
+            job["detail"] = ((("stopped by you after %d merges" % merged) if stopped else
+                              ("%d merges ran%s" % (merged, (" (%d refused)" % failed) if failed else "")))
+                             + (" — the gateway said: %s" % why if why else ""))
+        # SYNC واحد بس في الآخر — سواء خلص لآخر عميلة أو المستخدم ضغط Stop.
+        try:
+            synchronize(store.db(), account)
+        except Exception:
+            pass
+
+
+def touch(conn, account, instance_ids=None):
+    """زرار ↑ UPDATE: لمسة محايدة على خانات التجهيز عند Embark.
+
+    بتحدّث سجل التحديث (updatedAt) من غير ما أي عنصر يتحرّك أو كمية تتغيّر —
+    محطوطة عشان الكلاينت اللي ماسك نسخة قديمة من الشنطة يسحبها من جديد، فالحاجة
+    اللي تتحط في الشنطة من الموقع تظهر في الماتش الجاي مش بعدها.
+    """
+    if account == "ALL":
+        return {"executed": False, "error": "pick_account", "detail": "Pick one account first."}
+    out = pioneer_write.touch_loadout(conn, account, instance_ids)
+    out["kind"] = "touch"
+    return out
+
+
+def mutate(conn, account, action, instance_ids=None, name=None, container=None,
+           target_wrapper_id="", target_instance_id="", amount=None, limit=None):
+    blocked = _direct_block("mutate")
+    if blocked:
+        return blocked
+    if action not in writer.MUTATE_ACTIONS:
+        return {"executed": False, "error": "bad_action", "detail": "Unsupported action: %s" % action}
+    denied = [b for b in writer.HARD_BLOCKED if b in str(action).lower()]
+    if denied:
+        return {"executed": False, "error": "destructive_blocked",
+                "detail": "The action '%s' is destructive and blocked in the local mirror." % action}
+    rows = _rows_for(conn, account, instance_ids, name, container, limit)
+    if not rows:
+        return {"executed": False, "error": "nothing_selected", "detail": "No items match the selection."}
+    body = writer.build_mutate(action, rows, target_wrapper_id, target_instance_id, amount)
+    preview = {"method": "POST", "url": writer.BATCH_MUTATE, "body": body,
+               "items": [{"name": r["name"], "qty": r["qty"], "container": r["container"]} for r in rows][:40]}
+    if account == "ALL":
+        return {"executed": False, "error": "pick_account", "detail": "Pick one account before executing.", "preview": preview}
+    outcome = writer.execute("mutate", body, _account_id(conn, account), action=action)
+    out = _finish(conn, account, "mutate:%s" % action, body, outcome, max(1, len(rows)))
+    out["preview"] = preview
+    return out
+
+
+def _wrapper_rows(payload, container):
+    """Wrapper rows لقسم معيّن من الـ snapshot (stash/backpack/loadout slots)."""
+    lists = []
+    if container in ("stash", "backpack", "overflow"):
+        lists.append(payload.get(container) or [])
+    lists.append((payload.get("containers") or {}).get(container) or [])
+    out, seen = [], set()
+    for entries in lists:
+        for slot in entries or []:
+            wrapper = slot.get("wrapper_id") or slot.get("wrapperId")
+            if not wrapper or wrapper in seen:
+                continue
+            seen.add(wrapper)
+            out.append(slot)
+    return out
+
+
+def _is_empty_slot(slot):
+    return bool(slot.get("is_empty")) or not slot.get("item")
+
+
+def _empty_wrappers(payload, container, exclude=""):
+    return [s.get("wrapper_id") or s.get("wrapperId")
+            for s in _wrapper_rows(payload, container)
+            if _is_empty_slot(s) and (s.get("wrapper_id") or s.get("wrapperId")) != exclude]
+
+
+def _wrapper_is_empty(payload, container, wrapper):
+    if not wrapper:
+        return False
+    return any((s.get("wrapper_id") or s.get("wrapperId")) == wrapper and _is_empty_slot(s)
+               for s in _wrapper_rows(payload, container))
+
+
+def _find_split_result(conn, account, split_wrapper, name, amount):
+    rows = _rows_for(conn, account)
+    matches = [r for r in rows if r.get("wrapper_id") == split_wrapper and r.get("name") == name]
+    exact = [r for r in matches if int(r.get("qty") or 0) == amount]
+    return (exact or matches or [None])[0]
+
+
+def _split_preview(row, split_target, amount, split_body, move_body=None):
+    preview = {
+        "instance_id": row.get("instance_id"), "name": row.get("name"),
+        "qty": row.get("qty"), "amount": amount, "source": row.get("container"),
+        "steps": [{"action": "split", "target_wrapper_id": split_target,
+                   "request": {"method": "POST", "url": writer.BATCH_MUTATE,
+                               "body": split_body}}],
+    }
+    if move_body:
+        preview["steps"].append({"action": "move", "request": {
+            "method": "POST", "url": writer.BATCH_MOVE, "body": move_body}})
+    return preview
+
+
+def split_stack(conn, account, instance_id, amount, mode="split",
+                split_wrapper_id="", target_wrapper_id=""):
+    """تقسيم stack مع نقل اختياري: batch-mutate(split) ثم batch-move للقطعة الجديدة.
+
+    mode=split       : تقسيم داخل نفس القسم (BACKPACK / SAFE POCKET / QUICK USE).
+    mode=to_backpack : من STASH/OVERFLOW إلى BACKPACK (split مباشر للـ wrapper لو مفيش فاضي).
+    mode=to_stash    : من BACKPACK/SAFE POCKET/QUICK USE إلى STASH (split ثم move).
+    """
+    blocked = _direct_block("split")
+    if blocked:
+        return blocked
+    if account == "ALL":
+        return {"executed": False, "error": "pick_account", "detail": "Pick one account first."}
+    if not instance_id:
+        return {"executed": False, "error": "nothing_selected", "detail": "No item selected."}
+    rows = _rows_for(conn, account, [str(instance_id)])
+    if not rows:
+        return {"executed": False, "error": "unknown_instance", "detail": "The item is not in the account snapshot."}
+    row = rows[0]
+    qty = int(row.get("qty") or 0)
+    try:
+        amount = int(amount)
+    except (TypeError, ValueError):
+        amount = 0
+    if qty < 2:
+        return {"executed": False, "error": "not_stack", "detail": "This item is not stacked (quantity = 1)."}
+    if amount < 1 or amount >= qty:
+        return {"executed": False, "error": "bad_amount",
+                "detail": "The quantity must be between 1 and %d." % (qty - 1)}
+    if mode not in ("split", "to_backpack", "to_stash"):
+        return {"executed": False, "error": "bad_mode", "detail": "Unknown split mode: %s" % mode}
+
+    source = row.get("container") or ""
+    if mode == "split" and source not in ("backpack", "safe_pocket", "quick_use"):
+        return {"executed": False, "error": "bad_source", "detail": "Splitting from this container is not supported."}
+    if mode == "to_backpack" and source not in ("stash", "overflow"):
+        return {"executed": False, "error": "bad_source", "detail": "Moving to BACKPACK is only available from STASH/OVERFLOW."}
+    if mode == "to_stash" and source not in ("backpack", "safe_pocket", "quick_use"):
+        return {"executed": False, "error": "bad_source", "detail": "Moving to STASH is only available from BACKPACK/SAFE POCKET/QUICK USE."}
+
+    payload = _payload(conn, account)
+    dest_container = "backpack" if mode == "to_backpack" else ("stash" if mode == "to_stash" else source)
+    split_target = ""
+    move_body = None
+    target_wrapper = ""
+
+    if mode == "to_backpack":
+        target_wrapper = target_wrapper_id or next(iter(_empty_wrappers(payload, "backpack")), "")
+        if not target_wrapper:
+            return {"executed": False, "error": "no_empty_target", "detail": "There is no empty cell in the BACKPACK."}
+        if not _wrapper_is_empty(payload, "backpack", target_wrapper):
+            return {"executed": False, "error": "bad_target", "detail": "The BACKPACK cell is not empty."}
+        same_empties = _empty_wrappers(payload, source, exclude=row.get("wrapper_id") or "")
+        split_target = split_wrapper_id or (same_empties[0] if same_empties else "")
+        if split_target:
+            if split_target not in same_empties:
+                return {"executed": False, "error": "bad_split_wrapper",
+                        "detail": "The split cell is not empty or does not belong to the same section."}
+            move_body = {"item_ids": ["<new split instance>"], "source_wrapper_ids": [split_target],
+                         "target_container": "backpack", "target_wrapper_id": target_wrapper}
+        else:
+            split_target = target_wrapper  # split مباشر للخانة الهدف (atomic)
+    else:
+        same_empties = _empty_wrappers(payload, source, exclude=row.get("wrapper_id") or "")
+        split_target = split_wrapper_id or (same_empties[0] if same_empties else "")
+        if not split_target or split_target not in same_empties:
+            return {"executed": False, "error": "no_empty_split",
+                    "detail": "No empty cell inside %s for the split." % source.upper()}
+        if mode == "to_stash":
+            target_wrapper = ""
+            move_body = {"item_ids": ["<new split instance>"], "source_wrapper_ids": [split_target],
+                         "target_container": "stash", "target_wrapper_id": None}
+
+    split_body = writer.build_mutate("split", [row], split_target, "", amount)
+    preview = _split_preview(row, split_target, amount, split_body, move_body)
+    acc_id = _account_id(conn, account)
+    if not acc_id:
+        return {"executed": False, "error": "pick_account", "detail": "Pick one account.", "preview": preview}
+
+    outcome1 = writer.execute("mutate", split_body, acc_id, action="split")
+    if not outcome1.get("ok"):
+        store.log_action(conn, account, "split:%s" % mode, split_body,
+                         outcome1.get("error", "blocked"), outcome1.get("detail"), 1)
+        return {"executed": False, "error": outcome1.get("error"), "detail": outcome1.get("detail"),
+                "result": outcome1, "preview": preview}
+
+    refreshed = sync.pull_account(conn, account, acc_id, with_assets=False)
+    steps = [{"action": "split", "status": "executed", "target_wrapper_id": split_target}]
+    if not move_body:
+        store.log_action(conn, account, "split:%s" % mode, split_body, "executed",
+                         outcome1.get("response"), 1)
+        return {"executed": True, "result": outcome1, "preview": preview, "steps": steps,
+                "refreshed": refreshed}
+
+    new_row = _find_split_result(conn, account, split_target, row.get("name"), amount)
+    if not new_row:
+        store.log_action(conn, account, "split:%s" % mode, split_body, "failed",
+                         "split succeeded but the new stack was not found after sync", 1)
+        return {"executed": False, "error": "split_unresolved",
+                "detail": "The split succeeded but the new piece could not be identified after the sync.",
+                "result": outcome1, "preview": preview, "steps": steps,
+                "refreshed": refreshed, "partial": True}
+
+    move_body = writer.build_move([new_row], dest_container, target_wrapper)
+    outcome2 = writer.execute("move", move_body, acc_id)
+    store.log_action(conn, account, "split:%s" % mode, split_body, "executed",
+                     outcome1.get("response"), 1)
+    store.log_action(conn, account, "move:%s" % dest_container, move_body,
+                     "executed" if outcome2.get("ok") else outcome2.get("error", "failed"),
+                     outcome2.get("response") or outcome2.get("detail"), 1)
+    refreshed = sync.pull_account(conn, account, acc_id, with_assets=False)
+    steps.append({"action": "move", "status": "executed" if outcome2.get("ok") else "failed",
+                  "target_container": dest_container, "target_wrapper_id": target_wrapper or None,
+                  "instance_id": new_row.get("instance_id")})
+    return {"executed": bool(outcome2.get("ok")), "result": outcome2,
+            "error": None if outcome2.get("ok") else outcome2.get("error"),
+            "detail": None if outcome2.get("ok") else outcome2.get("detail"),
+            "preview": preview, "steps": steps, "refreshed": refreshed}
+
+
+def clear_backpack(conn, account, scope="backpack"):
+    """CLEAR: يرجّع محتوى الشنطة للستاش أولاً وأي فايض يروح Overflow — المنبع بيعمل التوزيع في طلب واحد.
+
+    scope="all" = CLEAR ALL: التجهيز كله (أسلحة/درع/كويك يوز/سيف بوكيت/أوجمنت) + الشنطة.
+    """
+    if config.DATA_SOURCE == "pioneer":
+        if account == "ALL":
+            return {"executed": False, "error": "pick_account", "detail": "Pick one account before executing."}
+        try:
+            rows = pioneer_write.backpack_items(account)
+            if scope == "all":
+                rows = pioneer_write.equipped_items(account) + rows
+        except pc.TokenExpired as exc:
+            return {"executed": False, "error": "token_expired", "code": 401, "detail": str(exc)}
+        except Exception as exc:  # noqa: BLE001
+            return {"executed": False, "error": "gateway_error", "code": 502,
+                    "detail": str(exc)[:300]}
+        if not rows:
+            return {"executed": True, "result": {"ok": True}, "moved": [],
+                    "note": "The backpack is already empty." if scope != "all" else "The loadout and the backpack are already empty."}
+        out = pioneer_write.move(conn, account, "stash", rows)
+        if out.get("executed"):
+            out["note"] = ("Returned %d items from the loadout and the backpack to the stash through the game gateway." % len(rows)
+                           if scope == "all" else
+                           "Returned %d items from the backpack to the stash through the game gateway." % len(rows))
+        return out
+    blocked = _direct_block("clear_backpack")
+    if blocked:
+        return blocked
+    acc_id = _account_id(conn, account)
+    if not acc_id:
+        return {"executed": False, "error": "pick_account", "detail": "Pick one account."}
+    preview = {"method": "POST", "url": writer.MOVE_ALL_TO_OVERFLOW, "body": None}
+    outcome = writer.execute("overflow_all", None, acc_id)
+    out = _finish(conn, account, "move_all_to_overflow", preview, outcome, 0)
+    out["preview"] = preview
+    if out.get("executed"):
+        out["note"] = "Returned the backpack contents to the stash, and the overflow to Overflow."
+    return out
+
+
+def pending(conn, limit=30, account=""):
+    return store.action_log(conn, limit, account)
+
+
+# ------------------------------------------------------------------ ماركس محلية
+def marks(conn, account):
+    return {"account": account, "marks": store.list_marks(conn, account), "palette": list(MARK_COLORS)}
+
+
+def mark_add(conn, account, instance_ids, color):
+    if color not in MARK_COLORS:
+        return {"ok": False, "error": "bad_color", "detail": "Unknown color — pick one from the eight-color palette."}
+    ids = [str(i) for i in (instance_ids or []) if i]
+    if not ids:
+        return {"ok": False, "error": "nothing_selected", "detail": "No items selected."}
+    if account == "ALL":
+        return {"ok": False, "error": "pick_account", "detail": "Pick one account."}
+    known = {r["instance_id"] for r in _rows_for(conn, account, ids)}
+    ids = [i for i in ids if i in known]
+    if not ids:
+        return {"ok": False, "error": "unknown_instance", "detail": "The items are not in the account snapshot."}
+    added = store.add_marks(conn, account, ids, color)
+    return {"ok": True, "added": added, "color": color,
+            "marks": store.list_marks(conn, account), "palette": list(MARK_COLORS)}
+
+
+def mark_remove(conn, account, instance_ids=None, mark_ids=None, color=None):
+    if account == "ALL":
+        return {"ok": False, "error": "pick_account", "detail": "Pick one account."}
+    removed = store.delete_marks(conn, account, instance_ids=instance_ids, mark_ids=mark_ids, color=color)
+    return {"ok": True, "removed": removed, "marks": store.list_marks(conn, account), "palette": list(MARK_COLORS)}
+
+
+# ------------------------------------------------------------------ المرفقات
+def _payload(conn, account):
+    payload, _ = store.read_snapshot(conn, account)
+    return payload or {}
+
+
+def _attachment_public(slot):
+    return {
+        "instance_id": slot.get("instanceId") or slot.get("instance_id"),
+        "wrapper_id": slot.get("wrapperId") or slot.get("wrapper_id"),
+        "slot_name": slot.get("slot_name"),
+        "slot_label": gearops.slot_label(slot.get("slot_name")),
+        "slot_asset_id": str(slot.get("slot_asset_id")) if slot.get("slot_asset_id") is not None else None,
+        "asset_id": str(slot.get("asset_id")) if slot.get("asset_id") is not None else None,
+        "display_name": slot.get("display_name") or slot.get("name") or "Empty Slot",
+        "rarity": slot.get("rarity"),
+        "image_filename": slot.get("image_filename") or slot.get("image") or "",
+        "level": slot.get("level"),
+        "type": slot.get("type"),
+        "is_stencil": gearops.is_stencil(slot),
+        "is_empty": bool(slot.get("is_empty", not slot.get("asset_id"))),
+    }
+
+
+def _stencils(row):
+    """Stencils المرفقة بالسلاح: لون تجميلي بيتعرض بس ومش بينفك."""
+    return [_attachment_public(a) for a in gearops.parse_attachments(row) if gearops.is_stencil(a)]
+
+
+def _weapon_card(row):
+    slots = [_attachment_public(a) for a in gearops.parse_attachments(row) if not gearops.is_stencil(a)]
+    level = gearops.level_of(row)
+    return {
+        "instance_id": row.get("instance_id"), "name": row.get("name"),
+        "display_name": row.get("name"), "type": row.get("type"),
+        "rarity": row.get("rarity"), "image": row.get("image"),
+        "image_filename": row.get("image"), "level": level, "level_label": gearops.roman(level),
+        "health": gearops.health_of(row), "slots": slots,
+        "stencils": _stencils(row),
+        "equipped": sum(1 for s in slots if not s["is_empty"]), "total_slots": len(slots),
+        "container": row.get("container"),
+    }
+
+
+def _rules_groups(weapons, inventory, rules):
+    groups = gearops.manager_slots(weapons, inventory, rules)
+    groups.sort(key=lambda g: (SLOT_ORDER.get(g.get("slot_name"), 99), g.get("label") or ""))
+    return groups
+
+
+def attachment_manager(conn, account, instance_ids=None):
+    """لوحة MANAGE: أسلحة محددة + خاناتها + المتاح في المخزن (قراءة فقط)."""
+    if account == "ALL":
+        return {"error": "pick_account", "detail": "Pick one account."}
+    rows = _rows_for(conn, account, instance_ids)
+    for row in rows:
+        catalog.decorate(row)
+    weapons = [r for r in rows if gearops.is_weapon(r)]
+    if not weapons:
+        return {"error": "no_weapons", "detail": "No selected weapons can manage attachments."}
+    rules = gearops.slot_rules()
+    all_rows = _rows_for(conn, account)
+    for row in all_rows:
+        catalog.decorate(row)
+    inventory = gearops.inventory_attachments(all_rows, rules)
+    groups = _rules_groups(weapons, inventory, rules)
+    cards = [_weapon_card(r) for r in weapons]
+    return {
+        "account": account, "weapons": cards, "groups": groups, "inventory": inventory,
+        "counts": {
+            "weapons": len(cards),
+            "slots": sum(c["total_slots"] for c in cards),
+            "empty": sum(c["total_slots"] - c["equipped"] for c in cards),
+            "available": len(inventory),
+        },
+    }
+
+
+def attachment_rules():
+    return {"slots": [dict(rule, slot_asset_id=key) for key, rule in gearops.slot_rules().items()]}
+
+
+def _paste_context(conn, account, weapon_ids):
+    rows = _rows_for(conn, account, weapon_ids)
+    for row in rows:
+        catalog.decorate(row)
+    weapons = [r for r in rows if gearops.is_weapon(r)]
+    rules = gearops.slot_rules()
+    all_rows = _rows_for(conn, account)
+    for row in all_rows:
+        catalog.decorate(row)
+    inventory = gearops.inventory_attachments(all_rows, rules)
+    return weapons, inventory, rules
+
+
+def _slot_state(conn, account, weapon_ids):
+    """حالة خانات مرفقات الأسلحة دي من آخر مزامنة: {wrapper: {weapon_id, attachment_id}}."""
+    wanted = set(str(w) for w in (weapon_ids or []) if w)
+    out = {}
+    rows = _rows_for(conn, account, sorted(wanted) or None)
+    for r in rows:
+        if wanted and r["instance_id"] not in wanted:
+            continue
+        try:
+            atts = json.loads(r.get("attachments") or "[]")
+        except (TypeError, ValueError):
+            atts = []
+        for a in atts:
+            if gearops.is_stencil(a):
+                continue
+            wrapper = str(a.get("wrapper_id") or a.get("wrapperId") or "")
+            if not wrapper:
+                continue
+            out[wrapper] = {"weapon_id": r["instance_id"], "slot_name": a.get("slot_name"),
+                            "slot_asset_id": str(a.get("slot_asset_id") or ""),
+                            "attachment_id": None if a.get("is_empty") else str(a.get("instance_id") or "")}
+    return out
+
+
+def _installed_attachments(conn, account):
+    """كل المرفقات المركّبة فعلياً: [{slot_wrapper_id, attachment_id, weapon_id}]
+
+    الـ Stencil بيتشال من هنا: البوابة بترفض أمر فك فيه ستينسل، فوجوده في نفس
+    الدفعة كان بيرجّع INVALID_ARGUMENT ويضيّع فك الملحقات الحقيقية كلها.
+    """
+    out = []
+    for r in _rows_for(conn, account):
+        try:
+            atts = json.loads(r.get("attachments") or "[]")
+        except (TypeError, ValueError):
+            atts = []
+        for a in atts:
+            if a.get("is_empty") or gearops.is_stencil(a):
+                continue
+            wrapper = str(a.get("wrapper_id") or a.get("wrapperId") or "")
+            instance = str(a.get("instance_id") or "")
+            if wrapper and instance:
+                out.append({"slot_wrapper_id": wrapper, "attachment_id": instance,
+                            "weapon_id": r["instance_id"], "name": a.get("name")})
+    return out
+
+
+def _log_direct(conn, account, kind, body, out, count):
+    store.log_action(conn, account, kind, body,
+                     "executed" if out.get("executed") else out.get("error", "failed"),
+                     out.get("detail") or out.get("result"), count)
+    return out
+
+
+def _direct_detach(conn, account, slot_wrapper_ids, target_container, kind):
+    slot_wrapper_ids = set(str(s) for s in (slot_wrapper_ids or []) if s)
+    batches = {}
+    for item in _installed_attachments(conn, account):
+        if not slot_wrapper_ids or item["slot_wrapper_id"] in slot_wrapper_ids:
+            batches.setdefault(item["weapon_id"], []).append(item["attachment_id"])
+    pick = [iid for batch in batches.values() for iid in batch]
+    if not pick:
+        return {"executed": False, "error": "nothing_installed",
+                "detail": "No removable attachment is installed in the selected slots."}
+    results = []
+    for index, batch in enumerate(batches.values()):
+        if index:
+            time.sleep(0.8)
+        out = pioneer_write.move_plan(conn, account, [
+            {"target_container": target_container, "instance_ids": batch}])
+        results.append(out)
+        if not out.get("executed"):
+            done = sum(int(r.get("items") or 0)
+                       for r in results[:-1] if r.get("executed"))
+            if done:
+                out["detail"] = "%s %d attachments were moved before this batch failed." % (
+                    out.get("detail") or "Detach stopped.", done)
+                out["partial"] = True
+            return out
+    moved = sum(int(r.get("items") or 0) for r in results)
+    return _log_direct(
+        conn, account, kind, {"attachments": pick},
+        {"executed": True, "items": moved,
+         "batches": len(results), "results": results}, moved)
+
+
+def _direct_attach(conn, account, ops, kind, replace_to="stash"):
+    """تركيب المرفقات عبر البوابة الرسمية في طلب واحد.
+
+    الخانة لازم تفضى الأول: لو فيها مرفق تاني بتفكه للوجهة المختارة (ستاش/أوفر
+    ستاش) في طلب منفصل وبعدين بتركّ الجديد — نفس ما اللعبة بتعمل بالظبط.
+    """
+    if account == "ALL":
+        return {"executed": False, "error": "pick_account", "detail": "Pick one account."}
+    clean = []
+    for op in ops or []:
+        wrapper = str(op.get("slot_wrapper_id") or "")
+        att = str(op.get("attachment_id") or "")
+        if wrapper and att:
+            clean.append({"slot_wrapper_id": wrapper, "attachment_id": att,
+                          "weapon_id": str(op.get("weapon_id") or "")})
+    if not clean:
+        return {"executed": False, "error": "nothing_to_attach",
+                "detail": "No attachment matches an empty slot."}
+    if replace_to not in ("stash", "overflow"):
+        replace_to = "stash"
+    slots = _slot_state(conn, account, [o["weapon_id"] for o in clean])
+    # "بياخد أتاتش إيه": البوابة بتقبل أي آيد في أي خانة، فالمطابقة بنفرضها هنا
+    # بقواعد الخانات (attachment_slots.json) قبل ما نكتب أي حاجة.
+    rules = gearops.slot_rules()
+    asset_of = {r["instance_id"]: str(r.get("asset_id") or "")
+                for r in _rows_for(conn, account, sorted({o["attachment_id"] for o in clean}))}
+    usable = []
+    for o in clean:
+        slot = slots.get(o["slot_wrapper_id"]) or {}
+        rule = rules.get(slot.get("slot_asset_id") or "")
+        allowed = set((rule or {}).get("allowed_ids") or [])
+        asset_id = asset_of.get(o["attachment_id"]) or ""
+        if allowed and asset_id and asset_id not in allowed:
+            continue
+        usable.append(o)
+    if not usable:
+        return {"executed": False, "error": "incompatible",
+                "detail": "These attachments do not match the selected slot types."}
+    clean = usable
+    occupied = [o for o in clean
+                if (slots.get(o["slot_wrapper_id"]) or {}).get("attachment_id")
+                and slots[o["slot_wrapper_id"]]["attachment_id"] != o["attachment_id"]]
+    if occupied:
+        removed = _direct_detach(conn, account, [o["slot_wrapper_id"] for o in occupied],
+                                 replace_to, kind + ":replace")
+        if not removed.get("executed"):
+            return removed
+    already = {o["slot_wrapper_id"] for o in clean
+               if (slots.get(o["slot_wrapper_id"]) or {}).get("attachment_id") == o["attachment_id"]}
+    wanted, seen = [], set()
+    for o in clean:
+        if o["slot_wrapper_id"] in already or o["slot_wrapper_id"] in seen:
+            continue
+        seen.add(o["slot_wrapper_id"])
+        wanted.append({"target_container": "mod_slot", "target_wrapper_id": o["slot_wrapper_id"],
+                       "instance_ids": [o["attachment_id"]]})
+    if not wanted:
+        return {"executed": False, "error": "already_there",
+                "detail": "These attachments are already installed in those slots."}
+    out = pioneer_write.move_plan(conn, account, wanted)
+    return _log_direct(conn, account, kind, {"slots": len(wanted)}, out, len(wanted))
+
+
+def paste_plan(conn, account, weapon_ids, setup):
+    if account == "ALL":
+        return {"error": "pick_account", "detail": "Pick one account."}
+    weapons, inventory, rules = _paste_context(conn, account, weapon_ids)
+    if not weapons:
+        return {"error": "no_weapons", "detail": "No weapons selected."}
+    plan = gearops.plan_paste(weapons, setup or {}, inventory, rules)
+    return {"account": account, "weapons": [w.get("name") for w in weapons], **plan}
+
+
+def paste(conn, account, weapon_ids, setup, confirmed=False):
+    plan = paste_plan(conn, account, weapon_ids, setup)
+    if config.DATA_SOURCE == "pioneer":
+        if plan.get("error"):
+            return {"executed": False, **plan}
+        if not plan["operations"]:
+            return {"executed": False, "error": "nothing_to_paste",
+                    "detail": "No matching attachments in the stash for the copied setup.", "plan": plan}
+        return _direct_attach(conn, account, plan["operations"], "attachments:paste")
+    blocked = _direct_block("attachments")
+    if blocked:
+        return blocked
+    if not plan["operations"]:
+        return {"executed": False, "error": "nothing_to_paste",
+                "detail": "No matching attachments in the stash for the copied setup.", "plan": plan}
+    acc_id = _account_id(conn, account)
+    if not acc_id:
+        return {"executed": False, "error": "pick_account", "plan": plan}
+    body = {"operations": plan["operations"]}
+    outcome = writer.execute("batch_attach", body, acc_id)
+    out = _finish(conn, account, "attachments:paste", body, outcome, plan["matchedCount"])
+    out["preview"] = {"method": "POST", "url": writer.BATCH_ATTACH, "body": body,
+                      "plan": plan}
+    out["plan"] = plan
+    return out
+
+
+def autofill(conn, account, weapon_ids, confirmed=False):
+    if account == "ALL":
+        return {"executed": False, "error": "pick_account", "detail": "Pick one account."}
+    weapons, inventory, rules = _paste_context(conn, account, weapon_ids)
+    if not weapons:
+        return {"executed": False, "error": "no_weapons", "detail": "No weapons selected."}
+    plan = gearops.plan_auto_fill(weapons, inventory, rules)
+    if config.DATA_SOURCE == "pioneer":
+        if not plan["operations"]:
+            return {"executed": False, "error": "nothing_to_fill",
+                    "detail": "No available attachments fit the empty slots.", "plan": plan}
+        out = _direct_attach(conn, account, plan["operations"], "attachments:autofill")
+        out["plan"] = plan
+        return out
+    blocked = _direct_block("attachments")
+    if blocked:
+        return blocked
+    if not plan["operations"]:
+        return {"executed": False, "error": "nothing_to_fill",
+                "detail": "No available attachments fit the empty slots.", "plan": plan}
+    acc_id = _account_id(conn, account)
+    if not acc_id:
+        return {"executed": False, "error": "pick_account", "plan": plan}
+    body = {"operations": plan["operations"]}
+    outcome = writer.execute("batch_attach", body, acc_id)
+    out = _finish(conn, account, "attachments:autofill", body, outcome, plan["filled"])
+    out["preview"] = {"method": "POST", "url": writer.BATCH_ATTACH, "body": body,
+                      "plan": plan}
+    out["plan"] = plan
+    return out
+
+
+def attach_one(conn, account, weapon_id, slot_wrapper_id, attachment_id, source_wrapper_id=None,
+               target_container="stash"):
+    if not (weapon_id and slot_wrapper_id and attachment_id):
+        return {"executed": False, "error": "bad_request",
+                "detail": "weapon_id, slot_wrapper_id and attachment_id are required."}
+    if config.DATA_SOURCE == "pioneer":
+        return _direct_attach(conn, account, [{
+            "weapon_id": weapon_id, "slot_wrapper_id": slot_wrapper_id,
+            "attachment_id": attachment_id}], "attachments:attach", target_container)
+    blocked = _direct_block("attachments")
+    if blocked:
+        return blocked
+    acc_id = _account_id(conn, account)
+    if not acc_id:
+        return {"executed": False, "error": "pick_account"}
+    body = {"weapon_id": weapon_id, "slot_wrapper_id": slot_wrapper_id,
+            "attachment_id": attachment_id, "source_wrapper_id": source_wrapper_id or None}
+    outcome = writer.execute("attach", body, acc_id)
+    out = _finish(conn, account, "attachments:attach", body, outcome, 1)
+    out["preview"] = {"method": "POST", "url": writer.ATTACH, "body": body}
+    return out
+
+
+def detach(conn, account, weapon_ids, slot_wrapper_ids=None, target_container="stash", confirmed=False):
+    weapon_ids = [str(w) for w in (weapon_ids or []) if w]
+    if not weapon_ids:
+        return {"executed": False, "error": "nothing_selected", "detail": "No weapons selected."}
+    if target_container not in ATTACH_TARGETS:
+        return {"executed": False, "error": "bad_target",
+                "detail": "The detach destination must be stash or overflow."}
+    slot_wrapper_ids = [str(s) for s in (slot_wrapper_ids or []) if s]
+    if config.DATA_SOURCE == "pioneer":
+        removable = set(_slot_state(conn, account, weapon_ids))
+        slots = slot_wrapper_ids or list(removable)
+        # الستينسل لون مش مرفق: لو رقم خانته اتطلب، البوابة هترفض الدفعة كلها.
+        slots = [s for s in slots if s in removable]
+        return _direct_detach(conn, account, slots, target_container, "attachments:detach")
+    blocked = _direct_block("attachments")
+    if blocked:
+        return blocked
+    acc_id = _account_id(conn, account)
+    if not acc_id:
+        return {"executed": False, "error": "pick_account"}
+    body = {"weapon_ids": weapon_ids, "target_container": target_container}
+    if slot_wrapper_ids:
+        body["slot_wrapper_ids"] = slot_wrapper_ids
+    outcome = writer.execute("detach", body, acc_id)
+    out = _finish(conn, account, "attachments:detach", body, outcome, len(weapon_ids))
+    out["preview"] = {"method": "POST", "url": writer.DETACH, "body": body}
+    return out
+
+
+# ------------------------------------------------------------------ خطط الترقية/الإصلاح/التفكيك/البيع
+def plan(conn, account, kind, instance_ids=None, targets=None):
+    if account == "ALL":
+        return {"error": "pick_account", "detail": "Pick one account.", "kind": kind}
+    # بدون تحديد صريح ممنوع — otherwise an empty list means "every item in the account".
+    if not instance_ids:
+        return {"error": "nothing_selected", "detail": "No items selected.", "kind": kind}
+    rows = _rows_for(conn, account, instance_ids)
+    if not rows:
+        return {"error": "nothing_selected", "detail": "No matching items.", "kind": kind}
+    for row in rows:
+        catalog.decorate(row)
+    payload = _payload(conn, account)
+    if config.DATA_SOURCE == "pioneer" and kind in ("recycle", "repair", "sell"):
+        # البوابة نفسها هي اللي بتقرر — مفيش بوابة تانية بتدي recycle_info/repair_cost،
+        # فلو اعتمدنا على الخطة التقليدية كان هيرفض كل حاجة رغم إن المنبع شغال.
+        return {"account": account, "kind": kind, "count": len(rows), "direct": True,
+                **gearops.direct_plan(kind, rows, payload)}
+    if kind == "upgrade":
+        rows = [r for r in rows if gearops.is_weapon(r)]
+        if not rows:
+            return {"error": "no_weapons", "detail": "No upgradable weapons.", "kind": kind}
+        if config.DATA_SOURCE == "pioneer":
+            # في الوضع المباشر الدرجة من الـ asset id نفسه (أدق من الاسم المخزّن).
+            patched = []
+            for r in rows:
+                row = dict(r)
+                tier = weapon_tiers.level_of_asset(r.get("asset_id"))
+                if tier:
+                    row["quality_level"] = tier - 1
+                patched.append(row)
+            rows = patched
+        data = gearops.upgrade_plan(rows, payload, targets or {})
+    elif kind == "repair":
+        data = gearops.repair_plan(rows, payload)
+    elif kind == "recycle":
+        data = gearops.recycle_plan(rows, payload)
+    elif kind == "sell":
+        data = gearops.sell_plan(rows)
+    else:
+        return {"error": "bad_kind", "detail": "Unknown plan kind: %s" % kind, "kind": kind}
+    return {"account": account, "kind": kind, "count": len(rows), **data}
+
+
+def _mutation_flow(conn, account, kind, action, rows, plan_data, confirmed, total=None):
+    if account == "ALL":
+        return {"executed": False, "error": "pick_account", "detail": "Pick one account."}
+    if not rows:
+        return {"executed": False, "error": "nothing_selected", "detail": "No matching items."}
+    acc_id = _account_id(conn, account)
+    if not acc_id:
+        return {"executed": False, "error": "pick_account"}
+    body = writer.build_mutate(action, rows)
+    preview = {"method": "POST", "url": writer.BATCH_MUTATE, "body": body,
+               "items": plan_data.get("items") or [], "materials": plan_data.get("materials") or [],
+               "total": total if total is not None else plan_data.get("total")}
+    outcome = writer.execute("mutate", body, acc_id, action=action, confirmed=confirmed)
+    out = _finish(conn, account, "%s:%s" % (kind, action), body, outcome, len(rows))
+    out["preview"] = preview
+    out["kind"] = kind
+    out["plan"] = plan_data
+    return out
+
+
+def upgrade(conn, account, instance_ids, targets=None, confirmed=False):
+    if config.DATA_SOURCE == "pioneer":
+        return _pioneer_upgrade(conn, account, instance_ids, targets or {}, confirmed)
+    blocked = _direct_block("upgrade")
+    if blocked:
+        return blocked
+    built = plan(conn, account, "upgrade", instance_ids, targets)
+    if built.get("error"):
+        return {"executed": False, **built}
+    steps = []
+    for item in built["items"]:
+        for level in range(item["current"] + 1, item["target"] + 1):
+            steps.append({"instance_id": item["instance_id"], "target_level": level,
+                          "name": item["name"], "from": gearops.roman(level - 1),
+                          "to": gearops.roman(level)})
+    preview = {"method": "POST", "url": writer.UPGRADE,
+               "steps": steps, "materials": built["materials"]}
+    if not steps:
+        return {"executed": False, "error": "max_level",
+                "detail": "All selected weapons already reached the maximum level (IV).", "preview": preview, "plan": built}
+    if not built["can_upgrade"]:
+        return {"executed": False, "error": "insufficient_materials",
+                "detail": "Materials are not enough — check the requirements list.", "preview": preview, "plan": built}
+    if account == "ALL":
+        return {"executed": False, "error": "pick_account", "preview": preview, "plan": built}
+    acc_id = _account_id(conn, account)
+    if not acc_id:
+        return {"executed": False, "error": "pick_account", "preview": preview, "plan": built}
+    if not confirmed:
+        return {"executed": False, "error": "confirmation_required",
+                "detail": "The upgrade must be confirmed from the dedicated UPGRADE window.", "preview": preview, "plan": built}
+
+    current_ids = {item["instance_id"]: item["instance_id"] for item in built["items"]}
+    results, done, first_error = [], 0, None
+    for step in steps:
+        body = {"instance_id": current_ids.get(step["instance_id"], step["instance_id"]),
+                "target_level": step["target_level"]}
+        outcome = writer.execute("upgrade", body, acc_id, action="upgrade", confirmed=True)
+        results.append({"step": step, "ok": bool(outcome.get("ok")), "code": outcome.get("code"),
+                        "error": outcome.get("error"), "detail": outcome.get("detail")})
+        if not outcome.get("ok"):
+            first_error = outcome
+            break
+        response = outcome.get("response") or {}
+        if response.get("instance_id"):
+            current_ids[step["instance_id"]] = response["instance_id"]
+        done += 1
+        if done < len(steps):
+            time.sleep(0.45)
+
+    status = "executed" if done == len(steps) else ("partial" if done else (first_error or {}).get("error", "failed"))
+    store.log_action(conn, account, "upgrade", {"steps": steps, "materials": built["materials"]},
+                     status, {"done": done, "total": len(steps), "results": results}, len(built["items"]))
+    refreshed = None
+    if done:
+        refreshed = sync.pull_account(conn, account, acc_id, with_assets=False)
+    out = {"executed": done > 0, "done": done, "total": len(steps), "steps": results,
+           "preview": preview, "plan": built, "refreshed": refreshed}
+    if first_error:
+        out["error"] = first_error.get("error")
+        out["detail"] = first_error.get("detail")
+        out["result"] = first_error
+    return out
+
+
+def _pioneer_upgrade(conn, account, instance_ids, targets, confirmed):
+    """ترقية الأسلحة على بوابة Embark الرسمية.
+
+    البوابة بترفع درجة واحدة في كل نداء على /v1/pioneer/inventory/upgrade،
+    فبناديها لحد ما نوصل للفل المطلوب (4) من غير ما نطلب تأكيد لكل درجة.
+    جدول المواد المحلي تقريبي، والبوابة هي المرجع الأخير — فمبنمنعش التنفيذ
+    على أساسه."""
+    if account == "ALL":
+        return {"executed": False, "error": "pick_account", "detail": "Pick one account."}
+    ids = [str(i) for i in (instance_ids or []) if i]
+    if not ids:
+        return {"executed": False, "error": "nothing_selected", "detail": "No weapons selected."}
+    built = plan(conn, account, "upgrade", ids, targets)
+    if built.get("error"):
+        return {"executed": False, **built}
+    if not confirmed:
+        return {"executed": False, "error": "confirmation_required",
+                "detail": "The upgrade must be confirmed from the UPGRADE window.", "plan": built}
+    results, done, failed = [], 0, None
+    for iid in ids:
+        target = int((targets or {}).get(iid) or 4)
+        target = min(4, max(2, target))
+        out = pioneer_write.upgrade_item(conn, account, iid, target)
+        results.append(out)
+        if out.get("executed"):
+            done += 1
+        elif failed is None:
+            failed = out
+    status = "executed" if done == len(ids) else ("partial" if done else "failed")
+    store.log_action(conn, account, "upgrade",
+                     {"ids": ids, "targets": targets},
+                     status, {"done": done, "total": len(ids),
+                              "levels": [(r.get("current"), r.get("target")) for r in results]},
+                     len(ids))
+    out = {"executed": done > 0, "done": done, "total": len(ids), "results": results,
+           "plan": built, "kind": "upgrade"}
+    if failed:
+        out["error"] = failed.get("error")
+        out["detail"] = failed.get("detail")
+    return out
+
+
+def _pioneer_mutation(conn, account, kind, instance_ids, confirmed):
+    """recycle/scrap/repair على بوابة اللعبة نفسها.
+
+    مفيش تراجع بعد التنفيذ — فالـ confirmed ده مش شكل، الواجهة بتبعتاه بعد ما
+    المستخدم يضغط الزرار نفسه في كليك يمين."""
+    if not confirmed:
+        return {"executed": False, "error": "confirm_required", "kind": kind,
+                "detail": "This action is final and cannot be undone — explicit confirmation required."}
+    return pioneer_write.direct_mutate(conn, account, kind, instance_ids)
+
+
+def recycle(conn, account, instance_ids, confirmed=False):
+    if config.DATA_SOURCE == "pioneer":
+        return _pioneer_mutation(conn, account, "recycle", instance_ids, confirmed)
+    blocked = _direct_block("recycle")
+    if blocked:
+        return blocked
+    built = plan(conn, account, "recycle", instance_ids)
+    if built.get("error"):
+        return {"executed": False, **built}
+    keep = {i["instance_id"] for i in built["items"]}
+    rows = [r for r in _rows_for(conn, account, instance_ids) if r["instance_id"] in keep]
+    if not rows:
+        return {"executed": False, "error": "not_recyclable",
+                "detail": "None of the selected items has recycle_info.", "plan": built}
+    return _mutation_flow(conn, account, "recycle", "recycle", rows, built, confirmed)
+
+
+def sell(conn, account, instance_ids, confirmed=False):
+    if config.DATA_SOURCE == "pioneer":
+        # مفيش عملية "sell" في البوابة — الإعدام (scrap) هو اللي بيرجّع كرديت،
+        # وده اللي بيحصل بالظبط لما تبيع للتاجر جوه اللعبة.
+        return _pioneer_mutation(conn, account, "scrap", instance_ids, confirmed)
+    blocked = _direct_block("sell")
+    if blocked:
+        return blocked
+    built = plan(conn, account, "sell", instance_ids)
+    if built.get("error"):
+        return {"executed": False, **built}
+    rows = _rows_for(conn, account, instance_ids)
+    if not rows:
+        return {"executed": False, "error": "nothing_selected", "plan": built}
+    return _mutation_flow(conn, account, "sell", "scrap", rows, built, confirmed, total=built.get("total"))
+
+
+def repair(conn, account, instance_ids, confirmed=False):
+    if config.DATA_SOURCE == "pioneer":
+        return _pioneer_mutation(conn, account, "repair", instance_ids, confirmed)
+    blocked = _direct_block("repair")
+    if blocked:
+        return blocked
+    built = plan(conn, account, "repair", instance_ids)
+    if built.get("error"):
+        return {"executed": False, **built}
+    keep = {i["instance_id"] for i in built["items"]}
+    rows = [r for r in _rows_for(conn, account, instance_ids) if r["instance_id"] in keep]
+    if not rows:
+        return {"executed": False, "error": "nothing_to_repair",
+                "detail": "No damaged items have a repair cost.", "plan": built}
+    return _mutation_flow(conn, account, "repair", "repair", rows, built, confirmed)
+
+
+def delete(conn, account, instance_ids, confirmed=False):
+    """الحذف المباشر: بنبعت discriminator=delete للمنبع ونردّ رفضه حرفياً لو رفض.
+
+    مقيس لايف: عناصر الستاش بترجع INVENTORY_ITEM_DELETE_FORBIDDEN أو INVALID_ARGUMENT،
+    فالزرار ده مش مقفول من ناحيتنا — القرار قرار المنبع نفسه."""
+    if config.DATA_SOURCE == "pioneer":
+        return _pioneer_mutation(conn, account, "delete", instance_ids, confirmed)
+    return {"executed": False, "error": "direct_read_only", "kind": "delete",
+            "detail": DIRECT_BLOCK_DETAIL}
+
+
+def split(conn, account, instance_id, target_wrapper="", amount=1, confirmed=False):
+    """تقسيم حقيقي على بوابة اللعبة: على batch-operation بأمر moveAmount واحد يفصل
+    الكمية وينزلها في الخانة الفاضية، وعلى مسار mutate القديم بـ update + create.
+
+    بينقص لحد سقف الرصة بالظبط زي اللعبة، ولو مالقاش خانة فاضية بيرفض نصاً.
+    للتراجع: ادمج الرصتين تاني بزرار COMBINE.
+    """
+    if config.DATA_SOURCE == "pioneer":
+        if not confirmed:
+            return {"executed": False, "error": "confirm_required", "kind": "split",
+                    "detail": "This writes to the live source — explicit confirmation required."}
+        rows = _rows_for(conn, account, [str(instance_id)])
+        aid = str((rows[0].get("asset_id") if rows else "") or "")
+        return pioneer_write.split_attempt(conn, account, instance_id, target_wrapper, amount,
+                                           cap=_stack_cap(conn, account, aid))
+    return split_stack(conn, account, instance_id, amount,
+                       split_wrapper_id=target_wrapper, target_wrapper_id=target_wrapper)
+
+
+def combine(conn, account, instance_id, target_instance_id, amount=None, confirmed=False):
+    """دمج رصتين من نفس النوع على المسار الرسمي: على batch بأمر moveAmount لخانة
+    الوجهة، وعلى مسار mutate القديم بـ update للهدف + تجهيز المصدر.
+
+    السحب على الوجهة بيملاها للحد الأقصى والفضل يفضل في مكانه (نفس سلوك اللعبة) — الحالتين
+    متقيستين لايف 2026-10-31، والمجمول بيفضل ثابت. لو المصدر اتفضى بالكامل بيتشال وده
+    رجوعه مفيش ليه مسار رسمي (out["undone"]=False).
+    """
+    if config.DATA_SOURCE != "pioneer":
+        return {"executed": False, "error": "direct_read_only", "kind": "combine",
+                "detail": DIRECT_BLOCK_DETAIL}
+    if not confirmed:
+        return {"executed": False, "error": "confirm_required", "kind": "combine",
+                "detail": "This writes to the live source — explicit confirmation required."}
+    rows = _rows_for(conn, account, [instance_id, target_instance_id])
+    aid = str((rows[0].get("asset_id") if rows else "") or "")
+    return pioneer_write.combine_attempt(conn, account, instance_id, target_instance_id,
+                                         amount=amount, cap=_stack_cap(conn, account, aid))
+
+
+def swap(conn, account, instance_id, target_instance_id, confirmed=False):
+    """تبديل مكان قطعتين على البوابة الرسمية — من غير أي تغيير في الكمية أو المتانة."""
+    if config.DATA_SOURCE != "pioneer":
+        return {"executed": False, "error": "direct_read_only", "kind": "swap",
+                "detail": DIRECT_BLOCK_DETAIL}
+    if not confirmed:
+        return {"executed": False, "error": "confirm_required", "kind": "swap",
+                "detail": "This writes to the live source — explicit confirmation required."}
+    return pioneer_write.swap_items(conn, account, instance_id, target_instance_id)
+
+
+# ------------------------------------------------------------------ كمية بالضبط للشنطة
+def fill_takes(stacks, want, cap=0):
+    """الخطة اللي توصلّل الرقم بالضبط: رصّات كاملة الأول، والفاضل ينفصل من أقرب رصة أكبر.
+
+    بترجّع [{"instance_id", "amount", "partial"}] أو None لو المتاح كله أقل من الرقم.
+    السقف بيقسّم الفاضل chunks ما بتعديش حجم الأكوم، فالشنطة تستقبل رصّتين زي اللعبة
+    بالظبط (15 + 2 للرقم 17) بدل ما ترفض قطعة أكبر من الحد.
+    """
+    pool = [{"instance_id": str(s.get("instance_id") or ""), "amount": int(s.get("amount") or 0)}
+            for s in (stacks or []) if str(s.get("instance_id") or "")]
+    pool = [s for s in pool if s["amount"] > 0]
+    left = int(want or 0)
+    if left < 1 or not pool or sum(s["amount"] for s in pool) < left:
+        return None
+    pool.sort(key=lambda s: (-s["amount"], s["instance_id"]))
+    takes = []
+    # الرصّة اللي حجمها ما يزيدش عن المطلوب ومكانها هي الأولى: نقلها في طلب واحد
+    # أحسن من رصّات صغيرة + فصل من رصّة تانية. قبل كده كان الرصّات الصغيرة (2)
+    # بتتملي الأول مع إن رصّة 5 بتغطي الرقم في حركة واحدة.
+    best_i, best_cost = -1, None
+    for i, s in enumerate(pool):
+        if s["amount"] > left:
+            continue
+        rem = left - s["amount"]
+        cost = 0 if rem == 0 else None
+        if rem > 0:
+            chunk = min(rem, cap) if cap and cap > 1 else rem
+            if any(x["amount"] > chunk for x in pool if x is not s):
+                cost = 1
+        if cost is not None and (best_cost is None or cost < best_cost):
+            best_i, best_cost = i, cost
+            if cost == 0:
+                break
+    if best_i >= 0:
+        s = pool[best_i]
+        takes.append({"instance_id": s["instance_id"], "amount": s["amount"], "partial": False})
+        left -= s["amount"]
+        s["amount"] = 0
+    for s in pool:
+        if left <= 0:
+            break
+        if s["amount"] <= left and s["amount"] > 0:
+            takes.append({"instance_id": s["instance_id"], "amount": s["amount"], "partial": False})
+            left -= s["amount"]
+            s["amount"] = 0     # الرصة اتنقلت كلها: مابقاش فيها حاجة تتفصل
+    while left > 0:
+        chunk = min(left, cap) if cap and cap > 1 else left
+        # أقرب رصة للقطعة المطلوبة: بنفضّي أصغر رصة ممكنة عشان الكبيرة تفضل سليمة
+        cands = [s for s in pool if s["amount"] > chunk]
+        if not cands:
+            return None
+        s = min(cands, key=lambda x: (x["amount"], x["instance_id"]))
+        takes.append({"instance_id": s["instance_id"], "amount": chunk, "partial": True})
+        s["amount"] -= chunk
+        left -= chunk
+    return takes
+
+
+def _merge_undo(dst, cells):
+    """حالة الخانات الأصلية من خطوات كتابة كتير: أول قراية لكل خانة هي الصح."""
+    for cell, kids in (cells or {}).items():
+        dst.setdefault(cell, kids)
+    return dst
+
+
+def _merge_backpack(conn, account, asset_id, cap, keep_id="", max_rounds=8):
+    """يجمع قطع النوع الواحد اللي في الشنطة في كومة واحدة على البوابة.
+
+    السحب بيفصل القطع في خانات ورا بعضها (الرصّات الكاملة الأول والقطعة المفصولة
+    بعدها)، فلو الطلب 2 بيوصلوا قطعتين 1 + 1. الدمج الحقيقي مفتوح على مسار
+    batch-operation (moveAmount لمعرّف كومة موجودة) — نفس اللي في زر MERGE —
+    فبنستخدمه على اللي وصل للشنطة بدل ما نستنى اللعبة تلمّها.
+
+    بيرجّع {"merged": عدد الدمجات الناجحة, "id": معرّف الكومة النهائية,
+            "amount": كميتها, "detail": آخر رسالة} — ومابيرميش استثناء أبداً:
+    فشل الدمج مش فشل للسحبة، القطع موجودة بس في خانات منفصلة.
+    """
+    merged, last_id, last_amount, detail = 0, "", 0, ""
+    aid = str(asset_id or "")
+    for _ in range(max(1, int(max_rounds))):
+        try:
+            data = pc.fetch_inventory_for(account) or {}
+            tree = pioneer_tree.Tree(data.get("items") or [])
+            lay = pioneer_tree.layout(tree)
+        except Exception:
+            break
+        bag_cells = set(str(s.get("wrapper") if isinstance(s, dict) else s)
+                        for s in lay["backpack"]["slots"])
+        piles = []
+        for iid, node in tree.by_id.items():
+            if str(node.get("gameAssetId")) != aid or node.get("slots"):
+                continue
+            if tree.parent.get(iid, "") not in bag_cells:
+                continue
+            piles.append({"id": iid, "amount": int(node.get("amount") or 0)})
+        piles = [p for p in piles if p["amount"] > 0]
+        if len(piles) < 2:
+            if piles:
+                last_id, last_amount = piles[0]["id"], piles[0]["amount"]
+            break
+        piles.sort(key=lambda p: (-p["amount"], p["id"] != keep_id, p["id"]))
+        tgt, src = piles[0], piles[1]
+        take = src["amount"]
+        if cap and cap > 1:
+            take = min(take, int(cap) - tgt["amount"])
+        if take < 1:
+            # الكومة الكبيرة مليانة للسقف: الدمج التالي على أحدث كومة أقل من السقف.
+            rest = [p for p in piles[1:] if not cap or p["amount"] < int(cap)]
+            if len(rest) < 2:
+                last_id, last_amount = tgt["id"], tgt["amount"]
+                break
+            rest.sort(key=lambda p: (-p["amount"], p["id"]))
+            tgt, src = rest[0], rest[1]
+            take = min(src["amount"], int(cap) - tgt["amount"]) if cap else src["amount"]
+            if take < 1:
+                last_id, last_amount = tgt["id"], tgt["amount"]
+                break
+        out = pioneer_write.combine_attempt(conn, account, src["id"], tgt["id"],
+                                            amount=take, cap=cap)
+        detail = out.get("detail") or ""
+        if not out.get("executed"):
+            break
+        merged += 1
+        last_id = tgt["id"]
+        last_amount = int((out.get("after") or {}).get("target") or (tgt["amount"] + take))
+    if not last_id:
+        try:
+            data = pc.fetch_inventory_for(account) or {}
+            tree = pioneer_tree.Tree(data.get("items") or [])
+            lay = pioneer_tree.layout(tree)
+            bag_cells = set(str(s.get("wrapper") if isinstance(s, dict) else s)
+                            for s in lay["backpack"]["slots"])
+            best = [i for i, n in tree.by_id.items()
+                    if str(n.get("gameAssetId")) == aid
+                    and tree.parent.get(i, "") in bag_cells]
+            if best:
+                last_id = best[0]
+                last_amount = int(tree.by_id[last_id].get("amount") or 0)
+        except Exception:
+            pass
+    return {"merged": merged, "id": last_id, "amount": last_amount, "detail": detail}
+
+
+_IN_USE = set()
+_USE_LOCK = threading.Lock()
+
+
+class _FillBusy(Exception):
+    pass
+
+
+@contextlib.contextmanager
+def _fill_slot(account):
+    """قفل الحساب: ضغطتين ورا بعض على نفس الحساب مش بيمشوا متوازيين على البوابة."""
+    with _USE_LOCK:
+        if account in _IN_USE:
+            raise _FillBusy()
+        _IN_USE.add(account)
+    try:
+        yield
+    finally:
+        with _USE_LOCK:
+            _IN_USE.discard(account)
+
+
+def _fill_pace():
+    """فاصل هادي بين طلبات الكتابة على البوابة (400-500ms مختلطين)."""
+    time.sleep(random.uniform(0.4, 0.5))
+
+
+def fill_plan(stacks, want, cap=0):
+    """خطة QTY بالظبط: أكوام كاملة الأول، والباقي rem تغطيه كومة واحدة.
+
+    الرصّة المغطية بتتنقل كاملة للشنطة وتتفصل جوّاها: بيفضل منها cover - rem في
+    الشنطة وقطعة rem في خانة تانية. يعني Person ده محتاج 3 خانات في الشنطة
+    (المغطية + المتبقي + المنفصل) ومش محتاج ولا خانة في الستاش زي قبل كده.
+    """
+    pool = [{"instance_id": str(s.get("instance_id") or ""), "amount": int(s.get("amount") or 0)}
+            for s in (stacks or []) if str(s.get("instance_id") or "")]
+    pool = [s for s in pool if s["amount"] > 0]
+    left = int(want or 0)
+    if left < 1 or not pool or sum(s["amount"] for s in pool) < left:
+        return None
+    pool.sort(key=lambda s: (-s["amount"], s["instance_id"]))
+    full, used = [], set()
+    for s in pool:
+        if s["amount"] <= left:
+            full.append(s)
+            used.add(s["instance_id"])
+            left -= s["amount"]
+            if left == 0:
+                break
+    cover, rem, split = None, left, False
+    if left > 0:
+        cands = [s for s in pool if s["instance_id"] not in used and s["amount"] > left]
+        if not cands:
+            return None
+        cover = min(cands, key=lambda s: (s["amount"], s["instance_id"]))
+        rem = left
+        split = int(cover["amount"]) > rem
+    cells = len(full)
+    if cover:
+        cells += 1
+        if split:
+            cells += 1 + (1 if int(cap or 0) and rem > int(cap) else 0)
+    return {"full": full, "cover": cover, "rem": rem, "split": split, "cells": cells}
+
+
+class _FillBox(object):
+    """الشجرة الحية بوصف مختصر: الشنطة، الستاش، وخانات كل حاوية."""
+
+    def __init__(self, tree, cap=0):
+        self.tree = pioneer_tree.Tree(tree.items) if tree is not None else None
+        lane = pioneer_tree.layout(self.tree) if self.tree is not None else {}
+        self.bag = set(str(s.get("wrapper") if isinstance(s, dict) else s)
+                       for s in (lane.get("backpack") or {}).get("slots") or [])
+        self.stash = set(str(s.get("wrapper") if isinstance(s, dict) else s)
+                         for s in (lane.get("stash") or {}).get("slots") or [])
+        self.cap = int(cap or 0)
+        self.cells = set(self.tree.by_id) if self.tree is not None else set()
+
+    def in_bag(self, iid):
+        """(خانة الشنطة اللي القطعة جوّاها أو حاويتها، هل مساحة القطعة جوّه الشنطة)."""
+        cur = str(iid or "")
+        for _ in range(12):
+            if cur in self.bag:
+                return cur, True
+            par = str(self.tree.parent.get(cur) or "")
+            if not par:
+                return "", False
+            if par in self.bag:
+                return par, True
+            if par not in self.cells:
+                return par, False
+            cur = par
+        return "", False
+
+    def seat(self, iid):
+        """الخانة اللي القطعة قاعد فيها (المصدر أو خزان القطعة)."""
+        par = str(self.tree.parent.get(str(iid)) or "")
+        return par if par else str(iid)
+
+    def free_bag(self):
+        return [c for c in sorted(self.bag) if not self.tree.first_child(c)]
+
+    def seat_room(self, cell):
+        """هل الخانة بتستوعب قطعة فصل جديدة (رصة + قطعة أو طفل فاضي)."""
+        if not cell or cell not in self.cells:
+            return not cell
+        kids = self.tree.children(cell)
+        if not kids:
+            return self.cap != 1
+        return bool(self.cap) and sum(
+            max(0, self.cap - int((self.tree.by_id.get(k) or {}).get("amount") or 0))
+            for k in kids) > 0
+
+    def owned(self, iid):
+        """الخانة اللي نوع القطعة منسوبة لخزنه: الخانة نفسها أو خزنه المباشر."""
+        return self.seat(iid) in self.stash or self.seat(iid) in self.bag
+
+    def amount(self, iid):
+        return int((self.tree.by_id.get(str(iid)) or {}).get("amount") or 0)
+
+    def of_type(self, aid, want=0):
+        """(القطع اللي في الشنطة، الأكوام في الستاش/الأوفر، القطع المنفردة، الحاوية)."""
+        bags, stacks, pieces, locked = [], [], [], []
+        for iid, node in self.tree.by_id.items():
+            if str(node.get("gameAssetId")) != str(aid):
+                continue
+            qty = int(node.get("amount") or 0)
+            if qty < 1:
+                continue
+            where, inside = self.in_bag(iid)
+            if inside:
+                bags.append({"instance_id": iid, "amount": qty, "cell": where,
+                             "name": self.tree.name_of(iid)})
+                continue
+            seat = self.seat(iid)
+            item = {"instance_id": iid, "amount": qty, "cell": seat,
+                    "container": "stash" if seat in self.stash else "overflow",
+                    "slots": bool(node.get("slots")),
+                    "name": self.tree.name_of(iid)}
+            if seat and seat not in self.stash:
+                sealed = any(self.tree.first_child(k) for k in self.tree.children(iid))
+                if not sealed:
+                    locked.append(item)
+                    continue
+            if qty > 1 and not item["slots"]:
+                stacks.append(item)
+            else:
+                pieces.append(item)
+        return bags, stacks, pieces, locked
+
+
+def _fill_read(conn, account, asset_id, want, in_bag):
+    """قراية حية واحدة للشجرة: الشنطة، والستاش/الأوفر للنوع ده، والخانات الفاضية."""
+    data = pc.fetch_inventory_for(account)
+    tree = pioneer_tree.Tree((data or {}).get("items") or [])
+    pioneer_tree.layout(tree)
+    box = _FillBox(tree, _stack_cap(conn, account, str(asset_id)))
+    bags, stacks, pieces, locked = box.of_type(asset_id, want)
+    total = sum(b["amount"] for b in bags)
+    return {"data": data, "tree": tree, "box": box, "bag_cells": box.bag,
+            "stash_cells": box.stash, "free": box.free_bag(), "bag_stacks": bags,
+            "stacks": stacks, "pieces": pieces, "locked": locked,
+            "in_bag": total if total else int(in_bag or 0)}
+
+
+def _fill_plan_of(found, want, cap):
+    """الخطة الرسمية: كل اللي بيتنقل كامل في طلب واحد، وكسر واحد آخره بيتفصل.
+
+    • الناقص بيتاخد من الستاش/الأوفر: الأكوام الكبيرة كاملة، وآخر كومة (أو قطعة)
+      فيها الكسر بتتفصل جوّه الشنطة.
+    • لو الستاش مش مكفي: أكبر كومة في الشنطة بتكمّل التغطية وبتتفصل برضه.
+    • مكان الفصل: كومة خانتها فيها مساحة الأول؛ لو كل الأكوام مسدودة (رصّة على
+      قد الخانة) الكسر بيتعمل على قطعة منفردة كاملة بدالها.
+    • قطع خانات التجهيز/السلاح مش مصادر فصل — بتتحسب في الإجمالي بس.
+    """
+    box = found["box"]
+    bags = found["bag_stacks"]
+    stacks = sorted([s for s in found["stacks"] if s["amount"] > 1],
+                    key=lambda s: (0 if s["container"] == "stash" else 1,
+                                   -s["amount"], s["instance_id"]))
+    loose = sorted([s for s in found["stacks"] if s["amount"] <= 1] + found["pieces"],
+                   key=lambda s: (-s["amount"], 0 if s["container"] == "stash" else 1,
+                                  s["instance_id"]))
+    roomy = [s for s in stacks if box.seat_room(s["cell"])]
+    if not roomy and loose:
+        stacks, loose = [], sorted(stacks + loose,
+                                   key=lambda s: (-s["amount"],
+                                                  0 if s["container"] == "stash" else 1,
+                                                  s["instance_id"]))
+    need = want - found["in_bag"]
+    out = {"need": need, "want": want, "short": 0, "items": [], "cells": 0, "plan": None}
+    keep_side = max(0, found["in_bag"] - want)
+    source = sum(s["amount"] for s in stacks) + sum(s["amount"] for s in loose)
+    if need <= 0:
+        if not keep_side:
+            return out
+        # الشنطة فيها أكتر من المطلوب: الزيادة بتخرج من أكبر كومة جوّاها.
+        big = sorted([b for b in bags if b["amount"] > 1], key=lambda b: -b["amount"])
+        if not big:
+            out["short"] = keep_side
+            return out
+        out["cells"] = 2
+        out["plan"] = {"items": [big[0]], "tail": dict(big[0], side="remove"),
+                       "split": True, "group": True, "keep": want, "cells": 2}
+        return out
+    short = need - source
+    if short > 0:
+        # أكبر كومة في الشنطة بتكمّل الناقص وبتتفصل برضه.
+        big = sorted([b for b in bags if b["amount"] > short], key=lambda b: b["amount"])
+        if not big:
+            out["short"] = short
+            return out
+        out["items"] = [dict(s, take=s["amount"], side="whole") for s in stacks + loose]
+        out["items"].append(dict(big[0], take=short, side="cover"))
+        out["cells"] = len(stacks) + len(loose) + 2
+        out["plan"] = {"items": out["items"], "tail": out["items"][-1],
+                       "split": True, "group": False, "cells": out["cells"]}
+        return out
+    items, left = [], need
+    tail = None
+    for s in stacks:
+        if left <= 0:
+            break
+        take = min(s["amount"], left)
+        if take < s["amount"]:
+            tail = dict(s, take=take, side="tail", cover=True)
+        else:
+            items.append(dict(s, take=take, side="whole"))
+        left -= take
+    if left > 0:
+        placed = []
+        for p in loose:
+            if left <= 0:
+                break
+            take = min(p["amount"], left)
+            if take < p["amount"]:
+                tail = dict(p, take=take, side="tail", cover=True)
+            else:
+                placed.append(dict(p, take=take, side="whole"))
+            left -= take
+        if left > 0 and placed:
+            # الكسر بقى هو نفسه قطعة كاملة: بيتحوّل لقطعة كبيرة تتفصل منها.
+            big = [b for b in bags if b["amount"] > left]
+            if big:
+                tail = dict(min(big, key=lambda b: b["amount"]), take=left, side="cover")
+                left = 0
+        items.extend(placed)
+    if left > 0:
+        out["short"] = left
+        return out
+    whole = [e for e in items if e["side"] == "whole"]
+    if tail:
+        out["cells"] = len(whole) + (2 if tail.get("cover") else 1)
+    elif keep_side:
+        # الزيادة أصلاً جوّه الشنطة: أكبر كومة بتترجع جزء منها.
+        big = sorted([b for b in bags if b["amount"] > keep_side], key=lambda b: -b["amount"])
+        if not big:
+            out["short"] = keep_side
+            return out
+        tail = dict(big[0], take=big[0]["amount"] - keep_side, side="tail")
+        out["cells"] = len(whole)
+    else:
+        out["cells"] = len(whole)
+    out["items"] = items
+    out["plan"] = {"items": items, "tail": tail, "split": bool(tail),
+                   "group": found["in_bag"] > want, "cells": out["cells"]}
+    return out
+
+
+def _fill_count(box, aid):
+    """(إجمالي النوع كله، اللي في الشنطة) من قراية حية."""
+    bags, stacks, pieces, locked = box.of_type(aid)
+    total = sum(b["amount"] for b in bags) + sum(s["amount"] for s in stacks) + \
+        sum(p["amount"] for p in pieces) + sum(p["amount"] for p in locked)
+    return total, sum(b["amount"] for b in bags)
+
+
+def _fill_verify(conn, account, asset_id, name, before, in_bag, steps, undo, plan):
+    """التحقق النهائي وخطوة WAN: SYNC واحد، ونوع الإجمالي ثابت والشنطة فيها الرقم بالظبط."""
+    aid = str(asset_id)
+    after = pc.fetch_inventory_for(account) or {}
+    box = _FillBox(pioneer_tree.Tree((after or {}).get("items") or []))
+    pioneer_tree.layout(box.tree)
+    now_total, bag_count = _fill_count(box, aid)
+    same = now_total == before
+    sync = {"ok": False, "detail": ""}
+    _fill_pace()
+    try:
+        sync = synchronize(conn, account) or {}
+    except Exception as exc:
+        sync = {"ok": False, "detail": str(exc)[:200]}
+    return {"executed": True, "kind": "fill", "delivered": bag_count - in_bag,
+            "in_backpack": bag_count, "total_before": before, "total_after": now_total,
+            "same_total": same, "plan": plan, "steps": steps, "undo": {"cells": undo},
+            "sync": bool(sync.get("ok")), "refreshed": None,
+            "detail": "%d %s in the backpack (was %d); the type total is %s." % (
+                bag_count, name, in_bag,
+                ("still %d" % before) if same else "CHANGED from %d to %d" % (before, now_total))}
+
+
+def _fill_verified(conn, account, asset_id, want, confirmed):
+    """تنفيذ QTY على المسارات الرسمية للبوابة:
+      1) قراية حية وحساب الخانات قبل أي كتابة — النقص = رفض فوري برسالة السبب.
+      2) كل اللي بيتنقل (أكوام/قطع كاملة) في طلب واحد بفاصل هادي.
+      3) الكسر الوحيد بيتفصل جوّه الشنطة، والزيادة ترجع للستاش (أو الأوفر لو مليان).
+      4) SYNC واحد في الآخر.
+    """
+    aid = str(asset_id)
+    try:
+        found = _fill_read(conn, account, aid, want, 0)
+    except pc.TokenExpired as exc:
+        return {"executed": False, "error": "token_expired", "kind": "fill", "detail": str(exc)}
+    except pc.PioneerError as exc:
+        return {"executed": False, "error": "gateway_error", "kind": "fill",
+                "detail": str(exc)[:300]}
+    except pioneer_tree.TreeError as exc:
+        return {"executed": False, "error": exc.error, "kind": "fill", "detail": exc.detail}
+    try:
+        box = found["box"]
+        name = next((s["name"] for s in found["stacks"] + found["pieces"] + found["bag_stacks"]
+                     if s.get("name")), aid)
+        total, _bag = _fill_count(box, aid)
+        total = max(total, found["in_bag"])
+        if total < want:
+            return {"executed": False, "error": "not_in_stash", "kind": "fill",
+                    "detail": "All you have of %s is %d (stash, overflow and backpack), so %d "
+                              "is impossible." % (name, total, want)}
+        if found["in_bag"] == want:
+            return {"executed": False, "error": "already_in_backpack", "kind": "fill",
+                    "detail": "The backpack already holds %d %s, so there is nothing to move." % (
+                        found["in_bag"], name)}
+        cap = box.cap
+        before = total
+        calc = _fill_plan_of(found, want, cap)
+        plan = calc["plan"]
+        if plan is None or calc["short"] > 0:
+            locked = sum(p["amount"] for p in found["locked"])
+            why = (" %d of them are inside equipped slots and cannot be split."
+                   % locked) if locked else ""
+            return {"executed": False, "error": "not_enough", "kind": "fill", "plan": plan,
+                    "detail": "There is not enough of %s in the stash to reach %d exactly.%s" % (
+                        name, want, why)}
+        need = plan["cells"]
+        if len(found["free"]) < need:
+            return {"executed": False, "error": "no_room", "kind": "fill", "plan": plan,
+                    "cells_needed": need, "cells_free": len(found["free"]),
+                    "detail": "The backpack has %d free cells and this move needs %d. Make room "
+                              "first." % (len(found["free"]), need)}
+        if not confirmed:
+            return {"executed": False, "error": "confirm_required", "kind": "fill", "plan": plan,
+                    "detail": "This writes to the live source — explicit confirmation required."}
+        if pioneer_write.paused():
+            return {"executed": False, "error": "write_paused", "code": 423, "kind": "fill",
+                    "plan": plan, "detail": pioneer_write.PAUSE_DETAIL}
+    except Exception as exc:
+        return {"executed": False, "error": "bad_tree", "kind": "fill", "detail": str(exc)[:300]}
+
+    steps, undo = [], {}
+    with _fill_slot(account):
+        try:
+            return _fill_steps(conn, account, found, aid, name, cap, before, calc, steps, undo)
+        except pc.TokenExpired as exc:
+            return {"executed": False, "error": "token_expired", "kind": "fill",
+                    "plan": plan, "steps": steps, "detail": str(exc)}
+        except pc.PioneerError as exc:
+            return {"executed": False, "error": "gateway_error", "kind": "fill",
+                    "plan": plan, "steps": steps, "detail": str(exc)[:300]}
+        except pioneer_tree.TreeError as exc:
+            return {"executed": False, "error": exc.error, "kind": "fill",
+                    "plan": plan, "steps": steps, "detail": exc.detail}
+
+
+def _fill_where(snap, iid, cells):
+    """(الخانة اللي القطعة جوّاها، هل هي جوّه الشنطة) — بالطلوع في أباء الشجرة الحية."""
+    if snap is None or not iid or str(iid) not in snap.by_id:
+        return "", False
+    cur = str(iid)
+    for _ in range(12):
+        if cur in cells:
+            return cur, True
+        par = str(snap.parent.get(cur) or "")
+        if not par:
+            return "", False
+        if par in cells:
+            return par if par in snap.by_id else cur, True
+        if par not in snap.by_id:
+            return par, False
+        cur = par
+    return "", False
+
+
+def _fill_steps(conn, account, found, aid, name, cap, before, calc, steps, undo):
+    """كل اللي بيتنقل كامل في طلب واحد، وبعدها الكسر الوحيد بيتفصل جوّه الشنطة.
+
+    كل خطوة بتتأكد من الشجرة الحية قبل اللي بعدها؛ والفشل بيرجّع اللي دخل الشنطة
+    ويطلع سبب البوابة الحرفي بدل الصمت."""
+    plan = calc["plan"]
+    items = [dict(e) for e in plan["items"]]
+    tail = plan["tail"]
+    want = int(plan.get("keep", calc["want"]))
+    group = bool(plan.get("group"))
+
+    def live():
+        data = pc.fetch_inventory_for(account) or {}
+        box = _FillBox(pioneer_tree.Tree(data.get("items") or []), cap)
+        pioneer_tree.layout(box.tree)
+        return box
+
+    def stop(msg):
+        return {"executed": False, "kind": "fill", "error": "move_failed", "plan": plan,
+                "steps": steps, "undo": {"cells": undo}, "detail": msg}
+
+    def back(iid):
+        _fill_pace()
+        out = pioneer_write.move(conn, account, "stash", [{"instance_id": iid}])
+        if not out.get("executed"):
+            _fill_pace()
+            out = pioneer_write.move(conn, account, "overflow", [{"instance_id": iid}])
+        steps.append({"action": "move", "what": "excess", "items": 1,
+                      "executed": bool(out.get("executed")), "error": out.get("error"),
+                      "detail": out.get("detail")})
+        if live().in_bag(iid)[1]:
+            return (out.get("detail") or out.get("error")
+                    or "the excess piece did not leave the backpack")
+        return ""
+
+    def split_fix(box, eid, take):
+        """فصل take وإخراج الزيادة من الشنطة، مع تحقق على الشجرة الحية."""
+        sp = pioneer_write.split_attempt(conn, account, eid, "", take, cap=cap, into_cell=False)
+        steps.append({"action": "split", "instance_id": eid, "amount": take,
+                      "executed": bool(sp.get("executed")), "error": sp.get("error"),
+                      "detail": sp.get("detail")})
+        if not sp.get("executed"):
+            return sp.get("detail") or sp.get("error") or "the split did not execute"
+        box = live()
+        seat = box.seat(eid)
+        fresh = str(sp.get("created") or "")
+        if not fresh or fresh not in box.tree.by_id:
+            fresh = next((k for k in box.tree.children(seat) if k != eid), "")
+        landed_in_bag = bool(fresh) and box.in_bag(fresh)[0] in box.bag
+        keep_id = fresh if landed_in_bag else eid
+        keep_amt = box.amount(keep_id)
+        bag_now = sum(b["amount"] for b in box.of_type(aid)[0])
+        if bag_now == want and keep_amt == take:
+            return ""
+        excess = eid if landed_in_bag else fresh
+        if not excess or bag_now <= want:
+            return ("The split ran but the backpack holds %d %s instead of %d."
+                    % (bag_now, name, want))
+        why = back(excess)
+        if why:
+            return why
+        box = live()
+        if _fill_count(box, aid)[0] != before:
+            return "⚠️ The total of the type changed while the excess was going back."
+        bag_now = sum(b["amount"] for b in box.of_type(aid)[0])
+        if bag_now != want:
+            return ("The backpack holds %d %s after the split and the excess went back "
+                    "(wanted %d)." % (bag_now, name, want))
+        return ""
+
+    # 1) الشنطة فيها أكتر من المطلوب: الزيادة بتخرج من أكبر كومة جوّاها.
+    if group:
+        box = live()
+        big = sorted([b for b in box.of_type(aid)[0] if b["amount"] > 1],
+                     key=lambda b: -b["amount"])
+        if not big:
+            return stop("Nothing of %s could be read as one stack inside the backpack." % name)
+        why = split_fix(box, big[0]["instance_id"], want)
+        if why:
+            return stop(why)
+        return _fill_verify(conn, account, aid, name, before, found["in_bag"], steps, undo, plan)
+
+    # 2) كل الأكوام/القطع الكاملة المطلوبة في طلب واحد.
+    moving = [e for e in items if e["side"] == "whole"]
+    if moving:
+        body = [{"instance_id": e["instance_id"]} for e in moving]
+        _fill_pace()
+        out = pioneer_write.move(conn, account, "backpack", body)
+        _merge_undo(undo, (out.get("undo") or {}).get("cells"))
+        steps.append({"action": "move", "what": "full", "items": len(body),
+                      "amount": sum(e["take"] for e in moving),
+                      "executed": bool(out.get("executed")), "error": out.get("error"),
+                      "detail": out.get("detail")})
+        box = live()
+        inside = [e for e in moving if box.in_bag(e["instance_id"])[1]]
+        if not out.get("executed") or out.get("to_overflow") or len(inside) < len(moving):
+            why = ""
+            for e in inside:
+                why = why or back(e["instance_id"])
+            bad = (out.get("detail") or out.get("error")) if not out.get("executed") or \
+                out.get("to_overflow") else ("the gateway answered OK but %d of the stacks did "
+                                             "not show inside the backpack"
+                                             % (len(moving) - len(inside)))
+            return stop("%s%s" % (bad, (" — %s" % why) if why else ""))
+    # 3) الكسر: الكومة بتتنقل كاملة لخانة فاضية وبتتفصل جوّاها.
+    if tail:
+        eid = tail["instance_id"]
+        if tail["side"] == "cover" or (eid not in [e["instance_id"] for e in moving]):
+            box = live()
+            free = box.free_bag()
+            if not free:
+                return stop("The covering stack of %s has no free cell in the backpack — make "
+                            "room and try again." % name)
+            _fill_pace()
+            out = pioneer_write.move(conn, account, "backpack",
+                                     [{"instance_id": eid, "target_wrapper_id": free[0]}],
+                                     fallback_if_full=True)
+            _merge_undo(undo, (out.get("undo") or {}).get("cells"))
+            steps.append({"action": "move", "what": "cover", "items": 1,
+                          "amount": tail["take"], "executed": bool(out.get("executed")),
+                          "error": out.get("error"), "detail": out.get("detail")})
+            if not out.get("executed") or not live().in_bag(eid)[1]:
+                return stop(out.get("detail") or out.get("error")
+                            or "the covering stack did not enter the backpack")
+        box = live()
+        amt = box.amount(eid)
+        if tail["take"] < amt:
+            why = split_fix(box, eid, tail["take"])
+            if why:
+                return stop(why)
+    return _fill_verify(conn, account, aid, name, before, found["in_bag"], steps, undo, plan)
+
+
+def fill(conn, account, asset_id, want, target_wrapper="", confirmed=False):
+    """يوصلّل الرقم المطلوب للشنطة بالظبط (QTY → MOVE TO BACKPACK).
+
+    الرقم بيتقرا من الشجرة الحية، والخانات بتتحسب قبل أي كتابة. لو الخانات ناقصة
+    الطلب بيترفض قبل ما يتلمس أي حاجة، ولو خطوة فشلت في النص بيرجع اللي اتسمع
+    لحد ما وقف — مفيش كتابة هيكلية يدوية، كله نقل وفصل رسمي على البوابة.
+    """
+    if config.DATA_SOURCE != "pioneer":
+        return {"executed": False, "error": "direct_read_only", "kind": "fill",
+                "detail": DIRECT_BLOCK_DETAIL}
+    if account == "ALL":
+        return {"executed": False, "error": "pick_account", "detail": "Pick one account first."}
+    if not asset_id:
+        return {"executed": False, "error": "nothing_selected", "kind": "fill",
+                "detail": "Select one item type in the search first."}
+    try:
+        want = int(want)
+    except (TypeError, ValueError):
+        want = 0
+    if want < 1:
+        return {"executed": False, "error": "bad_amount", "kind": "fill",
+                "detail": "Type a number in the QTY field first."}
+    try:
+        return _fill_verified(conn, account, asset_id, want, confirmed)
+    except _FillBusy:
+        return {"executed": False, "error": "busy", "kind": "fill", "code": 409,
+                "detail": "Another QTY move is already running on this account; wait for it "
+                          "to finish."}
+def synchronize(conn, account):
+    if config.DATA_SOURCE == "pioneer":
+        if account == "ALL":
+            return {"executed": False, "error": "pick_account", "detail": "Pick one account to sync."}
+        pulled = sync.pull_account(conn, account, None, with_assets=False)
+        store.log_action(conn, account, "sync:direct", {"source": "pioneer"},
+                         "executed" if pulled.get("ok") else "failed",
+                         pulled.get("error") or {"items": pulled.get("items")}, 0)
+        return {"executed": bool(pulled.get("ok")), "result": {"ok": True, "mode": "pioneer"},
+                "refreshed": pulled, "note": "Sync came straight from the game gateway — no data went through rampart."}
+    if account == "ALL":
+        return {"executed": False, "error": "pick_account", "detail": "Pick one account to sync."}
+    acc_id = _account_id(conn, account)
+    if not acc_id:
+        return {"executed": False, "error": "pick_account", "detail": "This account is not linked on Rampart."}
+    try:
+        outcome = writer.sync_upstream(acc_id)
+    except Exception as exc:
+        outcome = {"ok": False, "code": 502, "error": "upstream_error", "detail": str(exc)[:300]}
+    store.log_action(conn, account, "synchronize",
+                     {"method": "POST", "url": writer.SYNC},
+                     "executed" if outcome.get("ok") else outcome.get("error", "failed"),
+                     outcome.get("response") or outcome.get("detail"), 0)
+    pulled = None
+    if outcome.get("ok"):
+        pulled = sync.pull_account(conn, account, acc_id, with_assets=False)
+        if pulled and pulled.get("ok"):
+            store.set_meta(conn, "stats:%s" % account, pulled.get("stats") or {})
+            conn.execute("UPDATE accounts SET last_sync=? WHERE id=?", (time.time(), acc_id))
+            conn.commit()
+    return {"executed": bool(outcome.get("ok")), "result": outcome, "refreshed": pulled}

@@ -1,0 +1,28 @@
+def _fill_plan_of(found, want, cap):
+    single = [s for s in found["stacks"] if s["amount"] <= 1]
+    stacks = [s for s in found["stacks"] if s["amount"] > 1]
+    need = max(0, want - found["in_bag"])
+    loose, want_left = [], need
+    for p in found["pieces"]:
+        if want_left <= 0:
+            break
+        loose.append(p)
+        want_left -= p["amount"]
+    plan = fill_plan(stacks, want_left, cap)
+    if plan is None:
+        return {"stacks": stacks, "single": single, "loose": loose, "plan": None,
+                "need": need, "short": want_left}
+    short = want_left - (sum(t["amount"] for t in plan["full"]) +
+                         (plan["rem"] if plan["cover"] else 0))
+    if short > 0 and single:
+        # رصّات الـ 1 مش مصادر فصل: بتتاخد هي نفسها كقطعة كاملة.
+        single.sort(key=lambda s: (-s["amount"], s["instance_id"]))
+        extra = single[:short]
+        if extra:
+            plan["cover"].pop("needs_space", None)
+        plan["full"] = plan["full"] + [dict(s) for s in extra]
+        plan["cells"] += len(extra)
+        short -= len(extra)
+    return {"stacks": stacks, "single": single, "loose": loose, "plan": plan,
+            "need": need, "short": short}
+

@@ -1,26 +1,25 @@
 # secrets & runtime state
 .env
+tunnel_config.json
 data/*.db
 !data/rampart_local.db
+inventory.db
 data/*.log
 data/access.json
 data/agent_secret.txt
 data/hosting.json
-!data/pioneer_manifest.json
-!data/pioneer_telemetry.json
-!data/main_accounts.json
-data/snapshots/*
-!data/snapshots/*.json.gz
+data/pioneer_manifest.json
+data/pioneer_telemetry.json
+data/main_accounts.json
+data/snapshots/
 data/launch/
 state.json
 *.log
 
 # binaries & archives
-*.exe
-!frontend/download/CMSync.exe
-!frontend/download/CMSync_Setup.exe
 *.zip
 *.7z
+*.rar
 agent/build/
 agent/dist/
 _promote_backup_*/

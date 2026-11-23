@@ -25,8 +25,6 @@ from . import config
 HEADERS = {
     "Accept": "*/*",
     "Accept-Language": "en-EG,en;q=0.9,ar-EG;q=0.8,ar;q=0.7",
-    "Origin": "https://rampart.su",
-    "Referer": "https://rampart.su/",
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
     "Content-Type": "application/json",
 }
@@ -70,11 +68,11 @@ class UpstreamError(RuntimeError):
 
 
 class RampartDisabled(UpstreamError):
-    """كل طريق往外 لـ rampart.su بيعدي هنا — مقفول افتراضياً (FAHMY_RAMPART=off)."""
+    """كل طريق للخدمة الوسيطة بيعدي هنا — مقفول افتراضياً (FAHMY_RAMPART=off)."""
 
     def __init__(self, path=""):
         RuntimeError.__init__(
-            self, "Linking to rampart.su is stopped: the project runs directly on the official Embark gateway."
+            self, "Upstream linking is stopped: the project runs directly on the official Embark gateway."
                   + (" (%s)" % path if path else ""))
 
 
@@ -88,7 +86,7 @@ def _get(path, retries=2):
     last = None
     for attempt in range(retries + 1):
         try:
-            res = requests.get(config.UPSTREAM_API + path, headers=headers(), timeout=config.HTTP_TIMEOUT)
+            res = requests.get(path, headers=headers(), timeout=config.HTTP_TIMEOUT)
             if res.status_code == 200:
                 return res.json()
             last = UpstreamError("GET %s -> HTTP %s %s" % (path, res.status_code, (res.text or "")[:200]))
@@ -130,7 +128,7 @@ def fetch_inventory(account_id, activate=True):
     """يرجع payload المخزن الخام لحساب واحد (نفس شكل /inventory/parsed بالحرف)."""
     _guard(config.UPARSE_URL_PATH)
     if activate:
-        res = requests.post(config.UPSTREAM_API + config.ACTIVATE_PATH.format(account_id=account_id),
+        res = requests.post(config.ACTIVATE_PATH.format(account_id=account_id),
                             headers=headers(), timeout=config.HTTP_TIMEOUT)
         if res.status_code not in (200, 201, 204):
             raise UpstreamError("activate %s -> HTTP %s %s" % (account_id[:8], res.status_code, (res.text or "")[:200]))
@@ -141,7 +139,7 @@ def fetch_inventory(account_id, activate=True):
 # ------------------------------------------------- ملف المستخدم في Rampart (لا يمس المخزن)
 def _send(method, path, body=None):
     _guard(path)
-    res = requests.request(method, config.UPSTREAM_API + path, headers=headers(),
+    res = requests.request(method, path, headers=headers(),
                            json=body if body is not None else None, timeout=config.HTTP_TIMEOUT)
     if res.status_code not in (200, 201, 204):
         raise UpstreamError("%s %s -> HTTP %s %s" % (method, path, res.status_code, (res.text or "")[:240]))

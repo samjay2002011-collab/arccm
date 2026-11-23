@@ -1,11 +1,11 @@
-"""قارئ توكن Pioneer من ذاكرة اللعبة — بديل عن نسخ التوكن يدوي.
+"""Pioneer token reader from game memory — alternative to manual token pasting.
 
-بيدور في ذاكرة PioneerGame.exe على نمط JWT (eyJ….….…)، بيفكّ الـ payload، وبيقبّل
-بس التوكنات اللي بتاعة embark-pioneer واللي لسه ما انتتهت. القراءة بس (PROCESS_VM_READ)
-من غير أي كتابة في اللعبة أو في الشبكة.
+Scans PioneerGame.exe memory for JWT pattern (eyJ....), decodes the payload, and accepts
+only valid, unexpired tokens for embark-pioneer. Read-only (PROCESS_VM_READ) with zero writes
+to game memory or network.
 
-  python agent/memtoken.py            # يفحص ويطبع ملخص مقنّع
-  python agent/memtoken.py --paste    # يطبع التوكن الكامل (للتشخيص)
+  python agent/memtoken.py            # inspect and print masked summary
+  python agent/memtoken.py --paste    # print full token (for diagnosis)
 """
 import argparse
 import base64
@@ -19,8 +19,8 @@ from ctypes import wintypes
 PROCESS_NAME = "PioneerGame.exe"
 PIONEER_CLIENT = "embark-pioneer"
 JWT = re.compile(rb"eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}")
-RSA_SIG_BYTES = 256          # توقيع RS256 الكامل: 256 بايت = 342 خانة base64url
-ENGINE_MARKS = ("binaries", "win64")   # نسخة المحرك جوا PioneerGame\Binaries\Win64
+RSA_SIG_BYTES = 256          # Full RS256 signature: 256 bytes = 342 base64url characters
+ENGINE_MARKS = ("binaries", "win64")   # Engine build inside PioneerGame\Binaries\Win64
 
 KERNEL32 = ctypes.WinDLL("kernel32", use_last_error=True)
 PROCESS_VM_READ = 0x0010
@@ -37,7 +37,7 @@ MAX_SECONDS = 120.0
 
 
 class MBI(ctypes.Structure):
-    """MEMORY_BASIC_INFORMATION على x64 = 48 بايت بالظبط (الحشو الأخير 4 مش 8)."""
+    """MEMORY_BASIC_INFORMATION on x64 = exactly 48 bytes."""
     _fields_ = [("BaseAddress", ctypes.c_void_p), ("AllocationBase", ctypes.c_void_p),
                 ("AllocationProtect", wintypes.DWORD), ("_pad1", wintypes.DWORD),
                 ("RegionSize", ctypes.c_size_t), ("State", wintypes.DWORD),
@@ -45,7 +45,7 @@ class MBI(ctypes.Structure):
                 ("_pad2", wintypes.DWORD)]
 
 
-# من غير الأنواع دي الـ handle بيتقص لـ 32 بت على ويندوز 64 وبتفشل كل القراءات.
+# Explicit argument and return types for 64-bit Windows compatibility
 KERNEL32.OpenProcess.restype = wintypes.HANDLE
 KERNEL32.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
 KERNEL32.QueryFullProcessImageNameW.restype = wintypes.BOOL
@@ -62,7 +62,7 @@ KERNEL32.ReadProcessMemory.argtypes = [wintypes.HANDLE, ctypes.c_void_p, ctypes.
 
 
 def find_pids(name=PROCESS_NAME):
-    """معرّفات processos اللعبة — بيمشي على Toolhelp من غير أي اعتماد خارجي."""
+    """Process IDs of the game — uses Toolhelp snapshot without external dependencies."""
     SNAP = 0x00000002
 
     class ENTRY(ctypes.Structure):
@@ -96,7 +96,7 @@ def find_pids(name=PROCESS_NAME):
 
 
 def process_path(pid):
-    """المسار الكامل لعملية — من غير صلاحيات كاملة (LIMITEDInformation)."""
+    """Full path of a process using limited query privileges."""
     handle = KERNEL32.OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, False, pid)
     if not handle:
         return ""
@@ -113,11 +113,11 @@ def process_path(pid):
 
 
 def split_pids(pids=None):
-    """(لانشر، محرك) — نفس اسم البي exe لكن مسارين مختلفين.
-
-    اللانشر هو PioneerGame.exe اللي في جذع اللعبة: صغير وبيكتب التوكن في رامه وهو
-    لسه على شاشته قبل ما نافذة اللعبة تفتح — فمسحه رخيص وما يجمّدش اللعبوة.
-    المحرك (جوا مجلد Binaries) جيجاهنز ضخم ومسحه هو اللي بيعطّل اللعبة.
+    """(launcher, engine) — same executable name, different paths.
+    
+    The launcher is PioneerGame.exe in the game root: lightweight and writes the token
+    to its memory while still displaying its splash screen before the game window opens.
+    Scanning it is fast and safe.
     """
     pids = find_pids() if pids is None else list(pids)
     launcher, engine = [], []
@@ -137,11 +137,9 @@ def _b64_bytes(part):
 
 
 def inspect(token, strict=True):
-    """بيرجع بيانات التوكن لو ده توكن Pioneer صالح، غير كده None.
-
-    strict=True بيرفض النسخ المبتورة: اللعبة بتملّي بافر التوكن على مراحل، فالنسخة
-    اللي في الذاكرة ممكن يجي whole الـ payload بتاعها سليم والتوقيع مقطوع — والبوابة
-    بترد 401 على أي توكن كهدة. توقيع RS256 الكامل 256 بايت (342 خانة base64url).
+    """Returns token details if this is a valid Pioneer token, else None.
+    
+    strict=True rejects truncated copies where the RS256 signature is incomplete.
     """
     parts = token.split(".")
     if len(parts) < 3:
@@ -171,7 +169,7 @@ def inspect(token, strict=True):
 
 
 def truncated(token):
-    """True لو ده توكن Pioneer لكن توقيعها مبتور (نسخة ناقصة من بافر اللعبة)."""
+    """True if this is a Pioneer token but its signature is truncated in memory."""
     return bool(inspect(token, strict=False)) and not inspect(token)
 
 
@@ -190,15 +188,7 @@ def _iter_readable(handle):
 
 
 def scan(pid, stop_after=None, partial=None, max_bytes=None, max_seconds=None):
-    """بيلمع مناطق الذاكرة المقروءة وبيرجع التوكنات الصالحة مرتبة من الأحدث.
-
-    بيقرأ الذاكرة بثلاث صور: البايتات زي ما هي (نسخ ANSI) وصورتين بشريط الفواصل
-    (نسخ UTF‑16 اللي بستخدمها الأنريل) — عشان النسخة اللي في بافر ANSI بتيجي مبتورة
-    التوقيع في أغلب الأحيان. أي نسخة مبتورة بتتحسب في partial (لو اتداد) وما تخرجش.
-
-    max_bytes / max_seconds بيقطعوا المسح — بنخلّيهم صغار قدام اللانشر عشان أي لمعة
-    جوا عملية اللعبة نفسها بتجمّد اللعبوة (قاعدة ثابتة: ما نلمعش رام اللعبوة).
-    """
+    """Scans readable memory regions and returns valid tokens sorted newest first."""
     handle = KERNEL32.OpenProcess(PROCESS_VM_READ | PROCESS_QUERY_INFORMATION, False, pid)
     if not handle:
         raise OSError("OpenProcess failed (run as administrator?) err=%d" % ctypes.get_last_error())
@@ -242,7 +232,7 @@ def scan(pid, stop_after=None, partial=None, max_bytes=None, max_seconds=None):
 
 
 def best():
-    """أفضل توكن Pioneer في ذاكرة اللعبة المفتوحة حاليًا (أو None)."""
+    """Best Pioneer token currently in game memory (or None)."""
     for pid in find_pids():
         try:
             tokens = scan(pid)
@@ -255,13 +245,13 @@ def best():
 
 
 def mask(value, keep=6):
-    return (value[:keep] + "…" + value[-keep:]) if len(value) > keep * 2 else value
+    return (value[:keep] + "..." + value[-keep:]) if len(value) > keep * 2 else value
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Read the Pioneer token from game memory")
-    ap.add_argument("--paste", action="store_true", help="print the full token")
-    ap.add_argument("--all", action="store_true", help="print every candidate")
+    ap = argparse.ArgumentParser(description="Read Pioneer token from game memory")
+    ap.add_argument("--paste", action="store_true", help="print full token")
+    ap.add_argument("--all", action="store_true", help="print all candidate tokens")
     args = ap.parse_args()
     pids = find_pids()
     if not pids:
@@ -274,7 +264,7 @@ def main():
     if not tokens:
         print("There is no complete Pioneer token in memory right now (pid %s)." % ", ".join(map(str, pids)))
         if broken:
-            print("Found %d truncated-signature copies — wait until the game is exactly at the menu, then retry."
+            print("Found %d truncated-signature copies — wait until the game is at the menu, then retry."
                   % len(broken))
         return 1
     for t in (tokens if args.all else tokens[:1]):

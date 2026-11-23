@@ -42,7 +42,7 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: "Segoe
 .create-row .field label { display: block; font-size: 10px; font-weight: 800; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 6px; }
 .create-row .field input { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel-2); color: var(--text); font: inherit; }
 .create-row .field input:focus { outline: none; border-color: rgba(168,85,247,.6); }
-.btn { padding: 10px 20px; border: 0; border-radius: 10px; cursor: pointer; font: inherit; font-size: 11px; font-weight: 800; letter-spacing: 1.5px; color: #fff; transition: opacity .2s; }
+.btn { padding: 10px 20px; border: 0; border-radius: 10px; cursor: pointer; font: inherit; font-size: 11px; font-weight: 800; letter-spacing: 1.5px; color: #fff; }
 .btn:hover { opacity: .85; }
 .btn-primary { background: linear-gradient(135deg, var(--purple), var(--fuchsia)); }
 .btn-green { background: var(--green); color: #000; }
@@ -57,7 +57,11 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: "Segoe
 .table-head { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--line); }
 .table-head h2 { margin: 0; font-size: 13px; letter-spacing: 3px; font-weight: 800; flex: 1; }
 .sub-list { max-height: 60vh; overflow-y: auto; }
-.sub-row { display: grid; grid-template-columns: 35px 1fr 110px 80px 80px 110px auto; gap: 12px; align-items: center; padding: 14px 20px; border-bottom: 1px solid var(--line); transition: background .15s; }
+.sub-row { display: grid; grid-template-columns: 35px 1fr 130px 80px 85px 140px auto; gap: 12px; align-items: center; padding: 14px 20px; border-bottom: 1px solid var(--line); }
+.sub-row .limit-cell { display: flex; align-items: center; gap: 6px; }
+.sub-row .limit-cell label { font-size: 9px; font-weight: 900; letter-spacing: 1.2px; color: var(--muted); }
+.sub-row .limit-cell input { width: 48px; padding: 6px 6px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel-2); color: var(--text); font: inherit; font-size: 12px; text-align: center; }
+.sub-row .limit-cell input:focus { outline: none; border-color: rgba(168,85,247,.6); }
 .sub-row:hover { background: rgba(255,255,255,.02); }
 .sub-row .num { font-size: 11px; color: var(--muted); font-weight: 700; }
 .sub-row .name { font-weight: 800; font-size: 14px; }
@@ -73,6 +77,18 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: "Segoe
 .sub-row .days.gone { color: var(--red); }
 .sub-row .actions { display: flex; gap: 6px; flex-wrap: wrap; }
 .empty-state { padding: 40px; text-align: center; color: var(--muted); font-size: 13px; }
+
+/* Token log */
+.tok-row { display: grid; grid-template-columns: 1.1fr 1.8fr 92px 110px; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.tok-row:last-child { border-bottom: 0; }
+.tok-row .acc { font-weight: 800; font-size: 13px; word-break: break-word; }
+.tok-row .acc small { display: block; font-weight: 600; color: var(--muted); font-size: 10px; margin-top: 2px; }
+.tok-row .tok { font-family: ui-monospace, Consolas, monospace; font-size: 10px; color: var(--muted); cursor: pointer; word-break: break-all; }
+.tok-row .tok:hover { color: var(--text); }
+.tok-row .left { font-size: 11px; font-weight: 800; color: var(--amber); font-variant-numeric: tabular-nums; }
+.tok-row .left small { display: block; color: var(--muted); font-weight: 600; font-size: 9px; }
+.tok-head { display: grid; grid-template-columns: 1.1fr 1.8fr 92px 110px; gap: 12px; padding-bottom: 6px; font-size: 9px; font-weight: 800; letter-spacing: 1.5px; color: var(--muted); }
+.modal-sub { font-size: 11px; color: var(--muted); margin: -10px 0 14px; }
 
 /* Modal */
 .modal-bg { position: fixed; inset: 0; z-index: 90; background: rgba(0,0,0,.72); display: flex; align-items: center; justify-content: center; padding: 20px; }
@@ -109,21 +125,13 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: "Segoe
 </head>
 <body>
 
-<!-- Login overlay -->
-<div class="login-overlay" id="login-overlay">
-  <div class="login-box">
-    <h2>🔐 ADMIN LOGIN</h2>
-    <input id="admin-pw" type="password" placeholder="Admin password…" autofocus>
-    <button class="btn btn-primary" style="width:100%" id="admin-login-btn">LOGIN</button>
-    <div class="msg" id="admin-msg" style="margin-top:12px;font-size:12px;min-height:18px"></div>
-  </div>
-</div>
-
 <!-- Main UI -->
-<div id="main-ui" hidden>
+<div id="main-ui">
 <div class="topbar">
-  <h1>⚙ ADMIN CONTROL PANEL</h1>
-  <span class="badge" id="admin-pw-badge">Admin Mode</span>
+  <h1>⚙ ADMIN PANEL</h1>
+  <span class="badge" id="admin-pw-badge"></span>
+  <a href="/download/CMSync_Setup.exe" class="btn btn-sm" download="CMSync_Setup.exe" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px; background:rgba(168,85,247,.2); border:1px solid rgba(168,85,247,.5); color:#e9d5ff; font-weight:800;" title="Download CMSync Client v2.2.1">⬇ Download CMSync v2.2.1</a>
+  <a href="/" class="btn btn-ghost btn-sm" id="btn-dashboard" style="text-decoration:none; display:inline-flex; align-items:center;">← DASHBOARD</a>
   <a href="/auth/logout" class="btn btn-ghost btn-sm" id="btn-logout" style="text-decoration:none; display:inline-flex; align-items:center;">LOGOUT</a>
 </div>
 
@@ -131,22 +139,41 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: "Segoe
   <!-- Stats -->
   <div class="stats" id="stats"></div>
 
-  <!-- Admin Credentials & Reset (Unified Password) -->
+  <!-- Admin Credentials & Reset -->
   <div class="create-section" style="border: 1px solid rgba(168,85,247,0.3); background: linear-gradient(180deg, rgba(168,85,247,0.04), var(--panel));">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-      <h2 style="margin:0; color:#c084fc;">🔐 كلمة مرور الأدمن الموحدة (ADMIN PASSWORD)</h2>
-      <span style="font-size:11px; color:var(--muted); font-weight:600;">باسورد واحد فقط للدخول والتحكم الكامل</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h2 style="margin:0; color:#c084fc;">🔑 ADMIN CREDENTIALS &amp; RESET</h2>
+      <span style="font-size:11px; color:var(--muted); font-weight:600;">Sole password &amp; access token for Admin login and Admin Mode</span>
     </div>
     
-    <div style="background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:16px;">
-      <label style="display:block; font-size:10px; font-weight:800; letter-spacing:1.5px; color:var(--muted); margin-bottom:8px;">
-        كلمة مرور الأدمن (تُستخدم للدخول من صفحة /login وللوحة التحكم)
-      </label>
-      <div style="display:flex; gap:10px; align-items:center;">
-        <input id="cfg-admin-password" type="text" style="flex:1; padding:10px 14px; border-radius:10px; border:1px solid var(--line); background:var(--panel); color:var(--text); font-family:ui-monospace, Consolas, monospace; font-size:13px; font-weight:700;" placeholder="Admin password…">
-        <button class="btn btn-primary" id="btn-save-admin-password">حفظ كلمة المرور</button>
+    <div>
+      <!-- Sole Admin Password / Access Token -->
+      <div style="background:var(--panel-2); border:1px solid var(--line); border-radius:12px; padding:16px; max-width:650px;">
+        <label style="display:block; font-size:10px; font-weight:800; letter-spacing:1.5px; color:var(--muted); margin-bottom:8px;">
+          ADMIN PASSWORD / ACCESS TOKEN (ENTERED ON /login)
+        </label>
+        <div style="display:flex; gap:8px; margin-bottom:10px;">
+          <input id="cfg-admin-token" type="text" style="flex:1; padding:10px 12px; border-radius:10px; border:1px solid var(--line); background:var(--panel); color:var(--text); font-family:ui-monospace, Consolas, monospace; font-size:12px;" placeholder="Admin password…">
+          <button class="btn btn-ghost btn-sm" id="btn-gen-admin-token" title="Generate 50-character random token">🎲 RANDOM</button>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:11px; color:var(--muted);">Sole password for Admin login and Admin Mode access</span>
+          <button class="btn btn-primary btn-sm" id="btn-save-admin-token">SAVE PASSWORD</button>
+        </div>
       </div>
     </div>
+  </div>
+
+  <!-- Item icon catalog -->
+  <div class="create-section">
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap;">
+      <div>
+        <h2 style="margin:0;">🖼 ITEM ICON CATALOG</h2>
+        <div id="cat-stat" style="font-size:11px; color:var(--muted); margin-top:6px;">Loading…</div>
+      </div>
+      <button class="btn btn-primary" id="btn-cat-sync">⟳ SYNC ARCTRACKER CATALOG</button>
+    </div>
+    <div class="msg" id="cat-msg" style="margin-top:10px; font-size:12px; min-height:18px;"></div>
   </div>
 
   <!-- Create -->
@@ -155,7 +182,7 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: "Segoe
     <div class="create-row">
       <div class="field"><label>NAME</label><input id="c-name" placeholder="e.g. Ahmed"></div>
       <div class="field"><label>DAYS (0 = unlimited)</label><input id="c-days" type="number" value="30" min="0"></div>
-      <div class="field" style="max-width:140px;"><label>MAX ACCOUNTS</label><input id="c-max-accs" type="number" value="1" min="1"></div>
+      <div class="field" title="أقصى عدد حسابات يقدر المشترك يضيفها بتوكنه — فاضي = من غير حد"><label>ACCOUNTS LIMIT</label><input id="c-limit" type="number" value="" min="0" placeholder="no limit"></div>
       <div class="field"><label>NOTES (optional)</label><input id="c-notes" placeholder="e.g. paid $10"></div>
       <button class="btn btn-primary" id="btn-create">+ CREATE</button>
     </div>
@@ -168,15 +195,6 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: "Segoe
       <h2>SUBSCRIBERS</h2>
       <button class="btn btn-ghost btn-sm" id="btn-refresh">↻ REFRESH</button>
     </div>
-    <div style="display:grid; grid-template-columns:35px 1fr 110px 80px 80px 110px auto; gap:12px; padding:10px 20px; font-size:11px; font-weight:800; color:var(--muted); border-bottom:1px solid var(--line); letter-spacing:1px; background:rgba(255,255,255,0.015);">
-      <span>#</span>
-      <span>المشترك / SUBSCRIBER</span>
-      <span>TOKEN</span>
-      <span>الحالة</span>
-      <span>المدة المتبقية</span>
-      <span style="color:#c084fc;">🎮 حد الحسابات</span>
-      <span>إجراءات التحكم</span>
-    </div>
     <div class="sub-list" id="sub-list"></div>
   </div>
 </div>
@@ -187,9 +205,9 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: "Segoe
   <div class="modal-card">
     <h3 id="edit-title">EDIT SUBSCRIBER</h3>
     <div class="field"><label>NAME</label><input id="e-name"></div>
-    <div class="field"><label>MAX ACCOUNTS ALLOWED (الحد الأقصى للحسابات المسموح بها)</label><input id="e-max-accs" type="number" min="1" value="1"></div>
     <div class="field"><label>ADD DAYS (from now or from current expiry)</label><input id="e-days" type="number" value="0" min="0"></div>
     <div class="field"><label>SET EXACT DAYS (replaces current — 0 = unlimited)</label><input id="e-set-days" type="number" value="" min="0" placeholder="Leave empty to keep current"></div>
+    <div class="field"><label>ACCOUNTS LIMIT (empty = no limit, 0 = none)</label><input id="e-limit" type="number" value="" min="0" step="1" placeholder="No limit"></div>
     <div class="field"><label>NOTES</label><input id="e-notes"></div>
     <div class="modal-foot">
       <button class="btn btn-ghost" id="btn-cancel-edit">CANCEL</button>
@@ -215,16 +233,16 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: "Segoe
       <div class="profile-stat"><div class="ps-label">EXPIRES</div><div class="ps-value" id="prf-expires">—</div></div>
       <div class="profile-stat"><div class="ps-label">DAYS LEFT</div><div class="ps-value" id="prf-days">—</div></div>
       <div class="profile-stat"><div class="ps-label">LAST LOGIN</div><div class="ps-value" id="prf-lastlogin">—</div></div>
-      <div class="profile-stat"><div class="ps-label">MAX ACCOUNTS</div><div class="ps-value" id="prf-maxaccs">—</div></div>
+      <div class="profile-stat"><div class="ps-label">TOTAL LOGINS</div><div class="ps-value" id="prf-logincount">—</div></div>
       <div class="profile-stat"><div class="ps-label">NOTES</div><div class="ps-value" id="prf-notes" style="font-size:12px; font-weight:600;">—</div></div>
     </div>
     <div class="ps-label">ACCESS TOKEN</div>
     <div class="profile-token-box" id="prf-token" title="Click to copy">—</div>
     <div class="profile-actions">
       <button class="btn btn-ghost btn-sm" id="prf-btn-edit">✎ EDIT</button>
-      <button class="btn btn-green btn-sm" id="prf-btn-viewas" title="فتح حساب المشترك في تاب جديد">📂 VIEW ITEMS ↗</button>
-      <button class="btn btn-ghost btn-sm" id="prf-btn-tokens" style="color:#c084fc; border-color:rgba(168,85,247,0.5); font-weight:800;">📜 سجل التوكنات (24H)</button>
+      <button class="btn btn-green btn-sm" id="prf-btn-viewas">👤 OPEN AS SUBSCRIBER</button>
       <button class="btn btn-ghost btn-sm" id="prf-btn-copy-token">⧉ COPY TOKEN</button>
+      <a class="btn btn-ghost btn-sm" id="prf-btn-login-page" href="/login" target="_blank" style="text-decoration:none; display:inline-flex; align-items:center;" title="صفحة دخول المشترك — الصق التوكن فيها">🔓 SUBSCRIBER LOGIN</a>
       <button class="btn btn-ghost btn-sm" id="prf-btn-reset-token">🔄 NEW TOKEN</button>
       <button class="btn btn-ghost btn-sm" id="prf-btn-toggle">⏸ DISABLE</button>
       <button class="btn btn-red btn-sm" id="prf-btn-delete">✕ DELETE</button>
@@ -233,44 +251,18 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: "Segoe
   </div>
 </div>
 
-<!-- Game Tokens Log Modal (سجل توكنات المشترك لآخر 24 ساعة) -->
-<div class="modal-bg" id="tokens-modal" hidden>
-  <div class="modal-card" style="width: min(760px, 100%);">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid var(--line); padding-bottom:12px;">
-      <div style="display:flex; align-items:center; gap:10px;">
-        <span style="font-size:24px;">🔑</span>
-        <div>
-          <h3 style="margin:0; font-size:16px; font-weight:900; letter-spacing:1px; color:#e2e8f0;" id="toklog-title">سجل توكنات حسابات اللعبة</h3>
-          <small style="color:var(--muted); font-size:11px;" id="toklog-subtitle">سجل التوكنات لآخر 24 ساعة للمشترك</small>
-        </div>
-      </div>
-      <button class="btn btn-ghost btn-sm" id="btn-close-tokens-modal">✕ إغلاق</button>
-    </div>
-
-    <!-- 24-Hour Notice Banner -->
-    <div style="background:linear-gradient(135deg, rgba(168,85,247,0.12), rgba(217,70,239,0.06)); border:1px solid rgba(168,85,247,0.35); border-radius:12px; padding:12px 16px; margin-bottom:16px; display:flex; align-items:center; gap:12px;">
-      <span style="font-size:20px;">⏱️</span>
-      <div style="font-size:12px; line-height:1.6; color:#e2e8f0;">
-        <strong style="color:#c084fc;">نظام الحذف التلقائي (24 ساعة):</strong> يتم مسح هذا السجل تلقائياً بمجرد مرور <strong>24 ساعة</strong> على إضافة التوكن. يتم تسجيل التوكنات هنا فور قيام المشترك بربط حسابه من برنامج CMSync أو من خلال الموقع.
-      </div>
-    </div>
-
-    <!-- Tokens List Container -->
-    <div id="toklog-content" style="max-height:55vh; overflow-y:auto; padding-right:4px;">
-      <!-- Populated via JS -->
-    </div>
-
-    <!-- Footer -->
-    <div class="modal-foot" style="justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:14px; margin-top:16px;">
-      <div style="font-size:11px; font-weight:700; color:var(--muted);" id="toklog-count">0 توكن مسجل</div>
-      <div style="display:flex; gap:8px;">
-        <button class="btn btn-red btn-sm" id="btn-clear-tokens-log" style="display:none;">🗑️ مسح السجل يدوياً</button>
-        <button class="btn btn-ghost btn-sm" id="btn-refresh-tokens-log">↻ تحديث</button>
-      </div>
+<!-- Token Log Modal -->
+<div class="modal-bg" id="tok-modal" hidden>
+  <div class="modal-card">
+    <h3 id="tok-title">TOKEN LOG</h3>
+    <div class="modal-sub" id="tok-sub">Every game token this subscriber added, with the account it was added for.</div>
+    <div id="tok-list"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" id="btn-tok-close">CLOSE</button>
     </div>
   </div>
 </div>
 
-<script src="/admin.js?v=14"></script>
+<script src="/admin.js?v=17"></script>
 </body>
 </html>

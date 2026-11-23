@@ -13,22 +13,22 @@ import time
 
 from . import config
 
+VERSION = "2.2.1"
 EXE_NAME = "CMSync.exe"
 CHUNK = 1 << 20
 _cache = {}  # (path, size, mtime) -> sha256
 
 
 def exe_path():
-    env_path = os.environ.get("FAHMY_AGENT_EXE")
-    if env_path and os.path.isfile(env_path):
-        return env_path
-    frontend_dl = os.path.join(config.FRONTEND_DIR, "download", EXE_NAME)
-    if os.path.isfile(frontend_dl):
-        return frontend_dl
-    root_exe = os.path.join(config.ROOT, EXE_NAME)
-    if os.path.isfile(root_exe):
-        return root_exe
-    return frontend_dl
+    candidates = [
+        os.path.join(config.ROOT, "CMSync_Setup.exe"),
+        os.path.join(config.ROOT, "agent", "dist_installer", "CMSync_Setup.exe"),
+        os.path.join(config.ROOT, "tt_8004", "CMSync_Setup.exe"),
+    ]
+    for c in candidates:
+        if os.path.isfile(c):
+            return c
+    return os.environ.get("FAHMY_AGENT_EXE") or os.path.join(config.ROOT, EXE_NAME)
 
 
 def sha256(path):
@@ -52,8 +52,9 @@ def brief(path=None):
     try:
         st = os.stat(path)
     except OSError:
-        return {"present": False, "filename": os.path.basename(path), "path": path}
+        return {"present": False, "filename": os.path.basename(path), "path": path, "version": VERSION}
     return {"present": True, "filename": os.path.basename(path), "path": path,
+            "version": VERSION,
             "size": st.st_size, "built_at": int(st.st_mtime),
             "built_at_text": time.strftime("%Y-%m-%d %H:%M", time.localtime(st.st_mtime)),
             "sha256": sha256(path)}

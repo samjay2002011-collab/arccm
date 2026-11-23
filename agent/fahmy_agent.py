@@ -1,76 +1,86 @@
-"""CMSync — أجن محلي بيوصّل جهازك باللوحة من غير أي لصق توكن.
+"""CMSync Client — Local synchronization agent for ARC Raiders.
 
-بيعمل ثلاث حاجات في الخلفية:
-  1) لو اللوحة مقفولة بيشغّلها (uvicorn على 127.0.0.1 بس).
-  2) بيستنى ARC Raiders يفتح، بيقرا توكن Pioneer من ذاكرة اللعبة (قراءة فقط).
-  3) بيبعته للوحة على /api/accounts/auto: نفس الحساب يتحدّث، وحساب جديد يتسجّل —
-     ثم اللوحة تسحب المخزن قراءةً فورًا. مفيش أي كتابة على حساب اللعبة هنا نهائيًا.
-  4) التحديث تلقائي بالكامل: كل PULL_SECONDS بنعيد إرسال التوكن المحفوظ فاللوحة
-     تسحب المخزن قراءةً — من غير ما حد يدوس "حدّث دلوقتي" (الزرار فضل للطلب الفوري).
-  5) بيراقب عملية اللعبة كل WATCH_SECONDS: أول ما تدوس على ملف التشغيل وتستنى
-     LAUNCH_GRACE ثواني بيعمل مسح فوري للتوكن، ولحظة القفل بيسحب آخر حالة فورًا.
-  6) بيلمع اللانشر قبل المحرك: "Embark Game Launcher" بيكتب التوكن في ذاكرته وهو لسه
-     على شاشته (قبل ما نافذة اللعبوة تفتح)، فبنلمع هناك الأول وبنشيل اللانشر الصغير
-     بدل لمعة رام المحرك الجيجابايتي اللي بتجمّد اللعبوة. أول ما اللانشر يبان بنلمع
-     كل BOOT_GAP ثانية لحد ما التوكن يطلع، وبعدها للوتيرة الطويلة.
-  7) مسؤول عن رقم المانيفست (مفتاح الكتابة على بوابة بايونير): لحظة فتح اللعبة وكل
-     MANIFEST_SECONDS بيقول للوحة تسأل البوابة نفسها على الرقم الحي وتحفظه — فالباتش
-     ما بيلقاش الموقع برقم قديم والنقل ما بيرفضش. من غير أي قراءة لذاكرة اللعبة.
-  8) يحدّث نفسه: كل UPDATE_CHECK_SECONDS بيقارن بصمته ببصمة CMSync.exe اللي عند
-     اللوحة، ولو اختلفوا بيبلّغ، وزرار Update في الثى بينزّلها ويسأله قبل إعادة
-     التشغيل — فالنسخة الجديدة بتوصل بالظبط من غير ما حد يحمل البرنامج من الأول.
+Capabilities:
+  1) Scans ARC Raiders launcher/game memory for Pioneer JWT (read-only).
+  2) Sends token to server (/api/accounts/auto) to link subscriber and pull inventory.
+  3) Periodically repulls inventory (read-only) every PULL_SECONDS.
+  4) Monitors game process every WATCH_SECONDS.
+  5) Reads Embark Game Launcher early memory before engine window opens.
+  6) Keeps manifest up to date.
 
-  python agent/fahmy_agent.py              # شغل في الثى
-  python agent/fahmy_agent.py --once       # دورة واحدة واطبع النتيجة (للتجربة)
-  python agent/fahmy_agent.py --console    # نفس الشغل من غير أيقونة
-  python agent/fahmy_agent.py --install    # shortcut + تشغيل مع ويندوز
-  python agent/fahmy_agent.py --update-check  # قارن نسختك بنسخة اللوحة واسكت
+Usage:
+  python agent/fahmy_agent.py              # run in system tray
+  python agent/fahmy_agent.py --once       # single cycle and print result
+  python agent/fahmy_agent.py --console    # run in terminal without tray icon
+  python agent/fahmy_agent.py --install    # desktop shortcut + Windows startup
+  python agent/fahmy_agent.py --uninstall  # remove Windows startup
 """
 import argparse
 import ctypes
 import hashlib
 import json
 import os
-import shutil
+import queue
+import re
 import subprocess
 import sys
+import tempfile
 import threading
 import time
 import urllib.error
 import urllib.request
 import webbrowser
 import winreg
+import tkinter as tk
+from tkinter import messagebox
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import memtoken  # noqa: E402
 
-# ضبط معرف التطبيق في ويندوز فور تشغيل الموديول لربط أيقونة شريط المهام بالبرنامج وليس ببايثون
+# Hardcoded fallback server URL for port 8004
+PRIMARY_SERVER_URL = "https://arccm.pages.dev"
+FALLBACK_SERVER_URL = "https://arccm.fastapicloud.dev"
+GIST_ID = ""
+SERVER_URL = PRIMARY_SERVER_URL
+CURRENT_SERVER_URL = SERVER_URL
+
+_last_gist_refresh = 0.0
+_gist_refresh_lock = threading.Lock()
+
+# Set process AppUserModelID so Windows taskbar icon binds to this app
 try:
-    import ctypes
-    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("CM.CMSync.Agent.1.0")
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("CM.CMSync.Client.1.0")
 except Exception:
     pass
 
 SHOW_EVENT_NAME = "Local\\CMSync.ShowWindowEvent"
-
 APP_NAME = "CMSync"
+APP_DISPLAY_NAME = "CMSync Client"
+APP_VERSION = "2.2.2"
 CONFIG_DIR = os.path.join(os.environ.get("APPDATA", os.path.expanduser("~")), APP_NAME)
 CONFIG_FILE = os.path.join(CONFIG_DIR, "config.json")
 STATE_FILE = os.path.join(CONFIG_DIR, "state.json")
 LOG_FILE = os.path.join(CONFIG_DIR, "agent.log")
 RUN_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
-DEFAULT_PROJECT = r"C:\Users\Administrator\Desktop\rr"
-DEFAULT_PORT = 8000
-RESCAN_SECONDS = 300       # اللعبة شغالة والتوكن اتلمّ → نلمع الذاكرة كل 5 دقايق
-PULL_SECONDS = 120         # والتوكن المحفوظ بيتبعت كل دقيقتين عشان اللوحة تسحب المخزن قراءةً لوحدها
-LAUNCHER_SCAN_SECONDS = 60  # اللانشر لوحده (اللعبة لسه ما فتحت) → لمعة كل دقيقة: رخيصة وما تلمسش اللعبوة
-BOOT_GAP = 15              # شاشة اللانشر ومستنيين أول توكن → لمعة خفيفة كل 15 ثانية
-BOOT_WINDOW = 300          # والمهلة دي 5 دقايق من ظهور اللانشر، بعدها نرجع للوتيرة العادية
-LAUNCHER_BUDGET_MB = 768   # سقف لمعة اللانشر (الprocess بضلمةينات الميجا) — المحرك بسقفه المعتاد
-SCAN_BUDGET_SECONDS = 25   # والوقت الأقصى لللمعة الخفيفة دي
+DEFAULT_PROJECT = r"C:\Users\Administrator\Desktop\tt_8004"
+DEFAULT_PORT = 8004
+RESCAN_SECONDS = 300
+PULL_SECONDS = 120
+LAUNCHER_SCAN_SECONDS = 60
+BOOT_GAP = 15
+BOOT_WINDOW = 300
+LAUNCHER_BUDGET_MB = 768
+SCAN_BUDGET_SECONDS = 25
 LOG_KEEP = 400
-DEFAULT_TOKEN_FILE = r"C:\CMSyncToken.txt"
-DEFAULT_SERVER_URL = "https://arccm.pages.dev"
+
+PRIMARY_TOKEN_JSON = r"C:\tokens.json"
+PRIMARY_TOKEN_TXT = r"C:\tokens.txt"
+FALLBACK_TOKEN_JSON = os.path.join(CONFIG_DIR, "tokens.json")
+FALLBACK_TOKEN_TXT = os.path.join(CONFIG_DIR, "tokens.txt")
+DEFAULT_TOKEN_FILE = PRIMARY_TOKEN_JSON
+
+# Thread-safe UI message queue for cross-thread communications
+ui_queue = queue.Queue()
 
 
 def log(message):
@@ -89,15 +99,131 @@ def log(message):
     print(line.strip())
 
 
+def clean_gist_id(val):
+    """تنظيف تلقائي لـ GIST_ID واستخراج المعرف الصافي فقط بدون أي روابط أو مسافات."""
+    if not val:
+        return ""
+    s = str(val).strip().rstrip("/")
+    if "/" in s:
+        s = s.split("/")[-1]
+    if s.endswith(".git"):
+        s = s[:-4]
+    return s.strip()
+
+
+def refresh_server_url(force=False):
+    """Refreshes SERVER_URL anonymously from GitHub Gist pointer with fallback."""
+    global SERVER_URL, CURRENT_SERVER_URL, _last_gist_refresh
+    now = time.time()
+    if not force and (now - _last_gist_refresh < 30.0):
+        return SERVER_URL
+
+    with _gist_refresh_lock:
+        now = time.time()
+        if not force and (now - _last_gist_refresh < 30.0):
+            return SERVER_URL
+
+        candidate = ""
+        cleaned_id = clean_gist_id(GIST_ID)
+        if cleaned_id:
+            try:
+                req = urllib.request.Request(
+                    "https://api.github.com/gists/%s" % cleaned_id,
+                    headers={
+                        "Accept": "application/vnd.github+json",
+                        "User-Agent": "CMSync/%s" % APP_VERSION,
+                        "Cache-Control": "no-cache",
+                    },
+                    method="GET"
+                )
+                with urllib.request.urlopen(req, timeout=6) as resp:
+                    if resp.status == 200:
+                        data = json.loads(resp.read().decode("utf-8", "replace") or "{}")
+                        files = data.get("files") or {}
+                        file_info = files.get("server_url.json")
+                        if not file_info:
+                            for k, v in files.items():
+                                if k.endswith(".json"):
+                                    file_info = v
+                                    break
+                        if file_info:
+                            content_str = file_info.get("content")
+                            if content_str:
+                                try:
+                                    parsed = json.loads(content_str)
+                                    candidate = (parsed.get("server_url") or "").strip().rstrip("/")
+                                except Exception:
+                                    pass
+                            if not candidate and file_info.get("raw_url"):
+                                try:
+                                    raw_req = urllib.request.Request(
+                                        file_info["raw_url"],
+                                        headers={
+                                            "User-Agent": "CMSync/%s" % APP_VERSION,
+                                            "Cache-Control": "no-cache"
+                                        }
+                                    )
+                                    with urllib.request.urlopen(raw_req, timeout=6) as raw_resp:
+                                        parsed = json.loads(raw_resp.read().decode("utf-8", "replace") or "{}")
+                                        candidate = (parsed.get("server_url") or "").strip().rstrip("/")
+                                except Exception:
+                                    pass
+            except Exception as exc:
+                log("Gist check error: %s" % exc)
+
+        _last_gist_refresh = time.time()
+        if candidate and candidate.startswith("https://"):
+            if candidate != SERVER_URL:
+                log("Dynamic server URL updated from Gist: %s -> %s" % (SERVER_URL, candidate))
+                SERVER_URL = candidate
+                CURRENT_SERVER_URL = candidate
+                try:
+                    cfg = {}
+                    if os.path.exists(CONFIG_FILE):
+                        with open(CONFIG_FILE, "r", encoding="utf-8") as fh:
+                            cfg = json.load(fh) or {}
+                    cfg["server_url"] = candidate
+                    cfg["base_url"] = candidate
+                    os.makedirs(CONFIG_DIR, exist_ok=True)
+                    with open(CONFIG_FILE, "w", encoding="utf-8") as fh:
+                        json.dump(cfg, fh, indent=2, ensure_ascii=False)
+                except Exception:
+                    pass
+            return SERVER_URL
+
+        # Fallback: check config cache if SERVER_URL is not https or is legacy
+        if not SERVER_URL or not SERVER_URL.startswith("https://") or "separately-tiles" in SERVER_URL:
+            try:
+                if os.path.exists(CONFIG_FILE):
+                    with open(CONFIG_FILE, "r", encoding="utf-8") as fh:
+                        cached = (json.load(fh) or {}).get("server_url", "").strip().rstrip("/")
+                        if cached.startswith("https://") and "separately-tiles" not in cached:
+                            SERVER_URL = cached
+                            CURRENT_SERVER_URL = cached
+                            return SERVER_URL
+            except Exception:
+                pass
+            SERVER_URL = FALLBACK_SERVER_URL
+            CURRENT_SERVER_URL = SERVER_URL
+        return SERVER_URL
+
+
 def default_config():
     python = sys.executable
     if getattr(sys, "frozen", False):
-        # الثابت exe ما بيرث بايثون معاه: بنجيب بايثون الجهاز.
         python = os.environ.get("FAHMY_PYTHON") or _find_python() or python
-    return {"project": DEFAULT_PROJECT, "port": DEFAULT_PORT, "python": python,
-            "ensure_site": True, "idle_seconds": 30, "open_browser": False,
-            "token_file": DEFAULT_TOKEN_FILE, "server_url": DEFAULT_SERVER_URL,
-            "subscriber_token": "", "subscriber_name": ""}
+    return {
+        "project": DEFAULT_PROJECT,
+        "port": DEFAULT_PORT,
+        "python": python,
+        "ensure_site": True,
+        "idle_seconds": 30,
+        "open_browser": False,
+        "token_file": DEFAULT_TOKEN_FILE,
+        "server_url": SERVER_URL,
+        "subscriber_token": "",
+        "subscriber_name": "",
+    }
 
 
 def _find_python():
@@ -117,15 +243,22 @@ def load_config():
             cfg.update(json.load(fh) or {})
     except (OSError, ValueError):
         pass
-    url = (cfg.get("server_url") or "").strip().rstrip("/")
-    if cfg.get("subscriber_token") or (url and not url.startswith("http://127.0.0.1")):
-        cfg["base_url"] = url or DEFAULT_SERVER_URL
+    cached = (cfg.get("server_url") or "").strip().rstrip("/")
+    global SERVER_URL, CURRENT_SERVER_URL
+    if cached.startswith("https://") and "separately-tiles" not in cached and "trycloudflare" not in cached:
+        SERVER_URL = cached
+        CURRENT_SERVER_URL = cached
     else:
-        cfg["base_url"] = "http://127.0.0.1:%d" % int(cfg.get("port") or DEFAULT_PORT)
+        SERVER_URL = PRIMARY_SERVER_URL
+        CURRENT_SERVER_URL = PRIMARY_SERVER_URL
+    cfg["server_url"] = SERVER_URL
+    cfg["base_url"] = SERVER_URL
     return cfg
 
 
 def save_config(cfg):
+    cfg["server_url"] = SERVER_URL
+    cfg["base_url"] = SERVER_URL
     os.makedirs(CONFIG_DIR, exist_ok=True)
     body = {k: v for k, v in cfg.items() if k != "base_url"}
     with open(CONFIG_FILE, "w", encoding="utf-8") as fh:
@@ -149,11 +282,17 @@ def save_state(state):
         pass
 
 
-def http(method, url, body=None, headers=None, timeout=20):
+def http(method, url, body=None, headers=None, timeout=20, _retry=True):
+    global SERVER_URL, CURRENT_SERVER_URL
     data = json.dumps(body).encode() if body is not None else None
     base_headers = {
         "Content-Type": "application/json",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) CMSync/2.0",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Language": "en-US,en;q=0.9,ar;q=0.8",
+        "Sec-Ch-Ua": '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+        "Sec-Ch-Ua-Mobile": "?0",
+        "Sec-Ch-Ua-Platform": '"Windows"',
     }
     if headers:
         base_headers.update(headers)
@@ -162,24 +301,47 @@ def http(method, url, body=None, headers=None, timeout=20):
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             return resp.status, json.loads(resp.read().decode() or "{}")
     except urllib.error.HTTPError as exc:
+        if _retry and exc.code in (403, 500, 502, 503, 520, 521, 522, 524, 530):
+            old_url = SERVER_URL
+            alt_server = FALLBACK_SERVER_URL if "pages.dev" in old_url else PRIMARY_SERVER_URL
+            if alt_server != old_url:
+                SERVER_URL = alt_server
+                CURRENT_SERVER_URL = alt_server
+                new_url = url.replace(old_url, alt_server, 1) if old_url in url else alt_server + "/api" + url.split("/api")[-1]
+                log("Auto-failover on HTTP %d: retrying with %s" % (exc.code, new_url))
+                return http(method, new_url, body=body, headers=headers, timeout=timeout, _retry=False)
         try:
             return exc.code, json.loads(exc.read().decode() or "{}")
         except Exception:
             return exc.code, {}
     except Exception as exc:
+        if _retry:
+            old_url = SERVER_URL
+            alt_server = FALLBACK_SERVER_URL if "pages.dev" in old_url else PRIMARY_SERVER_URL
+            if alt_server != old_url:
+                SERVER_URL = alt_server
+                CURRENT_SERVER_URL = alt_server
+                new_url = url.replace(old_url, alt_server, 1) if old_url in url else alt_server + "/api" + url.split("/api")[-1]
+                log("Auto-failover on error (%s): retrying with %s" % (exc, new_url))
+                return http(method, new_url, body=body, headers=headers, timeout=timeout, _retry=False)
         return 0, {"error": str(exc)[:160]}
 
 
-# ---------------------------------------------------------------- اللوحة
 def site_status(cfg):
-    return http("GET", cfg["base_url"] + "/api/status", timeout=4)
+    """Ping /api/status — sends X-Subscriber-Token so middleware allows it without cookie."""
+    headers = {}
+    if cfg.get("subscriber_token"):
+        headers["X-Subscriber-Token"] = cfg["subscriber_token"]
+    status, body = http("GET", SERVER_URL + "/api/status", headers=headers, timeout=4)
+    log("site_status: HTTP %s — %s" % (status, body))
+    return status, body
 
 
 def agent_key(cfg):
-    """مفتاح الجهاز: لو المشترك معاه subscriber_token بنستخدمه، غير كده المفتاح المشترك."""
+    """Device key: returns subscriber_token if configured, else retrieves shared key."""
     if cfg.get("subscriber_token"):
         return cfg["subscriber_token"]
-    status, body = http("GET", cfg["base_url"] + "/api/agent/handshake", timeout=6)
+    status, body = http("GET", SERVER_URL + "/api/agent/handshake", timeout=6)
     if status == 200 and body.get("key"):
         cfg["project"] = body.get("project") or cfg["project"]
         return body["key"]
@@ -191,63 +353,25 @@ def agent_key(cfg):
         return ""
 
 
-def start_site(cfg):
-    """تشغيل اللوحة منفصلة عن الثى — نفس أمر uvicorn بتاع السكربتات."""
-    project = cfg.get("project") or ""
-    python = cfg.get("python") or ""
-    if not (os.path.isdir(project) and python and os.path.exists(python)):
-        log("Project or python not found (%s / %s)" % (project, python))
-        return False
-    creation = 0x00000008 | 0x00000200  # DETACHED | NEW_PROCESS_GROUP
-    env = dict(os.environ, PYTHONPATH=project)
-    out = open(os.path.join(CONFIG_DIR, "site.log"), "a", encoding="utf-8")
-    subprocess.Popen([python, "-m", "uvicorn", "backend.main:app", "--host", "127.0.0.1",
-                      "--port", str(cfg["port"]), "--log-level", "warning"],
-                     cwd=project, stdout=out, stderr=out, env=env, creationflags=creation)
-    log("Starting the dashboard…")
-    deadline = time.time() + 180
-    while time.time() < deadline:
-        status, _ = site_status(cfg)
-        if status == 200:
-            log("Dashboard is up.")
-            return True
-        time.sleep(3)
-    log("The dashboard did not come up after 180 seconds.")
-    return False
-
-
-def ensure_site(cfg):
-    # لو وضع المشترك (عبر السيرفر الخارجي أو معاه توكن)، مش بنشغل uvicorn محلي
-    if cfg.get("subscriber_token") or not cfg.get("base_url", "").startswith("http://127.0.0.1"):
-        status, _ = site_status(cfg)
-        return status == 200
-    status, _ = site_status(cfg)
-    if status == 200:
-        return True
-    if not cfg.get("ensure_site", True):
-        return False
-    return start_site(cfg)
-
-
 def push(cfg, key, token):
     headers = {}
     if cfg.get("subscriber_token"):
         headers["X-Subscriber-Token"] = cfg["subscriber_token"]
     else:
         headers["X-Fahmy-Agent"] = key
-    status, body = http("POST", cfg["base_url"] + "/api/accounts/auto",
+    status, body = http("POST", SERVER_URL + "/api/accounts/auto",
                         body={"token": token}, headers=headers, timeout=120)
     return status, body
 
 
 def panel_names(cfg, key):
-    """أسماء الحسابات اللي اللوحة تعرفها دلوقتي (المفتاح الداخلي + الاسم الظاهر)."""
+    """Retrieves account names known to the dashboard."""
     headers = {}
     if cfg.get("subscriber_token"):
         headers["X-Subscriber-Token"] = cfg["subscriber_token"]
     else:
         headers["X-Fahmy-Agent"] = key
-    status, body = http("GET", cfg["base_url"] + "/api/accounts", headers=headers)
+    status, body = http("GET", SERVER_URL + "/api/accounts", headers=headers)
     if status != 200:
         return None
     out = set()
@@ -256,18 +380,17 @@ def panel_names(cfg, key):
     return out
 
 
-# ---------------------------------------------------------------- الدورة
 def deliver(cfg, key, state, token, jti="", exp=0.0, notify=None):
-    """يبعت توكن للوحة ويسجّل النتيجة في الحالة. بيرجع رسالة، أو None لو اترفض."""
+    """Sends token to dashboard and records state."""
     pushed = state.setdefault("pushed", {})
     status, body = push(cfg, key, token)
     if status == 400 or status == 403:
         state["last_error"] = body.get("detail") or str(status)
-        log("The dashboard rejected it (%s): %s" % (status, state["last_error"]))
+        log("Dashboard rejected token (%s): %s" % (status, state["last_error"]))
         return None
     if status == 200 and not (body.get("pulled") or {}).get("ok") and not body.get("created"):
         state["last_error"] = (body.get("pulled") or {}).get("error") or "gateway refused"
-        log("The gateway rejected the token (%s)" % state["last_error"])
+        log("Gateway rejected token (%s)" % state["last_error"])
         if jti:
             pushed[jti] = {"at": time.time(), "bad": True,
                            "account": account_name(body), "exp": exp}
@@ -306,49 +429,225 @@ def account_name(body):
 
 
 def account_label(body):
-    """الاسم الظاهر في اللعبة — هو اللي بيتكتب في ملف التوكن، مش المفتاح الداخلي."""
     acc = (body or {}).get("account") or {}
     return acc.get("display_name") or acc.get("name") or "?"
 
 
-def write_token_file(cfg, name, token):
-    """السطر الأول اسم الحساب والسطر التاني التوكن — بيتكتب من جديد كل مرة."""
-    path = cfg.get("token_file") or DEFAULT_TOKEN_FILE
-    if not name or name == "?" or not token:
-        return False
-    want = "%s\n%s\n" % (name, token)
+def compute_token_expiry(token, saved_at=None):
+    if saved_at is None:
+        saved_at = time.time()
+    token_exp = 0.0
     try:
-        with open(path, "r", encoding="utf-8") as fh:
-            if fh.read() == want:
-                return True
-    except OSError:
+        info = memtoken.inspect(token, strict=False)
+        if info and info.get("exp"):
+            token_exp = float(info["exp"])
+    except Exception:
         pass
+    if token_exp > 0:
+        expires_at = min(token_exp, saved_at + 86400.0)
+    else:
+        expires_at = saved_at + 86400.0
+    return saved_at, expires_at
+
+
+def _can_write_dir(path):
     try:
-        with open(path, "w", encoding="utf-8") as fh:
-            fh.write(want)
-    except OSError as exc:
-        log("Token file %s is locked: %s" % (path, str(exc)[:90]))
+        d = os.path.dirname(os.path.abspath(path))
+        os.makedirs(d, exist_ok=True)
+        test = os.path.join(d, ".perm_test.tmp")
+        with open(test, "w") as fh:
+            fh.write("1")
+        os.remove(test)
+        return True
+    except (OSError, PermissionError):
         return False
-    if not cfg.get("_token_file_warned"):
-        cfg["_token_file_warned"] = True
-        log("The token is being written to %s" % path)
+
+
+def get_token_paths(cfg=None):
+    target = (cfg.get("token_file") if cfg else None) or PRIMARY_TOKEN_JSON
+    if not _can_write_dir(target):
+        return FALLBACK_TOKEN_JSON, FALLBACK_TOKEN_TXT
+    d = os.path.dirname(os.path.abspath(target)).upper()
+    if d in ("C:\\", "C:"):
+        return PRIMARY_TOKEN_JSON, PRIMARY_TOKEN_TXT
+    base_dir = os.path.dirname(os.path.abspath(target))
+    return os.path.join(base_dir, "tokens.json"), os.path.join(base_dir, "tokens.txt")
+
+
+def load_token_data(json_path):
+    if not os.path.isfile(json_path):
+        return {"accounts": {}, "updated_at": 0}
+    try:
+        with open(json_path, "r", encoding="utf-8") as fh:
+            data = json.load(fh)
+            if not isinstance(data, dict):
+                return {"accounts": {}, "updated_at": 0}
+            if "accounts" not in data or not isinstance(data["accounts"], dict):
+                data["accounts"] = {}
+            return data
+    except Exception:
+        return {"accounts": {}, "updated_at": 0}
+
+
+def save_token_data(data, json_path, txt_path):
+    try:
+        os.makedirs(os.path.dirname(os.path.abspath(json_path)), exist_ok=True)
+        with open(json_path, "w", encoding="utf-8") as fh:
+            json.dump(data, fh, indent=2, ensure_ascii=False)
+    except Exception as exc:
+        log("Failed to write token JSON %s: %s" % (json_path, exc))
+        return False
+
+    try:
+        os.makedirs(os.path.dirname(os.path.abspath(txt_path)), exist_ok=True)
+        lines = []
+        for acc_name, info in (data.get("accounts") or {}).items():
+            tok = info.get("token") or ""
+            if tok:
+                lines.append("%s\n%s" % (acc_name, tok))
+        with open(txt_path, "w", encoding="utf-8") as fh:
+            fh.write("\n".join(lines) + ("\n" if lines else ""))
+    except Exception as exc:
+        log("Failed to write token TXT %s: %s" % (txt_path, exc))
     return True
 
 
-def open_token_file(cfg):
-    path = cfg.get("token_file") or DEFAULT_TOKEN_FILE
-    if os.path.exists(path):
-        os.startfile(path)
-    else:
-        webbrowser.open(os.path.splitdrive(path)[0] + os.sep)
+def clean_expired_tokens(cfg=None, json_path=None, txt_path=None):
+    """Purges any token where now >= expires_at or now - saved_at >= 24h."""
+    try:
+        if not json_path or not txt_path:
+            json_path, txt_path = get_token_paths(cfg)
+        if not os.path.isfile(json_path):
+            return 0
+        data = load_token_data(json_path)
+        accounts = data.get("accounts") or {}
+        now = time.time()
+        expired = []
+        for name, info in list(accounts.items()):
+            saved_at = float(info.get("saved_at") or 0)
+            expires_at = float(info.get("expires_at") or 0)
+            if saved_at <= 0 or expires_at <= 0 or now >= expires_at or (now - saved_at) >= 86400.0:
+                expired.append(name)
+        if expired:
+            for name in expired:
+                accounts.pop(name, None)
+                log("Cleaned expired token for account: %s" % name)
+            data["updated_at"] = now
+            save_token_data(data, json_path, txt_path)
+        return len(expired)
+    except Exception as exc:
+        log("Token cleanup error: %s" % exc)
+        return 0
+
+
+def write_token_file(cfg, name, token):
+    if not name or name == "?" or not token:
+        return False
+    json_path, txt_path = get_token_paths(cfg)
+    clean_expired_tokens(cfg, json_path=json_path, txt_path=txt_path)
+
+    data = load_token_data(json_path)
+    accounts = data.setdefault("accounts", {})
+    now = time.time()
+    saved_at, expires_at = compute_token_expiry(token, saved_at=now)
+
+    existing = accounts.get(name)
+    if existing and existing.get("token") == token:
+        if float(existing.get("expires_at") or 0) > now:
+            return True
+
+    accounts[name] = {
+        "account": name,
+        "token": token,
+        "saved_at": saved_at,
+        "saved_at_text": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(saved_at)),
+        "expires_at": expires_at,
+        "expires_at_text": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(expires_at)),
+    }
+    data["updated_at"] = now
+    ok = save_token_data(data, json_path, txt_path)
+    if ok and not cfg.get("_token_file_warned"):
+        cfg["_token_file_warned"] = True
+        log("Token saved for %s to %s and %s" % (name, json_path, txt_path))
+    return ok
+
+
+def open_token_file(cfg=None, _icon=None, _item=None):
+    try:
+        json_path, txt_path = get_token_paths(cfg)
+        target = txt_path if os.path.isfile(txt_path) else json_path
+        if not os.path.exists(target):
+            data = {"accounts": {}, "updated_at": time.time()}
+            save_token_data(data, json_path, txt_path)
+            target = txt_path if os.path.isfile(txt_path) else json_path
+        os.startfile(target)
+    except Exception as exc:
+        log("Failed to open token file: %s" % exc)
+
+
+def _parse_version(v_str):
+    try:
+        clean = re.sub(r"[^0-9\.]", "", str(v_str).strip())
+        parts = [int(x) for x in clean.split(".") if x.isdigit()]
+        return tuple(parts) if parts else (0, 0, 0)
+    except Exception:
+        return (0, 0, 0)
+
+
+def check_for_updates(cfg, manual=False):
+    """Background check against SERVER_URL/api/cmsync/version."""
+    def worker():
+        try:
+            refresh_server_url(force=True)
+            status, body = http("GET", SERVER_URL + "/api/cmsync/version", timeout=8)
+            ui_queue.put(("update_check_result", manual, status, body))
+        except Exception as exc:
+            ui_queue.put(("update_check_result", manual, 0, {"error": str(exc)}))
+    threading.Thread(target=worker, daemon=True).start()
+
+
+def perform_update_download(dl_url, expected_sha):
+    """Downloads installer to %TEMP% and runs it."""
+    def worker():
+        temp_dir = tempfile.gettempdir()
+        installer_path = os.path.join(temp_dir, "CMSync_Setup_Update.exe")
+        full_url = dl_url if dl_url.startswith("http") else (SERVER_URL + dl_url)
+        log("Downloading update from %s to %s..." % (full_url, installer_path))
+        try:
+            req = urllib.request.Request(full_url, headers={
+                "User-Agent": "CMSync/%s" % APP_VERSION
+            })
+            with urllib.request.urlopen(req, timeout=60) as resp, open(installer_path, "wb") as out_f:
+                while True:
+                    chunk = resp.read(65536)
+                    if not chunk:
+                        break
+                    out_f.write(chunk)
+
+            if expected_sha:
+                h = hashlib.sha256()
+                with open(installer_path, "rb") as f:
+                    for chunk in iter(lambda: f.read(65536), b""):
+                        h.update(chunk)
+                actual_sha = h.hexdigest().lower()
+                if actual_sha != expected_sha.lower():
+                    log("Update verification failed: SHA256 mismatch (%s != %s)" % (actual_sha, expected_sha))
+                    ui_queue.put(("update_error", "Update verification failed (SHA256 mismatch). Please try again."))
+                    return
+
+            log("Update download verified. Launching installer: %s" % installer_path)
+            subprocess.Popen([installer_path], shell=False)
+            time.sleep(1)
+            os._exit(0)
+        except Exception as exc:
+            log("Update download error: %s" % exc)
+            ui_queue.put(("update_error", "Failed to download update: %s" % exc))
+
+    threading.Thread(target=worker, daemon=True).start()
 
 
 def repull(cfg, state, notify=None, now=False):
-    """يعيد إرسال التوكن المحفوظ لنفس الحساب — واللوحة تسحب المخزن قراءةً مع كل استلام.
-
-    ده اللي بيخلي التحديث تلقائي من غير زرار "حدّث دلوقتي": قراءة فقط، مفيش كتابة.
-    بيرجّع None لو لسه بدري على الدورة أو مفيش توكن محفوظ نتبعت بيه.
-    """
+    """Re-sends saved token for the same account to pull inventory read-only."""
     every = float(cfg.get("pull_seconds") or PULL_SECONDS)
     if not now and time.time() - float(state.get("last_pull") or 0) < every:
         return None
@@ -366,11 +665,6 @@ def repull(cfg, state, notify=None, now=False):
 
 
 def scan_gap(cfg, state, launcher):
-    """وتيرة لمعة الذاكرة: لمعة اللانشر رخيصة فلنكررها، ولمعة المحرك غالية فلنقلّها.
-
-    شاشة اللانشر لسه ما كتبتش توكن = كل كام ثانية، اللانشر بس = دقيقة، والمحرك شغال
-    والتوكن اتلمّ = 5 دقايق — عشان المسح جوا اللعبوة هو اللي بيجمّدها.
-    """
     if state.get("boot_poll"):
         return float(cfg.get("boot_gap") or BOOT_GAP)
     if not launcher:
@@ -379,19 +673,14 @@ def scan_gap(cfg, state, launcher):
 
 
 def harvest(cfg, launcher, engine, broken):
-    """أول عملية تطلّع توكن كامل تكفي — واللانشر بيمشي الأول.
-
-    اللانشر بيكتب التوكن وهو لسه على شاشته، فبنلمعه بميزانية صغيرة (process بضلمةينات
-    الميجا) وبنخلص قبل ما اللعبوة تفتح. المحرك ما بنلمعوش إلا لو اللانشر ساكت، وبالسقف
-    الكامل المعتاد — التقطير اللي قبل كده كان بيقطع الدورة على توكن موجود فعلاً.
-    """
+    """Scans launcher or engine process memory for Pioneer JWT token."""
     for pid in launcher:
         try:
             got = memtoken.scan(pid, partial=broken,
                                 max_bytes=LAUNCHER_BUDGET_MB * (1 << 20),
                                 max_seconds=cfg.get("scan_seconds") or SCAN_BUDGET_SECONDS)
         except OSError as exc:
-            log("Scan of pid %s failed: %s" % (pid, exc))
+            log("Scan of launcher PID %s failed: %s" % (pid, exc))
             continue
         if got:
             return got, pid
@@ -399,7 +688,7 @@ def harvest(cfg, launcher, engine, broken):
         try:
             got = memtoken.scan(pid, partial=broken)
         except OSError as exc:
-            log("Scan of pid %s failed: %s" % (pid, exc))
+            log("Scan of engine PID %s failed: %s" % (pid, exc))
             continue
         if got:
             return got, pid
@@ -407,11 +696,14 @@ def harvest(cfg, launcher, engine, broken):
 
 
 def sync_once(cfg, state, force=False, notify=None):
-    """دورة واحدة: لو اللانشر أو اللعبة مفتوحة اقرأ الذاكرة وابعث التوكن الجديد."""
-    status, site = site_status(cfg)
+    """Single cycle: scans game/launcher memory and delivers token."""
+    clean_expired_tokens(cfg)
+    status, _ = site_status(cfg)
     if status != 200:
-        state["last_error"] = "Dashboard is down"
-        return "Dashboard is down"
+        log("sync_once: dashboard unreachable (HTTP %s) — skipping memory scan" % status)
+        state["last_error"] = "Dashboard is unreachable"
+        return "Dashboard is unreachable"
+    log("sync_once: dashboard OK — starting memory scan")
     launcher, engine = memtoken.split_pids()
     pids = launcher + engine
     switched = "game" in state and bool(state.get("game")) != bool(pids)
@@ -419,18 +711,15 @@ def sync_once(cfg, state, force=False, notify=None):
         state["game"] = False
         state["boot_poll"] = False
         if switched:
-            # اللعبة قفلت دلوقتي: آخر سحب بعد الرايد بالتوكن المحفوظ من غير انتظار الدورة
             out = repull(cfg, state, notify, now=True)
             if out:
                 return out
         last = time.strftime("%H:%M", time.localtime(state.get("last_push") or 0))
-        return "Game closed | last update %s" % last if state.get("last_push") else "Game closed"
+        return "Game closed | last sync %s" % last if state.get("last_push") else "Game closed"
     if switched or not state.get("game") or not state.get("game_seen"):
-        # اللانشر بان دلوقتي (أو الأجنقل نفسه وهو شغال): التوكن اللي قبل كده ملك جلسة تانية
         state["game_seen"] = time.time()
         state["has_token"] = False
     state["game"] = True
-    # الاستعجال بس وهو واقف قدام اللانشر: لمعة المحرك الغالية ما تتكررش كل كام ثانية
     state["boot_poll"] = (bool(launcher) and not state.get("has_token")
                           and time.time() - float(state.get("game_seen") or 0) < BOOT_WINDOW)
     key = agent_key(cfg)
@@ -443,15 +732,12 @@ def sync_once(cfg, state, force=False, notify=None):
     held = (state.get("held") or {}).get(state.get("account"))
     rested = not force and not switched and since_scan < gap and state.get("pid") in pids
     if rested:
-        # لسه بدري على لمعة تانية: نعيش على التوكن المحفوظ بدل ما نلمع نفس الجيجابايت
         if not (held and exp > time.time()):
-            return "No Pioneer token in memory yet — scanning again in %d s" \
-                % int(max(1, gap - since_scan))
+            return "Waiting for token in memory — scanning in %d s" % int(max(1, gap - since_scan))
         known = panel_names(cfg, key)
         if known is None or state.get("account") in known:
-            return repull(cfg, state, notify) or "Token is fine (%.0f h)" % ((exp - time.time()) / 3600)
-        # الحساب اتمسح من اللوحة: نرجّعه من النسخة المحفوظة من غير ما نلمع الذاكرة تاني
-        log("Account %s is not in the dashboard — re-registering it from the saved copy" % state.get("account"))
+            return repull(cfg, state, notify) or "Token active (%.0f h left)" % ((exp - time.time()) / 3600)
+        log("Account %s missing from dashboard — re-registering" % state.get("account"))
         out = deliver(cfg, key, state, held, notify=notify)
         if out:
             return out
@@ -461,11 +747,10 @@ def sync_once(cfg, state, force=False, notify=None):
     state["last_scan"] = time.time()
     state["pid"] = scanned or pids[0]
     if not tokens:
-        state["last_error"] = ("Truncated-signature token copies in memory (%d)" % len(broken)) if broken \
-            else "No token in memory"
+        state["last_error"] = ("Truncated token copies in memory (%d)" % len(broken)) if broken else "No token in memory"
         if broken:
-            return "Found incomplete token copies in memory — waiting for a full one"
-        return "The launcher is running — waiting for the token to appear (%d s)" % int(max(1, gap - since_scan))
+            return "Found incomplete token copies — waiting for complete signature"
+        return "Launcher detected — waiting for token (%d s)" % int(max(1, gap - since_scan))
     state["has_token"] = True
     state["boot_poll"] = False
     write_token_file(cfg, state.get("display") or state.get("account"), tokens[0]["token"])
@@ -480,22 +765,16 @@ def sync_once(cfg, state, force=False, notify=None):
         out = deliver(cfg, key, state, cand["token"], cand["jti"], cand["exp"], notify)
         if out:
             return out
-    return repull(cfg, state, notify, now=True) or "All tokens in memory were already sent"
+    return repull(cfg, state, notify, now=True) or "Tokens in memory are up to date"
 
 
-WATCH_SECONDS = 3       # استطلاع خفيف على أسماء العمليات — ثواني معدودة لكل لقطة
-LAUNCH_GRACE = 5        # مهلة بعد ظهور عملية اللعبة عشان تكتب التوكن في الرام
-MANIFEST_SECONDS = 600  # ورقم المانيفست بيتسأل عليه كل 10 دقايق (الباتش ينزل واللعبة مقفولة)
+WATCH_SECONDS = 3
+LAUNCH_GRACE = 5
+MANIFEST_SECONDS = 600
 
 
 def refresh_manifest(cfg, state, force=False, notify=None):
-    """يخلّي اللوحة تسأل البوابة على رقم المانيفست الحي وتحفظه — صفر قراءة ذاكرة.
-
-    الرقم ده هو مفتاح الكتابة: أول ما اللعبة تعمل ابديت بيقى قديم فالنقل يرفض 412
-    والقراءة تفضل شغالة. بنسأله لحظة فتح اللعبة (force) وعشان الباتش ممكن ينزل
-    والحساب مقفول بنسأله دورياً كمان. اللوحة بتحفظ في data/pioneer_manifest.json
-    وبتقراه لكل طلب، فمفيش إعادة تشغيل ولا حاجة تدوس عليها.
-    """
+    """Requests current game manifest number from dashboard."""
     now = time.time()
     if not force and now - float(state.get("manifest_at") or 0) < MANIFEST_SECONDS:
         return ""
@@ -504,228 +783,23 @@ def refresh_manifest(cfg, state, force=False, notify=None):
     if not key:
         return ""
     headers = {"X-Subscriber-Token": cfg["subscriber_token"]} if cfg.get("subscriber_token") else {"X-Fahmy-Agent": key}
-    status, body = http("POST", cfg["base_url"] + "/api/agent/manifest", body={},
+    status, body = http("POST", SERVER_URL + "/api/agent/manifest", body={},
                         headers=headers, timeout=90)
     if status != 200:
         log("Manifest check failed (%s): %s" % (status, str(body)[:140]))
         return ""
     if not body.get("changed"):
         return "Manifest %s" % body.get("manifest_id")
-    log("Game patch: the gateway moved to manifest %s (was %s) — the site saved it"
-        % (body.get("manifest_id"), body.get("old")))
+    log("Game patch: manifest updated to %s (was %s)" % (body.get("manifest_id"), body.get("old")))
     state["manifest_changed_at"] = now
     save_state(state)
     if notify:
-        notify("The game patched — writes re-opened by themselves.")
+        notify("Game patched — manifest updated automatically.")
     return "Manifest updated to %s" % body.get("manifest_id")
 
 
-UPDATE_CHECK_SECONDS = 900   # ونسخة الأجن نفسها بتتفحص كل 15 دقيقة
-UPDATE_DIR = os.path.join(CONFIG_DIR, "update")
-DETACHED = 0x00000008 | 0x00000200
-STILL_ACTIVE = 259
-
-
 def exe_path():
-    """ملف الـ exe الجاري دلوقتي — فاضي لو الأجن اتشغل من بايثون (مفيش ملف يتبدّل)."""
     return sys.executable if getattr(sys, "frozen", False) else ""
-
-
-def sha256_of(path):
-    digest = hashlib.sha256()
-    with open(path, "rb") as fh:
-        for block in iter(lambda: fh.read(1 << 20), b""):
-            digest.update(block)
-    return digest.hexdigest()
-
-
-def file_release(path):
-    """وصف ملف على القرص، والبصمة متخزنة بحجمه وتعديله — مجاش غيرهم اتحسبت من جديد."""
-    st = os.stat(path)
-    key = (path, st.st_size, int(st.st_mtime))
-    digest = _sha_cache.get(key) or sha256_of(path)
-    _sha_cache.clear()
-    _sha_cache[key] = digest
-    return {"size": st.st_size, "built_at": int(st.st_mtime), "sha256": digest}
-
-
-_sha_cache = {}
-
-
-def release_info(cfg):
-    """النسخة المتاحة على السيرفر — نفس الملف اللي في صفحة الإعدادات بيتحمّل."""
-    key = agent_key(cfg)
-    if not key:
-        return {}
-    headers = {"X-Subscriber-Token": cfg["subscriber_token"]} if cfg.get("subscriber_token") else {"X-Fahmy-Agent": key}
-    status, body = http("GET", cfg["base_url"] + "/api/agent/release",
-                        headers=headers, timeout=60)
-    return body if status == 200 and body.get("present") else {}
-
-
-def check_update(cfg, state, force=False, notify=None):
-    """يقارن بصمته ببصمة نسخة السيرفر: مختلفة = في ابديت، والنفسية = مفيش.
-
-    بنعتمد على البصمة مش على رقم إصدار لأن مفيش رقم يتكتب ويتنسى عند كل بيلد —
-    وأي ملف مختلف فعلاً على السيرفر بيتكشف. البلّغ مرة واحدة لكل نسخة جديدة.
-    """
-    mine = exe_path()
-    if not mine:
-        return ""
-    now = time.time()
-    if not force and now - float(state.get("update_checked_at") or 0) < UPDATE_CHECK_SECONDS:
-        return ""
-    state["update_checked_at"] = now
-    remote = release_info(cfg)
-    if not remote:
-        return ""
-    try:
-        local = file_release(mine)
-    except OSError as exc:
-        log("Update check could not read itself: %s" % exc)
-        return ""
-    if local["sha256"] == remote.get("sha256"):
-        state["update_available"] = False
-        return "Up to date"
-    state["update_available"] = True
-    state["update_remote"] = {"built_at": remote.get("built_at_text"),
-                              "size": remote.get("size"), "sha256": remote.get("sha256")}
-    if state.get("update_notified_sha") != remote.get("sha256"):
-        state["update_notified_sha"] = remote.get("sha256")
-        save_state(state)
-        if notify:
-            notify("A new CMSync build is ready — right-click the icon and press Update.")
-        log("New build on the server: %s (%s MB) — this one is %s"
-            % (remote.get("built_at_text"), round((remote.get("size") or 0) / 1048576, 1),
-               local["sha256"][:8]))
-        return "New build %s available" % remote.get("built_at_text")
-    return "New build %s waiting" % remote.get("built_at_text")
-
-
-def download_update(cfg, state, notify=None):
-    """ينزّل نسخة السيرفر لملف مؤقت ويتأكد إنها هي المطلوبة قبل ما يسلّمها."""
-    remote = release_info(cfg)
-    if not remote:
-        return "", "The dashboard has no CMSync build to offer."
-    target = os.path.join(UPDATE_DIR, "CMSync.new.exe")
-    try:
-        if os.path.exists(target) and file_release(target)["sha256"] == remote["sha256"]:
-            return target, "Already downloaded."
-        key = agent_key(cfg)
-        if not key:
-            return "", "The dashboard did not give an agent key."
-        if notify:
-            notify("Downloading the new CMSync build…")
-        os.makedirs(UPDATE_DIR, exist_ok=True)
-        part = target + ".part"
-        headers = {"X-Subscriber-Token": cfg["subscriber_token"]} if cfg.get("subscriber_token") else {"X-Fahmy-Agent": key}
-        headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) CMSync/2.0"
-        req = urllib.request.Request(cfg["base_url"] + "/api/agent/release/file",
-                                     headers=headers)
-        with urllib.request.urlopen(req, timeout=900) as resp, open(part, "wb") as fh:
-            shutil.copyfileobj(resp, fh, 1 << 20)
-        if file_release(part)["sha256"] != remote["sha256"]:
-            os.remove(part)
-            return "", "The download came out corrupted — press Update again."
-        os.replace(part, target)
-    except Exception as exc:  # noqa: BLE001 — الزرار ما يقفلش الأيقونة
-        log("Update download failed: %s" % exc)
-        return "", "Download failed: %s" % str(exc)[:120]
-    state["update_downloaded_sha"] = remote["sha256"]
-    save_state(state)
-    size = round((remote.get("size") or 0) / 1048576, 1)
-    log("Downloaded build %s (%s MB) — ready to swap" % (remote.get("built_at_text"), size))
-    return target, "Downloaded %s MB." % size
-
-
-def process_alive(pid):
-    try:
-        kernel32 = ctypes.WinDLL("kernel32")
-    except OSError:
-        return False
-    handle = kernel32.OpenProcess(0x1000, False, int(pid))  # PROCESS_QUERY_LIMITED_INFORMATION
-    if not handle:
-        return False
-    try:
-        code = ctypes.c_ulong()
-        if not kernel32.GetExitCodeProcess(handle, ctypes.byref(code)):
-            return False
-        return code.value == STILL_ACTIVE
-    finally:
-        kernel32.CloseHandle(handle)
-
-
-def apply_update(wait_pid, source, target, launch=True):
-    """تبدّل نفسها: النسخة الجديدة بتشتغل من ملف مؤقت، تستنى القديمة تقفل، تنسخ فوقها، وتشغلها.
-
-    الـ exe مش بيتكتب وهو شغال على ويندوز، فبنستنى الـ PID يطلع، وبعدها بنعيد المحاولة
-    شوية ثواني لأن الملف بيقفل بعد لحظات من خروج العملية — مش بنفشل من أول مرة.
-    """
-    deadline = time.time() + 120
-    while wait_pid and process_alive(wait_pid) and time.time() < deadline:
-        time.sleep(0.5)
-    staged = target + ".newbuild"
-    for _ in range(60):
-        try:
-            shutil.copyfile(source, staged)
-            os.replace(staged, target)  # الذرة بتتحول نسخة كاملة مرة واحدة، بنصف ملف ما بيسيبش حد
-            break
-        except OSError:
-            time.sleep(0.5)
-    else:
-        try:
-            os.remove(staged)
-        except OSError:
-            pass
-        log("Update failed: %s is still locked — close CMSync and copy it by hand" % target)
-        return 3
-    log("Update applied: %s is now the running build" % target)
-    if launch:
-        subprocess.Popen([target], cwd=CONFIG_DIR, creationflags=DETACHED)
-    return 0
-
-
-def ask_yes_no(message):
-    """الـ exe بيتبني من غير نافذة — فالسؤال يظهر كصندوق رسالة."""
-    if sys.stdout is not None:
-        try:
-            return input(message + " [y/N] ").strip().lower() in ("y", "yes")
-        except (EOFError, OSError):
-            return False
-    try:
-        return ctypes.windll.user32.MessageBoxW(0, message, APP_NAME, 0x4 | 0x20) == 6
-    except Exception:
-        return False
-
-
-def run_update(cfg, state, notify=None, restart=None):
-    """الزرار: نزّل، اسأل، وبعدين سلّم للنسخة الجديدة تبدّل نفسها وتقفل دي."""
-    if not exe_path():
-        say("This CMSync is running from python — there is no exe file to replace.")
-        return ""
-    source, message = download_update(cfg, state, notify)
-    if not source:
-        say("Update: " + message)
-        return message
-    remote = state.get("update_remote") or {}
-    note = "%s (%s MB)" % (remote.get("built_at") or "new build",
-                           round((remote.get("size") or 0) / 1048576, 1))
-    if not ask_yes_no("CMSync %s is downloaded.\n\n"
-                      "Restart it now to finish the update? The dashboard keeps running." % note):
-        if notify:
-            notify("Downloaded — press Update again whenever you want to restart.")
-        return "Downloaded, restart pending."
-    spawn_apply(cfg, source)
-    if restart:
-        restart()
-    return "Restarting with the new build."
-
-
-def spawn_apply(cfg, source):
-    """يشغّل النسخة الجديدة بوضع التبديل — فلو النسخة القديمة هي اللي ما تعرفش تتحدّث،
-    الجديدة بتعرف: هي اللي بتنسخ على نفسها."""
-    subprocess.Popen([source, "--apply-update", str(os.getpid()), exe_path(), source],
-                     cwd=CONFIG_DIR, creationflags=DETACHED)
 
 
 def game_running():
@@ -743,10 +817,6 @@ def _sleep(seconds, stop):
 
 
 def wait_next_cycle(cfg, state, stop, interval):
-    """استراحة الدورة العادية، بتتقطع فورًا لحظة تغيّر حالة اللعبة (فتحت/قفلت).
-
-    وشاشة اللانشر مستنية التوكن = استراحة قصيرة عشان نحاول تاني بسرعة من غير انتظار دورة.
-    """
     if interval:
         _sleep(interval, stop)
         return
@@ -760,33 +830,29 @@ def wait_next_cycle(cfg, state, stop, interval):
         now = game_running()
         if now != was:
             if now:
-                log("The game opened — wait %d seconds and scan" % LAUNCH_GRACE)
+                log("Game started — waiting %d seconds to scan" % LAUNCH_GRACE)
                 _sleep(LAUNCH_GRACE, stop)
             else:
-                log("The game closed — refresh immediately")
+                log("Game exited — immediate sync")
             return
 
 
 def loop(cfg, state, stop, notify=None, interval=None):
     was_game = bool(state.get("game"))
-    first_cycle = True
+    last_cleanup = time.time()
+    clean_expired_tokens(cfg)
     while not stop.is_set():
         try:
-            ensure_site(cfg)
+            if time.time() - last_cleanup >= 600.0:
+                clean_expired_tokens(cfg)
+                last_cleanup = time.time()
             text = sync_once(cfg, state, notify=notify)
-            # أول ما اللعبة تفتح نسأل على رقم المانيفست فورًا: الباتش بيكون نزل
-            # خلاص، وإلا أول نقل بعد الدخول بيرفض 412 لحد ما الدورة العادية تجي.
             opened = bool(state.get("game")) and not was_game
             was_game = bool(state.get("game"))
             note = refresh_manifest(cfg, state, force=opened, notify=notify)
             if note and (opened or "updated" in note):
                 text = "%s | %s" % (text, note)
-            # وأول دورة بعد التشغيل نفحص نسختنا على طول: اللوحة ممكن تكون اتحدّثت وهو مقفول
-            up = check_update(cfg, state, force=first_cycle, notify=notify)
-            if up and "available" in up:
-                text = "%s | %s" % (text, up)
-            first_cycle = False
-        except Exception as exc:  # الأيقونة ما تموتش بسبب استثناء
+        except Exception as exc:
             text = "Error: %s" % exc
             log(text)
         state["status"] = text
@@ -795,9 +861,7 @@ def loop(cfg, state, stop, notify=None, interval=None):
         wait_next_cycle(cfg, state, stop, interval)
 
 
-# ---------------------------------------------------------------- ثى + تثبيت
 def make_icon():
-    """علامة CM: مربّع أوبسيدي بحلّة بنفسجى/فوشيا و"CM" أبيض في النص، ونقطة كهرمانية جوّه."""
     from PIL import Image, ImageDraw, ImageFont
     img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
@@ -828,8 +892,10 @@ def startup_enabled():
 
 
 def set_startup(enable):
-    exe = getattr(sys, "frozen", False) and sys.executable or '"%s" "%s"' % (
-        sys.executable, os.path.abspath(__file__))
+    if getattr(sys, "frozen", False):
+        exe = '"%s"' % sys.executable
+    else:
+        exe = '"%s" "%s"' % (sys.executable, os.path.abspath(__file__))
     try:
         key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, RUN_KEY, 0, winreg.KEY_SET_VALUE)
         if enable:
@@ -842,18 +908,17 @@ def set_startup(enable):
         winreg.CloseKey(key)
         return True
     except OSError as exc:
-        log("Could not edit Windows startup: %s" % exc)
+        log("Could not update Windows startup: %s" % exc)
         return False
 
 
 def desktop_shortcut():
-    """اختصار على سطح المكتب عن طريق PowerShell — من غير أي مكتبة خارجية."""
     if getattr(sys, "frozen", False):
         target, args, workdir = sys.executable, "", CONFIG_DIR
     else:
         here = os.path.abspath(__file__)
         target, args, workdir = "python.exe", '"%s"' % here, os.path.dirname(here)
-    link = os.path.join(os.path.expanduser("~"), "Desktop", "%s.lnk" % APP_NAME)
+    link = os.path.join(os.path.expanduser("~"), "Desktop", "%s.lnk" % APP_DISPLAY_NAME)
     ps = ("$s=(New-Object -ComObject WScript.Shell).CreateShortcut('%s');$s.TargetPath='%s';"
           "$s.Arguments='%s';$s.WorkingDirectory='%s';$s.Save()"
           % tuple(str(x).replace("'", "''") for x in (link, target, args, workdir)))
@@ -861,41 +926,22 @@ def desktop_shortcut():
         subprocess.run(["powershell", "-NoProfile", "-Command", ps], capture_output=True, timeout=30)
         return os.path.exists(link)
     except Exception as exc:
-        log("The shortcut failed: %s" % exc)
+        log("Desktop shortcut error: %s" % exc)
         return False
 
 
 def single_instance():
-    """مفيش نسخة تانية من البرنامج — وإذا كانت نسخة سابقة مفتوحة يتم إظهار نافذتها أو إنهاؤها لتشغيل الإصدار الجديد."""
     kernel32 = ctypes.WinDLL("kernel32")
     handle = kernel32.CreateMutexW(None, False, "Local\\CMSync.Tray")
     if not handle:
         return None
-    # ERROR_ALREADY_EXISTS = 183: في نسخة تانية ماسكة القفل خلاص
-    if kernel32.GetLastError() == 183:
+    if kernel32.GetLastError() == 183:  # ERROR_ALREADY_EXISTS
+        # Signal existing instance to restore its window
         try:
             hEvent = kernel32.OpenEventW(0x0002, False, SHOW_EVENT_NAME)
             if hEvent:
                 kernel32.SetEvent(hEvent)
                 kernel32.CloseHandle(hEvent)
-            user32 = ctypes.windll.user32
-            hwnd = user32.FindWindowW(None, "CMSync — ربط الحساب بالسيرفر")
-            if hwnd:
-                SW_RESTORE = 9
-                user32.ShowWindow(hwnd, SW_RESTORE)
-                user32.SetForegroundWindow(hwnd)
-                return None
-        except Exception:
-            pass
-
-        # لو مفيش نافذة ظاهرة للنسخة القديمة، نقوم بإنهاء العمليات السابقة لتشغيل النسخة الحالية مباشرة
-        try:
-            my_pid = os.getpid()
-            subprocess.run(f'taskkill /F /IM CMSync.exe /FI "PID ne {my_pid}"', shell=True, capture_output=True)
-            time.sleep(0.6)
-            handle = kernel32.CreateMutexW(None, False, "Local\\CMSync.Tray")
-            if kernel32.GetLastError() != 183:
-                return handle
         except Exception:
             pass
         return None
@@ -903,9 +949,7 @@ def single_instance():
 
 
 def get_clipboard_text():
-    """قراءة نص الحافظة بأمان تام لتجنب أي أخطاء أو انهيار."""
     try:
-        import tkinter as tk
         r = tk._default_root
         if r:
             txt = r.clipboard_get()
@@ -914,7 +958,6 @@ def get_clipboard_text():
     except Exception:
         pass
     try:
-        import ctypes
         u32 = ctypes.windll.user32
         k32 = ctypes.windll.kernel32
         if u32.OpenClipboard(0):
@@ -938,13 +981,12 @@ def get_clipboard_text():
 
 
 def find_app_icon():
-    """البحث عن ملف الأيقونة في موارد الحزمة أو المسار المحلي."""
     candidates = [
         getattr(sys, "_MEIPASS", ""),
         os.path.dirname(os.path.abspath(__file__)),
         os.path.join(os.path.dirname(os.path.abspath(__file__)), "agent"),
         os.path.dirname(sys.executable) if getattr(sys, "frozen", False) else "",
-        r"C:\Users\Administrator\Desktop\uu\agent"
+        r"C:\Users\Administrator\Desktop\tt_8004\agent"
     ]
     for c in candidates:
         if c:
@@ -955,10 +997,8 @@ def find_app_icon():
 
 
 def apply_dark_theme_to_window(window):
-    """تفعيل الثيم الداكن لشريط العنوان في ويندوز (Windows Dark Mode Title Bar)."""
     try:
         window.update_idletasks()
-        import ctypes
         hwnd = int(window.wm_frame(), 16)
         DWMWA_USE_IMMERSIVE_DARK_MODE = 20
         dark_flag = ctypes.c_int(1)
@@ -970,7 +1010,7 @@ def apply_dark_theme_to_window(window):
                 hwnd, 19, ctypes.byref(dark_flag), ctypes.sizeof(dark_flag)
             )
         DWMWA_CAPTION_COLOR = 35
-        color = ctypes.c_int(0x00170F0D)  # #0d0f17 in BGR
+        color = ctypes.c_int(0x00170F0D)
         ctypes.windll.dwmapi.DwmSetWindowAttribute(
             hwnd, DWMWA_CAPTION_COLOR, ctypes.byref(color), ctypes.sizeof(color)
         )
@@ -979,7 +1019,6 @@ def apply_dark_theme_to_window(window):
 
 
 def apply_app_icon(window):
-    """تطبيق أيقونة التطبيق على النافذة وشريط المهام عبر Win32 و Tkinter لمنع ظهور ريشة بايثون."""
     ico_path = find_app_icon()
     if not ico_path:
         return
@@ -996,63 +1035,33 @@ def apply_app_icon(window):
     except Exception:
         pass
     try:
-        import ctypes
         window.update_idletasks()
         hwnd = int(window.wm_frame(), 16)
         hIcon = ctypes.windll.user32.LoadImageW(None, ico_path, 1, 0, 0, 0x00000010)
         if hIcon:
-            ctypes.windll.user32.SendMessageW(hwnd, 0x0080, 0, hIcon)  # WM_SETICON, ICON_SMALL
-            ctypes.windll.user32.SendMessageW(hwnd, 0x0080, 1, hIcon)  # WM_SETICON, ICON_BIG
+            ctypes.windll.user32.SendMessageW(hwnd, 0x0080, 0, hIcon)
+            ctypes.windll.user32.SendMessageW(hwnd, 0x0080, 1, hIcon)
             ctypes.windll.user32.SendMessageW(window.winfo_id(), 0x0080, 0, hIcon)
             ctypes.windll.user32.SendMessageW(window.winfo_id(), 0x0080, 1, hIcon)
     except Exception:
         pass
 
 
-def prompt_subscriber_config(cfg, force=False):
-    """نافذة إعداد المشترك: إدخال التوكن ورابط السيرفر بتصميم داكن عصري وأيقونة مخصصة."""
-    if not force and cfg.get("subscriber_token"):
-        url = (cfg.get("server_url") or DEFAULT_SERVER_URL).rstrip("/")
-        status, body = http("POST", url + "/api/subscriber/verify",
-                            body={"token": cfg["subscriber_token"]}, timeout=8)
-        if status == 200 and body.get("ok"):
-            cfg["subscriber_name"] = body.get("name") or cfg.get("subscriber_name") or ""
-            save_config(cfg)
-            return True
-        elif status == 401:
-            log("Stored subscriber token is invalid or expired. Prompting for new token...")
-        else:
-            return True
-
-    # ضبط معرف التطبيق في ويندوز لربط أيقونة شريط المهام بالبرنامج وليس ببايثون
-    try:
-        import ctypes
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("CM.CMSync.Agent.1.0")
-    except Exception:
-        pass
-
-    try:
-        import tkinter as tk
-        from PIL import Image, ImageTk
-    except ImportError:
-        log("Tkinter / PIL not available")
-        return False
-
-    root = tk.Tk()
-    root.title("CMSync — ربط الحساب بالسيرفر")
-    w, h = 530, 440
+def build_gui(root, cfg, on_linked_callback=None):
+    """Builds the 100% English, password-masked GUI inside the Tkinter root."""
+    root.title(APP_DISPLAY_NAME)
+    w, h = 500, 360
     root.geometry(f"{w}x{h}")
     root.minsize(w, h)
     root.maxsize(w, h)
     root.configure(bg="#0d0f17")
 
-    # إغلاق النافذة والنزول لشريط المهام (Tray Icon) بدلاً من إنهاء البرنامج
+    # When X is pressed: NEVER exit process, only hide window to tray!
     def on_window_close():
-        root.destroy()
+        root.withdraw()
 
     root.protocol("WM_DELETE_WINDOW", on_window_close)
 
-    # معالجة استعادة النافذة عند الضغط عليها في شريط المهام
     def on_taskbar_map(event):
         if event.widget == root:
             root.deiconify()
@@ -1060,270 +1069,325 @@ def prompt_subscriber_config(cfg, force=False):
 
     root.bind("<Map>", on_taskbar_map)
 
-    # توسيط النافذة في منتصف الشاشة
     root.update_idletasks()
     x = max(0, (root.winfo_screenwidth() // 2) - (w // 2))
     y = max(0, (root.winfo_screenheight() // 2) - (h // 2))
     root.geometry(f"{w}x{h}+{x}+{y}")
 
-    # تفعيل شريط العنوان الداكن العصري وتعيين الأيقونة المخصصة
     apply_dark_theme_to_window(root)
     apply_app_icon(root)
 
-    # كارت الهيدر العصري
     header_card = tk.Frame(root, bg="#161824", highlightthickness=1, highlightbackground="#252a3d", padx=16, pady=12)
     header_card.pack(fill="x", padx=20, pady=(16, 12))
 
     head_top = tk.Frame(header_card, bg="#161824")
     head_top.pack(fill="x")
 
-    badge_lbl = tk.Label(head_top, text="⚡ CMSYNC CLIENT", font=("Segoe UI", 8, "bold"),
+    badge_lbl = tk.Label(head_top, text=f"⚡ CMSYNC CLIENT v{APP_VERSION}", font=("Segoe UI", 8, "bold"),
                          fg="#c084fc", bg="#261b3d", padx=8, pady=2)
     badge_lbl.pack(side="left")
 
-    title_lbl = tk.Label(header_card, text="ربط حساب اللعبة بسيرفر المخزن", font=("Segoe UI", 13, "bold"),
+    title_lbl = tk.Label(header_card, text="Connect Game to Cloud Dashboard", font=("Segoe UI", 12, "bold"),
                          fg="#f8fafc", bg="#161824", anchor="w")
     title_lbl.pack(fill="x", pady=(6, 2))
 
-    desc_lbl = tk.Label(header_card, text="اربط جهازك باللوحة السحابية للمزامنة التلقائية الفورية لمخزنك وعتادك.",
-                        font=("Segoe UI", 9), fg="#94a3b8", bg="#161824", justify="right", anchor="w")
+    desc_lbl = tk.Label(header_card, text="Link your device for instant real-time synchronization.",
+                        font=("Segoe UI", 9), fg="#94a3b8", bg="#161824", anchor="w")
     desc_lbl.pack(fill="x")
 
-    # الفورم الداخلي
-    form_frame = tk.Frame(root, bg="#0d0f17")
-    form_frame.pack(padx=24, fill="x")
+    container = tk.Frame(root, bg="#0d0f17")
+    container.pack(padx=20, fill="both", expand=True)
 
-    # 1. رابط السيرفر
-    url_hdr_row = tk.Frame(form_frame, bg="#0d0f17")
-    url_hdr_row.pack(fill="x", pady=(4, 3))
-    url_lbl = tk.Label(url_hdr_row, text="🌐 رابط السيرفر (Server URL):", font=("Segoe UI", 9, "bold"),
-                       fg="#e2e8f0", bg="#0d0f17")
-    url_lbl.pack(side="left")
+    # Context holders for thread-safe UI updates
+    active_widgets = {}
 
-    def reset_url_to_default():
-        url_var.set(DEFAULT_SERVER_URL)
-        status_lbl.config(text="✔ تم ضبط الرابط على السيرفر الرسمي الافتراضي", fg="#22c55e")
+    def render_content():
+        for widget in container.winfo_children():
+            widget.destroy()
 
-    reset_btn = tk.Button(url_hdr_row, text="🔄 السيرفر الرسمي (Default)", font=("Segoe UI", 8),
-                          bg="#1e293b", fg="#c084fc", activebackground="#2e1065", activeforeground="#ffffff",
-                          relief="flat", cursor="hand2", padx=8, pady=0, command=reset_url_to_default)
-    reset_btn.pack(side="right")
+        sub_token = (cfg.get("subscriber_token") or "").strip()
+        sub_name = (cfg.get("subscriber_name") or "").strip()
 
-    url_row = tk.Frame(form_frame, bg="#0d0f17")
-    url_row.pack(fill="x", pady=(0, 2))
+        if sub_token and sub_name:
+            # Connected view
+            connected_frame = tk.Frame(container, bg="#161824", highlightthickness=1,
+                                       highlightbackground="#22c55e", padx=16, pady=14)
+            connected_frame.pack(fill="x", pady=10)
 
-    init_url = (cfg.get("server_url") or "").strip()
-    if not init_url or "trycloudflare" in init_url:
-        init_url = DEFAULT_SERVER_URL
-    url_var = tk.StringVar(value=init_url)
-    url_entry = tk.Entry(url_row, textvariable=url_var, font=("Consolas", 9), bg="#161824", fg="#f8fafc",
-                         insertbackground="#ffffff", relief="flat", highlightthickness=1,
-                         highlightbackground="#2b3147", highlightcolor="#a855f7",
-                         justify="left", state="normal", takefocus=True)
-    url_entry.pack(side="left", fill="x", expand=True, ipady=6)
+            c_hdr = tk.Label(connected_frame, text=f"✔ Connected as: {sub_name}",
+                             font=("Segoe UI", 11, "bold"), fg="#22c55e", bg="#161824")
+            c_hdr.pack(anchor="w")
 
-    def do_paste_url():
-        txt = get_clipboard_text().strip()
-        if txt:
-            url_var.set(txt)
-            status_lbl.config(text="✔ تم لصق رابط السيرفر بنجاح", fg="#22c55e")
+            c_sub = tk.Label(connected_frame, text="Status: Ready / Waiting for Game",
+                             font=("Segoe UI", 9), fg="#94a3b8", bg="#161824")
+            c_sub.pack(anchor="w", pady=(4, 8))
+
+            def do_unlink():
+                cfg["subscriber_token"] = ""
+                cfg["subscriber_name"] = ""
+                save_config(cfg)
+                render_content()
+
+            unlink_btn = tk.Button(connected_frame, text="Unlink / Change Token", font=("Segoe UI", 9),
+                                   bg="#252a3d", fg="#f87171", activebackground="#7f1d1d", activeforeground="#ffffff",
+                                   relief="flat", cursor="hand2", padx=12, pady=3, command=do_unlink)
+            unlink_btn.pack(anchor="w")
+
+            status_lbl = tk.Label(container, text="Agent is active and monitoring ARC Raiders.",
+                                  font=("Segoe UI", 9), fg="#64748b", bg="#0d0f17")
+            status_lbl.pack(pady=(12, 4))
+
+            close_btn = tk.Button(container, text="Minimize to Tray", font=("Segoe UI", 10, "bold"),
+                                  bg="#8b5cf6", fg="#ffffff", activebackground="#7c3aed", activeforeground="#ffffff",
+                                  relief="flat", cursor="hand2", command=root.withdraw)
+            close_btn.pack(pady=8, ipady=5, ipadx=20)
+
         else:
-            status_lbl.config(text="⚠️ الحافظة فارغة", fg="#f59e0b")
+            # Token input view
+            tok_lbl = tk.Label(container, text="Subscriber Token:", font=("Segoe UI", 9, "bold"),
+                               fg="#e2e8f0", bg="#0d0f17", anchor="w")
+            tok_lbl.pack(fill="x", pady=(4, 3))
 
-    paste_url_btn = tk.Button(url_row, text="📋 لصق (Paste)", font=("Segoe UI", 8, "bold"),
-                              bg="#252a3d", fg="#f8fafc", activebackground="#a855f7", activeforeground="#ffffff",
-                              relief="flat", cursor="hand2", padx=12, command=do_paste_url)
-    paste_url_btn.pack(side="right", padx=(8, 0), ipady=4)
+            tok_row = tk.Frame(container, bg="#0d0f17")
+            tok_row.pack(fill="x", pady=(0, 6))
 
-    # الرابط التفاعلي لفتح الموقع في المتصفح بنقرة واحدة
-    def open_server_in_browser(e=None):
-        srv_url = url_var.get().strip()
-        if srv_url:
-            import webbrowser
-            webbrowser.open(srv_url)
+            tok_var = tk.StringVar(value="")
+            # Password masking by default (dots/bullets)
+            tok_entry = tk.Entry(tok_row, textvariable=tok_var, font=("Consolas", 10), bg="#161824", fg="#f8fafc",
+                                 show="•", insertbackground="#ffffff", relief="flat", highlightthickness=1,
+                                 highlightbackground="#2b3147", highlightcolor="#a855f7",
+                                 justify="left", state="normal", takefocus=True)
+            tok_entry.pack(side="left", fill="x", expand=True, ipady=6)
 
-    link_row = tk.Frame(form_frame, bg="#0d0f17")
-    link_row.pack(fill="x", pady=(2, 10))
-    link_lbl = tk.Label(link_row, text="🔗 اضغط هنا لفتح رابط الموقع في المتصفح تلقائياً ↗",
-                        font=("Segoe UI", 8, "underline"), fg="#38bdf8", bg="#0d0f17", cursor="hand2")
-    link_lbl.pack(side="left")
-    link_lbl.bind("<Button-1>", open_server_in_browser)
-    link_lbl.bind("<Enter>", lambda e: link_lbl.config(fg="#7dd3fc"))
-    link_lbl.bind("<Leave>", lambda e: link_lbl.config(fg="#38bdf8"))
+            # Eye toggle button to show/hide masked password
+            mask_state = [True]
 
-    # 2. توكن المشترك
-    tok_lbl = tk.Label(form_frame, text="🔑 توكن المشترك (Subscriber Token):", font=("Segoe UI", 9, "bold"),
-                       fg="#e2e8f0", bg="#0d0f17", anchor="w")
-    tok_lbl.pack(fill="x", pady=(2, 3))
+            def toggle_mask():
+                mask_state[0] = not mask_state[0]
+                tok_entry.config(show="•" if mask_state[0] else "")
+                eye_btn.config(text="👁" if mask_state[0] else "🙈")
 
-    tok_row = tk.Frame(form_frame, bg="#0d0f17")
-    tok_row.pack(fill="x", pady=(0, 8))
+            eye_btn = tk.Button(tok_row, text="👁", font=("Segoe UI", 10),
+                                bg="#252a3d", fg="#cbd5e1", activebackground="#334155", activeforeground="#ffffff",
+                                relief="flat", cursor="hand2", padx=8, command=toggle_mask)
+            eye_btn.pack(side="right", padx=(4, 0), ipady=3)
 
-    tok_var = tk.StringVar(value=cfg.get("subscriber_token") or "")
-    tok_entry = tk.Entry(tok_row, textvariable=tok_var, font=("Consolas", 9), bg="#161824", fg="#f8fafc",
-                         insertbackground="#ffffff", relief="flat", highlightthickness=1,
-                         highlightbackground="#2b3147", highlightcolor="#a855f7",
-                         justify="left", state="normal", takefocus=True)
-    tok_entry.pack(side="left", fill="x", expand=True, ipady=6)
-
-    def do_paste_token():
-        txt = get_clipboard_text().strip()
-        if txt:
-            tok_var.set(txt)
-            status_lbl.config(text="✔ تم لصق التوكن بنجاح", fg="#22c55e")
-        else:
-            status_lbl.config(text="⚠️ الحافظة فارغة — انسخ التوكن أولاً ثم اضغط لصق", fg="#f59e0b")
-
-    paste_btn = tk.Button(tok_row, text="📋 لصق (Paste)", font=("Segoe UI", 8, "bold"),
-                          bg="#252a3d", fg="#f8fafc", activebackground="#a855f7", activeforeground="#ffffff",
-                          relief="flat", cursor="hand2", padx=12, command=do_paste_token)
-    paste_btn.pack(side="right", padx=(8, 0), ipady=4)
-
-    def attach_context_menu(entry, str_var=None):
-        m = tk.Menu(root, tearoff=0, bg="#161824", fg="#ffffff", activebackground="#a855f7")
-
-        def do_copy():
-            try:
-                txt = ""
-                try:
-                    txt = entry.selection_get()
-                except Exception:
-                    pass
-                if not txt:
-                    txt = entry.get()
-                if txt:
-                    root.clipboard_clear()
-                    root.clipboard_append(txt)
-                    status_lbl.config(text="✔ تم النسخ إلى الحافظة", fg="#22c55e")
-            except Exception:
-                pass
-
-        def do_paste():
-            try:
+            def do_paste_token():
                 txt = get_clipboard_text().strip()
                 if txt:
-                    if str_var is not None:
-                        str_var.set(txt)
-                    else:
-                        entry.delete(0, tk.END)
-                        entry.insert(0, txt)
-                    status_lbl.config(text="✔ تم اللصق بنجاح", fg="#22c55e")
+                    tok_var.set(txt)
+                    status_lbl.config(text="✔ Token pasted from clipboard", fg="#22c55e")
                 else:
-                    status_lbl.config(text="⚠️ الحافظة فارغة", fg="#f59e0b")
-            except Exception:
-                pass
+                    status_lbl.config(text="⚠️ Clipboard is empty", fg="#f59e0b")
 
-        def do_select_all():
-            try:
-                entry.select_range(0, tk.END)
-                entry.icursor(tk.END)
-            except Exception:
-                pass
+            paste_btn = tk.Button(tok_row, text="📋 Paste", font=("Segoe UI", 8, "bold"),
+                                  bg="#252a3d", fg="#f8fafc", activebackground="#a855f7", activeforeground="#ffffff",
+                                  relief="flat", cursor="hand2", padx=12, command=do_paste_token)
+            paste_btn.pack(side="right", padx=(8, 0), ipady=4)
 
-        m.add_command(label="📋 لصق (Paste)", command=do_paste)
-        m.add_command(label="📄 نسخ (Copy)", command=do_copy)
-        m.add_command(label="🔘 تحديد الكل (Select All)", command=do_select_all)
+            # Context menu for right-click
+            def attach_context_menu(entry, str_var):
+                m = tk.Menu(root, tearoff=0, bg="#161824", fg="#ffffff", activebackground="#a855f7")
 
-        def show_popup(e):
-            try:
-                entry.focus_set()
-                m.tk_popup(e.x_root, e.y_root)
-            except Exception:
-                pass
-            finally:
-                try:
-                    m.grab_release()
-                except Exception:
-                    pass
-            return "break"
+                def do_copy():
+                    try:
+                        txt = entry.selection_get() if entry.select_present() else entry.get()
+                        if txt:
+                            root.clipboard_clear()
+                            root.clipboard_append(txt)
+                            status_lbl.config(text="✔ Copied to clipboard", fg="#22c55e")
+                    except Exception:
+                        pass
 
-        entry.bind("<Button-3>", show_popup)
+                def do_paste():
+                    txt = get_clipboard_text().strip()
+                    if txt:
+                        str_var.set(txt)
+                        status_lbl.config(text="✔ Pasted from clipboard", fg="#22c55e")
 
-        def on_key_paste(e):
-            do_paste()
-            return "break"
+                def do_select_all():
+                    entry.select_range(0, tk.END)
+                    entry.icursor(tk.END)
 
-        def on_key_copy(e):
-            do_copy()
-            return "break"
+                m.add_command(label="📋 Paste", command=do_paste)
+                m.add_command(label="📄 Copy", command=do_copy)
+                m.add_command(label="🔘 Select All", command=do_select_all)
 
-        entry.bind("<Control-v>", on_key_paste)
-        entry.bind("<Control-V>", on_key_paste)
-        entry.bind("<Shift-Insert>", on_key_paste)
-        entry.bind("<Control-c>", on_key_copy)
-        entry.bind("<Control-C>", on_key_copy)
+                def show_popup(e):
+                    try:
+                        entry.focus_set()
+                        m.tk_popup(e.x_root, e.y_root)
+                    except Exception:
+                        pass
+                    finally:
+                        try:
+                            m.grab_release()
+                        except Exception:
+                            pass
+                    return "break"
 
-    attach_context_menu(url_entry, url_var)
-    attach_context_menu(tok_entry, tok_var)
+                entry.bind("<Button-3>", show_popup)
 
-    # لو الحافظة فيها التوكن مسبقاً، ضعه تلقائياً
-    clip = get_clipboard_text().strip()
-    if not tok_var.get() and len(clip) >= 20 and not clip.startswith("http"):
-        tok_var.set(clip)
+            attach_context_menu(tok_entry, tok_var)
 
-    status_lbl = tk.Label(root, text="", font=("Segoe UI", 9, "bold"), fg="#ef4444", bg="#0d0f17")
-    status_lbl.pack(pady=(2, 8))
+            # Auto paste candidate token if on clipboard
+            clip = get_clipboard_text().strip()
+            if len(clip) >= 20 and not clip.startswith("http"):
+                tok_var.set(clip)
 
-    success = [False]
+            status_lbl = tk.Label(container, text="", font=("Segoe UI", 9, "bold"), fg="#ef4444", bg="#0d0f17")
+            status_lbl.pack(pady=(2, 6))
 
-    def on_connect():
-        srv = url_var.get().strip().rstrip("/")
-        tok = tok_var.get().strip()
-        if not srv or "trycloudflare" in srv:
-            srv = DEFAULT_SERVER_URL
-            url_var.set(srv)
-        if not tok:
-            status_lbl.config(text="يرجى إدخال توكن المشترك", fg="#ef4444")
-            return
+            def on_connect():
+                tok = tok_var.get().strip()
+                if not tok:
+                    status_lbl.config(text="Please enter subscriber token", fg="#ef4444")
+                    return
 
-        status_lbl.config(text="جاري التحقق من التوكن...", fg="#a855f7")
-        root.update()
+                status_lbl.config(text="Verifying subscriber token...", fg="#a855f7")
+                btn.config(state="disabled")
+                root.update_idletasks()
 
-        status, body = http("POST", srv + "/api/subscriber/verify", body={"token": tok}, timeout=10)
-        if status == 200 and body.get("ok"):
-            sub_name = body.get("name") or "المشترك"
-            status_lbl.config(text=f"✔ تم الربط بنجاح! مرحباً بك {sub_name}", fg="#22c55e")
-            cfg["server_url"] = srv
-            cfg["subscriber_token"] = tok
-            cfg["subscriber_name"] = sub_name
-            cfg["base_url"] = srv
-            save_config(cfg)
-            success[0] = True
-            root.after(1000, root.destroy)
-        elif status == 401:
-            status_lbl.config(text="❌ التوكن غير صحيح أو منتهي الصلاحية", fg="#ef4444")
-        else:
-            err = body.get("error") or str(status)
-            status_lbl.config(text=f"❌ تعذر الاتصال بالسيرفر ({err})", fg="#ef4444")
+                def do_verify():
+                    try:
+                        refresh_server_url(force=False)
+                        status, body = http("POST", SERVER_URL + "/api/subscriber/verify",
+                                            body={"token": tok}, timeout=10)
+                    except Exception as exc:
+                        status, body = 0, {"error": str(exc)}
+                    # Post result to thread-safe queue
+                    ui_queue.put(("verify_result", status, body, tok))
 
-    btn = tk.Button(root, text="🚀 حفظ وربط الحساب الآن (Connect & Start)", font=("Segoe UI", 10, "bold"),
-                    bg="#8b5cf6", fg="#ffffff", activebackground="#7c3aed", activeforeground="#ffffff",
-                    relief="flat", cursor="hand2", command=on_connect)
-    btn.pack(ipady=7, ipadx=24)
+                threading.Thread(target=do_verify, daemon=True).start()
 
-    tok_entry.bind("<Return>", lambda e: on_connect())
-    url_entry.bind("<Return>", lambda e: on_connect())
+            btn = tk.Button(container, text="Connect & Start", font=("Segoe UI", 10, "bold"),
+                            bg="#8b5cf6", fg="#ffffff", activebackground="#7c3aed", activeforeground="#ffffff",
+                            relief="flat", cursor="hand2", command=on_connect)
+            btn.pack(ipady=7, ipadx=24, pady=(2, 6))
 
-    # إعطاء الفوكس التام للنافذة وحقل التوكن
-    root.lift()
-    root.attributes('-topmost', True)
-    root.after(150, lambda: root.attributes('-topmost', False))
-    root.focus_force()
-    tok_entry.focus_set()
+            tok_entry.bind("<Return>", lambda e: on_connect())
+            tok_entry.focus_set()
 
-    root.mainloop()
-    return success[0]
+            active_widgets["btn"] = btn
+            active_widgets["status_lbl"] = status_lbl
+
+    # Queue message processor running safely on main thread
+    def process_ui_queue():
+        try:
+            while True:
+                msg = ui_queue.get_nowait()
+                if msg == "show_window":
+                    root.deiconify()
+                    root.lift()
+                    root.attributes("-topmost", True)
+                    root.after(100, lambda: root.attributes("-topmost", False))
+                    root.focus_force()
+                elif isinstance(msg, tuple) and msg[0] == "verify_result":
+                    _, status, body, tok = msg
+                    btn = active_widgets.get("btn")
+                    status_lbl = active_widgets.get("status_lbl")
+                    if btn:
+                        try:
+                            btn.config(state="normal")
+                        except Exception:
+                            pass
+                    if status == 200 and body.get("ok"):
+                        sub_name = body.get("name") or "Subscriber"
+                        cfg["subscriber_token"] = tok
+                        cfg["subscriber_name"] = sub_name
+                        cfg["server_url"] = SERVER_URL
+                        cfg["base_url"] = SERVER_URL
+                        save_config(cfg)
+                        if status_lbl:
+                            try:
+                                status_lbl.config(text=f"✔ Connected successfully! Welcome {sub_name}", fg="#22c55e")
+                            except Exception:
+                                pass
+                        if on_linked_callback:
+                            on_linked_callback(sub_name)
+                        render_content()
+                        # Hide window after 1.2s to tray, keeping process running
+                        root.after(1200, root.withdraw)
+                    elif status == 401:
+                        if status_lbl:
+                            try:
+                                status_lbl.config(text="❌ Invalid or expired subscriber token", fg="#ef4444")
+                            except Exception:
+                                pass
+                    else:
+                        err = body.get("detail") or body.get("error") or str(status)
+                        if status_lbl:
+                            try:
+                                status_lbl.config(text=f"❌ Connection error: {err}", fg="#ef4444")
+                            except Exception:
+                                pass
+                elif isinstance(msg, tuple) and msg[0] == "update_check_result":
+                    _, manual, status, body = msg
+                    if status == 200 and isinstance(body, dict):
+                        srv_ver = body.get("version") or ""
+                        dl_url = body.get("download_url") or "/download/CMSync_Setup.exe"
+                        expected_sha = body.get("sha256") or ""
+                        if _parse_version(srv_ver) > _parse_version(APP_VERSION):
+                            ans = messagebox.askyesno(
+                                "CMSync Update Available",
+                                f"A new version v{srv_ver} of CMSync is available.\n"
+                                f"Current installed version: v{APP_VERSION}\n\n"
+                                f"Would you like to download and install the update now?",
+                                parent=root
+                            )
+                            if ans:
+                                perform_update_download(dl_url, expected_sha)
+                        elif manual:
+                            messagebox.showinfo(
+                                "CMSync Up to Date",
+                                f"Server link synced — CMSync v{APP_VERSION} is up to date.",
+                                parent=root
+                            )
+                    elif manual:
+                        err_text = (body.get("detail") or body.get("error") or str(status)) if isinstance(body, dict) else str(status)
+                        messagebox.showwarning(
+                            "Update Check",
+                            f"Could not check for updates.\n{err_text}",
+                            parent=root
+                        )
+                elif isinstance(msg, tuple) and msg[0] == "update_error":
+                    _, err_msg = msg
+                    messagebox.showerror("Update Error", err_msg, parent=root)
+        except queue.Empty:
+            pass
+        root.after(80, process_ui_queue)
+
+    render_content()
+    root.after(80, process_ui_queue)
+    return render_content
 
 
-def run_tray(cfg, state):
+def run_gui_and_tray(cfg, state):
     import pystray
+
+    root = tk.Tk()
     stop = threading.Event()
 
+    def show_window():
+        ui_queue.put("show_window")
+
+    def on_exit(_icon=None, _item=None):
+        stop.set()
+        try:
+            icon.stop()
+        except Exception:
+            pass
+        try:
+            root.destroy()
+        except Exception:
+            pass
+        os._exit(0)
+
     def tooltip():
-        text = state.get("status") or "Starting…"
+        text = state.get("status") or "Starting..."
         hours = (float(state.get("exp") or 0) - time.time()) / 3600
         sub = (" | %s" % cfg["subscriber_name"]) if cfg.get("subscriber_name") else ""
-        return "%s%s | %s%s" % (APP_NAME, sub, text, ("  | token %.0f h" % hours) if hours > 0 else "")
+        return "%s%s | %s%s" % (APP_NAME, sub, text, (" | token %.0f h" % hours) if hours > 0 else "")
 
     def on_notify(message, title=APP_NAME):
         try:
@@ -1332,48 +1396,20 @@ def run_tray(cfg, state):
             pass
 
     def open_dash(_icon=None, _item=None):
-        webbrowser.open(cfg["base_url"])
+        def _open():
+            refresh_server_url(force=True)
+            webbrowser.open(SERVER_URL)
+        threading.Thread(target=_open, daemon=True).start()
 
     def sync_now(_icon=None, _item=None):
         def work():
+            refresh_server_url(force=False)
             sync_once(cfg, state, force=True, notify=on_notify)
             try:
                 icon.tooltip = tooltip()
             except Exception:
                 pass
         threading.Thread(target=work, daemon=True).start()
-
-    def change_config(_icon=None, _item=None):
-        try:
-            user32 = ctypes.windll.user32
-            hwnd = user32.FindWindowW(None, "CMSync — ربط الحساب بالسيرفر")
-            if hwnd:
-                user32.ShowWindow(hwnd, 9)
-                user32.SetForegroundWindow(hwnd)
-                return
-        except Exception:
-            pass
-        my_exe = exe_path()
-        if my_exe and getattr(sys, "frozen", False):
-            try:
-                subprocess.Popen([my_exe, "--config"])
-                return
-            except Exception:
-                pass
-        threading.Thread(target=lambda: prompt_subscriber_config(cfg, force=True), daemon=True).start()
-
-    def ipc_show_listener():
-        kernel32 = ctypes.WinDLL("kernel32")
-        hEvent = kernel32.CreateEventW(None, False, False, SHOW_EVENT_NAME)
-        if not hEvent:
-            return
-        while not stop.is_set():
-            res = kernel32.WaitForSingleObject(hEvent, 500)
-            if res == 0:
-                change_config()
-        kernel32.CloseHandle(hEvent)
-
-    threading.Thread(target=ipc_show_listener, daemon=True).start()
 
     def header_label(_item):
         if cfg.get("subscriber_name"):
@@ -1388,44 +1424,63 @@ def run_tray(cfg, state):
         os.makedirs(CONFIG_DIR, exist_ok=True)
         webbrowser.open(os.path.dirname(LOG_FILE))
 
-    def restart():
-        stop.set()
-        try:
-            icon.stop()
-        except Exception:
-            pass
-        os._exit(0)
-
-    def update_now(_icon=None, _item=None):
-        def work():
-            text = run_update(cfg, state, on_notify, restart)
-            if text:
-                log("Update: " + text)
-                try:
-                    icon.tooltip = tooltip()
-                except Exception:
-                    pass
-        threading.Thread(target=work, daemon=True).start()
-
-    def update_label(_item):
-        if not exe_path():
-            return "Update CMSync (running from python)"
-        return "Update CMSync — NEW BUILD" if state.get("update_available") else "Update CMSync"
-
     menu = pystray.Menu(
         pystray.MenuItem(header_label, None, enabled=False),
         pystray.Menu.SEPARATOR,
-        pystray.MenuItem("⚙️ إظهار نافذة البرنامج / Show CMSync", change_config, default=True),
-        pystray.MenuItem("🌐 Open Dashboard / فتح الموقع", open_dash),
-        pystray.MenuItem("🔄 Sync Now / تحديث الآن", sync_now),
-        pystray.MenuItem("🔑 Link Account / ربط الحساب", change_config),
-        pystray.MenuItem(update_label, update_now),
-        pystray.MenuItem("🚀 Run with Windows / تشغيل مع ويندوز", toggle_startup, checked=lambda item: startup_enabled()),
-        pystray.MenuItem("📁 Open the log folder", show_log),
-        pystray.MenuItem("📄 Token file (C:)", lambda _i=None, _x=None: open_token_file(cfg)),
-        pystray.MenuItem("❌ Exit / خروج", lambda: (stop.set(), icon.stop(), os._exit(0))),
+        pystray.MenuItem("Show CMSync", lambda _i, _m: show_window(), default=True),
+        pystray.MenuItem("Open Dashboard", open_dash),
+        pystray.MenuItem("Sync Now", sync_now),
+        pystray.MenuItem("Link Account", lambda _i, _m: show_window()),
+        pystray.MenuItem("Token File (C:)", lambda _i, _m: open_token_file(cfg)),
+        pystray.MenuItem("Check for Updates", lambda _i, _m: check_for_updates(cfg, manual=True)),
+        pystray.MenuItem("Run with Windows", toggle_startup, checked=lambda item: startup_enabled()),
+        pystray.MenuItem("Open Log Folder", show_log),
+        pystray.MenuItem("Exit", on_exit),
     )
     icon = pystray.Icon(APP_NAME, make_icon(), tooltip(), menu)
+
+    def on_linked(sub_name):
+        try:
+            icon.tooltip = tooltip()
+        except Exception:
+            pass
+
+    build_gui(root, cfg, on_linked_callback=on_linked)
+
+    # Check whether we have a valid token
+    has_valid_token = False
+    if cfg.get("subscriber_token"):
+        try:
+            status, body = http("POST", SERVER_URL + "/api/subscriber/verify",
+                                body={"token": cfg["subscriber_token"]}, timeout=4)
+            if status == 200 and body.get("ok"):
+                has_valid_token = True
+                cfg["subscriber_name"] = body.get("name") or cfg.get("subscriber_name") or ""
+                save_config(cfg)
+        except Exception:
+            if cfg.get("subscriber_token"):
+                has_valid_token = True
+
+    if has_valid_token:
+        # Hide window immediately to system tray
+        root.withdraw()
+    else:
+        # Show window so user can enter subscriber token
+        show_window()
+
+    # IPC listener for other instances launching
+    def ipc_show_listener():
+        kernel32 = ctypes.WinDLL("kernel32")
+        hEvent = kernel32.CreateEventW(None, False, False, SHOW_EVENT_NAME)
+        if not hEvent:
+            return
+        while not stop.is_set():
+            res = kernel32.WaitForSingleObject(hEvent, 500)
+            if res == 0:
+                ui_queue.put("show_window")
+        kernel32.CloseHandle(hEvent)
+
+    threading.Thread(target=ipc_show_listener, daemon=True).start()
 
     def reporter():
         while not stop.is_set():
@@ -1435,18 +1490,25 @@ def run_tray(cfg, state):
             except Exception:
                 break
 
+    def startup_worker():
+        try:
+            refresh_server_url(force=True)
+        except Exception:
+            pass
+        clean_expired_tokens(cfg)
+        time.sleep(6)
+        if not stop.is_set():
+            check_for_updates(cfg, manual=False)
+
     threading.Thread(target=lambda: loop(cfg, state, stop, notify=on_notify), daemon=True).start()
     threading.Thread(target=reporter, daemon=True).start()
-    try:
-        icon.run()
-    except Exception as e:
-        log("pystray icon.run() exited: %s" % e)
-        while not stop.is_set():
-            time.sleep(1)
+    threading.Thread(target=startup_worker, daemon=True).start()
+    threading.Thread(target=icon.run, daemon=True).start()
+
+    root.mainloop()
 
 
 def say(message):
-    """الـ exe بيتبني من غير نافذة كونسول — فالرسايل تظهر أو تتسجل بس."""
     log(message)
     if sys.stdout is not None:
         print(message)
@@ -1469,97 +1531,53 @@ def install(cfg):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=APP_NAME)
-    ap.add_argument("--once", action="store_true", help="one cycle and print the result")
-    ap.add_argument("--console", action="store_true", help="run without the tray icon")
+    ap.add_argument("--once", action="store_true", help="one cycle and print result")
+    ap.add_argument("--console", action="store_true", help="run without tray icon")
     ap.add_argument("--config", action="store_true", help="open subscriber setup dialog")
-    ap.add_argument("--install", action="store_true", help="Windows startup + shortcut")
+    ap.add_argument("--install", action="store_true", help="Windows startup + desktop shortcut")
     ap.add_argument("--uninstall", action="store_true", help="remove Windows startup")
-    ap.add_argument("--update-check", action="store_true",
-                    help="compare this build with the dashboard's and stop")
-    ap.add_argument("--apply-update", nargs=3, metavar=("PID", "TARGET", "SOURCE"),
-                    help=argparse.SUPPRESS)  # داخلية: النسخة الجديدة بتبدّل القديمة
     ap.add_argument("--project", default=None, help="dashboard folder")
     args = ap.parse_args(argv)
-    if args.apply_update:
-        pid, target, source = args.apply_update
-        return apply_update(int(pid), source, target)
+
     cfg = load_config()
     if args.project:
         cfg["project"] = args.project
         save_config(cfg)
     state = load_state()
-    if args.config:
-        prompt_subscriber_config(cfg, force=True)
-        mutex = single_instance()
-        if not mutex:
-            return 0
-        run_tray(cfg, state)
-        return 0
+
     if args.install:
         return install(cfg)
     if args.uninstall:
         set_startup(False)
         say("Windows startup removed.")
         return 0
+
     os.makedirs(CONFIG_DIR, exist_ok=True)
     if not os.path.exists(CONFIG_FILE):
-        save_config(cfg)  # أول تشغيل: يسيب ملف قابل للتعديل بدل القيم الافتراضية الصامتة
-    log("boot: project=%s port=%s python=%s" % (cfg["project"], cfg["port"], cfg["python"]))
-    if args.update_check:
-        ensure_site(cfg)
-        mine, remote = exe_path(), release_info(cfg)
-        local = file_release(mine) if mine else None
-        say("Update check: %s" % json.dumps({
-            "running": mine or "python (no exe to replace)",
-            "local_build": local and time.strftime("%Y-%m-%d %H:%M", time.localtime(local["built_at"])),
-            "server_build": remote and remote.get("built_at_text"),
-            "server_size_mb": remote and round((remote.get("size") or 0) / 1048576, 1),
-            "update_available": bool(local and remote and local["sha256"] != remote["sha256"]),
-        }, ensure_ascii=False))
-        return 0
+        save_config(cfg)
+
+    threading.Thread(target=lambda: refresh_server_url(force=True), daemon=True).start()
+    log("boot: project=%s port=%s server=%s" % (cfg["project"], cfg["port"], SERVER_URL))
+    clean_expired_tokens(cfg)
+
     if args.once:
-        ensure_site(cfg)
         status = sync_once(cfg, state, force=True)
         note = refresh_manifest(cfg, state, force=True)
         print(json.dumps({"status": status, "manifest": note,
-                          "update": check_update(cfg, state, force=True),
                           "account": state.get("account")}, ensure_ascii=False))
         save_state(state)
         return 0
+
     if args.console:
         loop(cfg, state, threading.Event(), notify=lambda m, **k: log("NOTIFY " + m))
         return 0
+
     mutex = single_instance()
     if not mutex:
+        # Existing instance already running, signaled to show window
         return 0
 
-    # تنظيف أي روابط نفق قديمة
-    if "trycloudflare" in (cfg.get("server_url") or ""):
-        cfg["server_url"] = DEFAULT_SERVER_URL
-        save_config(cfg)
-
-    # التحقق من صلاحية التوكن المحفوظ
-    has_valid_token = False
-    if cfg.get("subscriber_token"):
-        url = (cfg.get("server_url") or DEFAULT_SERVER_URL).rstrip("/")
-        try:
-            status, body = http("POST", url + "/api/subscriber/verify",
-                                body={"token": cfg["subscriber_token"]}, timeout=4)
-            if status == 200 and body.get("ok"):
-                has_valid_token = True
-                cfg["subscriber_name"] = body.get("name") or cfg.get("subscriber_name") or ""
-                save_config(cfg)
-        except Exception:
-            if cfg.get("subscriber_token"):
-                has_valid_token = True
-
-    # إذا لم يكن هناك توكن شغال، نفتح نافذة الربط أولاً في الـ Main Thread لضمان سرعة واستقرار عناصر الإدخال
-    if not has_valid_token:
-        ok = prompt_subscriber_config(cfg, force=True)
-        if not ok and not cfg.get("subscriber_token"):
-            return 0
-
-    run_tray(cfg, state)
+    run_gui_and_tray(cfg, state)
     return 0
 
 

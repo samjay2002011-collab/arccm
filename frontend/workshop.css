@@ -106,7 +106,7 @@
   padding: 7px 8px; border: 1px solid transparent; border-radius: 10px;
   background: transparent; color: var(--text); text-align: left;
   font: inherit; cursor: pointer;
-  transition: background .12s ease, border-color .12s ease, transform .1s ease;
+
 }
 .ws-row:hover { background: rgba(255, 255, 255, .045); border-color: rgba(255, 255, 255, .09); }
 .ws-row:focus-visible { outline: 2px solid #00f0ff; outline-offset: 1px; }

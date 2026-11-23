@@ -50,3 +50,24 @@ def public():
 
 def capacities(spec):
     return {key: int(spec.get(key) or 0) for key in ("backpack", "quick_use", "safe_pocket", "augmented")}
+
+
+SHIELD_LEVEL = {"light": 1, "medium": 2, "heavy": 3}
+SHIELD_NAMES = {1: "Light", 2: "Light/Medium", 3: "Light/Medium/Heavy"}
+
+
+def shield_level(spec):
+    """أعلى نوع درع بتدعمه الشنطة: 1 لايت، 2 لايت+ميديوم، 3 التلاتة."""
+    return int((spec or {}).get("shield_compatibility") or 0)
+
+
+def shield_supports(spec, shield_type):
+    level = SHIELD_LEVEL.get(str(shield_type or "").lower())
+    if not level:
+        return True, ""
+    top = shield_level(spec) or 3
+    if level <= top:
+        return True, ""
+    return False, ("%s supports %s shields only — a %s shield will not fit."
+                   % ((spec or {}).get("name") or "This bag", SHIELD_NAMES.get(top, "Light").lower(),
+                      str(shield_type).capitalize()))

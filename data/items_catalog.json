@@ -6,8 +6,7 @@
   "wiki_weapons": "Category:Weapons (infobox)",
   "wiki_quick_use": "Category:Quick Use + Quick Use subpages",
   "snapshots": {
-   "G21": "G21_20261025-132610.json.gz",
-   "G22": "G22_20261025-132618.json.gz"
+   "G21": "G21_20261025-132610.json.gz"
   },
   "wiki_pages": 591
  },
@@ -15221,12 +15220,12 @@
      ],
      "rarity": "Rare",
      "value": 5000,
-     "image": "arctracker/green_geometric_sofa.png",
+     "image": "arctracker/green_lab_sofa.png",
      "stack_size": 1,
      "max_attachments": 0,
      "quality_level": null,
      "level": null,
-     "asset_id": "1935108407",
+     "asset_id": "751359821",
      "source": "rampart",
      "group": "Blueprints",
      "quick_use": false
@@ -16135,30 +16134,6 @@
      "weight": 0.0,
      "wiki_image": "File:Blueprint.png",
      "wiki_image_url": "https://arcraiders.wiki/wiki/Special:FilePath/Blueprint.png"
-    }
-   ]
-  },
-  "green lab sofa design": {
-   "name": "Green Lab Sofa Design",
-   "variants": [
-    {
-     "name": "Green Lab Sofa Design",
-     "type": "Blueprint",
-     "is_blueprint": true,
-     "raw_categories": [
-      "EItemCategory::Recipe"
-     ],
-     "rarity": "Rare",
-     "value": 5000,
-     "image": "arctracker/green_lab_sofa.png",
-     "stack_size": 1,
-     "max_attachments": 0,
-     "quality_level": null,
-     "level": null,
-     "asset_id": "751359821",
-     "source": "rampart",
-     "group": "Blueprints",
-     "quick_use": false
     }
    ]
   },

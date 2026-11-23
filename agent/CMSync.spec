@@ -5,7 +5,7 @@ a = Analysis(
     ['fahmy_agent.py'],
     pathex=['agent'],
     binaries=[],
-    datas=[('C:/Users/Administrator/Desktop/uu/agent/cmsync.ico', '.')],
+    datas=[],
     hiddenimports=['pystray._win32'],
     hookspath=[],
     hooksconfig={},
@@ -36,5 +36,5 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
     uac_admin=True,
-    icon=['C:/Users/Administrator/Desktop/uu/agent/cmsync.ico'],
+    icon=['C:/Users/Administrator/.gemini/antigravity/scratch/cloud_site/agent/cmsync.ico'],
 )

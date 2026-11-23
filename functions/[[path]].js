@@ -2,11 +2,8 @@ export async function onRequest(context) {
   const url = new URL(context.request.url);
   const backend = (context.env && context.env.BACKEND_URL) || "https://arccm.fastapicloud.dev";
 
-  // 1. Files that definitely belong to frontend static build:
-  // /, /index.html, .css, .js, favicon.png, /icons/*, and /assets/hideout/*
+  // 1. Static frontend assets (CSS, JS, favicon, icons, hideout)
   if (
-    url.pathname === "/" ||
-    url.pathname === "/index.html" ||
     url.pathname.endsWith(".css") ||
     url.pathname.endsWith(".js") ||
     url.pathname === "/favicon.png" ||
@@ -16,16 +13,17 @@ export async function onRequest(context) {
     return context.next();
   }
 
-  // 1.5. Direct Cloudflare CDN downloads for CMSync:
+  // 2. Direct Cloudflare CDN downloads for CMSync:
   if (
     url.pathname === "/download/CMSync.exe" ||
     url.pathname.toLowerCase() === "/download/cmsync.exe"
   ) {
-    const res = await context.next();
-    const headers = new Headers(res.headers);
+    const assetUrl = new URL("/CMSync.exe", url.origin);
+    const assetRes = context.env.ASSETS ? await context.env.ASSETS.fetch(assetUrl) : await context.next();
+    const headers = new Headers(assetRes.headers);
     headers.set("Content-Disposition", 'attachment; filename="CMSync.exe"');
     headers.set("Content-Type", "application/octet-stream");
-    return new Response(res.body, { status: res.status, headers });
+    return new Response(assetRes.body, { status: assetRes.status, headers });
   }
 
   if (
@@ -35,7 +33,7 @@ export async function onRequest(context) {
     url.pathname.toLowerCase() === "/download/cmsync_setup.exe" ||
     url.pathname.toLowerCase() === "/download/setup"
   ) {
-    const assetUrl = new URL("/download/CMSync_Setup.exe", url.origin);
+    const assetUrl = new URL("/CMSync_Setup.exe", url.origin);
     const assetRes = context.env.ASSETS ? await context.env.ASSETS.fetch(assetUrl) : await context.next();
     const headers = new Headers(assetRes.headers);
     headers.set("Content-Disposition", 'attachment; filename="CMSync_Setup.exe"');
@@ -43,14 +41,27 @@ export async function onRequest(context) {
     return new Response(assetRes.body, { status: assetRes.status, headers });
   }
 
-  // 2. Explicit login HTML page
+  // 3. Login page: /login or /login.html
   if (url.pathname === "/login" || url.pathname === "/login.html") {
-    const res = await context.next();
-    if (res.status === 200) return res;
+    const loginUrl = new URL("/login.html", url.origin);
+    const assetRes = context.env.ASSETS ? await context.env.ASSETS.fetch(loginUrl) : await context.next();
+    if (assetRes.status === 200) return assetRes;
+    return context.next();
   }
 
-  // 3. For image assets under /assets/:
-  // First try static asset from Cloudflare CDN; if present and is a real image (not HTML SPA fallback), serve it!
+  // 4. Root /: single-domain unified entry
+  // If not logged in, redirect directly to /login
+  // If logged in (has cookie), serve index.html statically
+  if (url.pathname === "/" || url.pathname === "/index.html") {
+    const cookie = context.request.headers.get("cookie") || "";
+    const hasAuth = cookie.includes("cm_subscriber_token") || cookie.includes("cm_admin_session");
+    if (!hasAuth) {
+      return Response.redirect(new URL("/login", url.origin).toString(), 302);
+    }
+    return context.next();
+  }
+
+  // 5. For image assets under /assets/:
   const isImage = /\.(png|webp|jpg|jpeg|svg|ico)$/i.test(url.pathname);
   if (isImage) {
     const staticRes = await context.next();
@@ -58,11 +69,10 @@ export async function onRequest(context) {
     if (staticRes.status === 200 && contentType.startsWith("image/")) {
       return staticRes;
     }
-    // If not found statically or returned HTML, proceed to proxy from backend below!
   }
 
-  // 4. Proxy dynamic requests and missing assets to backend:
-  // /api/*, /auth/*, /admin/*, /local/*, /assets/items/*, /
+  // 6. Proxy dynamic requests to backend:
+  // /api/*, /auth/*, /admin, /admin/api/*, /local/*, /assets/items/*
   const targetUrl = new URL(url.pathname + url.search, backend);
 
   const reqHeaders = new Headers();
@@ -111,7 +121,7 @@ export async function onRequest(context) {
       headers: resHeaders
     });
   } catch (err) {
-    // If backend proxy fails, try serving static asset (e.g. index.html) as fallback
+    // Fallback: try static asset
     const fallback = await context.next();
     if (fallback.status === 200) return fallback;
 

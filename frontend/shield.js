@@ -98,11 +98,11 @@
     "-moz-user-select: text !important; user-select: text !important; }";
   (document.head || document.documentElement).appendChild(style);
 
-  // استثناء الأدمين من الحظر حتى يتمكن من إدارة وتطوير موقعه
+  // استثناء الأدمين من الحظر حتى يتمكن من إدارة وتطوير موقعه (بما في ذلك وضع التصفح كمشترك)
   var _isAdmin = false;
   try {
     fetch("/api/auth/me").then(function (r) { return r.json(); }).then(function (d) {
-      if (d && d.is_admin) {
+      if (d && (d.is_admin || d.impersonating)) {
         _isAdmin = true;
         _hideOverlay();
       }
@@ -113,7 +113,7 @@
   // لو حد فتح DevTools وحط breakpoint أو بيتابع الكود، الـ debugger statement
   // بيوقفه كل 50 ملي ثانية — مستحيل يتابع أي حاجة.
   var _trap = function () {
-    if (_isAdmin) return;
+    if (_isAdmin || location.hostname === "localhost" || location.hostname === "127.0.0.1") return;
     // بنعمل function جديدة كل مرة عشان يبقى صعب يتشال بـ breakpoint واحد
     (function () { debugger; })();
   };
@@ -202,14 +202,16 @@
   // (ده بيتعمل من السيرفر — شوف الـ middleware في main.py)
 
   // ─── 11. منع Console eval ─────────────────────────────────────────────
-  // إعادة تعريف بعض الدوال الحساسة
-  try {
-    Object.defineProperty(window, "eval", {
-      get: function () { return function () { return null; }; },
-      set: function () {},
-      configurable: false
-    });
-  } catch (ex) { /* بعض المتصفحات بترفض */ }
+  // إعادة تعريف بعض الدوال الحساسة (يُعطّل على localhost وللأدمن)
+  if (!_isAdmin && location.hostname !== "localhost" && location.hostname !== "127.0.0.1") {
+    try {
+      Object.defineProperty(window, "eval", {
+        get: function () { return function () { return null; }; },
+        set: function () {},
+        configurable: false
+      });
+    } catch (ex) { /* بعض المتصفحات بترفض */ }
+  }
 
   // ─── 12. مراقبة حجم الصفحة بدقة أعلى (للـ DevTools المحمولة/منفصلة) ──
   var _lastW = window.outerWidth, _lastH = window.outerHeight;

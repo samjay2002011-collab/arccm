@@ -14,7 +14,6 @@ body.locked .inv-body, body.locked .slot-cell,
 body.locked .lo-section, body.locked .big-slot { pointer-events: none; }
 body.locked .inv-col { outline: 1px solid rgba(239, 68, 68, .35); }
 
-
 .inv-grid {
   display: grid;
   grid-template-columns: minmax(0, 2.55fr) minmax(0, .95fr) minmax(0, 1.05fr);
@@ -57,7 +56,7 @@ body.locked .inv-col { outline: 1px solid rgba(239, 68, 68, .35); }
 .lo-select:hover { border-color: rgba(168, 85, 247, .45); color: var(--text); }
 .lo-select:focus { border-color: rgba(168, 85, 247, .5); color: var(--text); }
 .lo-select .lo-cur { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.lo-select .chev { font-size: 8px; opacity: .85; transition: transform .15s ease; }
+.lo-select .chev { font-size: 8px; opacity: .85; }
 .lo-dd.open .lo-select { border-color: rgba(168, 85, 247, .6); color: var(--text); }
 .lo-dd.open .lo-select .chev { transform: rotate(180deg); }
 .lo-pop {
@@ -105,7 +104,7 @@ body.locked .inv-col { outline: 1px solid rgba(239, 68, 68, .35); }
   font: inherit; font-size: 9px; font-weight: 900; letter-spacing: 1.8px;
 }
 .cat-btn:hover { border-color: rgba(192, 132, 252, .95); color: #e9d5ff; }
-.cat-btn .chev { font-size: 9px; opacity: .9; transition: transform .15s ease; }
+.cat-btn .chev { font-size: 9px; opacity: .9; }
 .cat-dd.open .cat-btn .chev { transform: rotate(180deg); }
 .cat-pop {
   position: absolute; top: calc(100% + 7px); left: 0; z-index: 45;
@@ -155,6 +154,15 @@ body.locked .inv-col { outline: 1px solid rgba(239, 68, 68, .35); }
   gap: clamp(6px, .6vw, 10px);
   padding: clamp(8px, .8vw, 14px);
 }
+/* الأعمدة بتتخطى في نفس النافذة: السبب الشائع لتقيل المخزن الكبير هو الـ layout
+   اللي بيعيد حساب كل بلاطة مع كل صورة بتوصل. المحتوى بياخد مكانه مرة واحدة
+   (contain: layout style) من غير ما الصور والحركة جوه تلمس باقي الصفحة. */
+/* contain-intrinsic-size بمقاس البلاطة الفعلي (110px في الستاش + البادينج) — قبل كده
+   كان 76px، فالمتصفح كان بيقيس طول السكرول غلط ويقفز أثناء التمرير. محتوى البلاطة
+   مرسوم جوه حدودها بس، فطول شريط السكرول ثابت من أول رسم. */
+.inv-body .tile { contain: layout paint style; contain-intrinsic-size: auto 122px auto 122px; }
+/* حاوية السكرول: layout مستقل — التمرير مابيلمسش باقي الصفحة */
+.inv-body { contain: layout; }
 .inv-body.drop { outline: 2px dashed rgba(168, 85, 247, .7); outline-offset: -6px; background: rgba(139, 92, 246, .07); }
 .note.empty-col { grid-column: 1 / -1; }
 
@@ -181,54 +189,13 @@ body.locked .inv-col { outline: 1px solid rgba(239, 68, 68, .35); }
   position: relative; aspect-ratio: 1 / 1; border-radius: 16px;
   background: #0a0a11; border: 1px dashed rgba(255, 255, 255, .1);
   display: flex; align-items: center; justify-content: center;
-  transition: border-color .12s ease, box-shadow .12s ease;
+
 }
 .slot-cell.filled { border-style: solid; border-color: transparent; background: transparent; }
 .slot-cell.drop { border-color: rgba(168, 85, 247, .9); box-shadow: 0 0 18px rgba(168, 85, 247, .35); }
 
-/* ===== التحقق الصارم للسحب والإفلات =====
-   أخضر ثابت بس: النبض كان بيعيد رسم كل الخانات في كل فريم — على جهاز المستخدم
-   كان بيفلّج الصفحة كلها. */
-.slot-cell.dnd-ok {
-  border-style: solid;
-  border-color: rgba(34, 197, 94, .85);
-  box-shadow: 0 0 0 1px rgba(34, 197, 94, .35);
-  cursor: copy;
-}
-.slot-cell.dnd-ok.drop {
-  border-color: rgba(74, 222, 128, 1);
-  background: rgba(34, 197, 94, .08);
-  box-shadow: 0 0 0 2px rgba(34, 197, 94, .8), 0 0 34px rgba(34, 197, 94, .55);
-}
-.inv-body.dnd-ok { outline: 2px dashed rgba(34, 197, 94, .55); outline-offset: -6px; }
-.inv-body.dnd-ok.drop {
-  outline: 2px dashed rgba(74, 222, 128, .95);
-  background: rgba(34, 197, 94, .06);
-}
-
 .slot-cell .tile { width: 100%; height: 100%; border-radius: 16px; }
 
-/* ===== الدمج والتبديل فوق البلاطة (زي رامبارت) =====
-   وقت السحب البلاطة بتتقسم نصين: الشمال دمج لنوع واحد لسه فيه مكان تحت السقف،
-   واليمين تبديل الأماكن. النصف اللي الماوس واقف عليه وقت الإفلات هو اللي بيتنفذ.
-   ألوان ثابتة من غير أي نبض — النبض كان بيعيد رسم الخانات في كل فريم. */
-.tile.dnd-combo::before, .tile.dnd-combo::after,
-.tile.dnd-combine::before, .tile.dnd-swap::after {
-  content: ""; position: absolute; top: 0; bottom: 0; z-index: 7;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  color: #fff; pointer-events: none; white-space: pre; line-height: 1.2;
-  font-weight: 900; font-size: clamp(7.5px, .6vw, 10px); letter-spacing: .4px;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, .8);
-}
-.tile.dnd-combo::before, .tile.dnd-combine::before { background: rgba(21, 128, 61, .93); content: "COMBINE"; }
-.tile.dnd-combo::after, .tile.dnd-swap::after { background: rgba(30, 64, 175, .93); content: "SWAP"; }
-.tile.dnd-combo::before { left: 0; width: 50%; border-right: 1px solid #08090e; }
-.tile.dnd-combo::after { right: 0; width: 50%; }
-.tile.dnd-combine::before, .tile.dnd-swap::after { left: 0; right: 0; }
-.tile.dnd-combo.half-left::before { background: rgba(34, 197, 94, .97); box-shadow: inset 0 0 0 2px #86efac; }
-.tile.dnd-combo:not(.half-left)::after { background: rgba(59, 130, 246, .97); box-shadow: inset 0 0 0 2px #bfdbfe; }
-.tile.dnd-combo, .tile.dnd-combine, .tile.dnd-swap { outline: 2px solid rgba(255, 255, 255, .78); outline-offset: -2px; }
-.tile.dnd-combo .qty, .tile.dnd-combine .qty, .tile.dnd-swap .qty { opacity: .4; }
 .slot-cross {
   width: 14px; height: 14px; opacity: .16; position: relative;
 }
@@ -250,6 +217,19 @@ body.locked .inv-col { outline: 1px solid rgba(239, 68, 68, .35); }
   cursor: not-allowed;
 }
 .slot-cell.no-wrapper .slot-cross { opacity: .08; }
+/* خانة من الشنطة اللي لسه اتلبست: الجزء الزايد بيتأسس مع أول ماتش، فبنديها
+   شكل محجوز هادي — من غير قفل ولا خطوط ممنوعة. */
+.slot-cell.pending {
+  border-style: solid;
+  border-color: rgba(120, 160, 255, .22);
+  background: rgba(80, 110, 200, .06);
+  cursor: default;
+}
+.slot-cell.pending .slot-cross { opacity: .12; }
+.slot-pending {
+  position: absolute; right: 4px; bottom: 3px;
+  font-size: 9px; line-height: 1; color: rgba(160, 190, 255, .7); pointer-events: none;
+}
 .slot-lock {
   position: absolute; right: 4px; bottom: 3px;
   font-size: 9px; line-height: 1; opacity: .75; pointer-events: none;
@@ -374,6 +354,14 @@ body.locked .inv-col { outline: 1px solid rgba(239, 68, 68, .35); }
 .qty-pieces { font-size: 10px; font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums; }
 .qty-note { font-size: 9px; color: var(--amber); min-height: 11px; text-align: center; }
 .tile.qty-hit { outline: 2px solid rgba(168,85,247,.55); outline-offset: 1px; }
+/* بطاقة QTY: كليك يمين → MOVE TO… BACKPACK بينفّذ الرقم بالظبط — الفأرة بتقول ده. */
+.qty-card[data-fill-asset] { cursor: context-menu; }
+.qty-card[data-fill-asset] .tile::after {
+  content: ""; position: absolute; inset: 3px; border-radius: 6px;
+  border: 1px dashed rgba(168,85,247,.35); pointer-events: none;
+}
+/* السكرول الانسيابي للستاش: الرسم بيتحرك في طبقة لوحدها فهوفر ثابت مفيش إعادة حساب. */
+.col-stash .inv-body { transform: translateZ(0); }
 
 /* ============================ PROFILE PREVIEW ============================
    شبكة المعاينة: بلاطات البروفيل جوه خانات اللوداوت والشنطة + الشريط تحت.
@@ -472,4 +460,11 @@ body.locked .inv-col { outline: 1px solid rgba(239, 68, 68, .35); }
 .dup-row {
   grid-column: 1 / -1; display: grid; gap: clamp(6px, .6vw, 10px);
   grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+}
+
+/* MERGE ALL في الخلفية: عداد صغير بس — الشبكة مش بتتعاد إلا بعد ما الدمج يخلص. */
+.merge-progress {
+  font-size: 10px; font-weight: 800; color: #cbd5e1; letter-spacing: .5px;
+  background: #0a0a10; border: 1px solid var(--line); border-radius: 7px; padding: 5px 8px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px;
 }

@@ -184,26 +184,22 @@ def record_failure(conn, account, error):
 
 
 def latest_snapshot_path(conn, account):
-    # نفضل الملف الأحدث على القرص مباشرة داخل SNAPSHOT_DIR لضمان التوافق التام بين Windows و Linux
-    fallback = sorted(glob.glob(os.path.join(config.SNAPSHOT_DIR, "%s_*.json.gz" % account)))
-    if fallback:
-        return fallback[-1]
+    if not account:
+        return None
     row = conn.execute("SELECT path FROM snapshots WHERE account=? AND ok=1 ORDER BY fetched_at DESC LIMIT 1",
                        (account,)).fetchone()
-    if row and row["path"]:
-        if os.path.exists(row["path"]):
-            return row["path"]
-        fname = row["path"].replace("\\", "/").split("/")[-1]
-        cand = os.path.join(config.SNAPSHOT_DIR, fname)
-        if os.path.exists(cand):
-            return cand
-    return None
+    if row and os.path.exists(row["path"]):
+        return row["path"]
+    fallback = sorted(glob.glob(os.path.join(config.SNAPSHOT_DIR, "%s_*.json.gz" % account)))
+    return fallback[-1] if fallback else None
 
 
 _SNAPSHOT_CACHE = {}  # account -> (path, mtime, data)
 
 
 def read_snapshot(conn, account):
+    if not account:
+        return None, None
     path = latest_snapshot_path(conn, account)
     if not path:
         return None, None
@@ -252,6 +248,52 @@ def list_accounts(conn, enabled_only=False):
     return [dict(r) for r in conn.execute(query)]
 
 
+def list_accounts_admin(conn, enabled_only=False):
+    """حسابات الأدمن فقط — استبعاد أي حساب يتبع أي مشترك في جدول subscribers."""
+    subs = [r["name"] for r in conn.execute("SELECT name FROM subscribers").fetchall()]
+    if not subs:
+        query = "SELECT * FROM accounts" + (" WHERE enabled=1" if enabled_only else "") + " ORDER BY added_at DESC, name"
+        return [dict(r) for r in conn.execute(query)]
+    placeholders = ",".join("?" for _ in subs)
+    query = (f"SELECT * FROM accounts WHERE (owner_username IS NULL OR owner_username = '' OR owner_username = 'Admin' OR owner_username NOT IN ({placeholders}))"
+             + (" AND enabled=1" if enabled_only else "") + " ORDER BY added_at DESC, name")
+    return [dict(r) for r in conn.execute(query, subs)]
+
+
+def active_account_admin(conn):
+    """الحساب النشط الخاص بالأدمن فقط."""
+    rows = list_accounts_admin(conn, enabled_only=True)
+    if not rows:
+        return None
+    for r in rows:
+        if r.get("is_active"):
+            return r
+    return rows[0]
+
+
+def _expand_names(name):
+    if not name:
+        return []
+    res = {name}
+    low = name.strip().lower()
+    if low in ("ahmed", "احمد", "af"):
+        res.update(["ahmed", "احمد", "AF"])
+    elif low in ("youssef", "يوسف", "youseif"):
+        res.update(["Youssef", "يوسف", "Youseif"])
+    return list(res)
+
+
+def list_accounts_owned(conn, subscriber_name, enabled_only=False):
+    """حسابات مشترك واحد بس — مفتاح الملكية هو اسم المشترك (owner_username)."""
+    if not subscriber_name:
+        return []
+    names = _expand_names(subscriber_name)
+    placeholders = ",".join("?" * len(names))
+    query = (f"SELECT * FROM accounts WHERE owner_username IN ({placeholders})"
+             + (" AND enabled=1" if enabled_only else "") + " ORDER BY added_at DESC, name")
+    return [dict(r) for r in conn.execute(query, tuple(names))]
+
+
 def get_account(conn, key):
     if not key:
         return None
@@ -272,23 +314,11 @@ def set_active_account(conn, account_id):
     conn.commit()
 
 
-def active_account(conn, owner=None):
-    all_accs = list_accounts(conn)
-    if not all_accs:
-        return None
-    clean_owner = str(owner).strip().lower() if owner and str(owner).strip().lower() != "admin" else ""
-    if clean_owner:
-        matching = [
-            r for r in all_accs
-            if clean_owner in [o.strip().lower() for o in (r.get("owner_username") or "").split(",") if o.strip()]
-            or (r.get("owner_username") or "").strip().lower() in ("", "all", "shared", "*", "public")
-        ]
-    else:
-        matching = all_accs
-    if not matching:
-        return all_accs[0]
-    active = next((r for r in matching if r.get("is_active")), None)
-    return active or matching[0]
+def active_account(conn):
+    row = conn.execute("SELECT * FROM accounts WHERE is_active=1 LIMIT 1").fetchone()
+    if row is None:
+        row = conn.execute("SELECT * FROM accounts WHERE enabled=1 ORDER BY added_at LIMIT 1").fetchone()
+    return dict(row) if row else None
 
 
 # ------------------------------------------------------------------ التجهيزات المحفوظة
