@@ -20,10 +20,13 @@ export async function onRequest(context) {
   ) {
     const assetUrl = new URL("/CMSync.exe", url.origin);
     const assetRes = context.env.ASSETS ? await context.env.ASSETS.fetch(assetUrl) : await context.next();
-    const headers = new Headers(assetRes.headers);
-    headers.set("Content-Disposition", 'attachment; filename="CMSync.exe"');
-    headers.set("Content-Type", "application/octet-stream");
-    return new Response(assetRes.body, { status: assetRes.status, headers });
+    const ct = assetRes.headers.get("content-type") || "";
+    if (assetRes.status === 200 && !ct.includes("text/html")) {
+      const headers = new Headers(assetRes.headers);
+      headers.set("Content-Disposition", 'attachment; filename="CMSync.exe"');
+      headers.set("Content-Type", "application/octet-stream");
+      return new Response(assetRes.body, { status: assetRes.status, headers });
+    }
   }
 
   if (
@@ -35,10 +38,13 @@ export async function onRequest(context) {
   ) {
     const assetUrl = new URL("/CMSync_Setup.exe", url.origin);
     const assetRes = context.env.ASSETS ? await context.env.ASSETS.fetch(assetUrl) : await context.next();
-    const headers = new Headers(assetRes.headers);
-    headers.set("Content-Disposition", 'attachment; filename="CMSync_Setup.exe"');
-    headers.set("Content-Type", "application/octet-stream");
-    return new Response(assetRes.body, { status: assetRes.status, headers });
+    const ct = assetRes.headers.get("content-type") || "";
+    if (assetRes.status === 200 && !ct.includes("text/html")) {
+      const headers = new Headers(assetRes.headers);
+      headers.set("Content-Disposition", 'attachment; filename="CMSync_Setup.exe"');
+      headers.set("Content-Type", "application/octet-stream");
+      return new Response(assetRes.body, { status: assetRes.status, headers });
+    }
   }
 
   // 3. Login page: /login or /login.html
