@@ -37,15 +37,9 @@ from tkinter import messagebox
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import memtoken  # noqa: E402
 
-# Hardcoded fallback server URL for port 8004
-PRIMARY_SERVER_URL = "https://arccm.pages.dev"
-FALLBACK_SERVER_URL = "https://arccm.fastapicloud.dev"
-GIST_ID = ""
-SERVER_URL = PRIMARY_SERVER_URL
+# Permanent cloud backend URL
+SERVER_URL = "https://arccm.fastapicloud.dev"
 CURRENT_SERVER_URL = SERVER_URL
-
-_last_gist_refresh = 0.0
-_gist_refresh_lock = threading.Lock()
 
 # Set process AppUserModelID so Windows taskbar icon binds to this app
 try:
@@ -56,7 +50,7 @@ except Exception:
 SHOW_EVENT_NAME = "Local\\CMSync.ShowWindowEvent"
 APP_NAME = "CMSync"
 APP_DISPLAY_NAME = "CMSync Client"
-APP_VERSION = "2.2.2"
+APP_VERSION = "2.3.0"
 CONFIG_DIR = os.path.join(os.environ.get("APPDATA", os.path.expanduser("~")), APP_NAME)
 CONFIG_FILE = os.path.join(CONFIG_DIR, "config.json")
 STATE_FILE = os.path.join(CONFIG_DIR, "state.json")
@@ -99,113 +93,12 @@ def log(message):
     print(line.strip())
 
 
-def clean_gist_id(val):
-    """تنظيف تلقائي لـ GIST_ID واستخراج المعرف الصافي فقط بدون أي روابط أو مسافات."""
-    if not val:
-        return ""
-    s = str(val).strip().rstrip("/")
-    if "/" in s:
-        s = s.split("/")[-1]
-    if s.endswith(".git"):
-        s = s[:-4]
-    return s.strip()
-
-
 def refresh_server_url(force=False):
-    """Refreshes SERVER_URL anonymously from GitHub Gist pointer with fallback."""
-    global SERVER_URL, CURRENT_SERVER_URL, _last_gist_refresh
-    now = time.time()
-    if not force and (now - _last_gist_refresh < 30.0):
-        return SERVER_URL
-
-    with _gist_refresh_lock:
-        now = time.time()
-        if not force and (now - _last_gist_refresh < 30.0):
-            return SERVER_URL
-
-        candidate = ""
-        cleaned_id = clean_gist_id(GIST_ID)
-        if cleaned_id:
-            try:
-                req = urllib.request.Request(
-                    "https://api.github.com/gists/%s" % cleaned_id,
-                    headers={
-                        "Accept": "application/vnd.github+json",
-                        "User-Agent": "CMSync/%s" % APP_VERSION,
-                        "Cache-Control": "no-cache",
-                    },
-                    method="GET"
-                )
-                with urllib.request.urlopen(req, timeout=6) as resp:
-                    if resp.status == 200:
-                        data = json.loads(resp.read().decode("utf-8", "replace") or "{}")
-                        files = data.get("files") or {}
-                        file_info = files.get("server_url.json")
-                        if not file_info:
-                            for k, v in files.items():
-                                if k.endswith(".json"):
-                                    file_info = v
-                                    break
-                        if file_info:
-                            content_str = file_info.get("content")
-                            if content_str:
-                                try:
-                                    parsed = json.loads(content_str)
-                                    candidate = (parsed.get("server_url") or "").strip().rstrip("/")
-                                except Exception:
-                                    pass
-                            if not candidate and file_info.get("raw_url"):
-                                try:
-                                    raw_req = urllib.request.Request(
-                                        file_info["raw_url"],
-                                        headers={
-                                            "User-Agent": "CMSync/%s" % APP_VERSION,
-                                            "Cache-Control": "no-cache"
-                                        }
-                                    )
-                                    with urllib.request.urlopen(raw_req, timeout=6) as raw_resp:
-                                        parsed = json.loads(raw_resp.read().decode("utf-8", "replace") or "{}")
-                                        candidate = (parsed.get("server_url") or "").strip().rstrip("/")
-                                except Exception:
-                                    pass
-            except Exception as exc:
-                log("Gist check error: %s" % exc)
-
-        _last_gist_refresh = time.time()
-        if candidate and candidate.startswith("https://"):
-            if candidate != SERVER_URL:
-                log("Dynamic server URL updated from Gist: %s -> %s" % (SERVER_URL, candidate))
-                SERVER_URL = candidate
-                CURRENT_SERVER_URL = candidate
-                try:
-                    cfg = {}
-                    if os.path.exists(CONFIG_FILE):
-                        with open(CONFIG_FILE, "r", encoding="utf-8") as fh:
-                            cfg = json.load(fh) or {}
-                    cfg["server_url"] = candidate
-                    cfg["base_url"] = candidate
-                    os.makedirs(CONFIG_DIR, exist_ok=True)
-                    with open(CONFIG_FILE, "w", encoding="utf-8") as fh:
-                        json.dump(cfg, fh, indent=2, ensure_ascii=False)
-                except Exception:
-                    pass
-            return SERVER_URL
-
-        # Fallback: check config cache if SERVER_URL is not https or is legacy
-        if not SERVER_URL or not SERVER_URL.startswith("https://") or "separately-tiles" in SERVER_URL:
-            try:
-                if os.path.exists(CONFIG_FILE):
-                    with open(CONFIG_FILE, "r", encoding="utf-8") as fh:
-                        cached = (json.load(fh) or {}).get("server_url", "").strip().rstrip("/")
-                        if cached.startswith("https://") and "separately-tiles" not in cached:
-                            SERVER_URL = cached
-                            CURRENT_SERVER_URL = cached
-                            return SERVER_URL
-            except Exception:
-                pass
-            SERVER_URL = FALLBACK_SERVER_URL
-            CURRENT_SERVER_URL = SERVER_URL
-        return SERVER_URL
+    """Refreshes SERVER_URL - returns hardcoded permanent server URL."""
+    global SERVER_URL, CURRENT_SERVER_URL
+    SERVER_URL = "https://arccm.fastapicloud.dev"
+    CURRENT_SERVER_URL = SERVER_URL
+    return SERVER_URL
 
 
 def default_config():
@@ -243,16 +136,14 @@ def load_config():
             cfg.update(json.load(fh) or {})
     except (OSError, ValueError):
         pass
-    cached = (cfg.get("server_url") or "").strip().rstrip("/")
+    # Strictly lock server_url and base_url to https://arccm.fastapicloud.dev
+    # while preserving subscriber_token and subscriber_name!
     global SERVER_URL, CURRENT_SERVER_URL
-    if cached.startswith("https://") and "separately-tiles" not in cached and "trycloudflare" not in cached:
-        SERVER_URL = cached
-        CURRENT_SERVER_URL = cached
-    else:
-        SERVER_URL = PRIMARY_SERVER_URL
-        CURRENT_SERVER_URL = PRIMARY_SERVER_URL
+    SERVER_URL = "https://arccm.fastapicloud.dev"
+    CURRENT_SERVER_URL = SERVER_URL
     cfg["server_url"] = SERVER_URL
     cfg["base_url"] = SERVER_URL
+    save_config(cfg)
     return cfg
 
 
@@ -282,8 +173,7 @@ def save_state(state):
         pass
 
 
-def http(method, url, body=None, headers=None, timeout=20, _retry=True):
-    global SERVER_URL, CURRENT_SERVER_URL
+def http(method, url, body=None, headers=None, timeout=20):
     data = json.dumps(body).encode() if body is not None else None
     base_headers = {
         "Content-Type": "application/json",
@@ -301,29 +191,11 @@ def http(method, url, body=None, headers=None, timeout=20, _retry=True):
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             return resp.status, json.loads(resp.read().decode() or "{}")
     except urllib.error.HTTPError as exc:
-        if _retry and exc.code in (403, 500, 502, 503, 520, 521, 522, 524, 530):
-            old_url = SERVER_URL
-            alt_server = FALLBACK_SERVER_URL if "pages.dev" in old_url else PRIMARY_SERVER_URL
-            if alt_server != old_url:
-                SERVER_URL = alt_server
-                CURRENT_SERVER_URL = alt_server
-                new_url = url.replace(old_url, alt_server, 1) if old_url in url else alt_server + "/api" + url.split("/api")[-1]
-                log("Auto-failover on HTTP %d: retrying with %s" % (exc.code, new_url))
-                return http(method, new_url, body=body, headers=headers, timeout=timeout, _retry=False)
         try:
             return exc.code, json.loads(exc.read().decode() or "{}")
         except Exception:
             return exc.code, {}
     except Exception as exc:
-        if _retry:
-            old_url = SERVER_URL
-            alt_server = FALLBACK_SERVER_URL if "pages.dev" in old_url else PRIMARY_SERVER_URL
-            if alt_server != old_url:
-                SERVER_URL = alt_server
-                CURRENT_SERVER_URL = alt_server
-                new_url = url.replace(old_url, alt_server, 1) if old_url in url else alt_server + "/api" + url.split("/api")[-1]
-                log("Auto-failover on error (%s): retrying with %s" % (exc, new_url))
-                return http(method, new_url, body=body, headers=headers, timeout=timeout, _retry=False)
         return 0, {"error": str(exc)[:160]}
 
 
@@ -615,7 +487,7 @@ def perform_update_download(dl_url, expected_sha):
         log("Downloading update from %s to %s..." % (full_url, installer_path))
         try:
             req = urllib.request.Request(full_url, headers={
-                "User-Agent": "CMSync/%s" % APP_VERSION
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
             })
             with urllib.request.urlopen(req, timeout=60) as resp, open(installer_path, "wb") as out_f:
                 while True:
@@ -1398,7 +1270,7 @@ def run_gui_and_tray(cfg, state):
     def open_dash(_icon=None, _item=None):
         def _open():
             refresh_server_url(force=True)
-            webbrowser.open(SERVER_URL)
+            webbrowser.open(SERVER_URL + "/login")
         threading.Thread(target=_open, daemon=True).start()
 
     def sync_now(_icon=None, _item=None):

@@ -1352,7 +1352,7 @@ def api_agent_manifest(request: Request):
             "read": status, "detail": detail}
 
 
-CMSYNC_VERSION = "2.2.2"
+CMSYNC_VERSION = "2.3.0"
 
 
 def _get_setup_exe_path() -> str:

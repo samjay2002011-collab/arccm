@@ -20,3 +20,11 @@ document.getElementById("login-form").onsubmit = async (e) => {
   } catch (ex) { msg.className = "msg err"; msg.textContent = "Connection error."; }
   btn.disabled = false;
 };
+
+fetch("/api/cmsync/version").then(r => r.json()).then(v => {
+  const btn = document.getElementById("login-dl-btn");
+  if (btn && v && v.version) {
+    const span = btn.querySelector("span:nth-child(2)");
+    if (span) span.textContent = `Download CMSync v${v.version}`;
+  }
+}).catch(() => {});

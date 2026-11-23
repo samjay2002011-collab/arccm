@@ -1,8 +1,8 @@
 ; Script generated for CMSync Windows Installer — Clean Upgrade Engine
 #define MyAppName "CMSync Client"
-#define MyAppVersion "2.2.2"
+#define MyAppVersion "2.3.0"
 #define MyAppPublisher "CMSync Team"
-#define MyAppURL "https://showers-helps-kodak-italiano.trycloudflare.com"
+#define MyAppURL "https://arccm.fastapicloud.dev"
 #define MyAppExeName "CMSync.exe"
 
 [Setup]

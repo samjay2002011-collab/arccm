@@ -468,8 +468,8 @@ function renderHeader() {
         ${a.name === state.account ? `<span class="acc-tick">✓</span>` : ""}
       </button>`;
   }).join("");
-  const dlItem = `<a href="/download/CMSync_Setup.exe" download="CMSync_Setup.exe" class="acc-dd-item acc-dd-dl" style="text-decoration:none; color:#c084fc; display:flex; align-items:center; gap:8px; border-top:1px solid rgba(255,255,255,.07);" title="Download CMSync Client v2.2.2">
-      <span>⬇</span><b>Download CMSync v2.2.2</b><span class="badge-new" style="font-size:9px; padding:1px 5px; border-radius:4px; background:rgba(34,197,94,.2); color:#4ade80;">NEW</span>
+  const dlItem = `<a href="/download/CMSync_Setup.exe" download="CMSync_Setup.exe" class="acc-dd-item acc-dd-dl" style="text-decoration:none; color:#c084fc; display:flex; align-items:center; gap:8px; border-top:1px solid rgba(255,255,255,.07);" title="Download CMSync Client v2.3.0">
+      <span>⬇</span><b>Download CMSync v2.3.0</b><span class="badge-new" style="font-size:9px; padding:1px 5px; border-radius:4px; background:rgba(34,197,94,.2); color:#4ade80;">NEW</span>
     </a>`;
   $("#acc-switch").innerHTML = state.accounts.length
     ? `<div class="acc-dd">${trigger}${state.menuOpen ? `<div class="acc-dd-menu">${items}${dlItem}${manage}</div>` : ""}</div>`
@@ -590,7 +590,7 @@ const AGENT_NOTES = {
 
 function agentDownload() {
   const r = (state.status || {}).release || {};
-  const ver = r.version || "2.2.2";
+  const ver = r.version || "2.3.0";
   const html = !r.present
     ? `<span class="dl-meta">No CMSync_Setup.exe on this server yet.</span>`
     : `<a class="dl-link" href="/download/CMSync_Setup.exe" download="CMSync_Setup.exe" title="CMSync_Setup.exe — Download and install CMSync Client">⬇ Download CMSync v${esc(ver)} <span class="badge-new">NEW</span></a>
